@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+  <algoliasearch_adminhtml_algoliasearchbackend_index>
+	<reference name="content">
+	  <block type="algoliasearch/adminhtml_algoliasearchbackend" name="algoliasearchbackend" template="algoliasearch/algoliasearchbackend.phtml"/>
+	</reference>
+  </algoliasearch_adminhtml_algoliasearchbackend_index>
+</layout>

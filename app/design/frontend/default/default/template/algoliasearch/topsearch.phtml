@@ -1,0 +1,81 @@
+<?php
+    $catalogSearchHelper = $this->helper('catalogsearch');
+    $algoliaSearchHelper = $this->helper('algoliasearch');
+?>
+
+
+<form id="search_mini_form" action="<?php echo $catalogSearchHelper->getResultUrl() ?>" method="get">
+    <div class="form-search">
+        <label for="search"><?php echo $this->__('Search:') ?></label>
+        <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" value="<?php echo $catalogSearchHelper->getEscapedQueryText() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
+        <button type="submit" title="<?php echo $this->__('Search') ?>" class="button"><span><span><?php echo $this->__('Search') ?></span></span></button>
+        <div id="search_autocomplete" class="algoliasearch-autocomplete">
+            <div id="search_autocomplete_categories"></div>
+            <div id="search_autocomplete_products"></div>
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+            var searchForm = new Varien.searchForm('search_mini_form', 'search', '<?php echo $this->__('Search entire store here...') ?>');
+            //searchForm.initAutocomplete('<?php echo $catalogSearchHelper->getSuggestUrl() ?>', 'search_autocomplete');
+            
+            var $search = $('search');
+            var algolia = new AlgoliaSearch('<?php echo $algoliaSearchHelper->getApplicationID(); ?>', '<?php echo $algoliaSearchHelper->getSearchOnlyAPIKey(); ?>');
+            var index_products = algolia.initIndex('magento_products');
+            var index_products = algolia.initIndex('magento_categories');
+
+            $search.observe('keyup', algoliaSearch).observe('blur', function() {
+                setTimeout(function() {
+                    $('search_autocomplete_categories').update('');
+                    $('search_autocomplete_products').update('');
+                }, 100);
+            });
+            function algoliaSearch(event) {
+                var q = $search.getValue();
+
+                algolia.startQueriesBatch();
+                algolia.addQueryInBatch("magento_products", q, { hitsPerPage: 5 });
+                algolia.addQueryInBatch("magento_categories", q, { hitsPerPage: 3 });
+                algolia.sendQueriesBatch(algoliaSearchCallback);
+            }
+
+            function algoliaSearchCallback(success, content) {
+                if (!success) {
+                    console.log(content);
+                    return;
+                }
+                if (!content.results || content.results.length != 2 || $search.getValue() != content.results[0].query) {
+                    return;
+                }
+
+                var html = '';
+                var categories = content.results[1];
+                for (var i = 0; i < categories.hits.length; ++i) {
+                    var hit = categories.hits[i];
+                    if (html === '') {
+                        html += '<div class="algoliasearch-autocomplete-title">Categories</div>';
+                    }
+                    html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' + 
+                        hit._highlightResult.name.value +
+                        ' <small>(' + hit.product_count + ')</small>' +
+                        '</a>';
+                }
+                $('search_autocomplete_categories').update(html);
+
+                html = '';
+                var products = content.results[0];
+                for (var i = 0; i < products.hits.length; ++i) {
+                    var hit = products.hits[i];
+                    if (html === '') {
+                        html += '<div class="algoliasearch-autocomplete-title">Products</div>';
+                    }
+                    html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' + 
+                        hit._highlightResult.name.value +
+                        (hit.categories && hit.categories.length > 0 ? '<div class="algoliasearch-autocomplete-category">in ' + hit.categories.join(', ') + '</div>' : '') +
+                        '</a>';
+                }
+                $('search_autocomplete_products').update(html);
+            }
+        //]]>
+        </script>
+    </div>
+</form>

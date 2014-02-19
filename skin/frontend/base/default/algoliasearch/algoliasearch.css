@@ -1,0 +1,36 @@
+.algoliasearch-autocomplete {
+  background: white;
+  position: absolute;
+  left: 40px;
+  right: 50px;
+  top: 30px;
+}
+
+.algoliasearch-autocomplete-title {
+  background: black;
+  color: white;
+  padding: 2px 4px;
+  font-weight: bold;
+}
+
+.algoliasearch-autocomplete-hit {
+  display: block;
+  text-decoration: none;
+  text-align: left;
+  padding: 2px 4px;
+}
+
+.algoliasearch-autocomplete-hit:hover {
+  background: #F18200;
+  color: white;
+}
+
+.algoliasearch-autocomplete-hit em {
+  font-weight: bold;
+  font-style: normal;
+}
+
+.algoliasearch-autocomplete-category {
+  margin-left: 10px;
+  color: #2f2f2f;
+}

@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<config>
+ <tabs>
+    <algoliasearch translate="label" module="algoliasearch">
+      <label>Algolia Search</label>
+      <sort_order>200</sort_order>
+    </algoliasearch>
+  </tabs>
+  <sections>
+    <algoliasearch translate="label" module="algoliasearch">                    
+      <label>Configuration</label>
+      <tab>algoliasearch</tab>
+      <frontend_type>text</frontend_type>
+      <sort_order>100</sort_order>
+      <show_in_default>1</show_in_default>
+      <show_in_website>1</show_in_website>
+      <show_in_store>1</show_in_store>            
+      <groups>
+        <settings translate="label"> 
+          <label>Settings</label>
+          <frontend_type>text</frontend_type>
+          <sort_order>0</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <fields>
+            <application_id translate="label">
+              <label>APPLICATION_ID</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>0</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </application_id>
+            <api_key translate="label">
+              <label>API_KEY</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </api_key>
+            <search_only_api_key translate="label">
+              <label>Search-only API_KEY (public)</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </search_only_api_key>
+          </fields>
+        </settings>
+        <ui translate="label"> 
+          <label>UI</label>
+          <frontend_type>text</frontend_type>
+          <sort_order>1</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <fields>
+            <hits_per_page translate="label">
+              <label>Hits per page</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>0</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </hits_per_page>
+          </fields>
+        </ui>
+      </groups>
+    </algoliasearch>
+  </sections>
+</config>
