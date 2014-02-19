@@ -55,7 +55,10 @@ class Algolia_Algoliasearch_Adminhtml_AlgoliasearchbackendController extends Mag
     }
 
     // products
-    $index_products   = Mage::helper('algoliasearch')->getIndex('magento_products');
+    $index_products = Mage::helper('algoliasearch')->getIndex('magento_products');
+    $index_products->setSettings(array(
+      "attributesToIndex" => array('name', 'categories', 'unordered(description)')
+    ));
     $products = Mage::getModel('catalog/product')->getCollection();
     foreach ($products as $prod) {
       $product = Mage::getModel('catalog/product')->load($prod->getId());
