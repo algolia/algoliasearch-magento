@@ -38,26 +38,26 @@
             </catalogsearch_resource>
         </models>
               <events>
-	  <catalog_product_prepare_save> <!-- identifier of the event we want to catch -->
+	  <catalog_product_save_after> <!-- identifier of the event we want to catch -->
         <observers>
-          <catalog_product_prepare_save_handler> <!-- identifier of the event handler -->
+          <catalog_product_save_after_handler> <!-- identifier of the event handler -->
             <type>model</type> <!-- class method call type; valid are model, object and singleton -->
-            <class>algoliasearch/observer</class> <!-- observers class alias -->
+            <class>Algolia_Algoliasearch_Model_Observer</class> <!-- observers class alias -->
             <method>saveProduct</method>  <!-- observer's method to be called -->
             <args></args> <!-- additional arguments passed to observer -->
-          </catalog_product_prepare_save_handler>
+          </catalog_product_save_after_handler>
         </observers>
-      </catalog_product_prepare_save>
-	  <catalog_category_prepare_save> <!-- identifier of the event we want to catch -->
+      </catalog_product_save_after>
+	  <catalog_category_save_after> <!-- identifier of the event we want to catch -->
         <observers>
-          <catalog_category_prepare_save_handler> <!-- identifier of the event handler -->
+          <catalog_category_save_after_handler> <!-- identifier of the event handler -->
             <type>model</type> <!-- class method call type; valid are model, object and singleton -->
-            <class>algoliasearch/observer</class> <!-- observers class alias -->
+            <class>Algolia_Algoliasearch_Model_Observer</class> <!-- observers class alias -->
             <method>saveCategory</method>  <!-- observer's method to be called -->
             <args></args> <!-- additional arguments passed to observer -->
-          </catalog_category_prepare_save_handler>
+          </catalog_category_save_after_handler>
         </observers>
-      </catalog_category_prepare_save>
+      </catalog_category_save_after>
     </events>
   </global>
   <admin>
