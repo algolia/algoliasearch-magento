@@ -1,5 +1,10 @@
-Algolia Search for Magento
+Algolia Search for Magento BETA
 ==================
+
+#### The magento plugin is currently at an early stage of development.
+
+------------------
+
 
 [Algolia Search](http://www.algolia.com) is a search API that provides hosted full-text, numerical and faceted search.
 Algolia’s Search API makes it easy to deliver a great search experience in your apps & websites providing:
