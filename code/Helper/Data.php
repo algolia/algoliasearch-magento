@@ -86,4 +86,12 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract {
     return Mage::getStoreConfig('algoliasearch/settings/search_only_api_key');
   }
 
+  public function getNbProductSuggestions() {
+    return Mage::getStoreConfig('algoliasearch/ui/number_sugggestions_product');
+  }
+
+  public function getNbCategorySuggestions() {
+    return Mage::getStoreConfig('algoliasearch/ui/number_sugggestions_category');
+  }
+
 }

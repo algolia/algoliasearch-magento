@@ -33,8 +33,8 @@
                 var q = $search.getValue();
 
                 algolia.startQueriesBatch();
-                algolia.addQueryInBatch("magento_products", q, { hitsPerPage: 5, tagFilters: 'store_<?php echo Mage::app()->getStore()->getStoreId(); ?>' });
-                algolia.addQueryInBatch("magento_categories", q, { hitsPerPage: 3, tagFilters: 'store_<?php echo Mage::app()->getStore()->getStoreId(); ?>' });
+                algolia.addQueryInBatch("magento_products", q, { hitsPerPage: <?php echo $algoliaSearchHelper->getNbProductSuggestions(); ?>, tagFilters: 'store_<?php echo Mage::app()->getStore()->getStoreId(); ?>' });
+                algolia.addQueryInBatch("magento_categories", q, { hitsPerPage: <?php echo $algoliaSearchHelper->getNbCategorySuggestions(); ?>, tagFilters: 'store_<?php echo Mage::app()->getStore()->getStoreId(); ?>' });
                 algolia.sendQueriesBatch(algoliaSearchCallback);
             }
 

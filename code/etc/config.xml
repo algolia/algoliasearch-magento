@@ -113,4 +113,12 @@
       </updates>
     </layout>
   </adminhtml>
+  <default>
+    <algoliasearch>
+      <ui>
+        <number_sugggestions_product>5</number_sugggestions_product>
+        <number_sugggestions_category>3</number_sugggestions_category>
+      </ui>
+    </algoliasearch>
+  </default>
 </config> 
