@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+        <reference name="head">
+            <action method="addJs"><script>algoliasearch/algoliasearch.min.js</script></action>
+            <action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>
+        </reference>
+        <reference name="top.search">
+            <action method="setTemplate" ><template>algoliasearch/topsearch.phtml</template></action>
+        </reference>
+    </default>
+</layout> 
