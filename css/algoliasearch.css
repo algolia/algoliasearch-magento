@@ -18,6 +18,7 @@
   text-decoration: none;
   text-align: left;
   padding: 2px 4px;
+  clear: both;
 }
 
 .algoliasearch-autocomplete-hit:hover {
@@ -33,4 +34,24 @@
 .algoliasearch-autocomplete-category {
   margin-left: 10px;
   color: #2f2f2f;
+}
+
+.algoliasearch-autocomplete-hit .thumb {
+  float: left;
+}
+
+.algoliasearch-autocomplete-hit .thumb img {
+  width: 50px;
+}
+
+.algoliasearch-autocomplete-hit .info {
+  margin-left: 60px;
+}
+
+.algoliasearch-autocomplete-hit .clearfix:after {
+   content: " ";
+   visibility: hidden;
+   display: block;
+   height: 0;
+   clear: both;
 }

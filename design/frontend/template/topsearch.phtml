@@ -55,8 +55,12 @@
                         html += '<div class="algoliasearch-autocomplete-title">Categories</div>';
                     }
                     html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' + 
-                        hit._highlightResult.name.value +
-                        ' <small>(' + hit.product_count + ')</small>' +
+                        (hit.image_url ? '<div class="thumb"><img src="' + hit.image_url + '" /></div>' : '') +
+                        '<div class="info">' +
+                            hit._highlightResult.name.value +
+                            ' <small>(' + hit.product_count + ')</small>' +
+                        '</div>' +
+                        '<div class="clearfix"></div>' +
                         '</a>';
                 }
                 $('search_autocomplete_categories').update(html);
@@ -69,8 +73,12 @@
                         html += '<div class="algoliasearch-autocomplete-title">Products</div>';
                     }
                     html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' + 
-                        hit._highlightResult.name.value +
-                        (hit.categories && hit.categories.length > 0 ? '<div class="algoliasearch-autocomplete-category">in ' + hit.categories.join(', ') + '</div>' : '') +
+                        (hit.thumbnail_url ? '<div class="thumb"><img src="' + hit.thumbnail_url + '" /></div>' : '') +
+                        '<div class="info">' +
+                            hit._highlightResult.name.value +
+                            (hit.categories && hit.categories.length > 0 ? '<div class="algoliasearch-autocomplete-category">in ' + hit.categories.join(', ') + '</div>' : '') +
+                        '</div>' +
+                        '<div class="clearfix"></div>' +
                         '</a>';
                 }
                 $('search_autocomplete_products').update(html);

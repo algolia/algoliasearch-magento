@@ -25,6 +25,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract {
     foreach ($product->getCategoryIds() as $catId) {
       array_push($categories, Mage::getModel('catalog/category')->setStoreId($product->getStoreId())->load($catId)->getName());
     }
+    $imageUrl = null;
+    $thumbnailUrl = null;
+    try {
+      $thumbnailUrl = $product->getThumbnailUrl();
+    } catch (Exception $e) { /* no thumbnail, no default: not fatal */ }
+    try {
+      $imageUrl = $product->getImageUrl();
+    } catch (Exception $e) { /* no image, no default: not fatal */ }
     return array(
       'objectID' => $product->getStoreId() . '_' . $product->getId(),
       'name' => $product->getName(),
@@ -32,9 +40,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract {
       'description' => $product->getDescription(),
       'price' => $product->getPrice(),
       'url' => $product->getUrlInStore(),
-      '_tags' => array("store_" . $product->getStoreId())
-      //'thumbnail_url' => $product->getThumbnailUrl(),
-      //'image_url' => $product->getImageUrl()
+      '_tags' => array("store_" . $product->getStoreId()),
+      'thumbnail_url' => $thumbnailUrl,
+      'image_url' => $imageUrl
     );
   }
 
@@ -46,6 +54,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract {
       }
       $path .= Mage::getModel('catalog/category')->setStoreId($cat->getStoreId())->load($catId)->getName();
     }
+    $imageUrl = null;
+    try {
+      $imageUrl = $cat->getImageUrl();
+    } catch (Exception $e) { /* no image, no default: not fatal */ }
     return array(
       'objectID' => $cat->getStoreId() . '_' . $cat->getId(),
       'name' => $cat->getName(),
@@ -53,8 +65,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract {
       'level' => $cat->getLevel(),
       'url' => $cat->getUrl(),
       'product_count' => $cat->getProductCount(),
-      '_tags' => array("store_" . $cat->getStoreId())
-      //'image_url' => $cat->getImageUrl()
+      '_tags' => array("store_" . $cat->getStoreId()),
+      'image_url' => $imageUrl
     );
   }
 
