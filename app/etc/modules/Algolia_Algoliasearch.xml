@@ -3,7 +3,7 @@
   <modules>
     <Algolia_Algoliasearch>
       <active>true</active>
-      <codePool>local</codePool>
+      <codePool>community</codePool>
       <version>0.1.0</version>
     </Algolia_Algoliasearch>
   </modules>
