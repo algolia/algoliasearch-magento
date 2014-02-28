@@ -16,42 +16,40 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract {
     return $this->getClient()->initIndex($index)->search($q, $params);
   }
 
-  public function getProductJSON($prod) {
-    $product = Mage::getModel('catalog/product')->load($prod->getId());
+  public function getProductJSON($product) {
     $categories = array();
     foreach ($product->getCategoryIds() as $catId) {
-      array_push($categories, Mage::getModel('catalog/category')->load($catId)->getName());
+      array_push($categories, Mage::getModel('catalog/category')->setStoreId($product->getStoreId())->load($catId)->getName());
     }
     return array(
-      'objectID' => $product->getId(),
+      'objectID' => $product->getStoreId() . '_' . $product->getId(),
       'name' => $product->getName(),
       'categories' => $categories,
       'description' => $product->getDescription(),
       'price' => $product->getPrice(),
-      'final_price' => $product->getFinalPrice(),
       'url' => $product->getUrlInStore(),
+      '_tags' => array("store_" . $product->getStoreId())
       //'thumbnail_url' => $product->getThumbnailUrl(),
       //'image_url' => $product->getImageUrl()
     );
   }
 
-  public function getCategoryJSON($id) {
-    $cat = Mage::getModel('catalog/category'); 
-    $cat->load($id);
+  public function getCategoryJSON($cat) {
     $path = '';
     foreach ($cat->getPathIds() as $catId) {
       if ($path != '') {
         $path .= ' / ';
       }
-      $path .= Mage::getModel('catalog/category')->load($catId)->getName();
+      $path .= Mage::getModel('catalog/category')->setStoreId($cat->getStoreId())->load($catId)->getName();
     }
     return array(
-      'objectID' => $id,
+      'objectID' => $cat->getStoreId() . '_' . $cat->getId(),
       'name' => $cat->getName(),
       'path' => $path,
       'level' => $cat->getLevel(),
       'url' => $cat->getUrl(),
       'product_count' => $cat->getProductCount(),
+      '_tags' => array("store_" . $cat->getStoreId())
       //'image_url' => $cat->getImageUrl()
     );
   }

@@ -28,28 +28,33 @@ class Algolia_Algoliasearch_Adminhtml_AlgoliasearchbackendController extends Mag
       "attributesToIndex" => array("name", "path"),
       "customRanking" => array("desc(product_count)")
     ));
-    $tree =  Mage::getModel('catalog/category')->getTreeModel();
-    $tree->load();
-    $ids = $tree->getCollection()->getAllIds(); 
-    if ($ids) { 
-      $categories = array();
-      foreach ($ids as $id) { 
-        array_push($categories, Mage::helper('algoliasearch')->getCategoryJSON($id));
-      } 
-      $index_categories->addObjects($categories);
-    }
 
     // products
     $index_products = Mage::helper('algoliasearch')->getIndex('magento_products');
     $index_products->setSettings(array(
       "attributesToIndex" => array('name', 'categories', 'unordered(description)')
     ));
-    $collection = Mage::getModel('catalog/product')->getCollection();
-    $products = array();
-    foreach ($collection as $prod) {
-      array_push($products, Mage::helper('algoliasearch')->getProductJSON($prod));
+
+    foreach (Mage::app()->getStores() as $store) {
+      $tree =  Mage::getModel('catalog/category')->setStoreId($store->getId())->getTreeModel();
+      $tree->load();
+      $ids = $tree->getCollection()->getAllIds(); 
+      if ($ids) { 
+        $categories = array();
+        foreach ($ids as $id) { 
+          $cat = Mage::getModel('catalog/category')->setStoreId($store->getId())->load($id);
+          array_push($categories, Mage::helper('algoliasearch')->getCategoryJSON($cat));
+        } 
+        $index_categories->addObjects($categories);
+      }
+
+      $collection = Mage::getModel('catalog/product')->setStoreId($store->getId())->getCollection();
+      $products = array();
+      foreach ($collection as $prod) {
+        array_push($products, Mage::helper('algoliasearch')->getProductJSON(Mage::getModel('catalog/product')->setStoreId($store->getId())->load($prod->getId())));
+      }
+      $index_products->addObjects($products);
     }
-    $index_products->addObjects($products);
 
     $this->_redirect('*/*');
   }
