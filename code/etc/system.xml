@@ -26,7 +26,8 @@
                     <fields>
                         <application_id translate="label">
                             <label>APPLICATION_ID</label>
-                            <frontend_type>text</frontend_type>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
                             <sort_order>0</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -34,7 +35,8 @@
                         </application_id>
                         <api_key translate="label">
                             <label>API_KEY</label>
-                            <frontend_type>text</frontend_type>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -42,7 +44,8 @@
                         </api_key>
                         <search_only_api_key translate="label">
                             <label>Search-only API_KEY (public)</label>
-                            <frontend_type>text</frontend_type>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
                             <sort_order>2</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -58,22 +61,24 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <number_sugggestions_product translate="label">
+                        <number_suggestions_product translate="label">
                             <label>Number of product suggestions</label>
                             <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
                             <sort_order>0</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </number_sugggestions_product>
-                        <number_sugggestions_category translate="label">
+                        </number_suggestions_product>
+                        <number_suggestions_category translate="label">
                             <label>Number of category suggestions</label>
                             <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </number_sugggestions_category>
+                        </number_suggestions_category>
                     </fields>
                 </ui>
             </groups>

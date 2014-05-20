@@ -98,11 +98,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getNbProductSuggestions()
     {
-        return Mage::getStoreConfig('algoliasearch/ui/number_sugggestions_product');
+        return Mage::getStoreConfig('algoliasearch/ui/number_suggestions_product');
     }
 
     public function getNbCategorySuggestions()
     {
-        return Mage::getStoreConfig('algoliasearch/ui/number_sugggestions_category');
+        return Mage::getStoreConfig('algoliasearch/ui/number_suggestions_category');
     }
 }
