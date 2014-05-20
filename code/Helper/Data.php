@@ -4,7 +4,6 @@ require 'algoliasearch.php';
 
 class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 {
-
     public function getTopSearchTemplate()
     {
         return 'algoliasearch/topsearch.phtml';
@@ -106,5 +105,4 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         return Mage::getStoreConfig('algoliasearch/ui/number_sugggestions_category');
     }
-
 }

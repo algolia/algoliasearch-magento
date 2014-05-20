@@ -1,124 +1,124 @@
 <?xml version="1.0"?>
 <config>
-  <modules>
-    <Algolia_Algoliasearch>
-      <version>0.1.0</version>
-    </Algolia_Algoliasearch>
-  </modules>
-  <frontend>
-    <layout>
-      <updates>
-        <algoliasearch>
-          <file>algoliasearch.xml</file>
-        </algoliasearch>
-      </updates>
-    </layout>
-  </frontend>
-  <global>
-    <helpers>
-      <algoliasearch>
-        <class>Algolia_Algoliasearch_Helper</class>
-      </algoliasearch>
-    </helpers>
-    <blocks>
-      <algoliasearch>
-        <class>Algolia_Algoliasearch_Block</class>
-      </algoliasearch>
-    </blocks>
-    <models>
-      <catalogsearch_mysql4>
-        <rewrite>
-          <fulltext>Algolia_Algoliasearch_Model_Mysql4_Fulltext</fulltext>
-        </rewrite>
-      </catalogsearch_mysql4>
-      <catalogsearch_resource>
-        <rewrite>
-          <fulltext>Algolia_Algoliasearch_Model_Resource_Fulltext</fulltext>
-        </rewrite>
-      </catalogsearch_resource>
-    </models>
-    <events>
-      <catalog_product_save_after> <!-- identifier of the event we want to catch -->
-        <observers>
-          <catalog_product_save_after_handler> <!-- identifier of the event handler -->
-            <type>model</type> <!-- class method call type; valid are model, object and singleton -->
-            <class>Algolia_Algoliasearch_Model_Observer</class> <!-- observers class alias -->
-            <method>saveProduct</method>  <!-- observer's method to be called -->
-            <args></args> <!-- additional arguments passed to observer -->
-          </catalog_product_save_after_handler>
-        </observers>
-      </catalog_product_save_after>
-      <catalog_category_save_after> <!-- identifier of the event we want to catch -->
-        <observers>
-          <catalog_category_save_after_handler> <!-- identifier of the event handler -->
-            <type>model</type> <!-- class method call type; valid are model, object and singleton -->
-            <class>Algolia_Algoliasearch_Model_Observer</class> <!-- observers class alias -->
-            <method>saveCategory</method>  <!-- observer's method to be called -->
-            <args></args> <!-- additional arguments passed to observer -->
-          </catalog_category_save_after_handler>
-        </observers>
-      </catalog_category_save_after>
-    </events>
-  </global>
-  <admin>
-    <routers>
-      <algoliasearch>
-        <use>admin</use>
-        <args>
-          <module>Algolia_Algoliasearch</module>
-          <frontName>algoliasearch</frontName>
-        </args>
-      </algoliasearch>
-    </routers>
-  </admin>
-  <adminhtml>
-    <menu>
-      <algoliasearch module="algoliasearch">
-        <title>Algolia</title>
-        <sort_order>100</sort_order>
-        <children>
-          <algoliasearchbackend module="algoliasearch">
-            <title>Reindex catalog</title>
-            <sort_order>0</sort_order>
-            <action>algoliasearch/adminhtml_algoliasearchbackend</action>
-          </algoliasearchbackend>
-        </children>
-      </algoliasearch>
-    </menu>
-    <acl>
-      <resources>
-        <all>
-          <title>Allow Everything</title>
-        </all>
-        <admin>
-          <children>
-            <algoliasearch translate="title" module="algoliasearch">
-              <title>Algoliasearch</title>
-              <sort_order>1000</sort_order>
-              <children>
-                <algoliasearchbackend translate="title">
-                  <title>Reindex</title>
-                </algoliasearchbackend>
-              </children>
+    <modules>
+        <Algolia_Algoliasearch>
+            <version>0.1.0</version>
+        </Algolia_Algoliasearch>
+    </modules>
+    <frontend>
+        <layout>
+            <updates>
+                <algoliasearch>
+                    <file>algoliasearch.xml</file>
+                </algoliasearch>
+            </updates>
+        </layout>
+    </frontend>
+    <global>
+        <helpers>
+            <algoliasearch>
+                <class>Algolia_Algoliasearch_Helper</class>
             </algoliasearch>
-          </children>
-        </admin>
-      </resources>
-    </acl>
-    <layout>
-      <updates>
+        </helpers>
+        <blocks>
+            <algoliasearch>
+                <class>Algolia_Algoliasearch_Block</class>
+            </algoliasearch>
+        </blocks>
+        <models>
+            <catalogsearch_mysql4>
+                <rewrite>
+                    <fulltext>Algolia_Algoliasearch_Model_Mysql4_Fulltext</fulltext>
+                </rewrite>
+            </catalogsearch_mysql4>
+            <catalogsearch_resource>
+                <rewrite>
+                    <fulltext>Algolia_Algoliasearch_Model_Resource_Fulltext</fulltext>
+                </rewrite>
+            </catalogsearch_resource>
+        </models>
+        <events>
+            <catalog_product_save_after> <!-- identifier of the event we want to catch -->
+                <observers>
+                    <catalog_product_save_after_handler> <!-- identifier of the event handler -->
+                        <type>model</type><!-- class method call type; valid are model, object and singleton -->
+                        <class>Algolia_Algoliasearch_Model_Observer</class><!-- observers class alias -->
+                        <method>saveProduct</method><!-- observer's method to be called -->
+                        <args></args><!-- additional arguments passed to observer -->
+                    </catalog_product_save_after_handler>
+                </observers>
+            </catalog_product_save_after>
+            <catalog_category_save_after> <!-- identifier of the event we want to catch -->
+                <observers>
+                    <catalog_category_save_after_handler> <!-- identifier of the event handler -->
+                        <type>model</type><!-- class method call type; valid are model, object and singleton -->
+                        <class>Algolia_Algoliasearch_Model_Observer</class><!-- observers class alias -->
+                        <method>saveCategory</method><!-- observer's method to be called -->
+                        <args></args><!-- additional arguments passed to observer -->
+                    </catalog_category_save_after_handler>
+                </observers>
+            </catalog_category_save_after>
+        </events>
+    </global>
+    <admin>
+        <routers>
+            <algoliasearch>
+                <use>admin</use>
+                <args>
+                    <module>Algolia_Algoliasearch</module>
+                    <frontName>algoliasearch</frontName>
+                </args>
+            </algoliasearch>
+        </routers>
+    </admin>
+    <adminhtml>
+        <menu>
+            <algoliasearch module="algoliasearch">
+                <title>Algolia</title>
+                <sort_order>100</sort_order>
+                <children>
+                    <algoliasearchbackend module="algoliasearch">
+                        <title>Reindex catalog</title>
+                        <sort_order>0</sort_order>
+                        <action>algoliasearch/adminhtml_algoliasearchbackend</action>
+                    </algoliasearchbackend>
+                </children>
+            </algoliasearch>
+        </menu>
+        <acl>
+            <resources>
+                <all>
+                    <title>Allow Everything</title>
+                </all>
+                <admin>
+                    <children>
+                        <algoliasearch translate="title" module="algoliasearch">
+                            <title>Algoliasearch</title>
+                            <sort_order>1000</sort_order>
+                            <children>
+                                <algoliasearchbackend translate="title">
+                                    <title>Reindex</title>
+                                </algoliasearchbackend>
+                            </children>
+                        </algoliasearch>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+        <layout>
+            <updates>
+                <algoliasearch>
+                    <file>algoliasearch.xml</file>
+                </algoliasearch>
+            </updates>
+        </layout>
+    </adminhtml>
+    <default>
         <algoliasearch>
-          <file>algoliasearch.xml</file>
+            <ui>
+                <number_sugggestions_product>5</number_sugggestions_product>
+                <number_sugggestions_category>3</number_sugggestions_category>
+            </ui>
         </algoliasearch>
-      </updates>
-    </layout>
-  </adminhtml>
-  <default>
-    <algoliasearch>
-      <ui>
-        <number_sugggestions_product>5</number_sugggestions_product>
-        <number_sugggestions_category>3</number_sugggestions_category>
-      </ui>
-    </algoliasearch>
-  </default>
+    </default>
 </config> 
