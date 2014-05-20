@@ -1,6 +1,6 @@
 <?php
-    $catalogSearchHelper = $this->helper('catalogsearch');
-    $algoliaSearchHelper = $this->helper('algoliasearch');
+    $catalogSearchHelper = $this->helper('catalogsearch'); /** @var $catalogSearchHelper Mage_CatalogSearch_Helper_Data */
+    $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHelper Algolia_Algoliasearch_Helper_Data */
 ?>
 
 
@@ -21,7 +21,7 @@
             var $search = $('search');
             var algolia = new AlgoliaSearch('<?php echo $algoliaSearchHelper->getApplicationID(); ?>', '<?php echo $algoliaSearchHelper->getSearchOnlyAPIKey(); ?>');
             var index_products = algolia.initIndex('magento_products');
-            var index_products = algolia.initIndex('magento_categories');
+            var index_categories = algolia.initIndex('magento_categories');
 
             $search.observe('keyup', algoliaSearch).observe('blur', function() {
                 setTimeout(function() {

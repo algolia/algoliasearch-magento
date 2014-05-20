@@ -1,82 +1,87 @@
 <?xml version="1.0"?>
 <config>
- <tabs>
-    <algoliasearch translate="label" module="algoliasearch">
-      <label>Algolia Search</label>
-      <sort_order>200</sort_order>
-    </algoliasearch>
-  </tabs>
-  <sections>
-    <algoliasearch translate="label" module="algoliasearch">                    
-      <label>Configuration</label>
-      <tab>algoliasearch</tab>
-      <frontend_type>text</frontend_type>
-      <sort_order>100</sort_order>
-      <show_in_default>1</show_in_default>
-      <show_in_website>1</show_in_website>
-      <show_in_store>1</show_in_store>            
-      <groups>
-        <settings translate="label"> 
-          <label>Settings</label>
-          <frontend_type>text</frontend_type>
-          <sort_order>0</sort_order>
-          <show_in_default>1</show_in_default>
-          <show_in_website>1</show_in_website>
-          <show_in_store>1</show_in_store>
-          <fields>
-            <application_id translate="label">
-              <label>APPLICATION_ID</label>
-              <frontend_type>text</frontend_type>
-              <sort_order>0</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>1</show_in_store>
-            </application_id>
-            <api_key translate="label">
-              <label>API_KEY</label>
-              <frontend_type>text</frontend_type>
-              <sort_order>1</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>1</show_in_store>
-            </api_key>
-            <search_only_api_key translate="label">
-              <label>Search-only API_KEY (public)</label>
-              <frontend_type>text</frontend_type>
-              <sort_order>2</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>1</show_in_store>
-            </search_only_api_key>
-          </fields>
-        </settings>
-        <ui translate="label"> 
-          <label>UI</label>
-          <frontend_type>text</frontend_type>
-          <sort_order>1</sort_order>
-          <show_in_default>1</show_in_default>
-          <show_in_website>1</show_in_website>
-          <show_in_store>1</show_in_store>
-          <fields>
-            <number_sugggestions_product translate="label">
-              <label>Number of product suggestions</label>
-              <frontend_type>text</frontend_type>
-              <sort_order>0</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>1</show_in_store>
-            </number_sugggestions_product>
-            <number_sugggestions_category translate="label">
-              <label>Number of category suggestions</label>
-              <frontend_type>text</frontend_type>
-              <sort_order>1</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>1</show_in_store>
-            </number_sugggestions_category>
-          </fields>
-        </ui>
-      </groups>
-    </algoliasearch>
-  </sections>
+    <tabs>
+        <algoliasearch translate="label" module="algoliasearch">
+            <label>Algolia Search</label>
+            <sort_order>200</sort_order>
+        </algoliasearch>
+    </tabs>
+    <sections>
+        <algoliasearch translate="label" module="algoliasearch">
+            <label>Configuration</label>
+            <tab>algoliasearch</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>100</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <settings translate="label">
+                    <label>Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>0</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <application_id translate="label">
+                            <label>APPLICATION_ID</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </application_id>
+                        <api_key translate="label">
+                            <label>API_KEY</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </api_key>
+                        <search_only_api_key translate="label">
+                            <label>Search-only API_KEY (public)</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </search_only_api_key>
+                    </fields>
+                </settings>
+                <ui translate="label">
+                    <label>UI</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <number_suggestions_product translate="label">
+                            <label>Number of product suggestions</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </number_suggestions_product>
+                        <number_suggestions_category translate="label">
+                            <label>Number of category suggestions</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </number_suggestions_category>
+                    </fields>
+                </ui>
+            </groups>
+        </algoliasearch>
+    </sections>
 </config>

@@ -35,11 +35,19 @@ class AlgoliaException extends \Exception { }
  * to start using Algolia Search API
  */
 class Client {
-    /*
+
+    protected $applicationID;
+    protected $apiKey;
+    protected $hostsArray;
+    protected $curlHandle;
+
+    /**
      * Algolia Search initialization
-     * @param applicationID the application ID you have in your admin interface
-     * @param apiKey a valid API key for the service
-     * @param hostsArray the list of hosts that you have received for the service
+     *
+     * @param string $applicationID the application ID you have in your admin interface
+     * @param string $apiKey a valid API key for the service
+     * @param array $hostsArray the list of hosts that you have received for the service
+     * @throws \Exception
      */
     public function __construct($applicationID, $apiKey, $hostsArray = null) {
         $this->applicationID = $applicationID;
@@ -87,12 +95,12 @@ class Client {
         curl_setopt($this->curlHandle, CURLOPT_CAINFO, __DIR__ . '/resources/ca-bundle.crt');
     }
 
-    /*
+    /**
      * Allow to use IP rate limit when you have a proxy between end-user and Algolia.
      * This option will set the X-Forwarded-For HTTP header with the client IP and the X-Forwarded-API-Key with the API Key having rate limits.
-     * @param adminAPIKey the admin API Key you can find in your dashboard
-     * @param endUserIP the end user IP (you can use both IPV4 or IPV6 syntax)
-     * @param rateLimitAPIKey the API key on which you have a rate limit
+     * @param string $adminAPIKey the admin API Key you can find in your dashboard
+     * @param string $endUserIP the end user IP (you can use both IPV4 or IPV6 syntax)
+     * @param string $rateLimitAPIKey the API key on which you have a rate limit
      */
     public function enableRateLimitForward($adminAPIKey, $endUserIP, $rateLimitAPIKey) {
          curl_setopt($this->curlHandle, CURLOPT_HTTPHEADER, array(
@@ -104,7 +112,7 @@ class Client {
                     ));
     }
 
-    /*
+    /**
      * Disable IP rate limit enabled with enableRateLimitForward() function
      */
     public function disableRateLimitForward() {
@@ -115,9 +123,8 @@ class Client {
                     ));
     }
 
-    /*
+    /**
      * This method allows to query multiple indexes with one API call
-     *
      */
     public function multipleQueries($queries, $indexNameKey = "indexName") {
         if ($queries == null) {
@@ -137,7 +144,7 @@ class Client {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "POST", "/1/indexes/*/queries", array(), array("requests" => $requests));
     }
 
-    /*
+    /**
      * List all existing indexes
      * return an object in the form:
      * array("items" => array(
@@ -149,11 +156,11 @@ class Client {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "GET", "/1/indexes/");
     }
 
-    /*
+    /**
      * Delete an index
      *
-     * @param indexName the name of index to delete
-     * return an object containing a "deletedAt" attribute
+     * @param string $indexName the name of index to delete
+     * @return mixed an object containing a "deletedAt" attribute
      */
     public function deleteIndex($indexName) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "DELETE", "/1/indexes/" . urlencode($indexName));
@@ -161,8 +168,10 @@ class Client {
 
     /**
      * Move an existing index.
-     * @param srcIndexName the name of index to copy.
-     * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     *
+     * @param string $srcIndexName the name of index to copy.
+     * @param string $dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     * @return mixed
      */
     public function moveIndex($srcIndexName, $dstIndexName) {
         $request = array("operation" => "move", "destination" => $dstIndexName);
@@ -171,8 +180,10 @@ class Client {
 
     /**
      * Copy an existing index.
-     * @param srcIndexName the name of index to copy.
-     * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     *
+     * @param string $srcIndexName the name of index to copy.
+     * @param string $dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+     * @return mixed
      */
     public function copyIndex($srcIndexName, $dstIndexName) {
         $request = array("operation" => "copy", "destination" => $dstIndexName);
@@ -181,50 +192,59 @@ class Client {
 
     /**
      * Return last logs entries.
-     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
-     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
+     *
+     * @param int $offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
+     * @param int $length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
+     * @param bool $onlyErrors
+     * @return mixed
      */
     public function getLogs($offset = 0, $length = 10, $onlyErrors = false) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "GET", "/1/logs?offset=" . $offset . "&length=" . $length . "&onlyErrors=" . $onlyErrors);
     }
 
-    /*
+    /**
      * Get the index object initialized (no server call needed for initialization)
-
-     * @param indexName the name of index
+     *
+     * @param string $indexName the name of index
+     * @return Index
      */
     public function initIndex($indexName) {
         return new Index($this->curlHandle, $this->hostsArray, $indexName);
     }
 
-    /*
+    /**
      * List all existing user keys with their associated ACLs
      *
+     * @return mixed
      */
     public function listUserKeys() {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "GET", "/1/keys");
     }
 
-    /*
+    /**
      * Get ACL of a user key
      *
+     * @param string $key
+     * @return mixed
      */
     public function getUserKeyACL($key) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "GET", "/1/keys/" . $key);
     }
 
-    /*
+    /**
      * Delete an existing user key
      *
+     * @param string $key
+     * @return mixed
      */
     public function deleteUserKey($key) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "DELETE", "/1/keys/" . $key);
     }
 
-    /*
+    /**
      * Create a new user key
      *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
+     * @param array $acls the list of ACL for this key. Defined by an array of strings that
      * can contains the following values:
      *   - search: allow to search (https and http)
      *   - addObject: allows to add/update an object in the index (https only)
@@ -232,9 +252,11 @@ class Client {
      *   - deleteIndex : allows to delete index content (https only)
      *   - settings : allows to get index settings (https only)
      *   - editSettings : allows to change index settings (https only)
-     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
-     * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
-     * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
+     * @param int $validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+     * @param int $maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
+     * @param int $maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
+     * @param string|array $indexes
+     * @return mixed
      */
     public function addUserKey($acls, $validity = 0, $maxQueriesPerIPPerHour = 0, $maxHitsPerQuery = 0, $indexes = null) {
         $params = array(
@@ -256,14 +278,14 @@ class Client {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "POST", "/1/keys", array(), $params);
     }
 
-    /*
+    /**
      * Generate a secured and public API Key from a list of tagFilters and an
      * optional user token identifying the current user
      *
-     * @param privateApiKey your private API Key
-     * @param tagFilters the list of tags applied to the query (used as security)
-     * @param userToken an optional token identifying the current user
-     *
+     * @param string $privateApiKey your private API Key
+     * @param array|string $tagFilters the list of tags applied to the query (used as security)
+     * @param string $userToken an optional token identifying the current user
+     * @return string
      */
     public function generateSecuredApiKey($privateApiKey, $tagFilters, $userToken = null) {
         if (is_array($tagFilters)) {
@@ -283,18 +305,19 @@ class Client {
         }
         return hash_hmac('sha256', $tagFilters . $userToken, $privateApiKey);
     }
-
-    protected $applicationID;
-    protected $apiKey;
-    protected $hostsArray;
-    protected $curlHandle;
 }
 
-/*
+/**
  * Contains all the functions related to one index
  * You should use Client.initIndex(indexName) to retrieve this object
  */
 class Index {
+
+    private $indexName;
+    private $urlIndexName;
+    private $hostsArray;
+    private $curlHandle;
+
     /*
      * Index initialization (You should not call this initialized yourself)
      */
@@ -305,12 +328,13 @@ class Index {
         $this->urlIndexName = urlencode($indexName);
     }
 
-    /*
+    /**
      * Perform batch operation on several objects
      *
-     * @param objects contains an array of objects to update (each object must contains an objectID attribute)
-     * @param objectIDKey  the key in each object that contains the objectID
-     * @param objectActionKey  the key in each object that contains the action to perform (addObject, updateObject, deleteObject or partialUpdateObject)
+     * @param array $objects contains an array of objects to update (each object must contains an objectID attribute)
+     * @param string $objectIDKey  the key in each object that contains the objectID
+     * @param string $objectActionKey  the key in each object that contains the action to perform (addObject, updateObject, deleteObject or partialUpdateObject)
+     * @return mixed
      */
     public function batchObjects($objects, $objectIDKey = "objectID", $objectActionKey = "objectAction") {
         $requests = array();
@@ -336,13 +360,12 @@ class Index {
         return $this->batch(array("requests" => $requests));
     }
 
-    /*
+    /**
      * Add an object in this index
      *
-     * @param content contains the object to add inside the index.
-     *  The object is represented by an associative array
-     * @param objectID (optional) an objectID you want to attribute to this object
-     * (if the attribute already exist the old object will be overwrite)
+     * @param array $content contains the object to add inside the index. The object is represented by an associative array
+     * @param string $objectID (optional) an objectID you want to attribute to this object (if the attribute already exist the old object will be overwrite)
+     * @return mixed
      */
     public function addObject($content, $objectID = null) {
 
@@ -353,21 +376,24 @@ class Index {
         }
     }
 
-    /*
+    /**
      * Add several objects
      *
-     * @param objects contains an array of objects to add. If the object contains an objectID
+     * @param array $objects contains an array of objects to add. If the object contains an objectID
+     * @param string $objectIDKey
+     * @return mixed
      */
     public function addObjects($objects, $objectIDKey = "objectID") {
         $requests = $this->buildBatch("addObject", $objects, true, $objectIDKey);
         return $this->batch($requests);
     }
 
-    /*
+    /**
      * Get an object from this index
      *
-     * @param objectID the unique identifier of the object to retrieve
-     * @param attributesToRetrieve (optional) if set, contains the list of attributes to retrieve as a string separated by ","
+     * @param string $objectID the unique identifier of the object to retrieve
+     * @param string $attributesToRetrieve (optional) if set, contains the list of attributes to retrieve as a string separated by ","
+     * @return mixed
      */
     public function getObject($objectID, $attributesToRetrieve = null) {
         $id = urlencode($objectID);
@@ -377,49 +403,55 @@ class Index {
             return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "GET", "/1/indexes/" . $this->urlIndexName . "/" . $id, array("attributes" => $attributesToRetrieve));
     }
 
-    /*
+    /**
      * Update partially an object (only update attributes passed in argument)
      *
-     * @param partialObject contains the object attributes to override, the
-     *  object must contains an objectID attribute
+     * @param array $partialObject contains the object attributes to override, the object must contains an objectID attribute
+     * @return mixed
      */
     public function partialUpdateObject($partialObject) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "POST", "/1/indexes/" . $this->urlIndexName . "/" . urlencode($partialObject["objectID"]) . "/partial", array(), $partialObject);
     }
 
-    /*
+    /**
      * Partially Override the content of several objects
      *
-     * @param objects contains an array of objects to update (each object must contains a objectID attribute)
+     * @param array $objects contains an array of objects to update (each object must contains a objectID attribute)
+     * @param string $objectIDKey
+     * @return mixed
      */
     public function partialUpdateObjects($objects, $objectIDKey = "objectID") {
         $requests = $this->buildBatch("partialUpdateObject", $objects, true, $objectIDKey);
         return $this->batch($requests);
     }
 
-    /*
+    /**
      * Override the content of object
      *
-     * @param object contains the object to save, the object must contains an objectID attribute
+     * @param mixed $object contains the object to save, the object must contains an objectID attribute
      */
     public function saveObject($object) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "PUT", "/1/indexes/" . $this->urlIndexName . "/" . urlencode($object["objectID"]), array(), $object);
     }
 
-    /*
+    /**
      * Override the content of several objects
      *
-     * @param objects contains an array of objects to update (each object must contains a objectID attribute)
+     * @param array $objects contains an array of objects to update (each object must contains a objectID attribute)
+     * @param string $objectIDKey
+     * @return mixed
      */
     public function saveObjects($objects, $objectIDKey = "objectID") {
         $requests = $this->buildBatch("updateObject", $objects, true, $objectIDKey);
         return $this->batch($requests);
     }
 
-    /*
+    /**
      * Delete an object from the index
      *
-     * @param objectID the unique identifier of object to delete
+     * @param string $objectID the unique identifier of object to delete
+     * @return mixed
+     * @throws \Exception
      */
     public function deleteObject($objectID) {
         if ($objectID == null || mb_strlen($objectID) == 0) {
@@ -428,10 +460,11 @@ class Index {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "DELETE", "/1/indexes/" . $this->urlIndexName . "/" . urlencode($objectID));
     }
 
-    /*
+    /**
      * Delete several objects
      *
-     * @param objects contains an array of objectIDs to delete. If the object contains an objectID
+     * @param array $objects contains an array of objectIDs to delete. If the object contains an objectID
+     * @return mixed
      */
     public function deleteObjects($objects) {
         $objectIDs = array();
@@ -442,11 +475,11 @@ class Index {
         return $this->batch($requests);
     }
 
-    /*
+    /**
      * Search inside the index
      *
-     * @param query the full text query
-     * @param args (optional) if set, contains an associative array with query parameters:
+     * @param string $query the full text query
+     * @param array $args (optional) if set, contains an associative array with query parameters:
      * - page: (integer) Pagination parameter used to select the page to retrieve.
      *                   Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
      * - hitsPerPage: (integer) Pagination parameter used to select the number of hits per page. Defaults to 20.
@@ -504,6 +537,8 @@ class Index {
      *   all hits containing a duplicate value for the attributeForDistinct attribute are removed from results.
      *   For example, if the chosen attribute is show_name and several hits have the same value for show_name, then only the best
      *   one is kept and others are removed.
+     *
+     * @return mixed
      */
     public function search($query, $args = null) {
         if ($args === null) {
@@ -513,24 +548,26 @@ class Index {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "GET", "/1/indexes/" . $this->urlIndexName, $args);
     }
 
-    /*
+    /**
      * Browse all index content
      *
-     * @param page Pagination parameter used to select the page to retrieve.
+     * @param int $page Pagination parameter used to select the page to retrieve.
      *             Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
-     * @param hitsPerPage: Pagination parameter used to select the number of hits per page. Defaults to 1000.
+     * @param int $hitsPerPage: Pagination parameter used to select the number of hits per page. Defaults to 1000.
+     * @return mixed
      */
     public function browse($page = 0, $hitsPerPage = 1000) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "GET", "/1/indexes/" . $this->urlIndexName . "/browse",
                                     array("page" => $page, "hitsPerPage" => $hitsPerPage));
     }
 
-    /*
+    /**
      * Wait the publication of a task on the server.
      * All server task are asynchronous and you can check with this method that the task is published.
      *
-     * @param taskID the id of the task returned by server
-     * @param timeBeforeRetry the time in milliseconds before retry (default = 100ms)
+     * @param string $taskID the id of the task returned by server
+     * @param int $timeBeforeRetry the time in milliseconds before retry (default = 100ms)
+     * @return mixed
      */
     public function waitTask($taskID, $timeBeforeRetry = 100) {
         while (true) {
@@ -539,27 +576,27 @@ class Index {
                 return $res;
             usleep($timeBeforeRetry * 1000);
         }
+        return NULL;
     }
 
-    /*
+    /**
      * Get settings of this index
-     *
      */
     public function getSettings() {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "GET", "/1/indexes/" . $this->urlIndexName . "/settings");
     }
 
-    /*
+    /**
      * This function deletes the index content. Settings and index specific API keys are kept untouched.
      */
     public function clearIndex() {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "POST", "/1/indexes/" . $this->urlIndexName . "/clear");
     }
 
-    /*
+    /**
      * Set settings for this index
      *
-     * @param settigns the settings object that can contains :
+     * @param array $settings the settings object that can contains :
      * - minWordSizefor1Typo: (integer) the minimum number of characters to accept one typo (default = 3).
      * - minWordSizefor2Typos: (integer) the minimum number of characters to accept two typos (default = 7).
      * - hitsPerPage: (integer) the number of hits per page (default = 10).
@@ -606,39 +643,37 @@ class Index {
      * - highlightPreTag: (string) Specify the string that is inserted before the highlighted parts in the query result (default to "<em>").
      * - highlightPostTag: (string) Specify the string that is inserted after the highlighted parts in the query result (default to "</em>").
      * - optionalWords: (array of strings) Specify a list of words that should be considered as optional when found in the query.
+     * @return mixed
      */
     public function setSettings($settings) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "PUT", "/1/indexes/" . $this->urlIndexName . "/settings", array(), $settings);
     }
 
-    /*
+    /**
      * List all existing user keys associated to this index with their associated ACLs
-     *
      */
     public function listUserKeys() {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "GET", "/1/indexes/" . $this->urlIndexName . "/keys");
     }
 
-    /*
+    /**
      * Get ACL of a user key associated to this index
-     *
      */
     public function getUserKeyACL($key) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "GET", "/1/indexes/" . $this->urlIndexName . "/keys/" . $key);
     }
 
-    /*
+    /**
      * Delete an existing user key associated to this index
-     *
      */
     public function deleteUserKey($key) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "DELETE", "/1/indexes/" . $this->urlIndexName . "/keys/" . $key);
     }
 
-    /*
+    /**
      * Create a new user key associated to this index
      *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
+     * @param array|string $acls the list of ACL for this key. Defined by an array of strings that
      * can contains the following values:
      *   - search: allow to search (https and http)
      *   - addObject: allows to add/update an object in the index (https only)
@@ -646,9 +681,10 @@ class Index {
      *   - deleteIndex : allows to delete index content (https only)
      *   - settings : allows to get index settings (https only)
      *   - editSettings : allows to change index settings (https only)
-     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
-     * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
-     * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
+     * @param int $validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+     * @param int $maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
+     * @param int $maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
+     * @return mixed
      */
     public function addUserKey($acls, $validity = 0, $maxQueriesPerIPPerHour = 0, $maxHitsPerQuery = 0) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "POST", "/1/indexes/" . $this->urlIndexName . "/keys", array(),
@@ -657,7 +693,9 @@ class Index {
 
     /**
      * Send a batch request
-     * @param  $requests an associative array defining the batch request body
+     *
+     * @param mixed $requests an associative array defining the batch request body
+     * @return mixed
      */
     public function batch($requests) {
         return AlgoliaUtils_request($this->curlHandle, $this->hostsArray, "POST", "/1/indexes/" . $this->urlIndexName . "/batch", array(), $requests);
@@ -665,10 +703,12 @@ class Index {
 
     /**
      * Build a batch request
-     * @param  $action the batch action
-     * @param  $objects the array of objects
-     * @param  $withObjectID set an 'objectID' attribute
-     * @param  $objectIDKey the objectIDKey
+     *
+     * @param string $action the batch action
+     * @param array $objects the array of objects
+     * @param string $withObjectID set an 'objectID' attribute
+     * @param string$objectIDKey the objectIDKey
+     * @return array
      */
     private function buildBatch($action, $objects, $withObjectID, $objectIDKey = "objectID") {
         $requests = array();
@@ -681,11 +721,6 @@ class Index {
         }
         return array("requests" => $requests);
     }
-
-    private $indexName;
-    private $urlIndexName;
-    private $hostsArray;
-    private $curlHandle;
 }
 
 function AlgoliaUtils_request($curlHandle, $hostsArray, $method, $path, $params = array(), $data = array()) {
