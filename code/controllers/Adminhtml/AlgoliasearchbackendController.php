@@ -2,12 +2,10 @@
 
 class Algolia_Algoliasearch_Adminhtml_AlgoliasearchbackendController extends Mage_Adminhtml_Controller_Action
 {
-    const BATCH_SIZE = 100;
-
     public function indexAction()
     {
         $this->loadLayout();
-        $this->_title($this->__("Algolia | Reindex catalog"));
+        $this->_title($this->__('Algolia | Reindex catalog'));
         $nb_products_indexed = 0;
         $nb_categories_indexed = 0;
         $indexes = Mage::helper('algoliasearch')->listIndexes();
@@ -27,50 +25,10 @@ class Algolia_Algoliasearch_Adminhtml_AlgoliasearchbackendController extends Mag
 
     public function reindexAction()
     {
-        // categories
-        $index_categories = Mage::helper('algoliasearch')->getIndex('magento_categories');
-        $index_categories->setSettings(array(
-            "attributesToIndex" => array("name", "path"),
-            "customRanking" => array("desc(product_count)")
-        ));
-
-        // products
-        $index_products = Mage::helper('algoliasearch')->getIndex('magento_products');
-        $index_products->setSettings(array(
-            "attributesToIndex" => array('name', 'categories', 'unordered(description)')
-        ));
-
-        foreach (Mage::app()->getStores() as $store) {
-            $tree =  Mage::getModel('catalog/category')->setStoreId($store->getId())->getTreeModel();
-            $tree->load();
-            $ids = $tree->getCollection()->getAllIds();
-            if ($ids) {
-                $categories = array();
-                foreach ($ids as $id) {
-                    $cat = Mage::getModel('catalog/category')->setStoreId($store->getId())->load($id);
-                    array_push($categories, Mage::helper('algoliasearch')->getCategoryJSON($cat));
-                    if (count($categories) >= self::BATCH_SIZE) {
-                        $index_categories->addObjects($categories);
-                        $categories = array();
-                    }
-                }
-                if (count($categories) > 0) {
-                    $index_categories->addObjects($categories);
-                }
-            }
-
-            $collection = Mage::getModel('catalog/product')->setStoreId($store->getId())->getCollection();
-            $products = array();
-            foreach ($collection as $prod) {
-                array_push($products, Mage::helper('algoliasearch')->getProductJSON(Mage::getModel('catalog/product')->setStoreId($store->getId())->load($prod->getId())));
-                if (count($products) >= self::BATCH_SIZE) {
-                    $index_products->addObjects($products);
-                    $products = array();
-                }
-            }
-            if (count($products) > 0) {
-                $index_products->addObjects($products);
-            }
+        try {
+            Mage::helper('algoliasearch')->reindexAll();
+        } catch (Exception $e) {
+            Mage::logException($e);
         }
 
         $this->_redirect('*/*');

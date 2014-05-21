@@ -3,21 +3,27 @@ class Algolia_Algoliasearch_Model_Observer
 {
     public function saveProduct(Varien_Event_Observer $observer)
     {
-        $product = $observer->getProduct();
-        $index = Mage::helper('algoliasearch')->getIndex('magento_products');
+        $product = $observer->getProduct(); /** @var $product Mage_Catalog_Model_Product */
         foreach ($product->getStoreIds() as $storeId) {
-            $prod = Mage::getModel('catalog/product')->setStoreId($storeId)->load($product->getId());
-            $index->addObject(Mage::helper('algoliasearch')->getProductJSON($prod));
+            if (Mage::app()->getStore($storeId)->isAdmin()) {
+                continue;
+            }
+            $index = Mage::helper('algoliasearch')->getStoreIndex($storeId);
+            $storeProduct = Mage::getModel('catalog/product')->setStoreId($storeId)->load($product->getId()); /** @var $storeProduct Mage_Catalog_Model_Product */
+            $index->addObject(Mage::helper('algoliasearch')->getProductJSON($storeProduct));
         }
     }
 
     public function saveCategory(Varien_Event_Observer $observer)
     {
-        $category = $observer->getCategory();
-        $index = Mage::helper('algoliasearch')->getIndex('magento_categories');
+        $category = $observer->getCategory(); /** @var $category Mage_Catalog_Model_Category */
         foreach ($category->getStoreIds() as $storeId) {
-            $cat = Mage::getModel('catalog/category')->setStoreId($storeId)->load($category->getId());
-            $index->addObject(Mage::helper('algoliasearch')->getCategoryJSON($cat));
+            if (Mage::app()->getStore($storeId)->isAdmin()) {
+                continue;
+            }
+            $index = Mage::helper('algoliasearch')->getStoreIndex($storeId);
+            $storeCategory = Mage::getModel('catalog/category')->setStoreId($storeId)->load($category->getId()); /** @var $storeCategory Mage_Catalog_Model_Category */
+            $index->addObject(Mage::helper('algoliasearch')->getCategoryJSON($storeCategory));
         }
     }
 }

@@ -119,6 +119,7 @@
                 <application_id backend_model="adminhtml/system_config_backend_encrypted" />
                 <api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <search_only_api_key backend_model="adminhtml/system_config_backend_encrypted" />
+                <index_prefix />
             </settings>
             <ui>
                 <number_suggestions_product>5</number_suggestions_product>
