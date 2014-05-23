@@ -106,6 +106,7 @@
             <ui>
                 <number_suggestions_product>5</number_suggestions_product>
                 <number_suggestions_category>3</number_suggestions_category>
+                <minimal_query_length>2</minimal_query_length>
             </ui>
         </algoliasearch>
     </default>

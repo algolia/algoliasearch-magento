@@ -96,6 +96,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </number_suggestions_category>
+                        <minimal_query_length translate="label">
+                            <label>Minimal query length</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </minimal_query_length>
                     </fields>
                 </ui>
             </groups>

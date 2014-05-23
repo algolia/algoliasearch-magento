@@ -28,9 +28,11 @@
             });
             function algoliaSearch(event) {
                 var q = $search.getValue();
-                algolia.startQueriesBatch();
-                algolia.addQueryInBatch('<?php echo $algoliaSearchHelper->getIndexName() ?>', q, { hitsPerPage: <?php echo $algoliaSearchHelper->getNbProductSuggestions(); ?>, tagFilters: '(product,category)' });
-                algolia.sendQueriesBatch(algoliaSearchCallback);
+                if (q.length >= <?php echo $algoliaSearchHelper->getMinimalQueryLength() ?>) {
+                    algolia.startQueriesBatch();
+                    algolia.addQueryInBatch('<?php echo $algoliaSearchHelper->getIndexName() ?>', q, { hitsPerPage: <?php echo $algoliaSearchHelper->getNbProductSuggestions(); ?>, tagFilters: '(product,category)' });
+                    algolia.sendQueriesBatch(algoliaSearchCallback);
+                }
             }
 
             function algoliaSearchCallback(success, content) {

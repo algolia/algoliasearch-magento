@@ -8,6 +8,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const COLLECTION_PAGE_SIZE = 100;
 
     const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED = 'algoliasearch/settings/is_enabled';
+    const XML_PATH_MINIMAL_QUERY_LENGTH = 'algoliasearch/ui/minimal_query_length';
 
     private static $_categoryNames;
 
@@ -349,5 +350,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getNbCategorySuggestions()
     {
         return Mage::getStoreConfig('algoliasearch/ui/number_suggestions_category');
+    }
+
+    public function getMinimalQueryLength()
+    {
+        return (int) Mage::getStoreConfig(self::XML_PATH_MINIMAL_QUERY_LENGTH);
     }
 }
