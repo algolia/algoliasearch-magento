@@ -26,4 +26,12 @@ class Algolia_Algoliasearch_Model_Observer
             $index->addObject(Mage::helper('algoliasearch')->getCategoryJSON($storeCategory));
         }
     }
+
+    public function useAlgoliaSearch(Varien_Event_Observer $observer)
+    {
+        if (Mage::getStoreConfigFlag(Algolia_Algoliasearch_Helper_Data::XML_PATH_IS_ALGOLIA_SEARCH_ENABLED)) {
+            $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
+        }
+        return $this;
+    }
 }

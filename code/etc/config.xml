@@ -13,6 +13,17 @@
                 </algoliasearch>
             </updates>
         </layout>
+        <events>
+            <controller_action_layout_load_before>
+                <observers>
+                    <algolia_search>
+                        <type>singleton</type>
+                        <class>algoliasearch/observer</class>
+                        <method>useAlgoliaSearch</method>
+                    </algolia_search>
+                </observers>
+            </controller_action_layout_load_before>
+        </events>
     </frontend>
     <global>
         <helpers>
@@ -26,6 +37,9 @@
             </algoliasearch>
         </blocks>
         <models>
+            <algoliasearch>
+                <class>Algolia_Algoliasearch_Model</class>
+            </algoliasearch>
             <catalogsearch_mysql4>
                 <rewrite>
                     <fulltext>Algolia_Algoliasearch_Model_Mysql4_Fulltext</fulltext>
@@ -42,7 +56,7 @@
                 <observers>
                     <catalog_product_save_after_handler> <!-- identifier of the event handler -->
                         <type>model</type><!-- class method call type; valid are model, object and singleton -->
-                        <class>Algolia_Algoliasearch_Model_Observer</class><!-- observers class alias -->
+                        <class>algoliasearch/observer</class><!-- observers class alias -->
                         <method>saveProduct</method><!-- observer's method to be called -->
                         <args></args><!-- additional arguments passed to observer -->
                     </catalog_product_save_after_handler>
@@ -52,7 +66,7 @@
                 <observers>
                     <catalog_category_save_after_handler> <!-- identifier of the event handler -->
                         <type>model</type><!-- class method call type; valid are model, object and singleton -->
-                        <class>Algolia_Algoliasearch_Model_Observer</class><!-- observers class alias -->
+                        <class>algoliasearch/observer</class><!-- observers class alias -->
                         <method>saveCategory</method><!-- observer's method to be called -->
                         <args></args><!-- additional arguments passed to observer -->
                     </catalog_category_save_after_handler>
@@ -83,6 +97,7 @@
     <default>
         <algoliasearch>
             <settings>
+                <is_enabled>0</is_enabled>
                 <application_id backend_model="adminhtml/system_config_backend_encrypted" />
                 <api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <search_only_api_key backend_model="adminhtml/system_config_backend_encrypted" />

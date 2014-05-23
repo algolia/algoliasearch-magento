@@ -17,11 +17,8 @@
         //<![CDATA[
             var searchForm = new Varien.searchForm('search_mini_form', 'search', '<?php echo $this->__('Search entire store here...') ?>');
             //searchForm.initAutocomplete('<?php echo $catalogSearchHelper->getSuggestUrl() ?>', 'search_autocomplete');
-            
             var $search = $('search');
             var algolia = new AlgoliaSearch('<?php echo $algoliaSearchHelper->getApplicationID(); ?>', '<?php echo $algoliaSearchHelper->getSearchOnlyAPIKey(); ?>');
-            var index_products = algolia.initIndex('<?php echo $algoliaSearchHelper->getIndexName() ?>');
-            var index_categories = algolia.initIndex('<?php echo $algoliaSearchHelper->getIndexName() ?>');
 
             $search.observe('keyup', algoliaSearch).observe('blur', function() {
                 setTimeout(function() {

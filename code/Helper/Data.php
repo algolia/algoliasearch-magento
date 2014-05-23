@@ -7,8 +7,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const BATCH_SIZE = 100;
     const COLLECTION_PAGE_SIZE = 100;
 
-    const INDEX_MAGENTO_PRODUCTS = 'magento_products';
-    const INDEX_MAGENTO_CATEGORIES = 'magento_categories';
+    const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED = 'algoliasearch/settings/is_enabled';
 
     private static $_categoryNames;
 
