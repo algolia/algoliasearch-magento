@@ -31,10 +31,8 @@
             });
             function algoliaSearch(event) {
                 var q = $search.getValue();
-
                 algolia.startQueriesBatch();
-                algolia.addQueryInBatch('<?php echo $algoliaSearchHelper->getIndexName() ?>', q, { hitsPerPage: <?php echo $algoliaSearchHelper->getNbProductSuggestions(); ?>, tagFilters: 'product' });
-                algolia.addQueryInBatch('<?php echo $algoliaSearchHelper->getIndexName() ?>', q, { hitsPerPage: <?php echo $algoliaSearchHelper->getNbCategorySuggestions(); ?>, tagFilters: 'category' });
+                algolia.addQueryInBatch('<?php echo $algoliaSearchHelper->getIndexName() ?>', q, { hitsPerPage: <?php echo $algoliaSearchHelper->getNbProductSuggestions(); ?>, tagFilters: '(product,category)' });
                 algolia.sendQueriesBatch(algoliaSearchCallback);
             }
 
@@ -43,16 +41,29 @@
                     console.log(content);
                     return;
                 }
-                if (!content.results || content.results.length != 2 || $search.getValue() != content.results[0].query) {
+                if (!content.results || content.results.length != 1 || $search.getValue() != content.results[0].query || !content.results[0].hits) {
                     return;
                 }
 
-                var html = '';
-                var categories = content.results[1];
-                for (var i = 0; i < categories.hits.length; ++i) {
-                    var hit = categories.hits[i];
+                var hits = content.results[0].hits,
+                    products = [],
+                    categories = [],
+                    html, i;
+                hits.each(function(hit) {
+                    if (typeof(hit) === 'object' && typeof(hit._tags) === 'object') {
+                        if (hit._tags.indexOf('product') > -1) {
+                            products.push(hit);
+                        } else if (hit._tags.indexOf('category') > -1) {
+                            categories.push(hit);
+                        }
+                    }
+                });
+
+                html = '';
+                for (i = 0; i < categories.length; ++i) {
+                    hit = categories[i];
                     if (html === '') {
-                        html += '<div class="algoliasearch-autocomplete-title">Categories</div>';
+                        html += '<div class="algoliasearch-autocomplete-title"><?php echo $this->__('Categories') ?></div>';
                     }
                     html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' + 
                         (hit.image_url ? '<div class="thumb"><img src="' + hit.image_url + '" /></div>' : '') +
@@ -66,11 +77,10 @@
                 $('search_autocomplete_categories').update(html);
 
                 html = '';
-                var products = content.results[0];
-                for (var i = 0; i < products.hits.length; ++i) {
-                    var hit = products.hits[i];
+                for (i = 0; i < products.length; ++i) {
+                    var hit = products[i];
                     if (html === '') {
-                        html += '<div class="algoliasearch-autocomplete-title">Products</div>';
+                        html += '<div class="algoliasearch-autocomplete-title"><?php echo $this->__('Products') ?></div>';
                     }
                     html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' + 
                         (hit.thumbnail_url ? '<div class="thumb"><img src="' + hit.thumbnail_url + '" /></div>' : '') +
