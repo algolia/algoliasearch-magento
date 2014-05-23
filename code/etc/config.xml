@@ -72,39 +72,6 @@
         </routers>
     </admin>
     <adminhtml>
-        <menu>
-            <algoliasearch module="algoliasearch">
-                <title>Algolia</title>
-                <sort_order>100</sort_order>
-                <children>
-                    <algoliasearchbackend module="algoliasearch">
-                        <title>Reindex catalog</title>
-                        <sort_order>0</sort_order>
-                        <action>algoliasearch/adminhtml_algoliasearchbackend</action>
-                    </algoliasearchbackend>
-                </children>
-            </algoliasearch>
-        </menu>
-        <acl>
-            <resources>
-                <all>
-                    <title>Allow Everything</title>
-                </all>
-                <admin>
-                    <children>
-                        <algoliasearch translate="title" module="algoliasearch">
-                            <title>Algoliasearch</title>
-                            <sort_order>1000</sort_order>
-                            <children>
-                                <algoliasearchbackend translate="title">
-                                    <title>Reindex</title>
-                                </algoliasearchbackend>
-                            </children>
-                        </algoliasearch>
-                    </children>
-                </admin>
-            </resources>
-        </acl>
         <layout>
             <updates>
                 <algoliasearch>
