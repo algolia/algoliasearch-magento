@@ -15,24 +15,28 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
         $adapter = $this->_getWriteAdapter();
 
         if (!$query->getIsProcessed() || true) {
-            $answer = Mage::helper('algoliasearch')->query('magento_products', $queryText, array(
+            $answer = Mage::helper('algoliasearch')->query(Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getId()), $queryText, array(
                 'hitsPerPage' => 1000, // retrieve all the hits (hard limit is 1000)
                 'attributesToRetrieve' => array(),
-                'tagFilters' => 'store_' . Mage::app()->getStore()->getStoreId()
+                'tagFilters' => 'product'
             ));
 
             $i = 0;
             foreach ($answer['hits'] as $hit) {
-                $sql = sprintf("INSERT INTO `" . $this->getTable('catalogsearch/result') . "`"
-                    . " (`query_id`, `product_id`, `relevance`) VALUES"
-                    . " (%d, %d, %d)"
-                    . " ON DUPLICATE KEY UPDATE `relevance`=VALUES(`relevance`)",
-                $query->getId(),
-                preg_split('/_/', $hit['objectID'])[1],
-                1000 - $i // relevance based on position
-                );
-                $adapter->query($sql);
-                ++$i;
+                $objectIdParts = preg_split('/_/', $hit['objectID']);
+                $productId = isset($objectIdParts[2]) ? $objectIdParts[2] : NULL;
+                if ($productId) {
+                    $sql = sprintf("INSERT INTO `" . $this->getTable('catalogsearch/result') . "`"
+                        . " (`query_id`, `product_id`, `relevance`) VALUES"
+                        . " (%d, %d, %d)"
+                        . " ON DUPLICATE KEY UPDATE `relevance`=VALUES(`relevance`)",
+                        $query->getId(),
+                        $productId,
+                        1000 - $i // relevance based on position
+                    );
+                    $adapter->query($sql);
+                    ++$i;
+                }
             }
 
             $query->setIsProcessed(1);
