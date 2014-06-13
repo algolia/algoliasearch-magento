@@ -143,7 +143,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             ->addIsActiveFilter()
             ->setLoadProductCount(TRUE)
             ->setStoreId($storeId)
-            ->addAttributeToSelect('image');
+            ->addAttributeToSelect('image')
+            ->addFieldToFilter('level', array('gt' => 1));
         $size = $categories->getSize();
         if ($size > 0) {
             $indexData = array();
