@@ -261,8 +261,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function reindexAll()
     {
         foreach (Mage::app()->getStores() as $store) { /** @var $store Mage_Core_Model_Store */
-            $this->reindexStoreCategories($store);
-            $this->reindexStoreProducts($store);
+            if ($store->getIsActive()) {
+                $this->reindexStoreCategories($store);
+                $this->reindexStoreProducts($store);
+            }
         }
     }
 
