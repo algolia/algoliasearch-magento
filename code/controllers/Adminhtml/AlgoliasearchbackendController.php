@@ -5,7 +5,7 @@ class Algolia_Algoliasearch_Adminhtml_AlgoliasearchbackendController extends Mag
     public function indexAction()
     {
         $this->loadLayout();
-        $this->_title($this->__('Algolia | Reindex catalog'));
+        $this->_title($this->__('Algolia | Reindex Catalog'));
         $this->renderLayout();
     }
 
@@ -13,8 +13,9 @@ class Algolia_Algoliasearch_Adminhtml_AlgoliasearchbackendController extends Mag
     {
         try {
             Mage::helper('algoliasearch')->reindexAll();
+            $this->_getSession()->addSuccess($this->__('The catalog has been successfully reindexed.'));
         } catch (Exception $e) {
-            Mage::logException($e);
+            $this->_getSession()->addException($e, $this->__('An error occurred while reindexing the catalog: "%s"', $e->getMessage()));
         }
 
         $this->_redirect('*/*');
