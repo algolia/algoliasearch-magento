@@ -28,7 +28,7 @@
             });
             function algoliaSearch(event) {
                 var q = $search.getValue();
-                if (q.length >= <?php echo $algoliaSearchHelper->getMinimalQueryLength() ?>) {
+                if (q.length >= <?php echo $algoliaSearchHelper->getMinimalQueryLength() ?> && q.lastIndexOf(' ') != q.length - 1) {
                     algolia.startQueriesBatch();
                     algolia.addQueryInBatch('<?php echo $algoliaSearchHelper->getIndexName() ?>', q, { hitsPerPage: <?php echo $algoliaSearchHelper->getNbProductSuggestions(); ?>, tagFilters: '(product,category)' });
                     algolia.sendQueriesBatch(algoliaSearchCallback);
