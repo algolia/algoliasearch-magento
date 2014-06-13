@@ -224,7 +224,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             ->addStoreFilter($storeId)
             ->addAttributeToSelect(array('name', 'url_key', 'description', 'image', 'thumbnail'))
             ->setVisibility(Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds())
-            ->addFinalPrice();
+            ->addFinalPrice()
+            ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
         $size = $products->getSize();
         if ($size > 0) {
             $indexData = array();
