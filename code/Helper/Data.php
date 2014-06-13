@@ -221,7 +221,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $products
             ->addStoreFilter($storeId)
             ->addAttributeToSelect(array('name', 'url_key', 'description', 'image', 'thumbnail'))
-            ->setVisibility(Mage::getSingleton('catalog/product_visibility')->getVisibleInSiteIds())
+            ->setVisibility(Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds())
             ->addFinalPrice();
         $size = $products->getSize();
         if ($size > 0) {
