@@ -19,6 +19,8 @@
             //searchForm.initAutocomplete('<?php echo $catalogSearchHelper->getSuggestUrl() ?>', 'search_autocomplete');
             var $search = $('search');
             var algolia = new AlgoliaSearch('<?php echo $algoliaSearchHelper->getApplicationID(); ?>', '<?php echo $algoliaSearchHelper->getSearchOnlyAPIKey(); ?>');
+            var searchQuery = '';
+            var searchTimeoutId = null;
 
             $search.observe('keyup', algoliaSearch).observe('blur', function() {
                 setTimeout(function() {
@@ -27,10 +29,16 @@
                 }, 100);
             });
             function algoliaSearch(event) {
-                var q = $search.getValue();
-                if (q.length >= <?php echo $algoliaSearchHelper->getMinimalQueryLength() ?> && q.lastIndexOf(' ') != q.length - 1) {
+                searchQuery = $search.getValue();
+                if (searchTimeoutId) {
+                    clearTimeout(searchTimeoutId);
+                }
+                searchTimeoutId = setTimeout(performSearch, <?php echo $algoliaSearchHelper->getSearchDelay(); ?>);
+            }
+            function performSearch() {
+                if (searchQuery.length >= <?php echo $algoliaSearchHelper->getMinimalQueryLength() ?> && searchQuery.lastIndexOf(' ') != searchQuery.length - 1) {
                     algolia.startQueriesBatch();
-                    algolia.addQueryInBatch('<?php echo $algoliaSearchHelper->getIndexName() ?>', q, { hitsPerPage: <?php echo $algoliaSearchHelper->getNbProductSuggestions(); ?>, tagFilters: '(product,category)' });
+                    algolia.addQueryInBatch('<?php echo $algoliaSearchHelper->getIndexName() ?>', searchQuery, { hitsPerPage: <?php echo $algoliaSearchHelper->getNbProductSuggestions(); ?>, tagFilters: '(product,category)' });
                     algolia.sendQueriesBatch(algoliaSearchCallback);
                 }
             }
