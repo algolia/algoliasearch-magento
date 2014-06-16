@@ -9,7 +9,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED = 'algoliasearch/settings/is_enabled';
     const XML_PATH_MINIMAL_QUERY_LENGTH = 'algoliasearch/ui/minimal_query_length';
-    const XML_PATH_SEARCH_DELAY = 'algoliasearch/settings/search_delay';
+    const XML_PATH_SEARCH_DELAY = 'algoliasearch/ui/search_delay';
 
     private static $_categoryNames;
     private static $_activeCategories;

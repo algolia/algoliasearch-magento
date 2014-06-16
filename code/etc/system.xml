@@ -68,16 +68,6 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </index_prefix>
-                        <search_delay translate="label comment">
-                            <label>Search Delay</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>60</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Delay in milliseconds before a query is submitted to avoid excessive queries. Default value is 100 milliseconds.</comment>
-                        </search_delay>
                     </fields>
                 </settings>
                 <ui translate="label">
@@ -115,6 +105,16 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </minimal_query_length>
+                        <search_delay translate="label comment">
+                            <label>Search Delay</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Delay in milliseconds before a query is submitted to avoid excessive queries. Default value is 100 milliseconds.</comment>
+                        </search_delay>
                     </fields>
                 </ui>
             </groups>

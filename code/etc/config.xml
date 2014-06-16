@@ -102,12 +102,12 @@
                 <api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <search_only_api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <index_prefix />
-                <search_delay>100</search_delay>
             </settings>
             <ui>
                 <number_suggestions_product>5</number_suggestions_product>
                 <number_suggestions_category>3</number_suggestions_category>
                 <minimal_query_length>2</minimal_query_length>
+                <search_delay>100</search_delay>
             </ui>
         </algoliasearch>
     </default>
