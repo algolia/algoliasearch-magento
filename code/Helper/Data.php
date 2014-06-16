@@ -10,9 +10,37 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED = 'algoliasearch/settings/is_enabled';
     const XML_PATH_MINIMAL_QUERY_LENGTH = 'algoliasearch/ui/minimal_query_length';
     const XML_PATH_SEARCH_DELAY = 'algoliasearch/ui/search_delay';
+    const XML_PATH_PRODUCT_ATTRIBUTES_TO_INDEX = 'algoliasearch/settings/product_attributes_to_index';
+    const XML_PATH_PRODUCT_ATTRIBUTES_TO_RETRIEVE = 'algoliasearch/settings/product_attributes_to_retrieve';
 
     private static $_categoryNames;
     private static $_activeCategories;
+
+    /**
+     * The list of predefined product attributes that will be retrieved by default
+     *
+     * @var array
+     */
+    static private $_predefinedProductAttributes = array(
+        'name',
+        'description',
+        'url',
+        'thumbnail_url',
+        'categories',
+    );
+
+    /**
+     * The list of predefined category attributes that will be retrieved by default
+     *
+     * @var array
+     */
+    static private $_predefinedCategoryAttributes = array(
+        'name',
+        'path',
+        'url',
+        'image_url',
+        'product_count'
+    );
 
     public function getTopSearchTemplate()
     {
@@ -40,8 +68,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         foreach ($this->getActiveCategories($product) as $categoryId) {
             array_push($categories, $this->getCategoryName($categoryId, $product->getStoreId()));
         }
-        $imageUrl = null;
-        $thumbnailUrl = null;
+        $imageUrl = NULL;
+        $thumbnailUrl = NULL;
         try {
             $thumbnailUrl = $product->getThumbnailUrl();
         } catch (Exception $e) { /* no thumbnail, no default: not fatal */ }
@@ -49,15 +77,15 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $imageUrl = $product->getImageUrl();
         } catch (Exception $e) { /* no image, no default: not fatal */ }
         return array(
-            'objectID' => $product->getStore()->getCode() . '_product_' . $product->getId(),
-            'name' => $product->getName(),
-            'categories' => $categories,
-            'description' => $product->getDescription(),
-            'price' => $product->getPrice(),
-            'url' => $product->getProductUrl(),
-            '_tags' => array('product'),
+            'objectID'      => $product->getStore()->getCode() . '_product_' . $product->getId(),
+            'name'          => $product->getName(),
+            'categories'    => $categories,
+            'description'   => $product->getDescription(),
+            'price'         => $product->getPrice(),
+            'url'           => $product->getProductUrl(),
+            '_tags'         => array('product'),
             'thumbnail_url' => $thumbnailUrl,
-            'image_url' => $imageUrl
+            'image_url'     => $imageUrl
         );
     }
 
@@ -70,19 +98,20 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             }
             $path .= $this->getCategoryName($categoryId, $category->getStoreId());
         }
-        $imageUrl = null;
+        $imageUrl = NULL;
         try {
             $imageUrl = $category->getImageUrl();
-        } catch (Exception $e) { /* no image, no default: not fatal */ }
+        } catch (Exception $e) { /* no image, no default: not fatal */
+        }
         return array(
-            'objectID' => $category->getStore()->getCode() . '_category_' . $category->getId(),
-            'name' => $category->getName(),
-            'path' => $path,
-            'level' => $category->getLevel(),
-            'url' => $category->getUrl(),
-            '_tags' => array('category'),
+            'objectID'      => $category->getStore()->getCode() . '_category_' . $category->getId(),
+            'name'          => $category->getName(),
+            'path'          => $path,
+            'level'         => $category->getLevel(),
+            'url'           => $category->getUrl(),
+            '_tags'         => array('category'),
             'product_count' => $category->getProductCount(),
-            'image_url' => $imageUrl
+            'image_url'     => $imageUrl
         );
     }
 
@@ -131,7 +160,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         // Init categories index
         $indexer = $this->getStoreIndex($storeId);
         $indexer->setSettings(array(
-            'attributesToIndex' => array('name', 'path'),
+            'attributesToIndex' => $this->getPredefinedCategoryAttributes(),
             'customRanking' => array('desc(product_count)')
         ));
 
@@ -150,7 +179,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         if ($size > 0) {
             $indexData = array();
             $pageSize = self::COLLECTION_PAGE_SIZE;
-            $pages = ceil($size/$pageSize);
+            $pages = ceil($size / $pageSize);
             $categories->clear();
             $page = 1;
             while ($page <= $pages) {
@@ -216,7 +245,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $indexer = $this->getStoreIndex($storeId);
         $indexer->setSettings(array(
-            'attributesToIndex' => array('name', 'categories', 'unordered(description)')
+            'attributesToIndex' => array_merge($this->getPredefinedProductAttributes(), $this->getProductAttributesToIndex($storeId))
         ));
 
         // Product indexing
@@ -231,7 +260,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         if ($size > 0) {
             $indexData = array();
             $pageSize = self::COLLECTION_PAGE_SIZE;
-            $pages = ceil($size/$pageSize);
+            $pages = ceil($size / $pageSize);
             $products->clear();
             $page = 1;
             while ($page <= $pages) {
@@ -276,7 +305,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getIndexName($storeId = NULL)
     {
-        return (string) $this->getIndexPrefix($storeId) . Mage::app()->getStore($storeId)->getCode();
+        return (string)$this->getIndexPrefix($storeId) . Mage::app()->getStore($storeId)->getCode();
     }
 
     /**
@@ -310,11 +339,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         $categoryName = NULL;
-        $key = strval($storeId).'-'.strval($categoryId);
+        $key = strval($storeId) . '-' . strval($categoryId);
         if (isset(self::$_categoryNames[$key])) {
             $categoryName = strval(self::$_categoryNames[$key]);
         } elseif ($storeId != 0) {
-            $key = '0-'.strval($categoryId);
+            $key = '0-' . strval($categoryId);
             if (isset(self::$_categoryNames[$key])) {
                 $categoryName = strval(self::$_categoryNames[$key]);
             }
@@ -348,11 +377,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $activeCategories = array();
         foreach ($product->getCategoryIds() as $categoryId) {
-            $key = strval($storeId).'-'.strval($categoryId);
+            $key = strval($storeId) . '-' . strval($categoryId);
             if (isset(self::$_activeCategories[$key])) {
                 $activeCategories[] = $categoryId;
             } elseif (intval($storeId) != 0) {
-                $key = '0-'.strval($categoryId);
+                $key = '0-' . strval($categoryId);
                 if (isset(self::$_activeCategories[$key])) {
                     $activeCategories[] = $categoryId;
                 }
@@ -405,5 +434,69 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getSearchDelay($storeId = NULL)
     {
         return (int) Mage::getStoreConfig(self::XML_PATH_SEARCH_DELAY, $storeId);
+    }
+
+    /**
+     * Retrieve product attribute to be indexed
+     *
+     * @param mixed $storeId
+     * @return array
+     */
+    public function getProductAttributesToIndex($storeId = NULL)
+    {
+        return array_merge($this->getPredefinedProductAttributes(), explode(',', Mage::getStoreConfig(self::XML_PATH_PRODUCT_ATTRIBUTES_TO_INDEX, $storeId)));
+    }
+
+    /**
+     * Get product attribute to retrieve in a search response
+     *
+     * @param mixed $storeId
+     * @return array
+     */
+    public function getProductAttributesToRetrieve($storeId = NULL)
+    {
+        return array_merge($this->getPredefinedProductAttributes(), explode(',', Mage::getStoreConfig(self::XML_PATH_PRODUCT_ATTRIBUTES_TO_RETRIEVE, $storeId)));
+    }
+
+    /**
+     * Get category attributes to retrieve in a search response
+     *
+     * @param mixed $storeId
+     * @return array
+     */
+    public function getCategoryAttributesToRetrieve($storeId = NULL)
+    {
+        return $this->getPredefinedCategoryAttributes();
+    }
+
+    /**
+     * Predefined category attributes
+     *
+     * @return array
+     */
+    public function getPredefinedCategoryAttributes()
+    {
+        return self::$_predefinedCategoryAttributes;
+    }
+
+    /**
+     * Predefined product attributes
+     *
+     * @return array
+     */
+    public function getPredefinedProductAttributes()
+    {
+        return self::$_predefinedProductAttributes;
+    }
+
+    /**
+     * The list of product and category attributes including predefined attributes and special attributes to retrieve in a search request
+     *
+     * @param mixed $storeId
+     * @return array
+     */
+    public function getAttributesToRetrieve($storeId = NULL)
+    {
+        return array_merge($this->getProductAttributesToRetrieve($storeId), $this->getCategoryAttributesToRetrieve($storeId), array('_tags'));
     }
 }

@@ -102,6 +102,8 @@
                 <api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <search_only_api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <index_prefix />
+                <attributes_to_index />
+                <attributes_to_retrieve />
             </settings>
             <ui>
                 <number_suggestions_product>5</number_suggestions_product>
