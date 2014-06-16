@@ -12,6 +12,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_SEARCH_DELAY = 'algoliasearch/settings/search_delay';
 
     private static $_categoryNames;
+    private static $_activeCategories;
 
     public function getTopSearchTemplate()
     {
@@ -36,7 +37,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getProductJSON(Mage_Catalog_Model_Product $product)
     {
         $categories = array();
-        foreach ($product->getCategoryIds() as $categoryId) {
+        foreach ($this->getActiveCategories($product) as $categoryId) {
             array_push($categories, $this->getCategoryName($categoryId, $product->getStoreId()));
         }
         $imageUrl = null;
@@ -320,6 +321,45 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         return $categoryName;
+    }
+
+    /**
+     * Proxy for active categories for the product for the specified store
+     *
+     * @param int|Mage_Catalog_Model_Product $product
+     * @param int $storeId
+     * @return array
+     */
+    public function getActiveCategories(Mage_Catalog_Model_Product $product, $storeId = NULL)
+    {
+        if (is_null(self::$_activeCategories)) {
+            self::$_activeCategories = array();
+            if ($attribute = Mage::getResourceModel('catalog/category')->getAttribute('is_active')) {
+                $connection = Mage::getSingleton('core/resource')->getConnection('core_read'); /** @var $connection Varien_Db_Adapter_Pdo_Mysql */
+                $select = $connection->select()
+                    ->from($attribute->getBackendTable(), array(new Zend_Db_Expr("CONCAT(store_id, '-', entity_id)"), 'value'))
+                    ->where('entity_type_id = ?', $attribute->getEntityTypeId())
+                    ->where('attribute_id = ?', $attribute->getAttributeId())
+                    ->where('entity_id IN (?)', $product->getCategoryIds())
+                    ->where('value = ?', 1);
+                self::$_activeCategories = $connection->fetchPairs($select);
+            }
+        }
+
+        $activeCategories = array();
+        foreach ($product->getCategoryIds() as $categoryId) {
+            $key = strval($storeId).'-'.strval($categoryId);
+            if (isset(self::$_activeCategories[$key])) {
+                $activeCategories[] = $categoryId;
+            } elseif (intval($storeId) != 0) {
+                $key = '0-'.strval($categoryId);
+                if (isset(self::$_activeCategories[$key])) {
+                    $activeCategories[] = $categoryId;
+                }
+            }
+        }
+
+        return $activeCategories;
     }
 
     private function getClient()
