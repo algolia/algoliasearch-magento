@@ -19,15 +19,7 @@ class Algolia_Algoliasearch_Model_Observer
      */
     public function saveProduct(Varien_Event_Observer $observer)
     {
-        $product = $observer->getProduct(); /** @var $product Mage_Catalog_Model_Product */
-        foreach ($product->getStoreIds() as $storeId) {
-            if (Mage::app()->getStore($storeId)->isAdmin()) {
-                continue;
-            }
-            $index = Mage::helper('algoliasearch')->getStoreIndex($storeId);
-            $storeProduct = Mage::getModel('catalog/product')->setStoreId($storeId)->load($product->getId()); /** @var $storeProduct Mage_Catalog_Model_Product */
-            $index->addObject(Mage::helper('algoliasearch')->getProductJSON($storeProduct));
-        }
+        $this->getQueue()->add('algoliasearch/observer', 'reindex', array('product_id' => $observer->getProduct()->getId()));
         return $this;
     }
 
@@ -37,15 +29,7 @@ class Algolia_Algoliasearch_Model_Observer
      */
     public function saveCategory(Varien_Event_Observer $observer)
     {
-        $category = $observer->getCategory(); /** @var $category Mage_Catalog_Model_Category */
-        foreach ($category->getStoreIds() as $storeId) {
-            if (Mage::app()->getStore($storeId)->isAdmin()) {
-                continue;
-            }
-            $index = Mage::helper('algoliasearch')->getStoreIndex($storeId);
-            $storeCategory = Mage::getModel('catalog/category')->setStoreId($storeId)->load($category->getId()); /** @var $storeCategory Mage_Catalog_Model_Category */
-            $index->addObject(Mage::helper('algoliasearch')->getCategoryJSON($storeCategory));
-        }
+        $this->getQueue()->add('algoliasearch/observer', 'reindex', array('category_id' => $observer->getCategory()->getId()));
         return $this;
     }
 
@@ -59,5 +43,47 @@ class Algolia_Algoliasearch_Model_Observer
             $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
         }
         return $this;
+    }
+
+    /**
+     * Reindex product or category
+     *
+     * @param Varien_Object $event
+     * @return Algolia_Algoliasearch_Model_Observer
+     * @throws Exception
+     */
+    public function reindex(Varien_Object $event)
+    {
+        // Reindex product
+        if ($productId = $event->getProductId()) {
+            $product = Mage::getModel('catalog/product')->load($productId);
+            if ( ! $product->getId()) {
+                throw new Exception('Could not load product by id: '.$productId);
+            }
+            foreach ($product->getStoreIds() as $storeId) {
+                if (Mage::app()->getStore($storeId)->isAdmin()) {
+                    continue;
+                }
+                $index = Mage::helper('algoliasearch')->getStoreIndex($storeId);
+                $storeProduct = Mage::getModel('catalog/product')->setStoreId($storeId)->load($product->getId()); /** @var $storeProduct Mage_Catalog_Model_Product */
+                $index->addObject(Mage::helper('algoliasearch')->getProductJSON($storeProduct));
+            }
+        }
+
+        // Reindex category
+        if ($categoryId = $event->getCategoryId()) {
+            $category = Mage::getModel('catalog/category')->load($categoryId);
+            if ( ! $category->getId()) {
+                throw new Exception('Could not load category by id: '.$categoryId);
+            }
+            foreach ($category->getStoreIds() as $storeId) {
+                if (Mage::app()->getStore($storeId)->isAdmin()) {
+                    continue;
+                }
+                $index = Mage::helper('algoliasearch')->getStoreIndex($storeId);
+                $storeCategory = Mage::getModel('catalog/category')->setStoreId($storeId)->load($category->getId()); /** @var $storeCategory Mage_Catalog_Model_Category */
+                $index->addObject(Mage::helper('algoliasearch')->getCategoryJSON($storeCategory));
+            }
+        }
     }
 }
