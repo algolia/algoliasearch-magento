@@ -1,6 +1,22 @@
 <?php
+
+/**
+ * Algolia search observer model
+ */
 class Algolia_Algoliasearch_Model_Observer
 {
+    /**
+     * @return Algolia_Algoliasearch_Model_Queue
+     */
+    protected function getQueue()
+    {
+        return Mage::getSingleton('algoliasearch/queue');
+    }
+
+    /**
+     * @param Varien_Event_Observer $observer
+     * @return Algolia_Algoliasearch_Model_Observer
+     */
     public function saveProduct(Varien_Event_Observer $observer)
     {
         $product = $observer->getProduct(); /** @var $product Mage_Catalog_Model_Product */
@@ -12,8 +28,13 @@ class Algolia_Algoliasearch_Model_Observer
             $storeProduct = Mage::getModel('catalog/product')->setStoreId($storeId)->load($product->getId()); /** @var $storeProduct Mage_Catalog_Model_Product */
             $index->addObject(Mage::helper('algoliasearch')->getProductJSON($storeProduct));
         }
+        return $this;
     }
 
+    /**
+     * @param Varien_Event_Observer $observer
+     * @return Algolia_Algoliasearch_Model_Observer
+     */
     public function saveCategory(Varien_Event_Observer $observer)
     {
         $category = $observer->getCategory(); /** @var $category Mage_Catalog_Model_Category */
@@ -25,8 +46,13 @@ class Algolia_Algoliasearch_Model_Observer
             $storeCategory = Mage::getModel('catalog/category')->setStoreId($storeId)->load($category->getId()); /** @var $storeCategory Mage_Catalog_Model_Category */
             $index->addObject(Mage::helper('algoliasearch')->getCategoryJSON($storeCategory));
         }
+        return $this;
     }
 
+    /**
+     * @param Varien_Event_Observer $observer
+     * @return Algolia_Algoliasearch_Model_Observer
+     */
     public function useAlgoliaSearch(Varien_Event_Observer $observer)
     {
         if (Mage::getStoreConfigFlag(Algolia_Algoliasearch_Helper_Data::XML_PATH_IS_ALGOLIA_SEARCH_ENABLED)) {

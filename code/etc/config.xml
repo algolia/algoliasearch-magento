@@ -39,7 +39,16 @@
         <models>
             <algoliasearch>
                 <class>Algolia_Algoliasearch_Model</class>
+                <resourceModel>algoliasearch_resource</resourceModel>
             </algoliasearch>
+            <algoliasearch_resource>
+                <class>Algolia_Algoliasearch_Model_Resource</class>
+                <entities>
+                    <queue>
+                        <table>algoliasearch_queue</table>
+                    </queue>
+                </entities>
+            </algoliasearch_resource>
             <catalogsearch_mysql4>
                 <rewrite>
                     <fulltext>Algolia_Algoliasearch_Model_Mysql4_Fulltext</fulltext>
@@ -58,7 +67,7 @@
                         <type>model</type><!-- class method call type; valid are model, object and singleton -->
                         <class>algoliasearch/observer</class><!-- observers class alias -->
                         <method>saveProduct</method><!-- observer's method to be called -->
-                        <args></args><!-- additional arguments passed to observer -->
+                        <args /><!-- additional arguments passed to observer -->
                     </catalog_product_save_after_handler>
                 </observers>
             </catalog_product_save_after>
@@ -68,12 +77,44 @@
                         <type>model</type><!-- class method call type; valid are model, object and singleton -->
                         <class>algoliasearch/observer</class><!-- observers class alias -->
                         <method>saveCategory</method><!-- observer's method to be called -->
-                        <args></args><!-- additional arguments passed to observer -->
+                        <args /><!-- additional arguments passed to observer -->
                     </catalog_category_save_after_handler>
                 </observers>
             </catalog_category_save_after>
         </events>
+        <resources>
+            <algoliasearch_setup>
+                <setup>
+                    <module>Algolia_Algoliasearch</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </algoliasearch_setup>
+            <algoliasearch_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </algoliasearch_read>
+            <algoliasearch_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </algoliasearch_write>
+        </resources>
     </global>
+    <crontab>
+        <jobs>
+            <algoliasearch_run_queue>
+                <schedule>
+                    <cron_expr>* * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>algoliasearch/queue::runCron</model>
+                </run>
+            </algoliasearch_run_queue>
+        </jobs>
+    </crontab>
     <admin>
         <routers>
             <algoliasearch>
@@ -111,6 +152,10 @@
                 <minimal_query_length>2</minimal_query_length>
                 <search_delay>100</search_delay>
             </ui>
+            <queue>
+                <active>1</active>
+                <retries>3</retries>
+            </queue>
         </algoliasearch>
     </default>
 </config> 
