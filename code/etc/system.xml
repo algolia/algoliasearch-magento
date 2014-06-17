@@ -68,6 +68,26 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </index_prefix>
+                        <product_attributes_to_index translate="label comment">
+                            <label>Product Attributes To Index</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>algoliasearch/system_config_source_product_attributesToIndex</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Additional attributes to be indexed. Product name, categories and description attributes are predefined and cannot be changed.</comment>
+                        </product_attributes_to_index>
+                        <product_attributes_to_retrieve translate="label comment">
+                            <label>Attributes To Retrieve</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>algoliasearch/system_config_source_product_attributesToRetrieve</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The list of attributes to retrieve in a search result. Category name, path, url, image url and products count attributes are predefined and cannot be changed.</comment>
+                        </product_attributes_to_retrieve>
                     </fields>
                 </settings>
                 <ui translate="label">
@@ -105,8 +125,46 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </minimal_query_length>
+                        <search_delay translate="label comment">
+                            <label>Search Delay</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Delay in milliseconds before a query is submitted to avoid excessive queries. Default value is 100 milliseconds.</comment>
+                        </search_delay>
                     </fields>
                 </ui>
+                <queue translate="label">
+                    <label>Queue</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Queue Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </active>
+                        <retries translate="label comment">
+                            <label>Max Retries</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Number of retries before giving up on unexpected errors.</comment>
+                        </retries>
+                    </fields>
+                </queue>
             </groups>
         </algoliasearch>
     </sections>

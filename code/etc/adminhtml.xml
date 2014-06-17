@@ -8,7 +8,7 @@
                     <sort_order>100</sort_order>
                     <children>
                         <algoliasearchbackend module="algoliasearch">
-                            <title>Reindex catalog</title>
+                            <title>Reindex Catalog</title>
                             <sort_order>0</sort_order>
                             <action>algoliasearch/adminhtml_algoliasearchbackend</action>
                         </algoliasearchbackend>
