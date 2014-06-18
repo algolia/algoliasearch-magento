@@ -2,12 +2,12 @@
 
 class Algolia_Algoliasearch_Model_Queue
 {
-    const TABLE_NAME = 'algoliasearch_queue';
+    const TABLE_NAME  = 'algoliasearch_queue';
     const SUCCESS_LOG = 'algoliasearch_queue_log.txt';
-    const ERROR_LOG = 'algoliasearch_queue_errors.log';
+    const ERROR_LOG   = 'algoliasearch_queue_errors.log';
 
     const XML_PATH_MAX_RETRIES = 'algoliasearch/queue/retries';
-    const XML_PATH_IS_ACTIVE = 'algoliasearch/queue/active';
+    const XML_PATH_IS_ACTIVE   = 'algoliasearch/queue/active';
 
     /**
      * @var string
@@ -68,8 +68,8 @@ class Algolia_Algoliasearch_Model_Queue
         $pids = $this->_db->fetchCol("SELECT pid FROM {$this->_table} WHERE pid IS NOT NULL GROUP BY pid");
         foreach ($pids as $pid) {
             // Old pid is no longer running, release it's reserved tasks
-            if ( ! file_exists("/proc/{$pid}/status")) {
-                Mage::log("A failed job queue was detected for pid {$pid}", Zend_Log::NOTICE, self::ERROR_LOG);
+            if (is_int($pid) && ! file_exists("/proc/{$pid}/status")) {
+                Mage::log("A crashed job queue process was detected for pid {$pid}", Zend_Log::NOTICE, self::ERROR_LOG);
                 $this->_db->update($this->_table,array('pid' => new Zend_Db_Expr('NULL')),array('pid = ?' => $pid));
             }
         }

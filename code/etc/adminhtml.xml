@@ -1,22 +1,5 @@
 <?xml version="1.0"?>
 <config>
-    <menu>
-        <system>
-            <children>
-                <algoliasearch module="algoliasearch">
-                    <title>Algolia</title>
-                    <sort_order>100</sort_order>
-                    <children>
-                        <algoliasearchbackend module="algoliasearch">
-                            <title>Reindex Catalog</title>
-                            <sort_order>0</sort_order>
-                            <action>algoliasearch/adminhtml_algoliasearchbackend</action>
-                        </algoliasearchbackend>
-                    </children>
-                </algoliasearch>
-            </children>
-        </system>
-    </menu>
     <acl>
         <resources>
             <admin>
@@ -31,15 +14,6 @@
                                     </algoliasearch>
                                 </children>
                             </config>
-                            <algoliasearch translate="title" module="algoliasearch">
-                                <title>Algoliasearch</title>
-                                <sort_order>100</sort_order>
-                                <children>
-                                    <algoliasearchbackend translate="title">
-                                        <title>Reindex</title>
-                                    </algoliasearchbackend>
-                                </children>
-                            </algoliasearch>
                         </children>
                     </system>
                 </children>
