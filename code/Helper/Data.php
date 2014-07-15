@@ -165,7 +165,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         ));
 
         // Categories indexing
-        $categories = Mage::getResourceModel('catalog/category_collection'); /** @var $categories Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
+        $categories = Mage::getResourceModel('catalog/category_collection'); /** @var $collection Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
         $categories
             ->setProductStoreId($storeId)
             ->addNameToResult()
@@ -328,25 +328,21 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         if (is_null(self::$_categoryNames)) {
             self::$_categoryNames = array();
-            $resource = Mage::getResourceModel('catalog/category'); /** @var $resource Mage_Catalog_Model_Resource_Category */
-            if ($attribute = $resource->getAttribute('name')) {
+            if ($attribute = Mage::getResourceModel('catalog/category')->getAttribute('name')) {
                 $connection = Mage::getSingleton('core/resource')->getConnection('core_read'); /** @var $connection Varien_Db_Adapter_Pdo_Mysql */
                 $select = $connection->select()
-                    ->from(array('backend' => $attribute->getBackendTable()), array(new Zend_Db_Expr("CONCAT(backend.store_id, '-', backend.entity_id)"), 'backend.value'))
-                    ->join(array('category' => $resource->getTable('catalog/category')), 'backend.entity_id = category.entity_id', array())
-                    ->where('backend.entity_type_id = ?', $attribute->getEntityTypeId())
-                    ->where('backend.attribute_id = ?', $attribute->getAttributeId())
-                    ->where('category.level > ?', 1);
+                    ->from($attribute->getBackendTable(), array(new Zend_Db_Expr("CONCAT(store_id, '-', entity_id)"), 'value'))
+                    ->where('entity_type_id = ?', $attribute->getEntityTypeId())
+                    ->where('attribute_id = ?', $attribute->getAttributeId());
                 self::$_categoryNames = $connection->fetchPairs($select);
             }
         }
 
         $categoryName = NULL;
-        $storeId = ($storeId === NULL) ? 0 : intval($storeId);
         $key = strval($storeId) . '-' . strval($categoryId);
-        if (isset(self::$_categoryNames[$key])) { // Check whether the category name is present for the specified store
+        if (isset(self::$_categoryNames[$key])) {
             $categoryName = strval(self::$_categoryNames[$key]);
-        } elseif ($storeId != 0) { // Check whether the category name is present for the default store
+        } elseif ($storeId != 0) {
             $key = '0-' . strval($categoryId);
             if (isset(self::$_categoryNames[$key])) {
                 $categoryName = strval(self::$_categoryNames[$key]);
@@ -367,27 +363,24 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         if (is_null(self::$_activeCategories)) {
             self::$_activeCategories = array();
-            $resource = Mage::getResourceModel('catalog/category'); /** @var $resource Mage_Catalog_Model_Resource_Category */
-            if ($attribute = $resource->getAttribute('is_active')) {
+            if ($attribute = Mage::getResourceModel('catalog/category')->getAttribute('is_active')) {
                 $connection = Mage::getSingleton('core/resource')->getConnection('core_read'); /** @var $connection Varien_Db_Adapter_Pdo_Mysql */
                 $select = $connection->select()
-                    ->from(array('backend' => $attribute->getBackendTable()), array(new Zend_Db_Expr("CONCAT(backend.store_id, '-', backend.entity_id)"), 'backend.value'))
-                    ->join(array('category' => $resource->getTable('catalog/category')), 'backend.entity_id = category.entity_id', array())
-                    ->where('backend.entity_type_id = ?', $attribute->getEntityTypeId())
-                    ->where('backend.attribute_id = ?', $attribute->getAttributeId())
-                    ->where('backend.value = ?', 1)
-                    ->where('category.level > ?', 1);
+                    ->from($attribute->getBackendTable(), array(new Zend_Db_Expr("CONCAT(store_id, '-', entity_id)"), 'value'))
+                    ->where('entity_type_id = ?', $attribute->getEntityTypeId())
+                    ->where('attribute_id = ?', $attribute->getAttributeId())
+                    ->where('entity_id IN (?)', $product->getCategoryIds())
+                    ->where('value = ?', 1);
                 self::$_activeCategories = $connection->fetchPairs($select);
             }
         }
 
         $activeCategories = array();
         foreach ($product->getCategoryIds() as $categoryId) {
-            $storeId = ($storeId === NULL) ? 0 : intval($storeId);
             $key = strval($storeId) . '-' . strval($categoryId);
-            if (isset(self::$_activeCategories[$key])) { // Check whether the category is active for the specified store
+            if (isset(self::$_activeCategories[$key])) {
                 $activeCategories[] = $categoryId;
-            } elseif (intval($storeId) != 0) { // Check whether the category is active for the default store
+            } elseif (intval($storeId) != 0) {
                 $key = '0-' . strval($categoryId);
                 if (isset(self::$_activeCategories[$key])) {
                     $activeCategories[] = $categoryId;

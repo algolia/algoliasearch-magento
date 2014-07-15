@@ -3,6 +3,26 @@
 class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_Model_Resource_Fulltext
 {
     /**
+     * Algolia search engine instance
+     *
+     * @var null|Algolia_Algoliasearch_Model_Resource_Engine
+     */
+    protected $_engine = NULL;
+
+    /**
+     * Algolia search helper
+     *
+     * @var null|Algolia_Algoliasearch_Helper_Data
+     */
+    protected $_helper = NULL;
+
+    public function _construct()
+    {
+        parent::_construct();
+        $this->_helper = Mage::helper('algoliasearch');
+    }
+
+    /**
      * Prepare results for query
      *
      * @param Mage_CatalogSearch_Model_Fulltext $object
@@ -12,6 +32,11 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
      */
     public function prepareResult($object, $queryText, $query)
     {
+        // Fallback to default catalog search if Algolia search is disabled
+        if ( ! $this->_helper->isEnabled()) {
+            return parent::prepareResult($object, $queryText, $query);
+        }
+
         $adapter = $this->_getWriteAdapter();
 
         if (!$query->getIsProcessed() || true) {
@@ -24,7 +49,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
             $i = 0;
             foreach ($answer['hits'] as $hit) {
                 $objectIdParts = preg_split('/_/', $hit['objectID']);
-                $productId = isset($objectIdParts[2]) ? $objectIdParts[2] : NULL;
+                $productId = isset($objectIdParts[1]) ? $objectIdParts[1] : NULL;
                 if ($productId) {
                     $sql = sprintf("INSERT INTO `" . $this->getTable('catalogsearch/result') . "`"
                         . " (`query_id`, `product_id`, `relevance`) VALUES"
@@ -43,5 +68,80 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
         }
 
         return $this;
+    }
+
+    /**
+     * Save multiply product indexes.
+     *
+     * @param int   $storeId
+     * @param array $productIndexes
+     * @return Algolia_Algoliasearch_Model_Resource_Fulltext
+     */
+    protected function _saveProductIndexes($storeId, $productIndexes)
+    {
+        // Fallback to default catalog search if Algolia search is disabled
+        if ( ! $this->_helper->isEnabled()) {
+            return parent::_saveProductIndexes($storeId, $productIndexes);
+        }
+
+        Mage::helper('algoliasearch')->rebuildStoreProductIndex($storeId, array_keys($productIndexes), $productIndexes);
+        return $this;
+    }
+
+    /**
+     * Delete entity(ies) index
+     *
+     * @param null|string    $entity catalog|product
+     * @param null|int       $storeId
+     * @param null|int|array $entityId
+     * @return Algolia_Algoliasearch_Model_Resource_Fulltext
+     */
+    public function cleanEntityIndex($entity, $storeId = NULL, $entityId = NULL)
+    {
+        if ($this->_helper->isEnabled($storeId) && is_object($this->_engine) && is_callable(array($this->_engine, 'cleanEntityIndex'))) {
+            $this->_engine->cleanEntityIndex($entity, $storeId, $entityId);
+        }
+        return $this;
+    }
+
+    /**
+     * Rebuild index for the specified categories
+     *
+     * @param null|int       $storeId
+     * @param null|int|array $categoryIds
+     * @return Algolia_Algoliasearch_Model_Resource_Fulltext
+     */
+    public function rebuildCategoryIndex($storeId = NULL, $categoryIds = NULL)
+    {
+        if ($this->_helper->isEnabled($storeId) && is_object($this->_engine) && is_callable(array($this->_engine, 'rebuildCategoryIndex'))) {
+            $this->_engine->rebuildCategoryIndex($storeId, $categoryIds);
+        }
+        return $this;
+    }
+
+    /**
+     * Rebuild index for the specified products
+     *
+     * @param null|int       $storeId
+     * @param null|int|array $productIds
+     * @return Algolia_Algoliasearch_Model_Resource_Fulltext
+     */
+    public function rebuildProductIndex($storeId = NULL, $productIds = NULL)
+    {
+        if ($this->_helper->isEnabled($storeId) && is_object($this->_engine) && is_callable(array($this->_engine, 'rebuildProductIndex'))) {
+            $this->_engine->rebuildProductIndex($storeId, $productIds);
+        }
+        return $this;
+    }
+
+    /**
+     * Retrieve Searchable attributes
+     *
+     * @param string $backendType
+     * @return array
+     */
+    public function getSearchableAttributes($backendType = NULL)
+    {
+        return $this->_getSearchableAttributes($backendType);
     }
 }

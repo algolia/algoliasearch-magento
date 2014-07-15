@@ -24,20 +24,30 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <is_enabled translate="label">
-                            <label>Enabled</label>
+                        <is_enabled translate="label comment">
+                            <label>Use For Catalog Search And Background Indexing</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
+                            <comment>The flag indicates whether Algolia search is enabled for catalog search and background indexing. Background indexing requires selecting Algolia engine in Catalog > Catalog Search > Engine.</comment>
+                        </is_enabled>
+                        <is_popup_enabled translate="label comment">
+                            <label>Display Popup With Search Results On Frontend</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </is_enabled>
+                            <comment>The flag indicates whether Algolia search popup is enabled on frontend.</comment>
+                            <depends><is_enabled>1</is_enabled></depends>
+                        </is_popup_enabled>
                         <application_id translate="label">
                             <label>APPLICATION_ID</label>
                             <frontend_type>obscure</frontend_type>
                             <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
-                            <sort_order>20</sort_order>
+                            <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -46,7 +56,7 @@
                             <label>API_KEY</label>
                             <frontend_type>obscure</frontend_type>
                             <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
-                            <sort_order>30</sort_order>
+                            <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -55,7 +65,7 @@
                             <label>Search-only API_KEY (public)</label>
                             <frontend_type>obscure</frontend_type>
                             <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
-                            <sort_order>40</sort_order>
+                            <sort_order>50</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -63,31 +73,11 @@
                         <index_prefix translate="label">
                             <label>Index name prefix</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>50</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </index_prefix>
-                        <product_attributes_to_index translate="label comment">
-                            <label>Product Attributes To Index</label>
-                            <frontend_type>multiselect</frontend_type>
-                            <source_model>algoliasearch/system_config_source_product_attributesToIndex</source_model>
                             <sort_order>60</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Additional attributes to be indexed. Product name, categories and description attributes are predefined and cannot be changed.</comment>
-                        </product_attributes_to_index>
-                        <product_attributes_to_retrieve translate="label comment">
-                            <label>Attributes To Retrieve</label>
-                            <frontend_type>multiselect</frontend_type>
-                            <source_model>algoliasearch/system_config_source_product_attributesToRetrieve</source_model>
-                            <sort_order>70</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The list of attributes to retrieve in a search result. Category name, path, url, image url and products count attributes are predefined and cannot be changed.</comment>
-                        </product_attributes_to_retrieve>
+                        </index_prefix>
                     </fields>
                 </settings>
                 <ui translate="label">
@@ -167,5 +157,80 @@
                 </queue>
             </groups>
         </algoliasearch>
+        <catalog>
+            <groups>
+                <search>
+                    <fields>
+                        <engine translate="label" module="algoliasearch">
+                            <label>Search Engine</label>
+                            <frontend_type>select</frontend_type>
+                            <backend_model>algoliasearch/system_config_backend_engine</backend_model>
+                            <source_model>algoliasearch/system_config_source_engine</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </engine>
+                        <algolia_is_enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <config_path>algoliasearch/settings/is_enabled</config_path>
+                            <sort_order>21</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <depends><engine>algoliasearch/engine</engine></depends>
+                        </algolia_is_enabled>
+                        <algolia_application_id translate="label">
+                            <label>APPLICATION_ID</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <config_path>algoliasearch/settings/application_id</config_path>
+                            <sort_order>22</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <algolia_is_enabled>1</algolia_is_enabled>
+                                <engine>algoliasearch/engine</engine>
+                            </depends>
+                        </algolia_application_id>
+                        <algolia_api_key translate="label">
+                            <label>API_KEY</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <config_path>algoliasearch/settings/api_key</config_path>
+                            <sort_order>23</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <algolia_is_enabled>1</algolia_is_enabled>
+                                <engine>algoliasearch/engine</engine>
+                            </depends>
+                        </algolia_api_key>
+                        <algolia_search_only_api_key translate="label">
+                            <label>Search-only API_KEY (public)</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <config_path>algoliasearch/settings/search_only_api_key</config_path>
+                            <sort_order>24</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <algolia_is_enabled>1</algolia_is_enabled>
+                                <engine>algoliasearch/engine</engine>
+                            </depends>
+                        </algolia_search_only_api_key>
+                        <search_type>
+                            <depends><engine>catalogsearch/fulltext_engine</engine></depends>
+                        </search_type>
+                        <use_layered_navigation_count>
+                            <depends><engine>catalogsearch/fulltext_engine</engine></depends>
+                        </use_layered_navigation_count>
+                    </fields>
+                </search>
+            </groups>
+        </catalog>
     </sections>
 </config>
