@@ -232,6 +232,21 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * Adding product count when load collection is incorrect.
+     * The method applies the same limitation as on frontend to get correct product count for the category in the specified store.
+     * Product collection will not be loaded so this solution is fast.
+     *
+     * @param Mage_Catalog_Model_Category $category
+     * @return Algolia_Algoliasearch_Helper_Data
+     */
+    public function addCategoryProductCount(Mage_Catalog_Model_Category $category)
+    {
+        $productCollection = $category->getProductCollection(); /** @var $productCollection Mage_Catalog_Model_Resource_Product_Collection */
+        $category->setProductCount($productCollection->addMinimalPrice()->count());
+        return $this;
+    }
+
+    /**
      * Rebuild store category index
      *
      * @param mixed          $storeId
@@ -252,11 +267,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $categories = Mage::getResourceModel('catalog/category_collection'); /** @var $categories Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
             $categories
                 ->addPathFilter($storeRootCategoryPath)
-                ->setProductStoreId($storeId)
                 ->addNameToResult()
                 ->addUrlRewriteToResult()
                 ->addIsActiveFilter()
-                ->setLoadProductCount(TRUE)
                 ->setStoreId($storeId)
                 ->addAttributeToSelect('image')
                 ->addFieldToFilter('level', array('gt' => 1));
@@ -278,6 +291,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                         if ( ! $this->isCategoryActive($category->getId(), $storeId)) {
                             continue;
                         }
+                        $this->addCategoryProductCount($category);
                         array_push($indexData, $this->getCategoryJSON($category));
                         if (count($indexData) >= self::BATCH_SIZE) {
                             $indexer->addObjects($indexData);
