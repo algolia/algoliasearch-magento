@@ -27,6 +27,18 @@ class Algolia_Algoliasearch_Model_Observer
     }
 
     /**
+     * Delete store index
+     *
+     * @param mixed $storeId
+     * @return Algolia_Algoliasearch_Model_Observer
+     */
+    public function deleteStoreIndex($storeId)
+    {
+        Mage::helper('algoliasearch')->deleteStoreIndex($storeId);
+        return $this;
+    }
+
+    /**
      * @return Algolia_Algoliasearch_Helper_Data
      */
     public function getHelper()
@@ -62,10 +74,10 @@ class Algolia_Algoliasearch_Model_Observer
 
         if (is_null($storeId) && is_null($entityId)) {
             foreach (Mage::app()->getStores() as $store) { /** @var $store Mage_Core_Model_Store */
-                $this->getStoreIndex($store)->clearIndex();
+                $this->deleteStoreIndex($store->getId());
             }
         } elseif (is_numeric($storeId) && is_null($entityId)) {
-            $this->getStoreIndex($storeId)->clearIndex();
+            $this->deleteStoreIndex($storeId);
         } elseif ( ! empty($entityId)) {
             $entityIds = (array) $entityId;
             if (is_numeric($storeId)) {

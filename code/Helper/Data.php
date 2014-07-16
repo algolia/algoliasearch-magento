@@ -23,6 +23,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     private static $_categoryNames;
     private static $_activeCategories;
+    private static $_rootCategoryId = -1;
 
     /**
      * Predefined Magento product attributes that are used to prepare data for indexing
@@ -71,9 +72,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->getClient()->listIndexes();
     }
 
-    public function deleteIndex($index)
+    public function deleteStoreIndex($storeId = NULL)
     {
-        return $this->getClient()->deleteIndex($index);
+        return $this->getClient()->deleteIndex($this->getIndexName($storeId));
     }
 
     public function query($index, $q, $params)
@@ -154,7 +155,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $categories = array();
         foreach ($this->getProductActiveCategories($product) as $categoryId) {
-            array_push($categories, $this->getCategoryName($categoryId, $product->getStoreId()));
+            if ($categoryName = $this->getCategoryName($categoryId, $product->getStoreId())) {
+                array_push($categories, $categoryName);
+            }
         }
         $imageUrl = NULL;
         $thumbnailUrl = NULL;
@@ -242,9 +245,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, FALSE);
 
         try {
+            $storeRootCategoryPath = sprintf('%d/%d', $this->getRootCategoryId(), Mage::app()->getStore($storeId)->getRootCategoryId());
             $indexer = $this->getStoreIndex($storeId);
             $categories = Mage::getResourceModel('catalog/category_collection'); /** @var $categories Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
             $categories
+                ->addPathFilter($storeRootCategoryPath)
                 ->setProductStoreId($storeId)
                 ->addNameToResult()
                 ->addUrlRewriteToResult()
@@ -494,7 +499,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $isActive = TRUE;
             $parentCategoryIds = explode('/', $path);
             // Exclude root category
-            if (count($parentCategoryIds) === 2) {
+            if (count($parentCategoryIds) <= 2) {
                 return FALSE;
             }
             // Remove root category
@@ -532,6 +537,23 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             }
         }
         return $activeCategories;
+    }
+
+    /**
+     * Retrieve root category id
+     *
+     * @return int
+     */
+    public function getRootCategoryId()
+    {
+        if (-1 === self::$_rootCategoryId) {
+            $collection = Mage::getResourceModel('catalog/category_collection');
+            $collection->addFieldToFilter('parent_id', 0);
+            $collection->getSelect()->limit(1);
+            $rootCategory = $collection->getFirstItem();
+            self::$_rootCategoryId = $rootCategory->getId();
+        }
+        return self::$_rootCategoryId;
     }
 
     /*************************/
