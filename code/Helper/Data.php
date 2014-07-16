@@ -23,6 +23,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     private static $_categoryNames;
     private static $_activeCategories;
+    private static $_rootCategoryId = -1;
 
     /**
      * Predefined Magento product attributes that are used to prepare data for indexing
@@ -71,9 +72,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->getClient()->listIndexes();
     }
 
-    public function deleteIndex($index)
+    public function deleteStoreIndex($storeId = NULL)
     {
-        return $this->getClient()->deleteIndex($index);
+        return $this->getClient()->deleteIndex($this->getIndexName($storeId));
     }
 
     public function query($index, $q, $params)
@@ -106,8 +107,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             array_push($attributesToIndex, $attribute->getAttributeCode());
         }
         $indexSettings = array(
-            'attributesToIndex' => $attributesToIndex,
-            'customRanking' => array('desc(product_count)')
+            'attributesToIndex'    => $attributesToIndex,
+            'customRanking'        => array('desc(product_count)'),
+            'minWordSizefor1Typo'  => 5,
+            'minWordSizefor2Typos' => 10,
         );
         return $indexSettings;
     }
@@ -154,7 +157,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $categories = array();
         foreach ($this->getProductActiveCategories($product) as $categoryId) {
-            array_push($categories, $this->getCategoryName($categoryId, $product->getStoreId()));
+            if ($categoryName = $this->getCategoryName($categoryId, $product->getStoreId())) {
+                array_push($categories, $categoryName);
+            }
         }
         $imageUrl = NULL;
         $thumbnailUrl = NULL;
@@ -227,6 +232,21 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * Adding product count when load collection is incorrect.
+     * The method applies the same limitation as on frontend to get correct product count for the category in the specified store.
+     * Product collection will not be loaded so this solution is fast.
+     *
+     * @param Mage_Catalog_Model_Category $category
+     * @return Algolia_Algoliasearch_Helper_Data
+     */
+    public function addCategoryProductCount(Mage_Catalog_Model_Category $category)
+    {
+        $productCollection = $category->getProductCollection(); /** @var $productCollection Mage_Catalog_Model_Resource_Product_Collection */
+        $category->setProductCount($productCollection->addMinimalPrice()->count());
+        return $this;
+    }
+
+    /**
      * Rebuild store category index
      *
      * @param mixed          $storeId
@@ -242,14 +262,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, FALSE);
 
         try {
+            $storeRootCategoryPath = sprintf('%d/%d', $this->getRootCategoryId(), Mage::app()->getStore($storeId)->getRootCategoryId());
             $indexer = $this->getStoreIndex($storeId);
             $categories = Mage::getResourceModel('catalog/category_collection'); /** @var $categories Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
             $categories
-                ->setProductStoreId($storeId)
+                ->addPathFilter($storeRootCategoryPath)
                 ->addNameToResult()
                 ->addUrlRewriteToResult()
                 ->addIsActiveFilter()
-                ->setLoadProductCount(TRUE)
                 ->setStoreId($storeId)
                 ->addAttributeToSelect('image')
                 ->addFieldToFilter('level', array('gt' => 1));
@@ -271,6 +291,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                         if ( ! $this->isCategoryActive($category->getId(), $storeId)) {
                             continue;
                         }
+                        $this->addCategoryProductCount($category);
                         array_push($indexData, $this->getCategoryJSON($category));
                         if (count($indexData) >= self::BATCH_SIZE) {
                             $indexer->addObjects($indexData);
@@ -494,7 +515,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $isActive = TRUE;
             $parentCategoryIds = explode('/', $path);
             // Exclude root category
-            if (count($parentCategoryIds) === 2) {
+            if (count($parentCategoryIds) <= 2) {
                 return FALSE;
             }
             // Remove root category
@@ -532,6 +553,23 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             }
         }
         return $activeCategories;
+    }
+
+    /**
+     * Retrieve root category id
+     *
+     * @return int
+     */
+    public function getRootCategoryId()
+    {
+        if (-1 === self::$_rootCategoryId) {
+            $collection = Mage::getResourceModel('catalog/category_collection');
+            $collection->addFieldToFilter('parent_id', 0);
+            $collection->getSelect()->limit(1);
+            $rootCategory = $collection->getFirstItem();
+            self::$_rootCategoryId = $rootCategory->getId();
+        }
+        return self::$_rootCategoryId;
     }
 
     /*************************/
