@@ -109,8 +109,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $indexSettings = array(
             'attributesToIndex'    => $attributesToIndex,
             'customRanking'        => array('desc(product_count)'),
-            'minWordSizefor1Typo'  => 10,
-            'minWordSizefor2Typos' => 20,
+            'minWordSizefor1Typo'  => 5,
+            'minWordSizefor2Typos' => 10,
         );
         return $indexSettings;
     }
