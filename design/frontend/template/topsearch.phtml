@@ -22,7 +22,7 @@
             var searchQuery = '';
             var searchTimeoutId = null;
 
-            $search.observe('keyup', algoliaSearch).observe('blur', function() {
+            $search.observe('keyup', algoliaSearch).observe('focus', algoliaSearch).observe('blur', function() {
                 setTimeout(function() {
                     $('search_autocomplete_categories').update('');
                     $('search_autocomplete_products').update('');
