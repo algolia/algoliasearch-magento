@@ -256,8 +256,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function rebuildStoreCategoryIndex($storeId, $categoryIds = NULL)
     {
-        $appEmulation = Mage::getSingleton('core/app_emulation');
-        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
         $oldIsFlatEnabled = Mage::getStoreConfigFlag(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $storeId);
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, FALSE);
 
@@ -291,6 +289,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                         if ( ! $this->isCategoryActive($category->getId(), $storeId)) {
                             continue;
                         }
+                        $category->setStoreId($storeId);
                         $this->addCategoryProductCount($category);
                         array_push($indexData, $this->getCategoryJSON($category));
                         if (count($indexData) >= self::BATCH_SIZE) {
@@ -311,12 +310,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
         catch (Exception $e)
         {
-            $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
             Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $oldIsFlatEnabled);
             throw $e;
         }
 
-        $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $oldIsFlatEnabled);
     }
 
@@ -336,8 +333,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function rebuildStoreProductIndex($storeId, $productIds = NULL, $defaultData = NULL)
     {
-        $appEmulation = Mage::getSingleton('core/app_emulation');
-        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
+        $oldStoreId = Mage::app()->getStore()->getId();
+        Mage::app()->setCurrentStore($storeId);
         $oldUseProductFlat = Mage::getStoreConfigFlag(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $storeId);
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, FALSE);
 
@@ -345,6 +342,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $indexer = $this->getStoreIndex($storeId);
             $products = Mage::getResourceModel('catalog/product_collection'); /** @var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
             $products
+                ->setStoreId($storeId)
                 ->addStoreFilter($storeId)
                 ->setVisibility(Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds())
                 ->addFinalPrice()
@@ -387,12 +385,12 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
         catch (Exception $e)
         {
-            $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
+            Mage::app()->setCurrentStore($oldStoreId);
             Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $oldUseProductFlat);
             throw $e;
         }
 
-        $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
+        Mage::app()->setCurrentStore($oldStoreId);
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $oldUseProductFlat);
     }
 
