@@ -38,7 +38,7 @@
             function performSearch() {
                 if (searchQuery.length >= <?php echo $algoliaSearchHelper->getMinimalQueryLength() ?> && searchQuery.lastIndexOf(' ') != searchQuery.length - 1) {
                     algolia.startQueriesBatch();
-                    var queryArguments = {hitsPerPage: <?php echo $algoliaSearchHelper->getNbProductSuggestions(); ?>, tagFilters: '(product,category)' };
+                    var queryArguments = {hitsPerPage: <?php echo $algoliaSearchHelper->getNbSuggestions(); ?>, tagFilters: '(product,category)' };
                     queryArguments.attributesToRetrieve = <?php echo json_encode($algoliaSearchHelper->getAttributesToRetrieve()) ?>;
                     algolia.addQueryInBatch('<?php echo $algoliaSearchHelper->getIndexName() ?>', searchQuery, queryArguments);
                     algolia.sendQueriesBatch(algoliaSearchCallback);
@@ -74,7 +74,7 @@
                     if (html === '') {
                         html += '<div class="algoliasearch-autocomplete-title"><?php echo $this->__('Categories') ?></div>';
                     }
-                    html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' + 
+                    html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' +
                         (hit.image_url ? '<div class="thumb"><img src="' + hit.image_url + '" /></div>' : '') +
                         '<div class="info">' +
                             hit._highlightResult.name.value +
@@ -91,7 +91,7 @@
                     if (html === '') {
                         html += '<div class="algoliasearch-autocomplete-title"><?php echo $this->__('Products') ?></div>';
                     }
-                    html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' + 
+                    html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' +
                         (hit.thumbnail_url ? '<div class="thumb"><img src="' + hit.thumbnail_url + '" /></div>' : '') +
                         '<div class="info">' +
                             hit._highlightResult.name.value +

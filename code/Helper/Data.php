@@ -9,8 +9,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     const XML_PATH_MINIMAL_QUERY_LENGTH        = 'algoliasearch/ui/minimal_query_length';
     const XML_PATH_SEARCH_DELAY                = 'algoliasearch/ui/search_delay';
-    const XML_PATH_NUMBER_SUGGESTIONS_PRODUCT  = 'algoliasearch/ui/number_suggestions_product';
-    const XML_PATH_NUMBER_SUGGESTIONS_CATEGORY = 'algoliasearch/ui/number_suggestions_category';
+    const XML_PATH_NUMBER_SUGGESTIONS          = 'algoliasearch/ui/number_suggestions';
 
     const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED      = 'algoliasearch/settings/is_enabled';
     const XML_PATH_IS_POPUP_ENABLED               = 'algoliasearch/settings/is_popup_enabled';
@@ -594,14 +593,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfig(self::XML_PATH_INDEX_PREFIX, $storeId);
     }
 
-    public function getNbProductSuggestions($storeId = NULL)
+    public function getNbSuggestions($storeId = NULL)
     {
-        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_SUGGESTIONS_PRODUCT, $storeId);
-    }
-
-    public function getNbCategorySuggestions($storeId = NULL)
-    {
-        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_SUGGESTIONS_CATEGORY, $storeId);
+        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_SUGGESTIONS, $storeId);
     }
 
     public function getMinimalQueryLength($storeId = NULL)

@@ -88,38 +88,31 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <number_suggestions_product translate="label">
-                            <label>Number of product suggestions</label>
+                        <number_suggestions translate="label comment">
+                            <label>Number of suggestions</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </number_suggestions_product>
-                        <number_suggestions_category translate="label">
-                            <label>Number of category suggestions</label>
+                            <comment>Default value is 5.</comment>
+                        </number_suggestions>
+                        <minimal_query_length translate="label comment">
+                            <label>Minimal query length</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </number_suggestions_category>
-                        <minimal_query_length translate="label">
-                            <label>Minimal query length</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
+                            <comment>Default value is 2.</comment>
                         </minimal_query_length>
                         <search_delay translate="label comment">
                             <label>Search Delay</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
-                            <sort_order>40</sort_order>
+                            <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
