@@ -144,4 +144,42 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
     {
         return $this->_getSearchableAttributes($backendType);
     }
+
+    /**
+     * Retrieve attribute source value for search
+     *
+     * @param string $attributeCode
+     * @param mixed $value
+     * @param int $storeId
+     * @param null|string $entity
+     * @return mixed
+     */
+    public function getAttributeValue($attributeCode, $value, $storeId, $entity = 'catalog_category')
+    {
+        $attribute = Mage::getSingleton('eav/config')->getAttribute($entity, $attributeCode);
+        if ( ! $attribute instanceof Mage_Eav_Model_Entity_Attribute_Abstract) {
+            return NULL;
+        }
+
+        if ($attribute->usesSource()) {
+            $attribute->setStoreId($storeId);
+            $value = $attribute->getSource()->getOptionText($value);
+        }
+        if ($attribute->getBackendType() == 'datetime') {
+            $value = $this->_getStoreDate($storeId, $value);
+        }
+
+        $inputType = $attribute->getFrontend()->getInputType();
+        if ($inputType == 'price') {
+            $value = Mage::app()->getStore($storeId)->roundPrice($value);
+        }
+
+        if (is_array($value)) {
+            $value = implode($this->_separator, $value);
+        } elseif (empty($value) && ($inputType == 'select' || $inputType == 'multiselect')) {
+            return NULL;
+        }
+
+        return preg_replace("#\s+#siu", ' ', trim(strip_tags($value)));
+    }
 }
