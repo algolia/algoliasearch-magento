@@ -71,13 +71,25 @@
                             <show_in_store>1</show_in_store>
                         </search_only_api_key>
                         <index_prefix translate="label">
-                            <label>Index name prefix</label>
+                            <label>Index Name Prefix</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>60</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </index_prefix>
+                        <category_additional_attributes translate="label comment">
+                            <label>Category Additional Attributes</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>algoliasearch/system_config_source_category_attributes</source_model>
+                            <backend_model>algoliasearch/system_config_backend_category_attributes</backend_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Additional category attributes for indexing. Category name, URL, image and product count will be indexed by default. Internal category attributes are excluded from the list.</comment>
+                            <depends><is_enabled>1</is_enabled></depends>
+                        </category_additional_attributes>
                     </fields>
                 </settings>
                 <ui translate="label">
@@ -88,38 +100,31 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <number_suggestions_product translate="label">
-                            <label>Number of product suggestions</label>
+                        <number_suggestions translate="label comment">
+                            <label>Number of suggestions</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </number_suggestions_product>
-                        <number_suggestions_category translate="label">
-                            <label>Number of category suggestions</label>
+                            <comment>Default value is 5.</comment>
+                        </number_suggestions>
+                        <minimal_query_length translate="label comment">
+                            <label>Minimal query length</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </number_suggestions_category>
-                        <minimal_query_length translate="label">
-                            <label>Minimal query length</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
+                            <comment>Default value is 2.</comment>
                         </minimal_query_length>
                         <search_delay translate="label comment">
                             <label>Search Delay</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
-                            <sort_order>40</sort_order>
+                            <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>

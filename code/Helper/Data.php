@@ -7,23 +7,22 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const BATCH_SIZE           = 100;
     const COLLECTION_PAGE_SIZE = 100;
 
-    const XML_PATH_MINIMAL_QUERY_LENGTH        = 'algoliasearch/ui/minimal_query_length';
-    const XML_PATH_SEARCH_DELAY                = 'algoliasearch/ui/search_delay';
-    const XML_PATH_NUMBER_SUGGESTIONS_PRODUCT  = 'algoliasearch/ui/number_suggestions_product';
-    const XML_PATH_NUMBER_SUGGESTIONS_CATEGORY = 'algoliasearch/ui/number_suggestions_category';
+    const XML_PATH_MINIMAL_QUERY_LENGTH = 'algoliasearch/ui/minimal_query_length';
+    const XML_PATH_SEARCH_DELAY         = 'algoliasearch/ui/search_delay';
+    const XML_PATH_NUMBER_SUGGESTIONS   = 'algoliasearch/ui/number_suggestions';
 
-    const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED      = 'algoliasearch/settings/is_enabled';
-    const XML_PATH_IS_POPUP_ENABLED               = 'algoliasearch/settings/is_popup_enabled';
-    const XML_PATH_APPLICATION_ID                 = 'algoliasearch/settings/application_id';
-    const XML_PATH_API_KEY                        = 'algoliasearch/settings/api_key';
-    const XML_PATH_SEARCH_ONLY_API_KEY            = 'algoliasearch/settings/search_only_api_key';
-    const XML_PATH_INDEX_PREFIX                   = 'algoliasearch/settings/index_prefix';
-    const XML_PATH_PRODUCT_ATTRIBUTES_TO_INDEX    = 'algoliasearch/settings/product_attributes_to_index';
-    const XML_PATH_PRODUCT_ATTRIBUTES_TO_RETRIEVE = 'algoliasearch/settings/product_attributes_to_retrieve';
+    const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED = 'algoliasearch/settings/is_enabled';
+    const XML_PATH_IS_POPUP_ENABLED          = 'algoliasearch/settings/is_popup_enabled';
+    const XML_PATH_APPLICATION_ID            = 'algoliasearch/settings/application_id';
+    const XML_PATH_API_KEY                   = 'algoliasearch/settings/api_key';
+    const XML_PATH_SEARCH_ONLY_API_KEY       = 'algoliasearch/settings/search_only_api_key';
+    const XML_PATH_INDEX_PREFIX              = 'algoliasearch/settings/index_prefix';
+    const XML_PATH_CATEGORY_ATTRIBUTES       = 'algoliasearch/settings/category_additional_attributes';
 
     private static $_categoryNames;
     private static $_activeCategories;
     private static $_rootCategoryId = -1;
+    private static $_categoryAttributes;
 
     /**
      * Predefined Magento product attributes that are used to prepare data for indexing
@@ -95,16 +94,19 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function setIndexSettings($storeId = NULL)
     {
         $index = $this->getStoreIndex($storeId);
-        $index->setSettings($this->getIndexSettings());
+        $index->setSettings($this->getIndexSettings($storeId));
         return $index;
     }
 
-    public function getIndexSettings()
+    public function getIndexSettings($storeId)
     {
         $searchableAttributes = Mage::getResourceModel('algoliasearch/fulltext')->getSearchableAttributes();
         $attributesToIndex = array('name', 'path', 'categories', 'unordered(description)');
         foreach ($searchableAttributes as $attribute) {
             array_push($attributesToIndex, $attribute->getAttributeCode());
+        }
+        foreach ($this->getCategoryAdditionalAttributes($storeId) as $attributeCode) {
+            array_push($attributesToIndex, $attributeCode);
         }
         $indexSettings = array(
             'attributesToIndex'    => $attributesToIndex,
@@ -118,6 +120,32 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     private function getClient()
     {
         return new \AlgoliaSearch\Client($this->getApplicationID(), $this->getAPIKey());
+    }
+
+    /**
+     * Return array of all category attributes that can be indexed (all except internal attributes and default attributes for indexing)
+     *
+     * @return array
+     */
+    public function getAllCategoryAttributes()
+    {
+        if (is_null(self::$_categoryAttributes)) {
+            self::$_categoryAttributes = array();
+            $config = Mage::getSingleton('eav/config'); /** @var $config Mage_Eav_Model_Config */
+            $allAttributes = $config->getEntityAttributeCodes('catalog_category');
+            $excludedAttributes = array(
+                'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
+                'custom_design', 'custom_design_from', 'custom_design_to', 'custom_layout_update', 'custom_use_parent_settings',
+                'default_sort_by', 'display_mode', 'filter_price_range', 'global_position', 'image', 'include_in_menu', 'is_active',
+                'is_always_include_in_menu', 'is_anchor', 'landing_page', 'level', 'lower_cms_block', 'name',
+                'page_layout', 'path', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
+                'visible_in_menu');
+            $categoryAttributes = array_diff($allAttributes, $excludedAttributes);
+            foreach ($categoryAttributes as $attributeCode) {
+                self::$_categoryAttributes[$attributeCode] = $config->getAttribute('catalog_category', $attributeCode)->getFrontendLabel();
+            }
+        }
+        return self::$_categoryAttributes;
     }
 
     /************/
@@ -203,13 +231,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getCategoryJSON(Mage_Catalog_Model_Category $category)
     {
-        $category->getUrlInstance()->setStore($category->getStoreId());
+        $storeId = $category->getStoreId();
+        $category->getUrlInstance()->setStore($storeId);
         $path = '';
         foreach ($category->getPathIds() as $categoryId) {
             if ($path != '') {
                 $path .= ' / ';
             }
-            $path .= $this->getCategoryName($categoryId, $category->getStoreId());
+            $path .= $this->getCategoryName($categoryId, $storeId);
         }
         $imageUrl = NULL;
         try {
@@ -228,6 +257,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         if ( ! empty($imageUrl)) {
             $data['image_url'] = $imageUrl;
         }
+        foreach ($this->getCategoryAdditionalAttributes($storeId) as $attributeCode) {
+            $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attributeCode, $category->getData($attributeCode), $storeId, Mage_Catalog_Model_Category::ENTITY);
+            if ($value) {
+                $data[$attributeCode] = $value;
+            }
+        }
+
         return $data;
     }
 
@@ -256,8 +292,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function rebuildStoreCategoryIndex($storeId, $categoryIds = NULL)
     {
-        $appEmulation = Mage::getSingleton('core/app_emulation');
-        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
         $oldIsFlatEnabled = Mage::getStoreConfigFlag(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $storeId);
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, FALSE);
 
@@ -271,7 +305,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 ->addUrlRewriteToResult()
                 ->addIsActiveFilter()
                 ->setStoreId($storeId)
-                ->addAttributeToSelect('image')
+                ->addAttributeToSelect(array_merge(array('name'), $this->getCategoryAdditionalAttributes($storeId)))
                 ->addFieldToFilter('level', array('gt' => 1));
             if ($categoryIds) {
                 $categories->addFieldToFilter('entity_id', array('in' => $categoryIds));
@@ -291,6 +325,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                         if ( ! $this->isCategoryActive($category->getId(), $storeId)) {
                             continue;
                         }
+                        $category->setStoreId($storeId);
                         $this->addCategoryProductCount($category);
                         array_push($indexData, $this->getCategoryJSON($category));
                         if (count($indexData) >= self::BATCH_SIZE) {
@@ -311,12 +346,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
         catch (Exception $e)
         {
-            $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
             Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $oldIsFlatEnabled);
             throw $e;
         }
 
-        $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $oldIsFlatEnabled);
     }
 
@@ -336,8 +369,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function rebuildStoreProductIndex($storeId, $productIds = NULL, $defaultData = NULL)
     {
-        $appEmulation = Mage::getSingleton('core/app_emulation');
-        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
+        $oldStoreId = Mage::app()->getStore()->getId();
+        Mage::app()->setCurrentStore($storeId);
         $oldUseProductFlat = Mage::getStoreConfigFlag(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $storeId);
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, FALSE);
 
@@ -345,6 +378,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $indexer = $this->getStoreIndex($storeId);
             $products = Mage::getResourceModel('catalog/product_collection'); /** @var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
             $products
+                ->setStoreId($storeId)
                 ->addStoreFilter($storeId)
                 ->setVisibility(Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds())
                 ->addFinalPrice()
@@ -387,12 +421,12 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
         catch (Exception $e)
         {
-            $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
+            Mage::app()->setCurrentStore($oldStoreId);
             Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $oldUseProductFlat);
             throw $e;
         }
 
-        $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
+        Mage::app()->setCurrentStore($oldStoreId);
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $oldUseProductFlat);
     }
 
@@ -596,14 +630,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfig(self::XML_PATH_INDEX_PREFIX, $storeId);
     }
 
-    public function getNbProductSuggestions($storeId = NULL)
+    public function getCategoryAdditionalAttributes($storeId = NULL)
     {
-        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_SUGGESTIONS_PRODUCT, $storeId);
+        return explode(',', Mage::getStoreConfig(self::XML_PATH_CATEGORY_ATTRIBUTES, $storeId));
     }
 
-    public function getNbCategorySuggestions($storeId = NULL)
+    public function getNbSuggestions($storeId = NULL)
     {
-        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_SUGGESTIONS_CATEGORY, $storeId);
+        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_SUGGESTIONS, $storeId);
     }
 
     public function getMinimalQueryLength($storeId = NULL)
