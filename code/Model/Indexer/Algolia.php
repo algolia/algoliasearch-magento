@@ -327,6 +327,14 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                             break;
                         }
                     }
+                    if ( ! $rebuildIndex) {
+                        foreach (Mage::helper('algoliasearch')->getCategoryAdditionalAttributes($category->getStoreId()) as $attribute) {
+                            if ($category->dataHasChangedFor($attribute)) {
+                                $rebuildIndex = TRUE;
+                                break;
+                            }
+                        }
+                    }
                     if ($rebuildIndex) {
                         $event->addNewData('catalogsearch_update_category_id', array($category->getId()));
                     }
