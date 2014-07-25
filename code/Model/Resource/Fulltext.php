@@ -175,11 +175,16 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
         }
 
         if (is_array($value)) {
-            $value = implode($this->_separator, $value);
+            return array_map(array($this, '_cleanData'), $value);
         } elseif (empty($value) && ($inputType == 'select' || $inputType == 'multiselect')) {
             return NULL;
         }
 
+        return $this->_cleanData($value);
+    }
+
+    protected function _cleanData($value)
+    {
         return preg_replace("#\s+#siu", ' ', trim(strip_tags($value)));
     }
 }
