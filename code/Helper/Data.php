@@ -52,6 +52,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     static private $_predefinedSpecialAttributes = array('_tags');
 
+    /**
+     * Data prefix to retrieve Algolia search specific data for the entity.
+     *
+     * @var string
+     */
+    private $_dataPrefix = 'algolia_';
+
     public function getTopSearchTemplate()
     {
         return 'algoliasearch/topsearch.phtml';
@@ -258,7 +265,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $data['image_url'] = $imageUrl;
         }
         foreach ($this->getCategoryAdditionalAttributes($storeId) as $attributeCode) {
-            $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attributeCode, $category->getData($attributeCode), $storeId, Mage_Catalog_Model_Category::ENTITY);
+            $value = $category->hasData($this->_dataPrefix.$attributeCode)
+                ? $category->getData($this->_dataPrefix.$attributeCode)
+                : $category->getData($attributeCode);
+            $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attributeCode, $value, $storeId, Mage_Catalog_Model_Category::ENTITY);
             if ($value) {
                 $data[$attributeCode] = $value;
             }
