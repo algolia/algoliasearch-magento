@@ -190,6 +190,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getProductJSON(Mage_Catalog_Model_Product $product, $defaultData = array())
     {
+        Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'default_data' => $defaultData));
+
         $categories = array();
         foreach ($this->getProductActiveCategories($product) as $categoryId) {
             if ($categoryName = $this->getCategoryName($categoryId, $product->getStoreId())) {
@@ -238,6 +240,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getCategoryJSON(Mage_Catalog_Model_Category $category)
     {
+        Mage::dispatchEvent('algolia_category_index_before', array('category' => $category));
+
         $storeId = $category->getStoreId();
         $category->getUrlInstance()->setStore($storeId);
         $path = '';
