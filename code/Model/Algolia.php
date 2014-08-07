@@ -26,7 +26,6 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
     public function rebuildProductIndex($storeId = NULL, $productIds = NULL)
     {
         $this->getResource()->rebuildProductIndex($storeId, $productIds);
-        $this->resetSearchResults();
         return $this;
     }
 
@@ -40,7 +39,6 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
     public function rebuildCategoryIndex($storeId = NULL, $categoryIds = NULL)
     {
         $this->getResource()->rebuildCategoryIndex($storeId, $categoryIds);
-        $this->resetSearchResults();
         return $this;
     }
 
@@ -54,7 +52,6 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
     public function cleanProductIndex($storeId = NULL, $productId = NULL)
     {
         $this->getResource()->cleanIndex(self::ENTITY_PRODUCT, $storeId, $productId);
-        $this->resetSearchResults();
         return $this;
     }
 
@@ -68,7 +65,6 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
     public function cleanCategoryIndex($storeId = NULL, $categoryId = NULL)
     {
         $this->getResource()->cleanIndex(self::ENTITY_CATEGORY, $storeId, $categoryId);
-        $this->resetSearchResults();
         return $this;
     }
 
@@ -80,15 +76,15 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
     public function rebuildIndex()
     {
         foreach (Mage::app()->getStores() as $store) { /** @var $store Mage_Core_Model_Store */
-            Mage::helper('algoliasearch')->setIndexSettings($store->getId());
             if ($store->getIsActive()) {
+                Mage::helper('algoliasearch')->setIndexSettings($store->getId());
                 $this->rebuildCategoryIndex($store->getId());
                 $this->rebuildProductIndex($store->getId());
             } else {
-                $this->cleanCategoryIndex($store->getId());
-                $this->cleanProductIndex($store->getId());
+                Mage::helper('algoliasearch')->deleteStoreIndex($store->getId());
             }
         }
+        $this->resetSearchResults();
         return $this;
     }
 
