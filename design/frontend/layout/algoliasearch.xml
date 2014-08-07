@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
-<layout version="0.1.0">
+<layout>
     <algolia_search_handle>
         <reference name="head">
             <action method="addJs"><script>algoliasearch/algoliasearch.min.js</script></action>
+            <action method="addItem"><type>skin_js</type><script>algoliasearch/livesearch.js</script></action>
             <action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>
         </reference>
         <reference name="top.search">
-            <action method="setTemplate"><template helper="algoliasearch/getTopSearchTemplate" /></action>
+            <action method="setTemplate"><template>algoliasearch/topsearch.phtml</template></action>
         </reference>
     </algolia_search_handle>
 </layout> 

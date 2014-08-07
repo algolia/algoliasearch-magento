@@ -8,5 +8,5 @@ Algolia_Algoliasearch.xml                   app/etc/modules/Algolia_Algoliasearc
 code                                        app/code/community/Algolia/Algoliasearch/
 design/frontend/layout/algoliasearch.xml    app/design/frontend/base/default/layout/algoliasearch.xml
 design/frontend/template                    app/design/frontend/base/default/template/algoliasearch
-css                                         skin/frontend/base/default/algoliasearch
+skin                                        skin/frontend/base/default/algoliasearch
 js                                          js/algoliasearch
