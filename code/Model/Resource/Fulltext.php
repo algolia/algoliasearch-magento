@@ -37,33 +37,34 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
             return parent::prepareResult($object, $queryText, $query);
         }
 
-        $adapter = $this->_getWriteAdapter();
-
         if (!$query->getIsProcessed() || true) {
             $answer = Mage::helper('algoliasearch')->query(Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getId()), $queryText, array(
                 'hitsPerPage' => 1000, // retrieve all the hits (hard limit is 1000)
-                'attributesToRetrieve' => array(),
+                'attributesToRetrieve' => 'objectID',
+                'attributesToHighlight' => '',
+                'attributesToSnippet' => '',
                 'tagFilters' => 'product'
             ));
 
-            $i = 0;
-            foreach ($answer['hits'] as $hit) {
+            $data = array();
+            foreach ($answer['hits'] as $i => $hit) {
                 $objectIdParts = preg_split('/_/', $hit['objectID']);
                 $productId = isset($objectIdParts[1]) ? $objectIdParts[1] : NULL;
                 if ($productId) {
-                    $sql = sprintf("INSERT INTO `" . $this->getTable('catalogsearch/result') . "`"
-                        . " (`query_id`, `product_id`, `relevance`) VALUES"
-                        . " (%d, %d, %d)"
-                        . " ON DUPLICATE KEY UPDATE `relevance`=VALUES(`relevance`)",
-                        $query->getId(),
-                        $productId,
-                        1000 - $i // relevance based on position
+                    $data[] = array(
+                        'query_id' => $query->getId(),
+                        'product_id' => $productId,
+                        'relevance' => 1000 - $i,
                     );
-                    $adapter->query($sql);
-                    ++$i;
                 }
             }
-
+            if ($data) {
+                $this->_getWriteAdapter()->insertOnDuplicate(
+                    $this->getTable('catalogsearch/result'),
+                    $data,
+                    array('relevance')
+                );
+            }
             $query->setIsProcessed(1);
         }
 

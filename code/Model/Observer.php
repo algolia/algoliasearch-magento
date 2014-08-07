@@ -113,8 +113,8 @@ class Algolia_Algoliasearch_Model_Observer
         $categoryIds = $event->getCategoryIds();
 
         if (is_null($storeId) && ! empty($categoryIds)) {
-            $storeIds = array_keys(Mage::app()->getStores());
-            foreach ($storeIds as $storeId) {
+            foreach (Mage::app()->getStores() as $storeId => $store) {
+                if ( ! $store->getIsActive()) continue;
                 $this->rebuildStoreCategoryIndex($storeId, $categoryIds);
             }
         } else {
@@ -147,8 +147,8 @@ class Algolia_Algoliasearch_Model_Observer
         $productIds = $event->getProductIds();
 
         if (is_null($storeId) && ! empty($productIds)) {
-            $storeIds = array_keys(Mage::app()->getStores());
-            foreach ($storeIds as $storeId) {
+            foreach (Mage::app()->getStores() as $storeId => $store) {
+                if ( ! $store->getIsActive()) continue;
                 $this->rebuildStoreProductIndex($storeId, $productIds);
             }
         } else {

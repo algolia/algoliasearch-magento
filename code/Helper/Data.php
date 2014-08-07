@@ -59,11 +59,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     private $_dataPrefix = 'algolia_';
 
-    public function getTopSearchTemplate()
-    {
-        return 'algoliasearch/topsearch.phtml';
-    }
-
     /**
      * @param string $name
      * @return \AlgoliaSearch\Index
