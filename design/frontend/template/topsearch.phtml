@@ -40,6 +40,7 @@
                     algolia.startQueriesBatch();
                     var queryArguments = {hitsPerPage: <?php echo $algoliaSearchHelper->getNbSuggestions(); ?>, tagFilters: '(product,category)' };
                     queryArguments.attributesToRetrieve = <?php echo json_encode($algoliaSearchHelper->getAttributesToRetrieve()) ?>;
+                    queryArguments.attributesToHighlight = 'name';
                     algolia.addQueryInBatch('<?php echo $algoliaSearchHelper->getIndexName() ?>', searchQuery, queryArguments);
                     algolia.sendQueriesBatch(algoliaSearchCallback);
                 }
