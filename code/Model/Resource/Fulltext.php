@@ -37,8 +37,6 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
             return parent::prepareResult($object, $queryText, $query);
         }
 
-        $adapter = $this->_getWriteAdapter();
-
         if (!$query->getIsProcessed() || true) {
             $answer = Mage::helper('algoliasearch')->query(Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getId()), $queryText, array(
                 'hitsPerPage' => 1000, // retrieve all the hits (hard limit is 1000)
@@ -60,11 +58,13 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
                     );
                 }
             }
-            $this->_getWriteAdapter()->insertOnDuplicate(
-                $this->getTable('catalogsearch/result'),
-                $data,
-                array('relevance')
-            );
+            if ($data) {
+                $this->_getWriteAdapter()->insertOnDuplicate(
+                    $this->getTable('catalogsearch/result'),
+                    $data,
+                    array('relevance')
+                );
+            }
             $query->setIsProcessed(1);
         }
 
