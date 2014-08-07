@@ -42,7 +42,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
         if (!$query->getIsProcessed() || true) {
             $answer = Mage::helper('algoliasearch')->query(Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getId()), $queryText, array(
                 'hitsPerPage' => 1000, // retrieve all the hits (hard limit is 1000)
-                'attributesToRetrieve' => '',
+                'attributesToRetrieve' => 'objectID',
                 'attributesToHighlight' => '',
                 'attributesToSnippet' => '',
                 'tagFilters' => 'product'
