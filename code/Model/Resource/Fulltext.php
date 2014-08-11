@@ -32,43 +32,74 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
      */
     public function prepareResult($object, $queryText, $query)
     {
-        // Fallback to default catalog search if Algolia search is disabled
-        if ( ! $this->_helper->isEnabled()) {
-            return parent::prepareResult($object, $queryText, $query);
-        }
+        try {
+            $this->beginTransaction();
+            if ( ! $this->lockQueryForTransaction($query)) {
+                return $this;
+            }
 
-        if (!$query->getIsProcessed() || true) {
-            $answer = Mage::helper('algoliasearch')->query(Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getId()), $queryText, array(
-                'hitsPerPage' => 1000, // retrieve all the hits (hard limit is 1000)
-                'attributesToRetrieve' => 'objectID',
-                'attributesToHighlight' => '',
-                'attributesToSnippet' => '',
-                'tagFilters' => 'product'
-            ));
+            // Fallback to default catalog search if Algolia search is disabled
+            if ( ! $this->_helper->isEnabled()) {
+                return parent::prepareResult($object, $queryText, $query);
+            }
 
-            $data = array();
-            foreach ($answer['hits'] as $i => $hit) {
-                $objectIdParts = preg_split('/_/', $hit['objectID']);
-                $productId = isset($objectIdParts[1]) ? $objectIdParts[1] : NULL;
-                if ($productId) {
-                    $data[] = array(
-                        'query_id' => $query->getId(),
-                        'product_id' => $productId,
-                        'relevance' => 1000 - $i,
+            if (!$query->getIsProcessed() || true) {
+                $answer = Mage::helper('algoliasearch')->query(Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getId()), $queryText, array(
+                    'hitsPerPage' => 1000, // retrieve all the hits (hard limit is 1000)
+                    'attributesToRetrieve' => 'objectID',
+                    'attributesToHighlight' => '',
+                    'attributesToSnippet' => '',
+                    'tagFilters' => 'product'
+                ));
+
+                $data = array();
+                foreach ($answer['hits'] as $i => $hit) {
+                    $objectIdParts = preg_split('/_/', $hit['objectID']);
+                    $productId = isset($objectIdParts[1]) ? $objectIdParts[1] : NULL;
+                    if ($productId) {
+                        $data[] = array(
+                            'query_id' => $query->getId(),
+                            'product_id' => $productId,
+                            'relevance' => 1000 - $i,
+                        );
+                    }
+                }
+                if ($data) {
+                    $this->_getWriteAdapter()->insertOnDuplicate(
+                        $this->getTable('catalogsearch/result'),
+                        $data,
+                        array('relevance')
                     );
                 }
+                $query->setIsProcessed(1);
             }
-            if ($data) {
-                $this->_getWriteAdapter()->insertOnDuplicate(
-                    $this->getTable('catalogsearch/result'),
-                    $data,
-                    array('relevance')
-                );
-            }
-            $query->setIsProcessed(1);
+
+            $this->commit();
+        } catch (Exception $e) {
+            $this->rollBack();
+            Mage::logException($e);
         }
 
         return $this;
+    }
+
+    /**
+     * Lock query entity for transaction to prevent FK error while updating search results.
+     * Use fulltext resource model instead of query resource model to avoid additional override.
+     *
+     * @param int|Mage_CatalogSearch_Model_Query $queryId
+     * @return bool true if query entity was locked
+     */
+    public function lockQueryForTransaction(Mage_CatalogSearch_Model_Query $queryId)
+    {
+        if ($queryId instanceof Mage_CatalogSearch_Model_Query) {
+            $queryId = $queryId->getId();
+        }
+        $adapter = $this->_getReadAdapter();
+        $select = $adapter->select()->forUpdate(TRUE)
+            ->from(array('query' => $this->getTable('catalogsearch/search_query')), array('query_id'))
+            ->where('query.query_id = ?', $queryId);
+        return ($queryId == $adapter->fetchOne($select));
     }
 
     /**
