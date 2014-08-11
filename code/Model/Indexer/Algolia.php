@@ -321,7 +321,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                     $event->addNewData('catalogsearch_update_category_id', array($movedCategoryId));
                 } else {
                     $rebuildIndex = FALSE;
-                    foreach (self::$_predefinedCategoryAttributes as $attribute) {
+                    foreach (array_merge(self::$_predefinedCategoryAttributes, array('is_active')) as $attribute) {
                         if ($category->dataHasChangedFor($attribute)) {
                             $rebuildIndex = TRUE;
                             break;
