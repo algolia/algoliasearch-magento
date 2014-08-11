@@ -44,13 +44,18 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
             }
 
             if (!$query->getIsProcessed() || true) {
-                $answer = Mage::helper('algoliasearch')->query(Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getId()), $queryText, array(
-                    'hitsPerPage' => 1000, // retrieve all the hits (hard limit is 1000)
-                    'attributesToRetrieve' => 'objectID',
-                    'attributesToHighlight' => '',
-                    'attributesToSnippet' => '',
-                    'tagFilters' => 'product'
-                ));
+                try {
+                    $answer = Mage::helper('algoliasearch')->query(Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getId()), $queryText, array(
+                        'hitsPerPage' => 1000, // retrieve all the hits (hard limit is 1000)
+                        'attributesToRetrieve' => 'objectID',
+                        'attributesToHighlight' => '',
+                        'attributesToSnippet' => '',
+                        'tagFilters' => 'product'
+                    ));
+                } catch (Exception $e) {
+                    Mage::getSingleton('catalog/session')->addError(Mage::helper('algoliasearch')->__('Search failed. Please try again.'));
+                    throw $e;
+                }
 
                 $data = array();
                 foreach ($answer['hits'] as $i => $hit) {
