@@ -188,7 +188,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'default_data' => $defaultData));
 
         $categories = array();
-        foreach ($this->getProductActiveCategories($product) as $categoryId) {
+        foreach ($this->getProductActiveCategories($product, $product->getStoreId()) as $categoryId) {
             if ($categoryName = $this->getCategoryName($categoryId, $product->getStoreId())) {
                 array_push($categories, $categoryName);
             }
@@ -301,8 +301,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function rebuildStoreCategoryIndex($storeId, $categoryIds = NULL)
     {
-        $oldIsFlatEnabled = Mage::getStoreConfigFlag(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $storeId);
-        Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, FALSE);
+        $emulationInfo = $this->startEmulation($storeId);
 
         try {
             $storeRootCategoryPath = sprintf('%d/%d', $this->getRootCategoryId(), Mage::app()->getStore($storeId)->getRootCategoryId());
@@ -355,11 +354,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
         catch (Exception $e)
         {
-            Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $oldIsFlatEnabled);
+            $this->stopEmulation($emulationInfo);
             throw $e;
         }
 
-        Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $oldIsFlatEnabled);
+        $this->stopEmulation($emulationInfo);
     }
 
     /**
@@ -378,10 +377,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function rebuildStoreProductIndex($storeId, $productIds = NULL, $defaultData = NULL)
     {
-        $oldStoreId = Mage::app()->getStore()->getId();
-        Mage::app()->setCurrentStore($storeId);
-        $oldUseProductFlat = Mage::getStoreConfigFlag(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $storeId);
-        Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, FALSE);
+        $emulationInfo = $this->startEmulation($storeId);
 
         try {
             $indexer = $this->getStoreIndex($storeId);
@@ -410,6 +406,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                     $collection->addCategoryIds();
                     $collection->addUrlRewrite();
                     foreach ($collection as $product) { /** @var $product Mage_Catalog_Model_Product */
+                        $product->setStoreId($storeId);
                         $default = isset($defaultData[$product->getId()]) ? $defaultData[$product->getId()] : array();
                         array_push($indexData, $this->getProductJSON($product, $default));
                         if (count($indexData) >= self::BATCH_SIZE) {
@@ -430,13 +427,43 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
         catch (Exception $e)
         {
-            Mage::app()->setCurrentStore($oldStoreId);
-            Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $oldUseProductFlat);
+            $this->stopEmulation($emulationInfo);
             throw $e;
         }
 
-        Mage::app()->setCurrentStore($oldStoreId);
-        Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $oldUseProductFlat);
+        $this->stopEmulation($emulationInfo);
+    }
+
+    /**
+     * Start store emulation. Disable product and category flat catalog.
+     *
+     * @param mixed $storeId
+     * @return Varien_Object
+     */
+    public function startEmulation($storeId)
+    {
+        $info = new Varien_Object;
+        $info->setInitialStoreId(Mage::app()->getStore()->getId());
+        $info->setEmulatedStoreId($storeId);
+        $info->setUseProductFlat(Mage::getStoreConfigFlag(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $storeId));
+        $info->setUseCategoryFlat(Mage::getStoreConfigFlag(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $storeId));
+        Mage::app()->setCurrentStore($storeId);
+        Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, FALSE);
+        Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, FALSE);
+        return $info;
+    }
+
+    /**
+     * Stop store emulation. Restore product and category flat catalog configuration.
+     *
+     * @param Varien_Object $info
+     * @return void
+     */
+    public function stopEmulation($info)
+    {
+        Mage::app()->setCurrentStore($info->getInitialStoreId());
+        Mage::app()->getStore($info->getEmulatedStoreId())->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $info->getUseProductFlat());
+        Mage::app()->getStore($info->getEmulatedStoreId())->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $info->getUseCategoryFlat());
     }
 
     /***********/
