@@ -28,19 +28,22 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
      * @param Mage_CatalogSearch_Model_Fulltext $object
      * @param string $queryText
      * @param Mage_CatalogSearch_Model_Query $query
-     * @return Mage_CatalogSearch_Model_Resource_Fulltext
+     * @return Algolia_Algoliasearch_Model_Resource_Fulltext
      */
     public function prepareResult($object, $queryText, $query)
     {
         try {
             $this->beginTransaction();
             if ( ! $this->lockQueryForTransaction($query)) {
+                $this->commit();
                 return $this;
             }
 
             // Fallback to default catalog search if Algolia search is disabled
             if ( ! $this->_helper->isEnabled()) {
-                return parent::prepareResult($object, $queryText, $query);
+                parent::prepareResult($object, $queryText, $query);
+                $this->commit();
+                return $this;
             }
 
             if (!$query->getIsProcessed() || true) {
