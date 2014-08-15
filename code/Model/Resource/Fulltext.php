@@ -103,6 +103,9 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
         if ($queryId instanceof Mage_CatalogSearch_Model_Query) {
             $queryId = $queryId->getId();
         }
+        if ( ! $queryId) {
+            return FALSE;
+        }
         $adapter = $this->_getReadAdapter();
         $select = $adapter->select()->forUpdate(TRUE)
             ->from(array('query' => $this->getTable('catalogsearch/search_query')), array('query_id'))
