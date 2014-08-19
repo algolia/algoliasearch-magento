@@ -68,20 +68,7 @@
                 <setup>
                     <module>Algolia_Algoliasearch</module>
                 </setup>
-                <connection>
-                    <use>core_setup</use>
-                </connection>
             </algoliasearch_setup>
-            <algoliasearch_read>
-                <connection>
-                    <use>core_read</use>
-                </connection>
-            </algoliasearch_read>
-            <algoliasearch_write>
-                <connection>
-                    <use>core_write</use>
-                </connection>
-            </algoliasearch_write>
         </resources>
         <index>
             <indexer>
