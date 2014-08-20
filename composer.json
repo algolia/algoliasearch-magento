@@ -1,0 +1,10 @@
+{
+    "name":"algolia/algoliasearch-magento",
+    "type":"magento-module",
+    "license":"MIT",
+    "homepage":"https://github.com/aligent/algoliasearch-magento",
+    "description":"Algolia Search for Magento",
+    "require":{
+        "magento-hackathon/magento-composer-installer":"*"
+    }
+}
