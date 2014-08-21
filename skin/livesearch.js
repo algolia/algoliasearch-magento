@@ -38,6 +38,10 @@ AlgoliaLiveSearch.prototype = {
     },
     performSearch: function() {
         var searchQuery = this.searchForm.field.getValue();
+        if (searchQuery === '') {
+            this.options.clearResults && this.options.clearResults.call(this);
+            return;
+        }
         if ( searchQuery.length >= this.options.minLength
           && searchQuery.lastIndexOf(' ') != searchQuery.length - 1
         ) {
