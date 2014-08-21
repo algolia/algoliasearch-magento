@@ -50,26 +50,22 @@ var algoliaLiveSearch = new AlgoliaLiveSearch({
                 }
             }
         });
-        var displayCategories = (categories.length > 0) || (products.length < nbSuggestions);
+        var displayCategories = (categories.length > 0);
         var displayProducts = (products.length > 0) || (categories.length < nbSuggestions);
 
         // Display categories
         if (displayCategories) {
             html = '<div class="algoliasearch-autocomplete-title"><?php echo $this->__('Categories') ?></div>';
-            if (categories.length > 0) {
-                for (i = 0; i < categories.length; ++i) {
-                    hit = categories[i];
-                    html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' +
-                        (hit.image_url ? '<div class="thumb"><img src="' + hit.image_url + '" /></div>' : '') +
-                        '<div class="info">' +
-                        hit._highlightResult.name.value +
-                        ' <small>(' + hit.product_count + ')</small>' +
-                        '</div>' +
-                        '<div class="clearfix"></div>' +
-                        '</a>';
-                }
-            } else {
-                html += '<div><?php echo $this->__('No results.') ?></div>'
+            for (i = 0; i < categories.length; ++i) {
+                hit = categories[i];
+                html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' +
+                    (hit.image_url ? '<div class="thumb"><img src="' + hit.image_url + '" /></div>' : '') +
+                    '<div class="info">' +
+                    hit._highlightResult.name.value +
+                    ' <small>(' + hit.product_count + ')</small>' +
+                    '</div>' +
+                    '<div class="clearfix"></div>' +
+                    '</a>';
             }
             $('search_autocomplete_categories').update(html);
         }
