@@ -59,7 +59,7 @@ Configuration
 
 To setup this module, you'll need an Algolia account. Just sign up [here](http://www.algolia.com/users/sign_up) to create an account and retrieve your credentials.
 
-### Configuration
+### Credentials & Settings
 
 Once the extension is installed, a new **Algolia Search** menu will appear in your **System > Configuration** menu.
 
