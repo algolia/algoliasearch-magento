@@ -185,7 +185,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getProductJSON(Mage_Catalog_Model_Product $product, $defaultData = array())
     {
-        Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'default_data' => $defaultData));
+        $transport = new Varien_Object($defaultData);
+        Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'custom_data' => $transport));
+        $defaultData = $transport->getData();
 
         $categories = array();
         foreach ($this->getProductActiveCategories($product) as $categoryId) {
@@ -221,9 +223,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         if ( ! empty($imageUrl)) {
             $customData['image_url'] = $imageUrl;
         }
-        foreach ($defaultData as $key => $value) {
-            $customData[$key] = $value;
-        }
+        $customData = array_merge($customData, $defaultData);
+
         return $customData;
     }
 
@@ -235,7 +236,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getCategoryJSON(Mage_Catalog_Model_Category $category)
     {
-        Mage::dispatchEvent('algolia_category_index_before', array('category' => $category));
+        $transport = new Varien_Object();
+        Mage::dispatchEvent('algolia_category_index_before', array('category' => $category, 'custom_data' => $transport));
+        $customData = $transport->getData();
 
         $storeId = $category->getStoreId();
         $category->getUrlInstance()->setStore($storeId);
@@ -272,6 +275,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 $data[$attributeCode] = $value;
             }
         }
+        $data = array_merge($data, $customData);
 
         return $data;
     }
