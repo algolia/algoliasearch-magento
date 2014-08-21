@@ -49,7 +49,7 @@ This extension adds an auto-completion menu to your search bar displaying produc
 
 ### Typo-tolerated full-text search
 
-This extension is also able to replace the the default full-text search engine handling typo-tolerance.
+This extension is also able to replace the default full-text search engine handling typo-tolerance.
 
 ![Full-text search](doc/fts.png)
 
