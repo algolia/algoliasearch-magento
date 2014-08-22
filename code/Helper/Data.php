@@ -186,7 +186,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getProductJSON(Mage_Catalog_Model_Product $product, $defaultData = array())
     {
         Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'default_data' => $defaultData));
-
+        $defaultData = is_array($defaultData) ? $defaultData : explode("|",$defaultData);
         $categories = array();
         foreach ($this->getProductActiveCategories($product, $product->getStoreId()) as $categoryId) {
             if ($categoryName = $this->getCategoryName($categoryId, $product->getStoreId())) {
