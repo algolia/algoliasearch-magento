@@ -112,7 +112,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
         $indexSettings = array(
             'attributesToIndex'    => $attributesToIndex,
-            'customRanking'        => array('desc(product_count)'),
+            'customRanking'        => array('desc(popularity)'),
             'minWordSizefor1Typo'  => 5,
             'minWordSizefor2Typos' => 10,
         );
@@ -262,6 +262,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'url'           => $category->getUrl(),
             '_tags'         => array('category'),
             'product_count' => $category->getProductCount(),
+            'popularity'    => $category->getProductCount(),
         );
         if ( ! empty($imageUrl)) {
             $data['image_url'] = $imageUrl;
