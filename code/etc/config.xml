@@ -102,8 +102,8 @@
             </settings>
             <ui>
                 <number_suggestions>5</number_suggestions>
-                <minimal_query_length>2</minimal_query_length>
-                <search_delay>100</search_delay>
+                <minimal_query_length>0</minimal_query_length>
+                <search_delay>0</search_delay>
             </ui>
             <queue>
                 <active>1</active>
