@@ -81,9 +81,23 @@ Once configured, do not forget to trigger the re-indexing in **System > Index Ma
 ![Index management](doc/index-management.png)
 
 
-Instant-search
----------------
+Customization
+------------
+
+### Style
+
+Feel free to update the default style modifying ```skin/frontend/base/default/algoliasearch/algoliasearch.css```.
+
+### Observers
+
+We're dispatching events allowing you to customize the default behavior of the extension. You can add observers on the following events:
+
+ * ```algolia_product_index_before```: triggered for each product, ability to add custom attributes using ```$observer->getCustomData()```.
+ * ```algolia_category_index_before```:  triggered for each category, ability to add custom attributes using ```$observer->getCustomData()```.
+
+### Instant-search
 
 If you want to build an instant-search based result page refreshing the whole page (results, pagination & navigation filters) “as you type” you can follow this [tutorial](http://www.algolia.com/doc/tutorials/instant-search).
 
 ![Instant search](doc/instant-search.gif)
+
