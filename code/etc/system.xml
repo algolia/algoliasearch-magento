@@ -78,12 +78,23 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </index_prefix>
+                        <use_ordered_qty_as_popularity translate="label">
+                            <label>Use Ordered Quantity as Popularity</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The flag indicates whether Algolia use the number of sales to reflect product's popularity.</comment>
+                            <depends><is_enabled>1</is_enabled></depends>
+                        </use_ordered_qty_as_popularity>
                         <category_additional_attributes translate="label comment">
                             <label>Category Additional Attributes</label>
                             <frontend_type>multiselect</frontend_type>
                             <source_model>algoliasearch/system_config_source_category_attributes</source_model>
                             <backend_model>algoliasearch/system_config_backend_category_attributes</backend_model>
-                            <sort_order>70</sort_order>
+                            <sort_order>80</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>

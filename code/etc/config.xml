@@ -99,6 +99,7 @@
                 <api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <search_only_api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <index_prefix />
+                <use_ordered_qty_as_popularity>1</use_ordered_qty_as_popularity>
             </settings>
             <ui>
                 <number_suggestions>5</number_suggestions>
