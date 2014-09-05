@@ -59,6 +59,16 @@
                     <fulltext>Algolia_Algoliasearch_Model_Resource_Fulltext</fulltext>
                 </rewrite>
             </catalogsearch_resource>
+            <enterprise_search>
+                <rewrite>
+                    <adminhtml_system_config_backend_engine>Algolia_Algoliasearch_Model_System_Config_Backend_Engine</adminhtml_system_config_backend_engine>
+                </rewrite>
+            </enterprise_search>
+            <enterprise_search>
+                <rewrite>
+                    <adminhtml_system_config_source_engine>Algolia_Algoliasearch_Model_System_Config_Source_Engine</adminhtml_system_config_source_engine>
+                </rewrite>
+            </enterprise_search>
         </models>
         <events>
 
