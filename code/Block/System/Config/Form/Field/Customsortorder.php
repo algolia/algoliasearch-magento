@@ -5,15 +5,20 @@
  */
 class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortorder extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
 {
-    protected $attribute;
-    protected $order;
+    protected $selectFields = array();
 
-
-    protected function getRenderer($id) {
-        if (!$this->$id) {
+    /**
+     * Creates and populates a select block to represent each column in the configuration property.
+     *
+     * @param $columnId String The name of the column defined in addColumn
+     * @return Algolia_Algoliasearch_Block_System_Config_Form_Field_Select
+     * @throws Exception
+     */
+    protected function getRenderer($columnId) {
+        if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId]) {
             $aOptions = array();
-            switch($id) {
-                case 'attribute':
+            switch($columnId) {
+                case 'attribute': // Populate the attribute column with a list of searchable attributes
                     $searchableAttributes = Mage::getResourceModel('algoliasearch/fulltext')->getSearchableAttributes();
                     foreach ($searchableAttributes as $attribute){
                         $aOptions[$attribute->getAttributecode()] = $attribute->getFrontendLabel();
@@ -26,16 +31,16 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortorder exten
                     );
                     break;
                 default:
-                    throw new Exception('Unknown attribute id ' . $id);
+                    throw new Exception('Unknown attribute id ' . $columnId);
             }
 
-            $this->$id = Mage::app()->getLayout()->createBlock('algoliasearch/system_config_form_field_select')->setIsRenderToJsTemplate(true);
-            $this->$id->setOptions($aOptions);
-            $this->$id->setExtraParams('style="width:160px;"');
+            $selectField = Mage::app()->getLayout()->createBlock('algoliasearch/system_config_form_field_select')->setIsRenderToJsTemplate(true);
+            $selectField->setOptions($aOptions);
+            $selectField->setExtraParams('style="width:160px;"');
+            $this->selectFields[$columnId] = $selectField;
         }
-        return $this->$id;
+        return $this->selectFields[$columnId];
     }
-
 
     public function __construct()
     {
