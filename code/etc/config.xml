@@ -109,6 +109,7 @@
                 <api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <search_only_api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <index_prefix />
+                <remove_words_if_no_result>None</remove_words_if_no_result>
             </settings>
             <ui>
                 <number_suggestions>5</number_suggestions>
