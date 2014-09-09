@@ -103,6 +103,16 @@
                              LastWords: when a query does not return any result, the first word will be added as optionalWords (the process is repeated with the second word, third word, ... until there is results). This option is useful on address search<br/>
                              None: No specific processing is done when a query does not return any result<br/>]]></comment>
                         </remove_words_if_no_result>
+                        <custom_ranking_attributes translate="label">
+                            <label>Optional Attributes For Custom Ranking</label>
+                            <frontend_model>algoliasearch/system_config_form_field_customsortorder</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.  Defaults to the product_count attribute in descending order.</comment>
+                        </custom_ranking_attributes>
                     </fields>
                 </settings>
                 <ui translate="label">

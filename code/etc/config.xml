@@ -110,6 +110,7 @@
                 <search_only_api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <index_prefix />
                 <remove_words_if_no_result>None</remove_words_if_no_result>
+                <custom_ranking_attributes>a:1:{i:0;a:2:{s:9:"attribute";s:13:"product_count";s:5:"order";s:4:"desc";}}</custom_ranking_attributes>
             </settings>
             <ui>
                 <number_suggestions>5</number_suggestions>
