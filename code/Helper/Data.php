@@ -18,6 +18,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_SEARCH_ONLY_API_KEY       = 'algoliasearch/settings/search_only_api_key';
     const XML_PATH_INDEX_PREFIX              = 'algoliasearch/settings/index_prefix';
     const XML_PATH_CATEGORY_ATTRIBUTES       = 'algoliasearch/settings/category_additional_attributes';
+    const XML_PATH_CUSTOM_RANKING_ATTRIBUTES       = 'algoliasearch/settings/custom_ranking_attributes';
 
     private static $_categoryNames;
     private static $_activeCategories;
@@ -110,14 +111,22 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         foreach ($this->getCategoryAdditionalAttributes($storeId) as $attributeCode) {
             array_push($attributesToIndex, $attributeCode);
         }
+
+        $customRankings = $this->getCustomRankings($storeId);
+        $customRankingsArr = array();
+        foreach ($customRankings as $ranking) {
+            $customRankingsArr[] =  $ranking['order'] . '(' . $ranking['attribute'] . ')';
+        }
+
         $indexSettings = array(
             'attributesToIndex'    => $attributesToIndex,
-            'customRanking'        => array('desc(product_count)'),
+            'customRanking'        => $customRankingsArr,
             'minWordSizefor1Typo'  => 5,
             'minWordSizefor2Typos' => 10,
         );
         return $indexSettings;
     }
+
 
     private function getClient()
     {
@@ -703,5 +712,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             self::$_predefinedCategoryAttributesToRetrieve,
             self::$_predefinedSpecialAttributes
         );
+    }
+
+    public function getCustomRankings($storeId = NULL) {
+        return unserialize(Mage::getStoreConfig(self::XML_PATH_CUSTOM_RANKING_ATTRIBUTES, $storeId));
     }
 }
