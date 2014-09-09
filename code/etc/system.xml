@@ -90,6 +90,19 @@
                             <comment>Additional category attributes for indexing. Category name, URL, image and product count will be indexed by default. Internal category attributes are excluded from the list.</comment>
                             <depends><is_enabled>1</is_enabled></depends>
                         </category_additional_attributes>
+                        <remove_words_if_no_result translate="label">
+                            <label>Remove Words If No Result?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>algoliasearch/system_config_source_removewords</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Optional property to avoid having an empty result page.<br/>
+                             LastWords: when a query does not return any result, the last word will be added as optionalWords (the process is repeated with the n-1 word, n-2 word, ... until there is results). This option is particularly useful on e-commerce websites<br/>
+                             LastWords: when a query does not return any result, the first word will be added as optionalWords (the process is repeated with the second word, third word, ... until there is results). This option is useful on address search<br/>
+                             None: No specific processing is done when a query does not return any result<br/>]]></comment>
+                        </remove_words_if_no_result>
                         <custom_ranking_attributes translate="label">
                             <label>Optional Attributes For Custom Ranking</label>
                             <frontend_model>algoliasearch/system_config_form_field_customsortorder</frontend_model>

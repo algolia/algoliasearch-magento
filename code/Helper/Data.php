@@ -18,7 +18,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_SEARCH_ONLY_API_KEY       = 'algoliasearch/settings/search_only_api_key';
     const XML_PATH_INDEX_PREFIX              = 'algoliasearch/settings/index_prefix';
     const XML_PATH_CATEGORY_ATTRIBUTES       = 'algoliasearch/settings/category_additional_attributes';
-    const XML_PATH_CUSTOM_RANKING_ATTRIBUTES       = 'algoliasearch/settings/custom_ranking_attributes';
+    const XML_PATH_REMOVE_IF_NO_RESULT       = 'algoliasearch/settings/remove_words_if_no_result';
+    const XML_PATH_CUSTOM_RANKING_ATTRIBUTES = 'algoliasearch/settings/custom_ranking_attributes';
 
     private static $_categoryNames;
     private static $_activeCategories;
@@ -712,6 +713,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             self::$_predefinedCategoryAttributesToRetrieve,
             self::$_predefinedSpecialAttributes
         );
+    }
+
+    public function getRemoveWordsIfNoResult($storeId = NULL)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_REMOVE_IF_NO_RESULT, $storeId);
     }
 
     public function getCustomRankings($storeId = NULL) {
