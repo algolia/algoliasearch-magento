@@ -90,6 +90,16 @@
                             <comment>Additional category attributes for indexing. Category name, URL, image and product count will be indexed by default. Internal category attributes are excluded from the list.</comment>
                             <depends><is_enabled>1</is_enabled></depends>
                         </category_additional_attributes>
+                        <custom_ranking_attributes translate="label">
+                            <label>Optional Attributes For Custom Ranking</label>
+                            <frontend_model>algoliasearch/system_config_form_field_customsortorder</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.  Defaults to the product_count attribute in descending order.</comment>
+                        </custom_ranking_attributes>
                     </fields>
                 </settings>
                 <ui translate="label">
