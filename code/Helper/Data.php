@@ -402,6 +402,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             if ($productIds) {
                 $products->addAttributeToFilter('entity_id', array('in' => $productIds));
             }
+            Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before', array('store' => $storeId, 'collection' => $products));
             $size = $products->getSize();
             if ($size > 0) {
                 $indexData = array();
