@@ -11,15 +11,16 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_SEARCH_DELAY         = 'algoliasearch/ui/search_delay';
     const XML_PATH_NUMBER_SUGGESTIONS   = 'algoliasearch/ui/number_suggestions';
 
-    const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED = 'algoliasearch/settings/is_enabled';
-    const XML_PATH_IS_POPUP_ENABLED          = 'algoliasearch/settings/is_popup_enabled';
-    const XML_PATH_APPLICATION_ID            = 'algoliasearch/settings/application_id';
-    const XML_PATH_API_KEY                   = 'algoliasearch/settings/api_key';
-    const XML_PATH_SEARCH_ONLY_API_KEY       = 'algoliasearch/settings/search_only_api_key';
-    const XML_PATH_INDEX_PREFIX              = 'algoliasearch/settings/index_prefix';
-    const XML_PATH_CATEGORY_ATTRIBUTES       = 'algoliasearch/settings/category_additional_attributes';
-    const XML_PATH_REMOVE_IF_NO_RESULT       = 'algoliasearch/settings/remove_words_if_no_result';
-    const XML_PATH_CUSTOM_RANKING_ATTRIBUTES = 'algoliasearch/settings/custom_ranking_attributes';
+    const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED     = 'algoliasearch/settings/is_enabled';
+    const XML_PATH_IS_POPUP_ENABLED              = 'algoliasearch/settings/is_popup_enabled';
+    const XML_PATH_APPLICATION_ID                = 'algoliasearch/settings/application_id';
+    const XML_PATH_API_KEY                       = 'algoliasearch/settings/api_key';
+    const XML_PATH_SEARCH_ONLY_API_KEY           = 'algoliasearch/settings/search_only_api_key';
+    const XML_PATH_INDEX_PREFIX                  = 'algoliasearch/settings/index_prefix';
+    const XML_PATH_USE_ORDERED_QTY_AS_POPULARITY = 'algoliasearch/settings/use_ordered_qty_as_popularity';
+    const XML_PATH_CATEGORY_ATTRIBUTES           = 'algoliasearch/settings/category_additional_attributes';
+    const XML_PATH_REMOVE_IF_NO_RESULT           = 'algoliasearch/settings/remove_words_if_no_result';
+    const XML_PATH_CUSTOM_RANKING_ATTRIBUTES     = 'algoliasearch/settings/custom_ranking_attributes';
 
     private static $_categoryNames;
     private static $_activeCategories;
@@ -128,7 +129,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $indexSettings;
     }
 
-
     private function getClient()
     {
         return new \AlgoliaSearch\Client($this->getApplicationID(), $this->getAPIKey());
@@ -195,8 +195,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getProductJSON(Mage_Catalog_Model_Product $product, $defaultData = array())
     {
-        Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'default_data' => $defaultData));
+        $transport = new Varien_Object($defaultData);
+        Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'custom_data' => $transport));
         $defaultData = is_array($defaultData) ? $defaultData : explode("|",$defaultData);
+
         $categories = array();
         foreach ($this->getProductActiveCategories($product, $product->getStoreId()) as $categoryId) {
             if ($categoryName = $this->getCategoryName($categoryId, $product->getStoreId())) {
@@ -231,9 +233,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         if ( ! empty($imageUrl)) {
             $customData['image_url'] = $imageUrl;
         }
-        foreach ($defaultData as $key => $value) {
-            $customData[$key] = $value;
-        }
+        $customData = array_merge($customData, $defaultData);
+
         return $customData;
     }
 
@@ -245,7 +246,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getCategoryJSON(Mage_Catalog_Model_Category $category)
     {
-        Mage::dispatchEvent('algolia_category_index_before', array('category' => $category));
+        $transport = new Varien_Object();
+        Mage::dispatchEvent('algolia_category_index_before', array('category' => $category, 'custom_data' => $transport));
+        $customData = $transport->getData();
 
         $storeId = $category->getStoreId();
         $category->getUrlInstance()->setStore($storeId);
@@ -269,6 +272,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'url'           => $category->getUrl(),
             '_tags'         => array('category'),
             'product_count' => $category->getProductCount(),
+            'popularity'    => $category->getProductCount(),
         );
         if ( ! empty($imageUrl)) {
             $data['image_url'] = $imageUrl;
@@ -282,6 +286,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 $data[$attributeCode] = $value;
             }
         }
+        $data = array_merge($data, $customData);
 
         return $data;
     }
@@ -419,7 +424,20 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                     foreach ($collection as $product) { /** @var $product Mage_Catalog_Model_Product */
                         $product->setStoreId($storeId);
                         $default = isset($defaultData[$product->getId()]) ? $defaultData[$product->getId()] : array();
-                        array_push($indexData, $this->getProductJSON($product, $default));
+
+                        $json = $this->getProductJSON($product, $default);
+                        if ($this->isUseOrderedQtyAsPopularity($storeId)) {
+                            $report = Mage::getResourceModel('reports/product_sold_collection')
+                                ->addOrderedQty()
+                                ->setStoreId($storeId)
+                                ->addStoreFilter($storeId)
+                                ->addAttributeToSelect(array('name', 'id'))
+                                ->addFieldToFilter('entity_id', $product->getId())
+                                ->getFirstItem();
+                            $json['popularity'] = intval($report->getOrderedQty());
+                        }
+
+                        array_push($indexData, $json);
                         if (count($indexData) >= self::BATCH_SIZE) {
                             $indexer->addObjects($indexData);
                             $indexData = array();
@@ -675,6 +693,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getIndexPrefix($storeId = NULL)
     {
         return Mage::getStoreConfig(self::XML_PATH_INDEX_PREFIX, $storeId);
+    }
+
+    public function isUseOrderedQtyAsPopularity($storeId = NULL)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_USE_ORDERED_QTY_AS_POPULARITY, $storeId);
     }
 
     public function getCategoryAdditionalAttributes($storeId = NULL)
