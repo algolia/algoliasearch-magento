@@ -53,7 +53,8 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
                         'attributesToRetrieve' => 'objectID',
                         'attributesToHighlight' => '',
                         'attributesToSnippet' => '',
-                        'tagFilters' => 'product'
+                        'tagFilters' => 'product',
+                        'removeWordsIfNoResult'=> Mage::helper('algoliasearch')->getRemoveWordsIfNoResult(Mage::app()->getStore()->getId()),
                     ));
                 } catch (Exception $e) {
                     Mage::getSingleton('catalog/session')->addError(Mage::helper('algoliasearch')->__('Search failed. Please try again.'));

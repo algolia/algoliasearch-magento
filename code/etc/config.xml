@@ -59,6 +59,16 @@
                     <fulltext>Algolia_Algoliasearch_Model_Resource_Fulltext</fulltext>
                 </rewrite>
             </catalogsearch_resource>
+            <enterprise_search>
+                <rewrite>
+                    <adminhtml_system_config_backend_engine>Algolia_Algoliasearch_Model_System_Config_Backend_Engine</adminhtml_system_config_backend_engine>
+                </rewrite>
+            </enterprise_search>
+            <enterprise_search>
+                <rewrite>
+                    <adminhtml_system_config_source_engine>Algolia_Algoliasearch_Model_System_Config_Source_Engine</adminhtml_system_config_source_engine>
+                </rewrite>
+            </enterprise_search>
         </models>
         <events>
 
@@ -99,6 +109,8 @@
                 <api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <search_only_api_key backend_model="adminhtml/system_config_backend_encrypted" />
                 <index_prefix />
+                <remove_words_if_no_result>None</remove_words_if_no_result>
+                <custom_ranking_attributes>a:1:{i:0;a:2:{s:9:"attribute";s:13:"product_count";s:5:"order";s:4:"desc";}}</custom_ranking_attributes>
                 <use_ordered_qty_as_popularity>1</use_ordered_qty_as_popularity>
             </settings>
             <ui>
