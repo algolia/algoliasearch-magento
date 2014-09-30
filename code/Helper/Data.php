@@ -390,7 +390,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      * @return void
      * @throws Exception
      */
-    public function rebuildStoreProductIndex($storeId, $productIds = NULL, $defaultData = NULL)
+    public function rebuildStoreProductIndex($storeId, $productIds, $defaultData = NULL)
     {
         $emulationInfo = $this->startEmulation($storeId);
 
@@ -403,10 +403,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 ->setVisibility(Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds())
                 ->addFinalPrice()
                 ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
-                ->addAttributeToSelect(self::$_predefinedProductAttributes);
-            if ($productIds) {
-                $products->addAttributeToFilter('entity_id', array('in' => $productIds));
-            }
+                ->addAttributeToSelect(self::$_predefinedProductAttributes)
+                ->addAttributeToFilter('entity_id', array('in' => $productIds));
+
             Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before', array('store' => $storeId, 'collection' => $products));
             $size = $products->getSize();
             if ($size > 0) {
