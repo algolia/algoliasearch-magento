@@ -92,7 +92,7 @@
         <jobs>
             <algoliasearch_run_queue>
                 <schedule>
-                    <cron_expr>* * * * *</cron_expr>
+                    <cron_expr>*/5 * * * *</cron_expr>
                 </schedule>
                 <run>
                     <model>algoliasearch/queue::runCron</model>
