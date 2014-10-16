@@ -229,6 +229,9 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
 
     protected function _cleanData($value)
     {
+        if ( ! is_string($value)) {
+          return $value;
+        }
         return preg_replace("#\s+#siu", ' ', trim(strip_tags($value)));
     }
 }
