@@ -422,7 +422,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                     $collection->addUrlRewrite();
                     foreach ($collection as $product) { /** @var $product Mage_Catalog_Model_Product */
                         $product->setStoreId($storeId);
-                        $default = isset($defaultData[$product->getId()]) ? $defaultData[$product->getId()] : array();
+                        $default = isset($defaultData[$product->getId()]) ? (array) $defaultData[$product->getId()] : array();
 
                         $json = $this->getProductJSON($product, $default);
                         if ($this->isUseOrderedQtyAsPopularity($storeId)) {
