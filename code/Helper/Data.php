@@ -430,7 +430,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                                 ->addOrderedQty()
                                 ->setStoreId($storeId)
                                 ->addStoreFilter($storeId)
-                                ->addAttributeToSelect(array('name', 'id'))
                                 ->addFieldToFilter('entity_id', $product->getId())
                                 ->getFirstItem();
                             $json['popularity'] = intval($report->getOrderedQty());
