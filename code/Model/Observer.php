@@ -82,16 +82,15 @@ class Algolia_Algoliasearch_Model_Observer
             $entityIds = (array) $entityId;
             if (is_numeric($storeId)) {
                 $objectIds = array();
-                $store = Mage::app()->getStore($storeId);
                 foreach ($entityIds as $id) {
-                    $objectIds[] = $store->getCode().'_'.$entity.'_'.$id;
+                    $objectIds[] = $entity.'_'.$id;
                 }
                 $this->getHelper()->getStoreIndex($storeId)->deleteObjects($objectIds);
             } elseif (is_null($storeId)) {
                 foreach (Mage::app()->getStores() as $store) { /** @var $store Mage_Core_Model_Store */
                     $objectIds = array();
                     foreach ($entityIds as $id) {
-                        $objectIds[] = $store->getCode().'_'.$entity.'_'.$id;
+                        $objectIds[] = $entity.'_'.$id;
                     }
                     $this->getHelper()->getStoreIndex($store->getId())->deleteObjects($objectIds);
                 }
