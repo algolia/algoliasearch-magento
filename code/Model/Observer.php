@@ -97,6 +97,7 @@ class Algolia_Algoliasearch_Model_Observer
                 }
             }
         }
+        Mage::getSingleton('algoliasearch/algolia')->resetSearchResults();
 
         return $this;
     }

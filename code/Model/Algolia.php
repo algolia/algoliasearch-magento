@@ -51,7 +51,7 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
      */
     public function cleanProductIndex($storeId = NULL, $productId = NULL)
     {
-        $this->getResource()->cleanIndex(self::ENTITY_PRODUCT, $storeId, $productId);
+        $this->getResource()->cleanEntityIndex(self::ENTITY_PRODUCT, $storeId, $productId);
         return $this;
     }
 
@@ -64,7 +64,7 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
      */
     public function cleanCategoryIndex($storeId = NULL, $categoryId = NULL)
     {
-        $this->getResource()->cleanIndex(self::ENTITY_CATEGORY, $storeId, $categoryId);
+        $this->getResource()->cleanEntityIndex(self::ENTITY_CATEGORY, $storeId, $categoryId);
         return $this;
     }
 

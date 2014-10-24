@@ -404,13 +404,11 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 $parentIds = $this->_getResource()->getRelationsByChild($productId);
                 if ( ! empty($parentIds)) {
                     $this->_getIndexer()
-                        ->rebuildProductIndex(NULL, $parentIds)
-                        ->resetSearchResults();
+                        ->rebuildProductIndex(NULL, $parentIds);
                 }
             }
             $this->_getIndexer()
-                ->cleanProductIndex(NULL, $productId)
-                ->resetSearchResults();
+                ->cleanProductIndex(NULL, $productId);
             /*
              * Change indexer status as need to reindex related categories to update product count.
              * It's low priority so no need to automatically reindex all related categories after deleting each product.
@@ -428,8 +426,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
             // All children categories IDs including the current category
             $categoryIds = $category->getAllChildren(TRUE);
             $this->_getIndexer()
-                ->cleanCategoryIndex(NULL, $categoryIds)
-                ->resetSearchResults();
+                ->cleanCategoryIndex(NULL, $categoryIds);
             /*
              * Change indexer status as need to reindex related products to update the list of categories.
              * It's low priority so no need to automatically reindex all related products after deleting each category.
@@ -447,32 +444,27 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                     foreach (Mage::app()->getWebsite($websiteId)->getStoreIds() as $storeId) {
                         if ($actionType == 'remove') {
                             $this->_getIndexer()
-                                ->cleanProductIndex($storeId, $productIds)
-                                ->resetSearchResults();
+                                ->cleanProductIndex($storeId, $productIds);
                         } else if ($actionType == 'add') {
                             $this->_getIndexer()
-                                ->rebuildProductIndex($storeId, $productIds)
-                                ->resetSearchResults();
+                                ->rebuildProductIndex($storeId, $productIds);
                         }
                     }
                 }
             }
-            if (isset($data['catalogsearch_status'])) {
+            else if (isset($data['catalogsearch_status'])) {
                 $status = $data['catalogsearch_status'];
                 if ($status == Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
                     $this->_getIndexer()
-                        ->rebuildProductIndex(NULL, $productIds)
-                        ->resetSearchResults();
+                        ->rebuildProductIndex(NULL, $productIds);
                 } else {
                     $this->_getIndexer()
-                        ->cleanProductIndex(NULL, $productIds)
-                        ->resetSearchResults();
+                        ->cleanProductIndex(NULL, $productIds);
                 }
             }
-            if (isset($data['catalogsearch_force_reindex'])) {
+            else if (isset($data['catalogsearch_force_reindex'])) {
                 $this->_getIndexer()
-                    ->rebuildProductIndex(NULL, $productIds)
-                    ->resetSearchResults();
+                    ->rebuildProductIndex(NULL, $productIds);
             }
         }
 
@@ -493,8 +485,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 }
             }
             $this->_getIndexer()
-                ->rebuildProductIndex(NULL, $productIds)
-                ->resetSearchResults();
+                ->rebuildProductIndex(NULL, $productIds);
         }
 
         /*
@@ -505,8 +496,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
             $updateCategoryIds = $data['catalogsearch_update_category_id'];
             $updateCategoryIds = is_array($updateCategoryIds) ? $updateCategoryIds : array($updateCategoryIds);
             $this->_getIndexer()
-                ->rebuildCategoryIndex(NULL, $updateCategoryIds)
-                ->resetSearchResults();
+                ->rebuildCategoryIndex(NULL, $updateCategoryIds);
         }
     }
 
