@@ -78,7 +78,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </index_prefix>
-                        <use_ordered_qty_as_popularity translate="label">
+                        <use_ordered_qty_as_popularity translate="label comment">
                             <label>Use Ordered Quantity as Popularity</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
@@ -89,6 +89,15 @@
                             <comment>The flag indicates whether Algolia use the number of sales to reflect product's popularity.</comment>
                             <depends><is_enabled>1</is_enabled></depends>
                         </use_ordered_qty_as_popularity>
+                        <index_product_count translate="label comment">
+                            <label>Index Product Count</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>75</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <comment>If Yes, the number of products contained in a category will be indexed as 'product_count' and will also override the default value for 'popularity'.</comment>
+                            <depends><is_enabled>1</is_enabled></depends>
+                        </index_product_count>
                         <category_additional_attributes translate="label comment">
                             <label>Category Additional Attributes</label>
                             <frontend_type>multiselect</frontend_type>
@@ -98,10 +107,10 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Additional category attributes for indexing. Category name, URL, image and product count will be indexed by default. Internal category attributes are excluded from the list.</comment>
+                            <comment>Additional category attributes for indexing. Category name, URL, image and product count (if enabled above) will be indexed by default. Internal category attributes are excluded from the list.</comment>
                             <depends><is_enabled>1</is_enabled></depends>
                         </category_additional_attributes>
-                        <remove_words_if_no_result translate="label">
+                        <remove_words_if_no_result translate="label comment">
                             <label>Remove Words If No Result?</label>
                             <frontend_type>select</frontend_type>
                             <source_model>algoliasearch/system_config_source_removewords</source_model>
@@ -114,7 +123,7 @@
                              LastWords: when a query does not return any result, the first word will be added as optionalWords (the process is repeated with the second word, third word, ... until there is results). This option is useful on address search<br/>
                              None: No specific processing is done when a query does not return any result<br/>]]></comment>
                         </remove_words_if_no_result>
-                        <custom_ranking_attributes translate="label">
+                        <custom_ranking_attributes translate="label comment">
                             <label>Optional Attributes For Custom Ranking</label>
                             <frontend_model>algoliasearch/system_config_form_field_customsortorder</frontend_model>
                             <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
@@ -122,7 +131,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.  Defaults to the product_count attribute in descending order.</comment>
+                            <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.  Defaults to the popularity (product count) attribute in descending order.</comment>
                         </custom_ranking_attributes>
                     </fields>
                 </settings>
