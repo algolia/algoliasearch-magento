@@ -222,10 +222,16 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 $event->addNewData('algoliasearch_reindex_all', TRUE);
                 break;
             case Mage_Core_Model_Config_Data::ENTITY:
+                $stores = TRUE;
+                if ($event->getDataObject()->getScope() == 'stores') {
+                    $stores = [$event->getDataObject()->getScopeId()];
+                } else if ($event->getDataObject()->getScope() == 'websites') {
+                    $stores = Mage::app()->getWebsite($event->getDataObject()->getScopeId())->getStoreIds();
+                }
                 if (in_array($event->getDataObject()->getPath(), $this->_relatedConfigSettingsUpdate)) {
-                    $event->addNewData('algoliasearch_update_settings', TRUE);
+                    $event->addNewData('algoliasearch_update_settings', $stores);
                 } else if (in_array($event->getDataObject()->getPath(), $this->_relatedConfigSettingsReindex)) {
-                    $event->addNewData('algoliasearch_reindex_all', TRUE);
+                    $event->addNewData('algoliasearch_reindex_all', $stores);
                 }
                 break;
             case Mage_Core_Model_Store::ENTITY:
@@ -431,7 +437,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
          * Update index settings but do not reindex any records
          */
         else if ( ! empty($data['algoliasearch_update_settings'])) {
-            $this->_getIndexer()->updateIndexSettings();
+            $this->_getIndexer()->updateIndexSettings($data['algoliasearch_update_settings']);
         }
         /*
          * Clear index for the deleted product and update index for the related categories.

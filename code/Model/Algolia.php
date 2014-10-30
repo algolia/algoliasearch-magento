@@ -91,11 +91,16 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
     /**
      * Update index settings only (do not reindex)
      *
+     * @param array|bool $storeIds
      * @return Algolia_Algoliasearch_Model_Algolia
      */
-    public function updateIndexSettings()
+    public function updateIndexSettings($storeIds)
     {
-        foreach (Mage::app()->getStores() as $store) { /** @var $store Mage_Core_Model_Store */
+        if ( ! is_array($storeIds)) {
+            $storeIds = array_keys(Mage::app()->getStores());
+        }
+        foreach ($storeIds as $storeId) { /** @var $store Mage_Core_Model_Store */
+            $store = Mage::app()->getStore($storeId);
             if ($store->getIsActive()) {
                 Mage::helper('algoliasearch')->setIndexSettings($store->getId());
             }

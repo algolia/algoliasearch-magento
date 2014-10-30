@@ -131,7 +131,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         // Default index settings
         $indexSettings = array(
-            'attributesToIndex'    => array_unique($attributesToIndex),
+            'attributesToIndex'    => array_values(array_unique($attributesToIndex)),
             'customRanking'        => $customRankingsArr,
             'minWordSizefor1Typo'  => 5,
             'minWordSizefor2Typos' => 10,
