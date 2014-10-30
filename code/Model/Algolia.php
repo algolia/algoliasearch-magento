@@ -89,6 +89,22 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
     }
 
     /**
+     * Update index settings only (do not reindex)
+     *
+     * @return Algolia_Algoliasearch_Model_Algolia
+     */
+    public function updateIndexSettings()
+    {
+        foreach (Mage::app()->getStores() as $store) { /** @var $store Mage_Core_Model_Store */
+            if ($store->getIsActive()) {
+                Mage::helper('algoliasearch')->setIndexSettings($store->getId());
+            }
+        }
+        $this->resetSearchResults();
+        return $this;
+    }
+
+    /**
      * Reset search results cache
      *
      * @return Mage_CatalogSearch_Model_Fulltext

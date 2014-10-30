@@ -16,7 +16,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortorder exten
      */
     protected function getRenderer($columnId) {
         if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId]) {
-            $aOptions = array();
+            $aOptions = array('popularity' => Mage::helper('algoliasearch')->__('Popularity'));
             switch($columnId) {
                 case 'attribute': // Populate the attribute column with a list of searchable attributes
                     $searchableAttributes = Mage::getResourceModel('algoliasearch/fulltext')->getSearchableAttributes();
