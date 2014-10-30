@@ -74,6 +74,7 @@ class Algolia_Algoliasearch_Model_Observer
 
         if (is_null($storeId) && is_null($entityId)) {
             foreach (Mage::app()->getStores() as $store) { /** @var $store Mage_Core_Model_Store */
+                if ( ! $store->getIsActive()) { continue; }
                 $this->deleteStoreIndex($store->getId());
             }
         } elseif (is_numeric($storeId) && is_null($entityId)) {
@@ -89,6 +90,7 @@ class Algolia_Algoliasearch_Model_Observer
                 $this->getHelper()->getStoreIndex($storeId)->deleteObjects($objectIds);
             } elseif (is_null($storeId)) {
                 foreach (Mage::app()->getStores() as $store) { /** @var $store Mage_Core_Model_Store */
+                    if ( ! $store->getIsActive()) { continue; }
                     $objectIds = array();
                     foreach ($entityIds as $id) {
                         $objectIds[] = $store->getCode().'_'.$entity.'_'.$id;
