@@ -37,6 +37,11 @@ AlgoliaLiveSearch.prototype = {
             .observe('blur', this.options.clearResults ? this.options.clearResults.bind(this) : function(){})
             .observe('blur', this.focusOutCallback)
             .observe('keydown', this.onKeyPress.bindAsEventListener(this));
+
+        if (Mage && Mage.Cookies && Mage.Cookies.get('lastSearchQuery')) {
+            this.searchForm.field.value = Mage.Cookies.get('lastSearchQuery');
+            Mage.Cookies.set('lastSearchQuery', '');
+        }
     },
     submitSearch: function(event) {
         if (this.searchTimeoutId) {
