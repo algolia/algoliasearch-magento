@@ -51,7 +51,7 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
      */
     public function cleanProductIndex($storeId = NULL, $productId = NULL)
     {
-        $this->getResource()->cleanIndex(self::ENTITY_PRODUCT, $storeId, $productId);
+        $this->getResource()->cleanEntityIndex(self::ENTITY_PRODUCT, $storeId, $productId);
         return $this;
     }
 
@@ -64,7 +64,7 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
      */
     public function cleanCategoryIndex($storeId = NULL, $categoryId = NULL)
     {
-        $this->getResource()->cleanIndex(self::ENTITY_CATEGORY, $storeId, $categoryId);
+        $this->getResource()->cleanEntityIndex(self::ENTITY_CATEGORY, $storeId, $categoryId);
         return $this;
     }
 
@@ -82,6 +82,27 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
                 $this->rebuildProductIndex($store->getId());
             } else {
                 Mage::helper('algoliasearch')->deleteStoreIndex($store->getId());
+            }
+        }
+        $this->resetSearchResults();
+        return $this;
+    }
+
+    /**
+     * Update index settings only (do not reindex)
+     *
+     * @param array|bool $storeIds
+     * @return Algolia_Algoliasearch_Model_Algolia
+     */
+    public function updateIndexSettings($storeIds)
+    {
+        if ( ! is_array($storeIds)) {
+            $storeIds = array_keys(Mage::app()->getStores());
+        }
+        foreach ($storeIds as $storeId) { /** @var $store Mage_Core_Model_Store */
+            $store = Mage::app()->getStore($storeId);
+            if ($store->getIsActive()) {
+                Mage::helper('algoliasearch')->setIndexSettings($store->getId());
             }
         }
         $this->resetSearchResults();

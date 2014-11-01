@@ -63,10 +63,10 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
 
                 $data = array();
                 foreach ($answer['hits'] as $i => $hit) {
-                    $objectIdParts = preg_split('/_/', $hit['objectID']);
+                    $objectIdParts = explode('_', $hit['objectID'], 2);
                     $productId = isset($objectIdParts[1]) ? $objectIdParts[1] : NULL;
                     if ($productId) {
-                        $data[] = array(
+                        $data[$productId] = array(
                             'query_id' => $query->getId(),
                             'product_id' => $productId,
                             'relevance' => 1000 - $i,
@@ -74,11 +74,24 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
                     }
                 }
                 if ($data) {
-                    $this->_getWriteAdapter()->insertOnDuplicate(
-                        $this->getTable('catalogsearch/result'),
-                        $data,
-                        array('relevance')
+                    // Filter products that do not exist or are disabled for the website (e.g. if product was deleted or removed
+                    // from catalog but not yet from index). Avoids foreign key errors and incorrect listings
+                    $existingProductIds = $this->_getWriteAdapter()->fetchCol($this->_getWriteAdapter()->select()
+                        ->from($this->_getWriteAdapter()->getTableName('catalog_product_website'), ['product_id'])
+                        ->where('website_id = ?', Mage::app()->getStore($query->getStoreId())->getWebsiteId())
+                        ->where('product_id IN (?)', array_keys($data))
                     );
+                    $ignoreProductIds = array_diff(array_keys($data), $existingProductIds);
+                    foreach ($ignoreProductIds as $productId) {
+                        unset($data[$productId]);
+                    }
+                    if ($data) {
+                        $this->_getWriteAdapter()->insertOnDuplicate(
+                             $this->getTable('catalogsearch/result'),
+                             array_values($data),
+                             array('relevance')
+                        );
+                    }
                 }
                 $query->setIsProcessed(1);
             }

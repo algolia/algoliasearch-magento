@@ -62,7 +62,9 @@ var algoliaLiveSearch = new AlgoliaLiveSearch({
                     (hit.image_url ? '<div class="thumb"><img src="' + hit.image_url + '" /></div>' : '') +
                     '<div class="info">' +
                     hit._highlightResult.name.value +
+                    <?php if ($algoliaSearchHelper->isIndexProductCount()): ?>
                     ' <small>(' + hit.product_count + ')</small>' +
+                    <?php endif ?>
                     '</div>' +
                     '<div class="clearfix"></div>' +
                     '</a>';
