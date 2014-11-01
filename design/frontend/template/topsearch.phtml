@@ -92,6 +92,14 @@ var algoliaLiveSearch = new AlgoliaLiveSearch({
             }
             $('search_autocomplete_products').update(html);
         }
+        <?php if ($algoliaSearchHelper->getSaveLastQuery()): ?>
+        $('search_autocomplete').select('a').invoke('observe', 'click', function(e){
+            var searchQuery = algoliaLiveSearch.searchForm.field.getValue();
+            if(searchQuery){
+                Mage.Cookies.set('lastSearchQuery', searchQuery);
+            }
+        });
+        <?php endif ?>
     },
     clearResults: function() {
         $('search_autocomplete_categories').update('');

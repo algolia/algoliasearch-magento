@@ -10,6 +10,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_MINIMAL_QUERY_LENGTH = 'algoliasearch/ui/minimal_query_length';
     const XML_PATH_SEARCH_DELAY         = 'algoliasearch/ui/search_delay';
     const XML_PATH_NUMBER_SUGGESTIONS   = 'algoliasearch/ui/number_suggestions';
+    const XML_PATH_SAVE_LAST_QUERY      = 'algoliasearch/ui/save_last_query';
 
     const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED     = 'algoliasearch/settings/is_enabled';
     const XML_PATH_IS_POPUP_ENABLED              = 'algoliasearch/settings/is_popup_enabled';
@@ -760,6 +761,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getSearchDelay($storeId = NULL)
     {
         return (int) Mage::getStoreConfig(self::XML_PATH_SEARCH_DELAY, $storeId);
+    }
+
+    public function getSaveLastQuery($storeId = NULL)
+    {
+        return Mage::getStoreConfigFlag(self::XML_PATH_SAVE_LAST_QUERY, $storeId);
     }
 
     public function isEnabled($storeId = NULL)
