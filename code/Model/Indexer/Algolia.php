@@ -224,7 +224,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
             case Mage_Core_Model_Config_Data::ENTITY:
                 $stores = TRUE;
                 if ($event->getDataObject()->getScope() == 'stores') {
-                    $stores = [$event->getDataObject()->getScopeId()];
+                    $stores = array($event->getDataObject()->getScopeId());
                 } else if ($event->getDataObject()->getScope() == 'websites') {
                     $stores = Mage::app()->getWebsite($event->getDataObject()->getScopeId())->getStoreIds();
                 }
