@@ -346,7 +346,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 $category   = $event->getDataObject();
                 $productIds = $category->getAffectedProductIds();
                 if ($category->dataHasChangedFor('is_active') && ! $category->getData('is_active')) {
-                    $event->addNewData('catalogsearch_delete_category_id', array_merge([$category->getId()], $category->getAllChildren(TRUE)));
+                    $event->addNewData('catalogsearch_delete_category_id', array_merge(array($category->getId()), $category->getAllChildren(TRUE)));
                     if ($productIds) {
                         $event->addNewData('catalogsearch_update_product_id', $productIds);
                     }
