@@ -77,7 +77,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
                     // Filter products that do not exist or are disabled for the website (e.g. if product was deleted or removed
                     // from catalog but not yet from index). Avoids foreign key errors and incorrect listings
                     $existingProductIds = $this->_getWriteAdapter()->fetchCol($this->_getWriteAdapter()->select()
-                        ->from($this->_getWriteAdapter()->getTableName('catalog_product_website'), ['product_id'])
+                        ->from($this->_getWriteAdapter()->getTableName('catalog_product_website'), array('product_id'))
                         ->where('website_id = ?', Mage::app()->getStore($query->getStoreId())->getWebsiteId())
                         ->where('product_id IN (?)', array_keys($data))
                     );
