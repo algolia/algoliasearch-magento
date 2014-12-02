@@ -46,10 +46,13 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
                 return $this;
             }
 
-            if (!$query->getIsProcessed() || true) {
+            if (!$query->getIsProcessed())
+            {
+
+                $resultsLimit = Mage::helper('algoliasearch')->getResultsLimit($query->getStoreId());
                 try {
                     $answer = Mage::helper('algoliasearch')->query(Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getId()), $queryText, array(
-                        'hitsPerPage' => 1000, // retrieve all the hits (hard limit is 1000)
+                        'hitsPerPage' => max(5,min($resultsLimit, 1000)), // retrieve all the hits (hard limit is 1000)
                         'attributesToRetrieve' => 'objectID',
                         'attributesToHighlight' => '',
                         'attributesToSnippet' => '',
@@ -64,18 +67,19 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
                 $data = array();
                 foreach ($answer['hits'] as $i => $hit) {
                     $objectIdParts = explode('_', $hit['objectID'], 2);
-                    $productId = isset($objectIdParts[1]) ? $objectIdParts[1] : NULL;
+                    $productId = ! empty($objectIdParts[1]) && ctype_digit($objectIdParts[1]) ? (int)$objectIdParts[1] : NULL;
                     if ($productId) {
                         $data[$productId] = array(
                             'query_id' => $query->getId(),
                             'product_id' => $productId,
-                            'relevance' => 1000 - $i,
+                            'relevance' => $resultsLimit - $i,
                         );
                     }
                 }
+
+                // Filter products that do not exist or are disabled for the website (e.g. if product was deleted or removed
+                // from catalog but not yet from index). Avoids foreign key errors and incorrect listings
                 if ($data) {
-                    // Filter products that do not exist or are disabled for the website (e.g. if product was deleted or removed
-                    // from catalog but not yet from index). Avoids foreign key errors and incorrect listings
                     $existingProductIds = $this->_getWriteAdapter()->fetchCol($this->_getWriteAdapter()->select()
                         ->from($this->_getWriteAdapter()->getTableName('catalog_product_website'), array('product_id'))
                         ->where('website_id = ?', Mage::app()->getStore($query->getStoreId())->getWebsiteId())
@@ -85,13 +89,28 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
                     foreach ($ignoreProductIds as $productId) {
                         unset($data[$productId]);
                     }
+                }
+
+                // Delete old results that are no longer relevant
+                if ($query->getId()) {
+                    $deleteWhere = $this->_getWriteAdapter()->quoteInto('query_id = ?', $query->getId());
                     if ($data) {
-                        $this->_getWriteAdapter()->insertOnDuplicate(
-                             $this->getTable('catalogsearch/result'),
-                             array_values($data),
-                             array('relevance')
-                        );
+                        $deleteWhere .= ' AND '.$this->_getWriteAdapter()->quoteInto('product_id NOT IN (?)', array_keys($data));
                     }
+                    $this->_getWriteAdapter()->delete($this->getTable('catalogsearch/result'), $deleteWhere);
+                }
+
+                // Insert results / update relevance
+                if ($data) {
+                    // Lock for update to avoid deadlocks with in-progress orders (foreign key on catalog_product_entity locks rows)
+                    $stock = Mage::getSingleton('cataloginventory/stock');
+                    $stock->getResource()->getProductsStock($stock, array_keys($data), true);
+
+                    $this->_getWriteAdapter()->insertOnDuplicate(
+                         $this->getTable('catalogsearch/result'),
+                         array_values($data),
+                         array('relevance')
+                    );
                 }
                 $query->setIsProcessed(1);
             }

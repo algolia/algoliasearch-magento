@@ -113,6 +113,7 @@
                 <custom_ranking_attributes>a:1:{i:0;a:2:{s:9:"attribute";s:10:"popularity";s:5:"order";s:4:"desc";}}</custom_ranking_attributes>
                 <use_ordered_qty_as_popularity>1</use_ordered_qty_as_popularity>
                 <index_product_count>1</index_product_count>
+                <results_limit>1000</results_limit>
             </settings>
             <ui>
                 <number_suggestions>5</number_suggestions>

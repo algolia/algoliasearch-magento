@@ -24,6 +24,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_CUSTOM_RANKING_ATTRIBUTES     = 'algoliasearch/settings/custom_ranking_attributes';
     const XML_PATH_INDEX_PRODUCT_COUNT           = 'algoliasearch/settings/index_product_count';
     const XML_PATH_CUSTOM_INDEX_SETTINGS         = 'algoliasearch/settings/custom_index_settings';
+    const XML_PATH_RESULTS_LIMIT                 = 'algoliasearch/settings/results_limit';
 
     private static $_categoryNames;
     private static $_activeCategories;
@@ -795,4 +796,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getCustomRankings($storeId = NULL) {
         return unserialize(Mage::getStoreConfig(self::XML_PATH_CUSTOM_RANKING_ATTRIBUTES, $storeId));
     }
+
+    public function getResultsLimit($storeId = NULL)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_RESULTS_LIMIT, $storeId);
+    }
+
 }

@@ -136,6 +136,16 @@
                              LastWords: when a query does not return any result, the first word will be added as optionalWords (the process is repeated with the second word, third word, ... until there is results). This option is useful on address search<br/>
                              None: No specific processing is done when a query does not return any result<br/>]]></comment>
                         </remove_words_if_no_result>
+                        <results_limit translate="label comment">
+                            <label>Results Limit</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The maximum number of results to return for searches. Maximum is 1000.</comment>
+                        </results_limit>
                     </fields>
                 </settings>
                 <ui translate="label">
