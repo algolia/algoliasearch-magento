@@ -102,8 +102,11 @@ var algoliaLiveSearch = new AlgoliaLiveSearch({
         <?php endif ?>
     },
     clearResults: function() {
-        $('search_autocomplete_categories').update('');
-        $('search_autocomplete_products').update('');
+        // delay the dropdown menu clearing to ensure the click on hits can be processed
+        setTimeout(function() {
+            $('search_autocomplete_categories').update('');
+            $('search_autocomplete_products').update('');
+        }, 100);
     }
 });
 //]]>
