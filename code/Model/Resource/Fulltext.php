@@ -32,10 +32,12 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
      */
     public function prepareResult($object, $queryText, $query)
     {
+        Varien_Profiler::start('Algolia/FullText-prepareResult');
         try {
             $this->beginTransaction();
             if ( ! $this->lockQueryForTransaction($query)) {
                 $this->commit();
+                Varien_Profiler::stop('Algolia/FullText-prepareResult');
                 return $this;
             }
 
@@ -43,9 +45,11 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
             if ( ! $this->_helper->isEnabled()) {
                 parent::prepareResult($object, $queryText, $query);
                 $this->commit();
+                Varien_Profiler::stop('Algolia/FullText-prepareResult');
                 return $this;
             }
 
+            Varien_Profiler::start('Algolia/FullText-prepareResult-process');
             if (!$query->getIsProcessed())
             {
 
@@ -120,6 +124,8 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
             $this->rollBack();
             Mage::logException($e);
         }
+        Varien_Profiler::stop('Algolia/FullText-prepareResult-process');
+        Varien_Profiler::stop('Algolia/FullText-prepareResult');
 
         return $this;
     }
