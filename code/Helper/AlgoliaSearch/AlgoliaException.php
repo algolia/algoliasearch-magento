@@ -23,9 +23,8 @@
  *
  *
  */
+namespace AlgoliaSearch;
 
-require_once 'AlgoliaSearch/Version.php';
-require_once 'AlgoliaSearch/AlgoliaException.php';
-require_once 'AlgoliaSearch/ClientContext.php';
-require_once 'AlgoliaSearch/Client.php';
-require_once 'AlgoliaSearch/Index.php';
+class AlgoliaException extends \Exception
+{
+}
