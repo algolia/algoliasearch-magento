@@ -88,10 +88,10 @@ AlgoliaLiveSearch.prototype = {
     onKeyPress: function(event) {
         if(this.active)
             switch(event.keyCode) {
-                case Event.KEY_TAB:
                 case Event.KEY_RETURN:
                     this.selectEntry();
                     Event.stop(event);
+                    return;
                 case Event.KEY_ESC:
                     this.searchForm.field.blur();
                     Event.stop(event);
@@ -103,6 +103,7 @@ AlgoliaLiveSearch.prototype = {
                     this.markPrevious();
                     Event.stop(event);
                     return;
+                case Event.KEY_TAB:
                 case Event.KEY_DOWN:
                     this.markNext();
                     Event.stop(event);
