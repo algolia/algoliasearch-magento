@@ -52,11 +52,13 @@
             <catalogsearch_mysql4>
                 <rewrite>
                     <fulltext>Algolia_Algoliasearch_Model_Mysql4_Fulltext</fulltext>
+                    <fulltext_collection>Algolia_Algoliasearch_Model_Mysql4_Fulltext_Collection</fulltext_collection>
                 </rewrite>
             </catalogsearch_mysql4>
             <catalogsearch_resource>
                 <rewrite>
                     <fulltext>Algolia_Algoliasearch_Model_Resource_Fulltext</fulltext>
+                    <fulltext_collection>Algolia_Algoliasearch_Model_Resource_Fulltext_Collection</fulltext_collection>
                 </rewrite>
             </catalogsearch_resource>
             <enterprise_search>
