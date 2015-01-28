@@ -69,8 +69,10 @@ var algoliaLiveSearch = new AlgoliaLiveSearch({
                     '<div class="clearfix"></div>' +
                     '</a>';
             }
-            $('search_autocomplete_categories').update(html);
+        } else {
+            html = '';
         }
+        $('search_autocomplete_categories').update(html);
 
         // Display products
         if (displayProducts) {
@@ -90,15 +92,18 @@ var algoliaLiveSearch = new AlgoliaLiveSearch({
             } else {
                 html += '<div><?php echo $this->__('No results.') ?></div>'
             }
-            $('search_autocomplete_products').update(html);
+        } else {
+            html = '';
         }
+        $('search_autocomplete_products').update(html);
+
         <?php if ($algoliaSearchHelper->getSaveLastQuery()): ?>
-        $('search_autocomplete').select('a').invoke('observe', 'click', function(e){
-            var searchQuery = algoliaLiveSearch.searchForm.field.getValue();
-            if(searchQuery){
+        var searchQuery = algoliaLiveSearch.searchForm.field.getValue();
+        if(searchQuery){
+            $('search_autocomplete').select('a').invoke('observe', 'click', function(e){
                 Mage.Cookies.set('lastSearchQuery', searchQuery);
-            }
-        });
+            });
+        }
         <?php endif ?>
     },
     clearResults: function() {
