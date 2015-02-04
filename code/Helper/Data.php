@@ -312,6 +312,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
         $customData = array_merge($customData, $defaultData);
 
+        if (isset($customData['price'])) {
+            $customData['price'] = floatval($customData['price']);
+        }
+
         return $customData;
     }
 
