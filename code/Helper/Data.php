@@ -274,6 +274,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $transport = new Varien_Object($defaultData);
         Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'custom_data' => $transport));
+        $defaultData = $transport->getData();
+
         $defaultData = is_array($defaultData) ? $defaultData : explode("|",$defaultData);
 
         $categories = array();
@@ -311,6 +313,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $customData['image_url'] = $imageUrl;
         }
         $customData = array_merge($customData, $defaultData);
+
+        if (isset($customData['price'])) {
+            $customData['price'] = floatval($customData['price']);
+        }
 
         return $customData;
     }
