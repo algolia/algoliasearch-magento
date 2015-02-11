@@ -3,7 +3,7 @@
     $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHelper Algolia_Algoliasearch_Helper_Data */
 ?>
 
-
+<!-- Algolia -->
 <form id="search_mini_form" action="<?php echo $catalogSearchHelper->getResultUrl() ?>" method="get">
     <div class="form-search">
         <label for="search"><?php echo $this->__('Search:') ?></label>
@@ -24,6 +24,7 @@ var algoliaLiveSearch = new AlgoliaLiveSearch({
     indexName: '<?php echo $algoliaSearchHelper->getIndexName() ?>',
     searchDelay: <?php echo (int) $algoliaSearchHelper->getSearchDelay() ?>,
     minLength: <?php echo (int) $algoliaSearchHelper->getMinimalQueryLength() ?>,
+    resultLinks: '.algoliasearch-autocomplete-hit',
     queryOptions: {
         hitsPerPage: <?php echo (int) $algoliaSearchHelper->getNbSuggestions() ?>,
         tagFilters: '(product,category)',
