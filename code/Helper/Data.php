@@ -20,6 +20,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_INDEX_PREFIX                  = 'algoliasearch/settings/index_prefix';
     const XML_PATH_USE_ORDERED_QTY_AS_POPULARITY = 'algoliasearch/settings/use_ordered_qty_as_popularity';
     const XML_PATH_CATEGORY_ATTRIBUTES           = 'algoliasearch/settings/category_additional_attributes';
+    const XML_PATH_PRODUCT_ATTRIBUTES            = 'algoliasearch/settings/product_additional_attributes';
     const XML_PATH_REMOVE_IF_NO_RESULT           = 'algoliasearch/settings/remove_words_if_no_result';
     const XML_PATH_CUSTOM_RANKING_ATTRIBUTES     = 'algoliasearch/settings/custom_ranking_attributes';
     const XML_PATH_INDEX_PRODUCT_COUNT           = 'algoliasearch/settings/index_product_count';
@@ -31,6 +32,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     private static $_activeCategories;
     private static $_rootCategoryId = -1;
     private static $_categoryAttributes;
+    private static $_productAttributes;
 
     /**
      * Predefined Magento product attributes that are used to prepare data for indexing
@@ -209,6 +211,33 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Varien_Profiler::stop('Algolia-FullText-getSearchResult');
 
         return $data;
+    }
+
+    /**
+     * Return array of all product attributes that can be indexed (all except internal attributes and default attributes for indexing)
+     *
+     * @return array
+     */
+    public function getAllProductAttributes()
+    {
+        if (is_null(self::$_productAttributes)) {
+            self::$_productAttributes = array();
+            $config = Mage::getSingleton('eav/config'); /** @var $config Mage_Eav_Model_Config */
+            $allAttributes = $config->getEntityAttributeCodes('catalog_product');
+            $excludedAttributes = array(
+                'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
+                'custom_design', 'custom_design_from', 'custom_design_to', 'custom_layout_update', 'custom_use_parent_settings',
+                'default_sort_by', 'display_mode', 'filter_price_range', 'global_position', 'image', 'include_in_menu', 'is_active',
+                'is_always_include_in_menu', 'is_anchor', 'landing_page', 'level', 'lower_cms_block', 'name',
+                'page_layout', 'path', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
+                'visible_in_menu');
+            $productAttributes = array_diff($allAttributes, $excludedAttributes);
+            foreach ($productAttributes as $attributeCode) {
+                self::$_productAttributes[$attributeCode] = $config->getAttribute('catalog_category', $attributeCode)->getFrontendLabel();
+            }
+        }
+
+        return self::$_productAttributes;
     }
 
     /**
@@ -490,7 +519,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 ->setVisibility(Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds())
                 ->addFinalPrice()
                 ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
-                ->addAttributeToSelect(self::$_predefinedProductAttributes)
+                ->addAttributeToSelect(array_merge(self::$_predefinedProductAttributes, $this->getProductAdditionalAttributes($storeId)))
                 ->addAttributeToFilter('entity_id', array('in' => $productIds));
 
             Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before', array('store' => $storeId, 'collection' => $products));
@@ -793,6 +822,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getCategoryAdditionalAttributes($storeId = NULL)
     {
         return explode(',', Mage::getStoreConfig(self::XML_PATH_CATEGORY_ATTRIBUTES, $storeId));
+    }
+
+    public function getProductAdditionalAttributes($storeId = NULL)
+    {
+        return explode(',', Mage::getStoreConfig(self::XML_PATH_PRODUCT_ATTRIBUTES, $storeId));
     }
 
     public function getNbSuggestions($storeId = NULL)

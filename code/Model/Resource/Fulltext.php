@@ -19,6 +19,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
     public function _construct()
     {
         parent::_construct();
+        $this->_engine = new Algolia_Algoliasearch_Model_Resource_Engine();
         $this->_helper = Mage::helper('algoliasearch');
     }
 
@@ -183,6 +184,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
         if ($this->_helper->isEnabled($storeId) && is_object($this->_engine) && is_callable(array($this->_engine, 'rebuildCategoryIndex'))) {
             $this->_engine->rebuildCategoryIndex($storeId, $categoryIds);
         }
+
         return $this;
     }
 

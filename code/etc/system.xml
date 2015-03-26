@@ -92,6 +92,18 @@
                             <comment>If Yes, the number of products contained in a category will be indexed as 'product_count' and will also override the default value for 'popularity'.</comment>
                             <depends><is_enabled>1</is_enabled></depends>
                         </index_product_count>
+                        <product_additional_attributes translate="label comment">
+                            <label>Product Additional Attributes</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>algoliasearch/system_config_source_product_attributes</source_model>
+                            <backend_model>algoliasearch/system_config_backend_product_attributes</backend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Additional product attributes.</comment>
+                            <depends><is_enabled>1</is_enabled></depends>
+                        </product_additional_attributes>
                         <category_additional_attributes translate="label comment">
                             <label>Category Additional Attributes</label>
                             <frontend_type>multiselect</frontend_type>
@@ -101,7 +113,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Additional category attributes for indexing. Category name, URL, image and product count (if enabled above) will be indexed by default. Internal category attributes are excluded from the list.</comment>
+                            <comment>Additional category attributes</comment>
                             <depends><is_enabled>1</is_enabled></depends>
                         </category_additional_attributes>
                         <custom_ranking_attributes translate="label comment">
