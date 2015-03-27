@@ -6,12 +6,11 @@ AlgoliaLiveSearch.prototype = {
             applicationID: null,
             apiKey: null,
             indexName: null,
-            searchDelay: 100,
-            minLength: 2,
+            searchDelay: 0,
+            minLength: 0,
             resultLinks: null,
             queryOptions: {
                 hitsPerPage: 10,
-                tagFilters: '(product,category)',
                 attributesToRetrieve: null,
                 attributesToHighlight: 'name'
             },
@@ -55,12 +54,13 @@ AlgoliaLiveSearch.prototype = {
             this.options.clearResults && this.options.clearResults.call(this);
             return;
         }
-        if ( searchQuery.length >= this.options.minLength
-          && searchQuery.lastIndexOf(' ') != searchQuery.length - 1
-        ) {
+        if (searchQuery.length >= this.options.minLength && searchQuery.lastIndexOf(' ') != searchQuery.length - 1)
+        {
             this.algolia.startQueriesBatch();
-            this.algolia.addQueryInBatch(this.options.indexName, searchQuery, this.options.queryOptions);
+            this.algolia.addQueryInBatch(this.options.indexName + '_products', searchQuery, this.options.queryOptions);
+            this.algolia.addQueryInBatch(this.options.indexName + '_categories', searchQuery, this.options.queryOptions);
             this.algolia.sendQueriesBatch(this.searchResultsCallback);
+
             Event.fire(document, 'algolia:search', {query: searchQuery});
         }
     },
@@ -69,21 +69,15 @@ AlgoliaLiveSearch.prototype = {
         this.index = 0;
     },
     searchResults: function(success, content) {
-        if ( ! success) {
+        if (! success) {
             if (console) console.log(content);
-            return;
-        }
-        if ( ! content.results
-          || content.results.length != 1
-          || this.searchForm.field.getValue() != content.results[0].query
-        ) {
             return;
         }
 
         this.active = true;
         this.index = 0;
         this.selectedEntry = null;
-        this.options.renderResults.call(this, content.results[0]);
+        this.options.renderResults.call(this, content.results);
     },
     onKeyPress: function(event) {
         if(this.active)
@@ -97,7 +91,7 @@ AlgoliaLiveSearch.prototype = {
                     Event.stop(event);
                     return;
                 case Event.KEY_LEFT:
-                    case Event.KEY_RIGHT:
+                case Event.KEY_RIGHT:
                     return;
                 case Event.KEY_UP:
                     this.markPrevious();
@@ -108,11 +102,11 @@ AlgoliaLiveSearch.prototype = {
                     this.markNext();
                     Event.stop(event);
                     return;
-        }
+            }
         else
-            if(event.keyCode==Event.KEY_TAB || event.keyCode==Event.KEY_RETURN ||
-                (Prototype.Browser.WebKit > 0 && event.keyCode == 0)) return;
-        
+        if(event.keyCode==Event.KEY_TAB || event.keyCode==Event.KEY_RETURN ||
+            (Prototype.Browser.WebKit > 0 && event.keyCode == 0)) return;
+
         this.submitSearch();
     },
     markNext: function() {
@@ -120,7 +114,7 @@ AlgoliaLiveSearch.prototype = {
     },
     markPrevious: function(){
         this.selectedEntry = this.options.markPrevious ? this.options.markPrevious.call(this) : this.markEntry(-1);
-    },   
+    },
     selectEntry: function(){
         if(this.options.selectEntry){
             this.options.selectEntry.call(this);
@@ -137,19 +131,19 @@ AlgoliaLiveSearch.prototype = {
 
             var links = $$(this.options.resultLinks);
             if(links.length == 0){
-               this.index = 0;
-               return;
+                this.index = 0;
+                return;
             }
-               
+
             if(this.index+diff >= links.length || this.index+diff < 0){
                 return;
             }
 
-            this.index += diff;  
+            this.index += diff;
 
             links.invoke('removeClassName', 'marked');
             links[this.index].addClassName('marked');
-            
+
             return links[this.index];
         }
 

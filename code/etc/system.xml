@@ -94,9 +94,8 @@
                         </index_product_count>
                         <product_additional_attributes translate="label comment">
                             <label>Product Additional Attributes</label>
-                            <frontend_type>multiselect</frontend_type>
-                            <source_model>algoliasearch/system_config_source_product_attributes</source_model>
-                            <backend_model>algoliasearch/system_config_backend_product_attributes</backend_model>
+                            <frontend_model>algoliasearch/system_config_form_field_customsortorderproduct</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
                             <sort_order>80</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -104,37 +103,37 @@
                             <comment>Additional product attributes.</comment>
                             <depends><is_enabled>1</is_enabled></depends>
                         </product_additional_attributes>
-                        <category_additional_attributes translate="label comment">
+                        <category_additional_attributes2 translate="label comment">
                             <label>Category Additional Attributes</label>
-                            <frontend_type>multiselect</frontend_type>
-                            <source_model>algoliasearch/system_config_source_category_attributes</source_model>
-                            <backend_model>algoliasearch/system_config_backend_category_attributes</backend_model>
+                            <frontend_model>algoliasearch/system_config_form_field_customsortordercategory</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
                             <sort_order>80</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>Additional category attributes</comment>
                             <depends><is_enabled>1</is_enabled></depends>
-                        </category_additional_attributes>
-                        <custom_ranking_attributes translate="label comment">
-                            <label>Optional Attributes For Custom Ranking</label>
-                            <frontend_model>algoliasearch/system_config_form_field_customsortorder</frontend_model>
+                        </category_additional_attributes2>
+                        <custom_ranking_product_attributes translate="label comment">
+                            <label>Optional Product Attributes For Custom Ranking</label>
+                            <frontend_model>algoliasearch/system_config_form_field_customrankingproduct</frontend_model>
                             <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
                             <sort_order>85</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.  Defaults to the popularity (product count) attribute in descending order.</comment>
-                        </custom_ranking_attributes>
-                        <custom_index_settings translate="label comment">
-                            <label>Custom Index Settings</label>
-                            <frontend_type>textarea</frontend_type>
-                            <sort_order>90</sort_order>
+                        </custom_ranking_product_attributes>
+                        <custom_ranking_category_attributes translate="label comment">
+                            <label>Optional Category Attributes For Custom Ranking</label>
+                            <frontend_model>algoliasearch/system_config_form_field_customrankingcategory</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>85</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment><![CDATA[Specify additional <a href="https://www.algolia.com/doc/rest_api#Indexes">index settings</a> using JSON format which will be merged over the default settings.]]></comment>
-                        </custom_index_settings>
+                            <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.  Defaults to the popularity (product count) attribute in descending order.</comment>
+                        </custom_ranking_category_attributes>
                         <remove_words_if_no_result translate="label comment">
                             <label>Remove Words If No Result?</label>
                             <frontend_type>select</frontend_type>
@@ -187,26 +186,6 @@
                             <show_in_store>1</show_in_store>
                             <comment>Default value is 5.</comment>
                         </number_suggestions>
-                        <minimal_query_length translate="label comment">
-                            <label>Minimal query length</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Default value is 0.</comment>
-                        </minimal_query_length>
-                        <search_delay translate="label comment">
-                            <label>Search Delay</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Delay in milliseconds before a query is submitted to avoid excessive queries. Default value is 0 milliseconds.</comment>
-                        </search_delay>
                         <save_last_query translate="label comment">
                             <label>Save Last Query</label>
                             <frontend_type>select</frontend_type>

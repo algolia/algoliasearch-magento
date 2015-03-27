@@ -7,10 +7,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const BATCH_SIZE           = 100;
     const COLLECTION_PAGE_SIZE = 100;
 
-    const XML_PATH_MINIMAL_QUERY_LENGTH = 'algoliasearch/ui/minimal_query_length';
-    const XML_PATH_SEARCH_DELAY         = 'algoliasearch/ui/search_delay';
-    const XML_PATH_NUMBER_SUGGESTIONS   = 'algoliasearch/ui/number_suggestions';
-    const XML_PATH_SAVE_LAST_QUERY      = 'algoliasearch/ui/save_last_query';
+    const XML_PATH_MINIMAL_QUERY_LENGTH          = 'algoliasearch/ui/minimal_query_length';
+    const XML_PATH_SEARCH_DELAY                  = 'algoliasearch/ui/search_delay';
+    const XML_PATH_NUMBER_SUGGESTIONS            = 'algoliasearch/ui/number_suggestions';
+    const XML_PATH_SAVE_LAST_QUERY               = 'algoliasearch/ui/save_last_query';
 
     const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED     = 'algoliasearch/settings/is_enabled';
     const XML_PATH_IS_POPUP_ENABLED              = 'algoliasearch/settings/is_popup_enabled';
@@ -19,7 +19,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_SEARCH_ONLY_API_KEY           = 'algoliasearch/settings/search_only_api_key';
     const XML_PATH_INDEX_PREFIX                  = 'algoliasearch/settings/index_prefix';
     const XML_PATH_USE_ORDERED_QTY_AS_POPULARITY = 'algoliasearch/settings/use_ordered_qty_as_popularity';
-    const XML_PATH_CATEGORY_ATTRIBUTES           = 'algoliasearch/settings/category_additional_attributes';
+    const XML_PATH_CATEGORY_ATTRIBUTES           = 'algoliasearch/settings/category_additional_attributes2';
     const XML_PATH_PRODUCT_ATTRIBUTES            = 'algoliasearch/settings/product_additional_attributes';
     const XML_PATH_REMOVE_IF_NO_RESULT           = 'algoliasearch/settings/remove_words_if_no_result';
     const XML_PATH_CUSTOM_RANKING_ATTRIBUTES     = 'algoliasearch/settings/custom_ranking_attributes';
@@ -27,6 +27,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_CUSTOM_INDEX_SETTINGS         = 'algoliasearch/settings/custom_index_settings';
     const XML_PATH_RESULTS_LIMIT                 = 'algoliasearch/settings/results_limit';
     const XML_PATH_USE_RESULT_CACHE              = 'algoliasearch/settings/use_result_cache';
+    const XML_PATH_CATEGORY_CUSTOM_RANKING       = 'algoliasearch/settings/custom_ranking_category_attributes';
+    const XML_PATH_PRODUCT_CUSTOM_RANKING        = 'algoliasearch/settings/custom_ranking_product_attributes';
 
     private static $_categoryNames;
     private static $_activeCategories;
@@ -100,9 +102,24 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->getClient()->initIndex($index)->search($q, $params);
     }
 
-    public function getStoreIndex($storeId = NULL)
+    public function getStoreProductIndexName($storeId = NULL)
     {
-        return $this->getIndex($this->getIndexName($storeId));
+        return $this->getIndexName($storeId).'_products';
+    }
+
+    public function getStoreCategoryIndexName($storeId = NULL)
+    {
+        return $this->getIndexName($storeId).'_categories';
+    }
+
+    public function getStoreProductIndex($storeId = NULL)
+    {
+        return $this->getIndex($this->getIndexName($storeId).'_products');
+    }
+
+    public function getStoreCategoryIndex($storeId = NULL)
+    {
+        return $this->getIndex($this->getIndexName($storeId).'_categories');
     }
 
     public function getIndexName($storeId = NULL)
@@ -110,61 +127,102 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return (string)$this->getIndexPrefix($storeId) . Mage::app()->getStore($storeId)->getCode();
     }
 
-    public function setIndexSettings($storeId = NULL)
+    public function mergeSettings($index_name, $settings)
     {
-        $index = $this->getStoreIndex($storeId);
-        $index->setSettings($this->getIndexSettings($storeId));
-        return $index;
+        $onlineSettings = $this->getIndex($index_name)->getSettings();
+
+        $removes = array('slaves');
+
+        foreach ($removes as $remove)
+            if (isset($onlineSettings[$remove]))
+                unset($onlineSettings[$remove]);
+
+        foreach ($settings as $key => $value)
+            $onlineSettings[$key] = $value;
+
+        return $onlineSettings;
     }
 
-    public function getIndexSettings($storeId)
+    public function setIndexSettings($storeId = NULL)
     {
-        $searchableAttributes = Mage::getResourceModel('algoliasearch/fulltext')->getSearchableAttributes();
-        $attributesToIndex = array('name', 'path', 'categories', 'popularity', 'unordered(description)');
-        foreach ($searchableAttributes as $attribute) {
-            array_push($attributesToIndex, $attribute->getAttributeCode());
-        }
-        foreach ($this->getCategoryAdditionalAttributes($storeId) as $attributeCode) {
-            array_push($attributesToIndex, $attributeCode);
+        $index = $this->getStoreProductIndex($storeId);
+        $index->setSettings($this->getProductIndexSettings($storeId));
+
+        $index = $this->getStoreCategoryIndex($storeId);
+        $index->setSettings($this->getCategoryIndexSettings($storeId));
+    }
+
+    public function getProductIndexSettings($storeId)
+    {
+        $attributesToIndex = array();
+
+        foreach ($this->getProductAdditionalAttributes($storeId) as $attribute)
+        {
+            if ($attribute['searchable'] == '1')
+            {
+                if ($attribute['order'] == 'ordered')
+                    $attributesToIndex[] = $attribute['attribute'];
+                else
+                    $attributesToIndex[] = 'unordered('.$attribute['attribute'].')';
+            }
         }
 
-        $customRankings = $this->getCustomRankings($storeId);
+        $customRankings = $this->getProductCustomRanking($storeId);
+
         $customRankingsArr = array();
-        foreach ($customRankings as $ranking) {
-            $customRankingsArr[] =  $ranking['order'] . '(' . $ranking['attribute'] . ')';
-        }
 
-        // Default index settings
+        foreach ($customRankings as $ranking)
+            $customRankingsArr[] =  $ranking['order'] . '(' . $ranking['attribute'] . ')';
+
         $indexSettings = array(
             'attributesToIndex'    => array_values(array_unique($attributesToIndex)),
             'customRanking'        => $customRankingsArr,
-            'minWordSizefor1Typo'  => 5,
-            'minWordSizefor2Typos' => 10,
         );
-
-        // Custom index settings from config
-        if ($customSettings = trim(Mage::getStoreConfig(self::XML_PATH_CUSTOM_INDEX_SETTINGS, $storeId))) {
-            $customSettings = @json_decode($customSettings, TRUE);
-            if ($customSettings === NULL) {
-                /* Error codes:
-                 0 = JSON_ERROR_NONE
-                 1 = JSON_ERROR_DEPTH
-                 2 = JSON_ERROR_STATE_MISMATCH
-                 3 = JSON_ERROR_CTRL_CHAR
-                 4 = JSON_ERROR_SYNTAX
-                 5 = JSON_ERROR_UTF8
-                 */
-                $error = function_exists('json_last_error_msg') ? json_last_error_msg() : json_last_error();
-                Mage::log("Error decoding custom index settings: ".$error);
-            } else {
-                $indexSettings = array_merge($indexSettings, $customSettings);
-            }
-        }
 
         // Additional index settings from event observer
         $transport = new Varien_Object($indexSettings);
         Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport));
         $indexSettings = $transport->getData();
+
+        $this->mergeSettings($this->getStoreProductIndexName($storeId), $indexSettings);
+
+        return $indexSettings;
+    }
+
+    public function getCategoryIndexSettings($storeId)
+    {
+        $attributesToIndex = array();
+
+        foreach ($this->getCategoryAdditionalAttributes($storeId) as $attribute)
+        {
+            if ($attribute['searchable'] == '1')
+            {
+                if ($attribute['order'] == 'ordered')
+                    $attributesToIndex[] = $attribute['attribute'];
+                else
+                    $attributesToIndex[] = 'unordered('.$attribute['attribute'].')';
+            }
+        }
+
+        $customRankings = $this->getCategoryCustomRanking($storeId);
+
+        $customRankingsArr = array();
+
+        foreach ($customRankings as $ranking)
+            $customRankingsArr[] =  $ranking['order'] . '(' . $ranking['attribute'] . ')';
+
+        // Default index settings
+        $indexSettings = array(
+            'attributesToIndex'    => array_values(array_unique($attributesToIndex)),
+            'customRanking'        => $customRankingsArr
+        );
+
+        // Additional index settings from event observer
+        $transport = new Varien_Object($indexSettings);
+        Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport));
+        $indexSettings = $transport->getData();
+
+        $this->mergeSettings($this->getStoreCategoryIndexName($storeId), $indexSettings);
 
         return $indexSettings;
     }
@@ -220,21 +278,29 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getAllProductAttributes()
     {
-        if (is_null(self::$_productAttributes)) {
+        if (is_null(self::$_productAttributes))
+        {
             self::$_productAttributes = array();
-            $config = Mage::getSingleton('eav/config'); /** @var $config Mage_Eav_Model_Config */
+
+            /** @var $config Mage_Eav_Model_Config */
+            $config = Mage::getSingleton('eav/config');
+
             $allAttributes = $config->getEntityAttributeCodes('catalog_product');
+
+            $productAttributes = array_merge(array('name', 'path', 'categories', 'popularity', 'description'), $allAttributes);
+
             $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
                 'custom_design', 'custom_design_from', 'custom_design_to', 'custom_layout_update', 'custom_use_parent_settings',
                 'default_sort_by', 'display_mode', 'filter_price_range', 'global_position', 'image', 'include_in_menu', 'is_active',
-                'is_always_include_in_menu', 'is_anchor', 'landing_page', 'level', 'lower_cms_block', 'name',
-                'page_layout', 'path', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
+                'is_always_include_in_menu', 'is_anchor', 'landing_page', 'level', 'lower_cms_block',
+                'page_layout', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
                 'visible_in_menu');
-            $productAttributes = array_diff($allAttributes, $excludedAttributes);
-            foreach ($productAttributes as $attributeCode) {
+
+            $productAttributes = array_diff($productAttributes, $excludedAttributes);
+
+            foreach ($productAttributes as $attributeCode)
                 self::$_productAttributes[$attributeCode] = $config->getAttribute('catalog_category', $attributeCode)->getFrontendLabel();
-            }
         }
 
         return self::$_productAttributes;
@@ -247,22 +313,29 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getAllCategoryAttributes()
     {
-        if (is_null(self::$_categoryAttributes)) {
+        if (is_null(self::$_categoryAttributes))
+        {
             self::$_categoryAttributes = array();
-            $config = Mage::getSingleton('eav/config'); /** @var $config Mage_Eav_Model_Config */
+
+            /** @var $config Mage_Eav_Model_Config */
+            $config = Mage::getSingleton('eav/config');
+
             $allAttributes = $config->getEntityAttributeCodes('catalog_category');
+
             $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
                 'custom_design', 'custom_design_from', 'custom_design_to', 'custom_layout_update', 'custom_use_parent_settings',
                 'default_sort_by', 'display_mode', 'filter_price_range', 'global_position', 'image', 'include_in_menu', 'is_active',
-                'is_always_include_in_menu', 'is_anchor', 'landing_page', 'level', 'lower_cms_block', 'name',
-                'page_layout', 'path', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
+                'is_always_include_in_menu', 'is_anchor', 'landing_page', 'level', 'lower_cms_block',
+                'page_layout', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
                 'visible_in_menu');
+
             $categoryAttributes = array_diff($allAttributes, $excludedAttributes);
-            foreach ($categoryAttributes as $attributeCode) {
+
+            foreach ($categoryAttributes as $attributeCode)
                 self::$_categoryAttributes[$attributeCode] = $config->getAttribute('catalog_category', $attributeCode)->getFrontendLabel();
-            }
         }
+
         return self::$_categoryAttributes;
     }
 
@@ -290,6 +363,17 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getCategoryObjectId(Mage_Catalog_Model_Category $category)
     {
         return 'category_' . $category->getId();
+    }
+
+    private function try_cast($value)
+    {
+        if (is_numeric($value) && intval($value) == intval(floatval($value)))
+            return intval($value);
+
+        if (is_numeric($value))
+            return floatval($value);
+
+        return $value;
     }
 
     /**
@@ -325,8 +409,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'objectID'      => $this->getProductObjectId($product),
             'name'          => $product->getName(),
             'price'         => $product->getPrice(),
-            'url'           => $product->getProductUrl(),
-            '_tags'         => array('product'),
+            'url'           => $product->getProductUrl()
         );
         $description = $product->getDescription();
         if ( ! empty($description)) {
@@ -341,11 +424,30 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         if ( ! empty($imageUrl)) {
             $customData['image_url'] = $imageUrl;
         }
+
+        $storeId = $product->getStoreId();
+
+        foreach ($this->getProductAdditionalAttributes($storeId) as $attribute)
+        {
+            $value = $product->hasData($this->_dataPrefix.$attribute['attribute'])
+                ? $product->getData($this->_dataPrefix.$attribute['attribute'])
+                : $product->getData($attribute['attribute']);
+
+            $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attribute['attribute'], $value, $storeId, Mage_Catalog_Model_Product::ENTITY);
+            if ($value) {
+                $customData[$attribute['attribute']] = $value;
+            }
+        }
+
         $customData = array_merge($customData, $defaultData);
+
 
         if (isset($customData['price'])) {
             $customData['price'] = floatval($customData['price']);
         }
+
+        foreach ($customData as &$data)
+            $data = $this->try_cast($data);
 
         return $customData;
     }
@@ -391,16 +493,20 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         if ( ! empty($imageUrl)) {
             $data['image_url'] = $imageUrl;
         }
-        foreach ($this->getCategoryAdditionalAttributes($storeId) as $attributeCode) {
-            $value = $category->hasData($this->_dataPrefix.$attributeCode)
-                ? $category->getData($this->_dataPrefix.$attributeCode)
-                : $category->getData($attributeCode);
-            $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attributeCode, $value, $storeId, Mage_Catalog_Model_Category::ENTITY);
+        foreach ($this->getCategoryAdditionalAttributes($storeId) as $attribute) {
+            $value = $category->hasData($this->_dataPrefix.$attribute['attribute'])
+                ? $category->getData($this->_dataPrefix.$attribute['attribute'])
+                : $category->getData($attribute['attribute']);
+            $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attribute['attribute'], $value, $storeId, Mage_Catalog_Model_Category::ENTITY);
             if ($value) {
-                $data[$attributeCode] = $value;
+                $data[$attribute['attribute']] = $value;
             }
         }
+
         $data = array_merge($data, $customData);
+
+        foreach ($data as &$data0)
+            $data0 = $this->try_cast($data0);
 
         return $data;
     }
@@ -434,15 +540,25 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         try {
             $storeRootCategoryPath = sprintf('%d/%d', $this->getRootCategoryId(), Mage::app()->getStore($storeId)->getRootCategoryId());
-            $indexer = $this->getStoreIndex($storeId);
+
+            $indexer = $this->getStoreCategoryIndex($storeId);
+
             $categories = Mage::getResourceModel('catalog/category_collection'); /** @var $categories Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
+
+            $unserializedCategorysAttrs = unserialize(Mage::getStoreConfig(self::XML_PATH_CATEGORY_ATTRIBUTES, $storeId));
+
+            $additionalAttr = array();
+
+            foreach ($unserializedCategorysAttrs as $attr)
+                $additionalAttr[] = $attr['attribute'];
+
             $categories
                 ->addPathFilter($storeRootCategoryPath)
                 ->addNameToResult()
                 ->addUrlRewriteToResult()
                 ->addIsActiveFilter()
                 ->setStoreId($storeId)
-                ->addAttributeToSelect(array_merge(array('name'), $this->getCategoryAdditionalAttributes($storeId)))
+                ->addAttributeToSelect(array_merge(array('name'), $additionalAttr))
                 ->addFieldToFilter('level', array('gt' => 1));
             if ($categoryIds) {
                 $categories->addFieldToFilter('entity_id', array('in' => $categoryIds));
@@ -511,15 +627,23 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $emulationInfo = $this->startEmulation($storeId);
 
         try {
-            $indexer = $this->getStoreIndex($storeId);
+            $indexer = $this->getStoreProductIndex($storeId);
             $products = Mage::getResourceModel('catalog/product_collection'); /** @var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
+
+            $additionalAttr = array();
+
+            $unserializedProductsAttrs = unserialize(Mage::getStoreConfig(self::XML_PATH_PRODUCT_ATTRIBUTES, $storeId));
+
+            foreach ($unserializedProductsAttrs as $attr)
+                $additionalAttr[] = $attr['attribute'];
+
             $products
                 ->setStoreId($storeId)
                 ->addStoreFilter($storeId)
                 ->setVisibility(Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds())
                 ->addFinalPrice()
                 ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
-                ->addAttributeToSelect(array_merge(self::$_predefinedProductAttributes, $this->getProductAdditionalAttributes($storeId)))
+                ->addAttributeToSelect(array_merge(self::$_predefinedProductAttributes, $additionalAttr))
                 ->addAttributeToFilter('entity_id', array('in' => $productIds));
 
             Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before', array('store' => $storeId, 'collection' => $products));
@@ -541,6 +665,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                         $default = isset($defaultData[$product->getId()]) ? (array) $defaultData[$product->getId()] : array();
 
                         $json = $this->getProductJSON($product, $default);
+
                         if ($this->isUseOrderedQtyAsPopularity($storeId)) {
                             $report = Mage::getResourceModel('reports/product_sold_collection')
                                 ->addOrderedQty()
@@ -821,27 +946,27 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getCategoryAdditionalAttributes($storeId = NULL)
     {
-        return explode(',', Mage::getStoreConfig(self::XML_PATH_CATEGORY_ATTRIBUTES, $storeId));
+        return unserialize(Mage::getStoreConfig(self::XML_PATH_CATEGORY_ATTRIBUTES, $storeId));
     }
 
     public function getProductAdditionalAttributes($storeId = NULL)
     {
-        return explode(',', Mage::getStoreConfig(self::XML_PATH_PRODUCT_ATTRIBUTES, $storeId));
+        return unserialize(Mage::getStoreConfig(self::XML_PATH_PRODUCT_ATTRIBUTES, $storeId));
+    }
+
+    public function getCategoryCustomRanking($storeId = NULL)
+    {
+        return unserialize(Mage::getStoreConfig(self::XML_PATH_CATEGORY_CUSTOM_RANKING, $storeId));
+    }
+
+    public function getProductCustomRanking($storeId = NULL)
+    {
+        return unserialize(Mage::getStoreConfig(self::XML_PATH_PRODUCT_CUSTOM_RANKING, $storeId));
     }
 
     public function getNbSuggestions($storeId = NULL)
     {
         return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_SUGGESTIONS, $storeId);
-    }
-
-    public function getMinimalQueryLength($storeId = NULL)
-    {
-        return (int) Mage::getStoreConfig(self::XML_PATH_MINIMAL_QUERY_LENGTH, $storeId);
-    }
-
-    public function getSearchDelay($storeId = NULL)
-    {
-        return (int) Mage::getStoreConfig(self::XML_PATH_SEARCH_DELAY, $storeId);
     }
 
     public function getSaveLastQuery($storeId = NULL)
