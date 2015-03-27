@@ -66,7 +66,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
             'renderer'=> $this->getRenderer('order'),
         ));
         $this->_addAfter = false;
-        $this->_addButtonLabel = Mage::helper('adminhtml')->__('Add Custom Sort Order');
+        $this->_addButtonLabel = Mage::helper('adminhtml')->__('Add Attribute');
         parent::__construct();
     }
 

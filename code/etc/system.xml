@@ -10,135 +10,163 @@
             <show_in_website>1</show_in_website>
             <show_in_store>1</show_in_store>
             <groups>
-                <settings translate="label">
-                    <label>Settings</label>
+                <credentials translate="label">
+                    <label>Credentials &amp; Setup</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>10</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <is_enabled translate="label comment">
-                            <label>Use For Catalog Search And Background Indexing</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        <application_id translate="label">
+                            <label>Application ID</label>
+                            <frontend_type>text</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
-                            <comment>The flag indicates whether Algolia search is enabled for catalog search and background indexing. Background indexing requires selecting Algolia engine in Catalog > Catalog Search > Engine.</comment>
-                        </is_enabled>
-                        <is_popup_enabled translate="label comment">
-                            <label>Display Popup With Search Results On Frontend</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Your Application ID</comment>
+                        </application_id>
+                        <search_only_api_key translate="label">
+                            <label>Search-only (public) API key</label>
+                            <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The flag indicates whether Algolia search popup is enabled on frontend.</comment>
-                            <depends><is_enabled>1</is_enabled></depends>
-                        </is_popup_enabled>
-                        <application_id translate="label">
-                            <label>APPLICATION_ID</label>
+                            <comment>A search-only API key (will be included in the public JavaScript code)</comment>
+                        </search_only_api_key>
+                        <api_key translate="label">
+                            <label>Admin API key</label>
                             <frontend_type>obscure</frontend_type>
                             <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
                             <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </application_id>
-                        <api_key translate="label">
-                            <label>API_KEY</label>
-                            <frontend_type>obscure</frontend_type>
-                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <comment>Your administration API key (kept private)</comment>
+                        </api_key>
+                        <index_prefix translate="label">
+                            <label>Index Name Prefix</label>
+                            <frontend_type>text</frontend_type>
                             <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </api_key>
-                        <search_only_api_key translate="label">
-                            <label>Search-only API_KEY (public)</label>
-                            <frontend_type>obscure</frontend_type>
-                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <comment>If configured, all indices created by the extension will be prefixed by this value.</comment>
+                        </index_prefix>
+                        <is_enabled translate="label comment">
+                            <label>Enable Catalog Search</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>50</sort_order>
                             <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </search_only_api_key>
-                        <index_prefix translate="label">
-                            <label>Index Name Prefix</label>
-                            <frontend_type>text</frontend_type>
+                            <comment>The flag indicates whether Algolia is enabled for catalog search and background indexing. Background indexing requires selecting Algolia engine in Catalog > Catalog Search > Engine.</comment>
+                        </is_enabled>
+                        <is_popup_enabled translate="label comment">
+                            <label>Enable Auto-completion Menu</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>60</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </index_prefix>
+                            <comment>The flag indicates whether the search-as-you-type auto-completion menu is enabled. It requires your theme to expose a "top.search" template.</comment>
+                        </is_popup_enabled>
+                    </fields>
+                </credentials>
+                <products translate="label">
+                    <label>Products Configuration</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <product_additional_attributes translate="label comment">
+                            <label>Product Attributes</label>
+                            <frontend_model>algoliasearch/system_config_form_field_customsortorderproduct</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>List of attributes used to define an Algolia record.</comment>
+                            <depends><is_enabled>1</is_enabled></depends>
+                        </product_additional_attributes>
                         <use_ordered_qty_as_popularity translate="label comment">
                             <label>Use Ordered Quantity as Popularity</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>70</sort_order>
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The flag indicates whether Algolia use the number of sales to reflect product's popularity.</comment>
-                            <depends><is_enabled>1</is_enabled></depends>
+                            <comment>The flag indicates whether the number of sales is added as a "sales_count" attribute.</comment>
                         </use_ordered_qty_as_popularity>
+                        <custom_ranking_product_attributes translate="label comment">
+                            <label>Ranking</label>
+                            <frontend_model>algoliasearch/system_config_form_field_customrankingproduct</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.</comment>
+                        </custom_ranking_product_attributes>
+                    </fields>
+                </products>
+                <categories translate="label">
+                    <label>Categories Configuration</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>40</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <category_additional_attributes2 translate="label comment">
+                            <label>Category Attributes</label>
+                            <frontend_model>algoliasearch/system_config_form_field_customsortordercategory</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>List of attributes used to define an Algolia record</comment>
+                        </category_additional_attributes2>
                         <index_product_count translate="label comment">
                             <label>Index Product Count</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>75</sort_order>
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <comment>If Yes, the number of products contained in a category will be indexed as 'product_count' and will also override the default value for 'popularity'.</comment>
-                            <depends><is_enabled>1</is_enabled></depends>
                         </index_product_count>
-                        <product_additional_attributes translate="label comment">
-                            <label>Product Additional Attributes</label>
-                            <frontend_model>algoliasearch/system_config_form_field_customsortorderproduct</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>80</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Additional product attributes.</comment>
-                            <depends><is_enabled>1</is_enabled></depends>
-                        </product_additional_attributes>
-                        <category_additional_attributes2 translate="label comment">
-                            <label>Category Additional Attributes</label>
-                            <frontend_model>algoliasearch/system_config_form_field_customsortordercategory</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>80</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Additional category attributes</comment>
-                            <depends><is_enabled>1</is_enabled></depends>
-                        </category_additional_attributes2>
-                        <custom_ranking_product_attributes translate="label comment">
-                            <label>Optional Product Attributes For Custom Ranking</label>
-                            <frontend_model>algoliasearch/system_config_form_field_customrankingproduct</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>85</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.  Defaults to the popularity (product count) attribute in descending order.</comment>
-                        </custom_ranking_product_attributes>
                         <custom_ranking_category_attributes translate="label comment">
-                            <label>Optional Category Attributes For Custom Ranking</label>
+                            <label>Ranking</label>
                             <frontend_model>algoliasearch/system_config_form_field_customrankingcategory</frontend_model>
                             <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>85</sort_order>
+                            <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.  Defaults to the popularity (product count) attribute in descending order.</comment>
                         </custom_ranking_category_attributes>
+                    </fields>
+                </categories>
+                <relevance translate="label">
+                    <label>Query Expansion Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>50</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
                         <remove_words_if_no_result translate="label comment">
                             <label>Remove Words If No Result?</label>
                             <frontend_type>select</frontend_type>
                             <source_model>algoliasearch/system_config_source_removewords</source_model>
-                            <sort_order>95</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -147,31 +175,12 @@
                              LastWords: when a query does not return any result, the first word will be added as optionalWords (the process is repeated with the second word, third word, ... until there is results). This option is useful on address search<br/>
                              None: No specific processing is done when a query does not return any result<br/>]]></comment>
                         </remove_words_if_no_result>
-                        <results_limit translate="label comment">
-                            <label>Results Limit</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>100</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The maximum number of results to return for searches. Maximum is 1000.</comment>
-                        </results_limit>
-                        <use_result_cache translate="label comment">
-                            <label>Use Result Cache</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>110</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <comment>The Result Cache (catalogsearch_result table, prepareResult method) can reduce the number of repeat queries, but may also cause high database load and/or lock contention if products are saved frequently..</comment>
-                            <depends><is_enabled>1</is_enabled></depends>
-                        </use_result_cache>
                     </fields>
-                </settings>
+                </relevance>
                 <ui translate="label">
-                    <label>UI</label>
+                    <label>Search Bar UI/UX</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>20</sort_order>
+                    <sort_order>60</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -184,13 +193,13 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Default value is 5.</comment>
+                            <comment>The number of suggestion the auto-completion menu is displaying. Default value is 5.</comment>
                         </number_suggestions>
                         <save_last_query translate="label comment">
                             <label>Save Last Query</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>40</sort_order>
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -199,9 +208,9 @@
                     </fields>
                 </ui>
                 <queue translate="label">
-                    <label>Queue</label>
+                    <label>Queue Configuration</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>30</sort_order>
+                    <sort_order>70</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -252,47 +261,48 @@
                             <depends><engine>algoliasearch/engine</engine></depends>
                         </algolia_is_enabled>
                         <algolia_application_id translate="label">
-                            <label>APPLICATION_ID</label>
-                            <frontend_type>obscure</frontend_type>
-                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <label>Application ID</label>
+                            <frontend_type>text</frontend_type>
                             <config_path>algoliasearch/settings/application_id</config_path>
                             <sort_order>22</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <comment>Your application ID</comment>
                             <depends>
                                 <algolia_is_enabled>1</algolia_is_enabled>
                                 <engine>algoliasearch/engine</engine>
                             </depends>
                         </algolia_application_id>
-                        <algolia_api_key translate="label">
-                            <label>API_KEY</label>
-                            <frontend_type>obscure</frontend_type>
-                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
-                            <config_path>algoliasearch/settings/api_key</config_path>
+                        <algolia_search_only_api_key translate="label">
+                            <label>Search-only (public) API key</label>
+                            <frontend_type>text</frontend_type>
+                            <config_path>algoliasearch/settings/search_only_api_key</config_path>
                             <sort_order>23</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <depends>
-                                <algolia_is_enabled>1</algolia_is_enabled>
-                                <engine>algoliasearch/engine</engine>
-                            </depends>
-                        </algolia_api_key>
-                        <algolia_search_only_api_key translate="label">
-                            <label>Search-only API_KEY (public)</label>
-                            <frontend_type>obscure</frontend_type>
-                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
-                            <config_path>algoliasearch/settings/search_only_api_key</config_path>
-                            <sort_order>24</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
+                            <comment>A search-only API key (will be included in the public JavaScript code)</comment>
                             <depends>
                                 <algolia_is_enabled>1</algolia_is_enabled>
                                 <engine>algoliasearch/engine</engine>
                             </depends>
                         </algolia_search_only_api_key>
+                        <algolia_api_key translate="label">
+                            <label>Admin API key</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <config_path>algoliasearch/settings/api_key</config_path>
+                            <sort_order>24</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Your administration API key (kept private)</comment>
+                            <depends>
+                                <algolia_is_enabled>1</algolia_is_enabled>
+                                <engine>algoliasearch/engine</engine>
+                            </depends>
+                        </algolia_api_key>
                         <search_type>
                             <depends><engine>catalogsearch/fulltext_engine</engine></depends>
                         </search_type>
