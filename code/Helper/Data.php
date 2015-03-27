@@ -245,14 +245,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Varien_Profiler::start('Algolia-FullText-getSearchResult');
         try {
             $resultsLimit = $this->getResultsLimit($storeId);
-            $answer = $this->query($this->getIndexName($storeId), $queryText, array(
-                'hitsPerPage' => max(5,min($resultsLimit, 1000)), // retrieve all the hits (hard limit is 1000)
+            $answer = $this->query($this->getStoreProductIndexName($storeId), $queryText, array(
+                'hitsPerPage' => max(5, min($resultsLimit, 1000)), // retrieve all the hits (hard limit is 1000)
                 'attributesToRetrieve' => 'objectID',
                 'attributesToHighlight' => '',
                 'attributesToSnippet' => '',
-                'tagFilters' => 'product',
                 'removeWordsIfNoResult'=> $this->getRemoveWordsIfNoResult($storeId),
             ));
+
         } catch (Exception $e) {
             Varien_Profiler::stop('Algolia-FullText-getSearchResult');
             throw $e;
