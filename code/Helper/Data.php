@@ -946,22 +946,42 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getCategoryAdditionalAttributes($storeId = NULL)
     {
-        return unserialize(Mage::getStoreConfig(self::XML_PATH_CATEGORY_ATTRIBUTES, $storeId));
+        $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_CATEGORY_ATTRIBUTES, $storeId));
+
+        if (is_array($attrs))
+            return $attrs;
+
+        return array();
     }
 
     public function getProductAdditionalAttributes($storeId = NULL)
     {
-        return unserialize(Mage::getStoreConfig(self::XML_PATH_PRODUCT_ATTRIBUTES, $storeId));
+        $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_PRODUCT_ATTRIBUTES, $storeId));
+
+        if (is_array($attrs))
+            return $attrs;
+
+        return array();
     }
 
     public function getCategoryCustomRanking($storeId = NULL)
     {
-        return unserialize(Mage::getStoreConfig(self::XML_PATH_CATEGORY_CUSTOM_RANKING, $storeId));
+        $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_CATEGORY_CUSTOM_RANKING, $storeId));
+
+        if (is_array($attrs))
+            return $attrs;
+
+        return array();
     }
 
     public function getProductCustomRanking($storeId = NULL)
     {
-        return unserialize(Mage::getStoreConfig(self::XML_PATH_PRODUCT_CUSTOM_RANKING, $storeId));
+        $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_PRODUCT_CUSTOM_RANKING, $storeId));
+
+        if (is_array($attrs))
+            return $attrs;
+
+        return array();
     }
 
     public function getNbSuggestions($storeId = NULL)
