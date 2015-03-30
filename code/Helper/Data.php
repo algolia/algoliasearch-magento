@@ -12,23 +12,29 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_NUMBER_SUGGESTIONS            = 'algoliasearch/ui/number_suggestions';
     const XML_PATH_SAVE_LAST_QUERY               = 'algoliasearch/ui/save_last_query';
 
-    const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED     = 'algoliasearch/settings/is_enabled';
-    const XML_PATH_IS_POPUP_ENABLED              = 'algoliasearch/settings/is_popup_enabled';
-    const XML_PATH_APPLICATION_ID                = 'algoliasearch/settings/application_id';
-    const XML_PATH_API_KEY                       = 'algoliasearch/settings/api_key';
-    const XML_PATH_SEARCH_ONLY_API_KEY           = 'algoliasearch/settings/search_only_api_key';
-    const XML_PATH_INDEX_PREFIX                  = 'algoliasearch/settings/index_prefix';
-    const XML_PATH_USE_ORDERED_QTY_AS_POPULARITY = 'algoliasearch/settings/use_ordered_qty_as_popularity';
-    const XML_PATH_CATEGORY_ATTRIBUTES           = 'algoliasearch/settings/category_additional_attributes2';
-    const XML_PATH_PRODUCT_ATTRIBUTES            = 'algoliasearch/settings/product_additional_attributes';
-    const XML_PATH_REMOVE_IF_NO_RESULT           = 'algoliasearch/settings/remove_words_if_no_result';
-    const XML_PATH_CUSTOM_RANKING_ATTRIBUTES     = 'algoliasearch/settings/custom_ranking_attributes';
-    const XML_PATH_INDEX_PRODUCT_COUNT           = 'algoliasearch/settings/index_product_count';
-    const XML_PATH_CUSTOM_INDEX_SETTINGS         = 'algoliasearch/settings/custom_index_settings';
-    const XML_PATH_RESULTS_LIMIT                 = 'algoliasearch/settings/results_limit';
-    const XML_PATH_USE_RESULT_CACHE              = 'algoliasearch/settings/use_result_cache';
-    const XML_PATH_CATEGORY_CUSTOM_RANKING       = 'algoliasearch/settings/custom_ranking_category_attributes';
-    const XML_PATH_PRODUCT_CUSTOM_RANKING        = 'algoliasearch/settings/custom_ranking_product_attributes';
+    const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED     = 'algoliasearch/credentials/is_enabled';
+    const XML_PATH_IS_POPUP_ENABLED              = 'algoliasearch/credentials/is_popup_enabled';
+    const XML_PATH_APPLICATION_ID                = 'algoliasearch/credentials/application_id';
+    const XML_PATH_API_KEY                       = 'algoliasearch/credentials/api_key';
+    const XML_PATH_SEARCH_ONLY_API_KEY           = 'algoliasearch/credentials/search_only_api_key';
+    const XML_PATH_INDEX_PREFIX                  = 'algoliasearch/credentials/index_prefix';
+
+    const XML_PATH_USE_ORDERED_QTY_AS_POPULARITY = 'algoliasearch/products/use_ordered_qty_as_popularity';
+    const XML_PATH_PRODUCT_ATTRIBUTES            = 'algoliasearch/products/product_additional_attributes';
+    const XML_PATH_PRODUCT_CUSTOM_RANKING        = 'algoliasearch/products/custom_ranking_product_attributes';
+
+    const XML_PATH_CATEGORY_ATTRIBUTES           = 'algoliasearch/categories/category_additional_attributes2';
+    const XML_PATH_INDEX_PRODUCT_COUNT           = 'algoliasearch/categories/index_product_count';
+    const XML_PATH_CATEGORY_CUSTOM_RANKING       = 'algoliasearch/categories/custom_ranking_category_attributes';
+
+    const XML_PATH_REMOVE_IF_NO_RESULT           = 'algoliasearch/relevance/remove_words_if_no_result';
+
+    const XML_PATH_RESULTS_LIMIT                 = 'algoliasearch/ui/results_limit';
+    const XML_PATH_USE_RESULT_CACHE              = 'algoliasearch/ui/use_result_cache';
+
+    const XML_PATH_CUSTOM_RANKING_ATTRIBUTES     = 'algoliasearch/queue/custom_ranking_attributes';
+    const XML_PATH_CUSTOM_INDEX_SETTINGS         = 'algoliasearch/queue/custom_index_settings';
+
 
     private static $_categoryNames;
     private static $_activeCategories;
@@ -648,6 +654,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before', array('store' => $storeId, 'collection' => $products));
             $size = $products->getSize();
+
             if ($size > 0) {
                 $indexData = array();
                 $pageSize = self::COLLECTION_PAGE_SIZE;
