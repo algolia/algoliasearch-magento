@@ -38,7 +38,7 @@
                         </search_only_api_key>
                         <api_key translate="label">
                             <label>Admin API key</label>
-                            <frontend_type>obscure</frontend_type>
+                            <frontend_type>password</frontend_type>
                             <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>

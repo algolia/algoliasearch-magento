@@ -116,6 +116,7 @@ AlgoliaLiveSearch.prototype = {
         this.selectedEntry = this.options.markPrevious ? this.options.markPrevious.call(this) : this.markEntry(-1);
     },
     selectEntry: function(){
+        console.log(this.selectedEntry);
         if(this.options.selectEntry){
             this.options.selectEntry.call(this);
         }
@@ -129,7 +130,8 @@ AlgoliaLiveSearch.prototype = {
                 diff = 0;
             }
 
-            var links = $$(this.options.resultLinks);
+            var links = this.options.resultLinks;
+
             if(links.length == 0){
                 this.index = 0;
                 return;

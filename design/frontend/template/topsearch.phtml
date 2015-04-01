@@ -67,6 +67,7 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
             } else {
                 html = '';
             }
+
             $('search_autocomplete_categories').update(html);
 
             // Display products
@@ -90,7 +91,10 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
             } else {
                 html = '';
             }
+
             $('search_autocomplete_products').update(html);
+
+            this.options.resultLinks = $('search_autocomplete').select('a');
 
             <?php if ($algoliaSearchHelper->getSaveLastQuery()): ?>
             var searchQuery = algoliaLiveSearch.searchForm.field.getValue();
