@@ -135,7 +135,15 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function mergeSettings($index_name, $settings)
     {
-        $onlineSettings = $this->getIndex($index_name)->getSettings();
+        $onlineSettings = array();
+
+        try
+        {
+            $onlineSettings = $this->getIndex($index_name)->getSettings();
+        }
+        catch(\Exception $e)
+        {
+        }
 
         $removes = array('slaves');
 
