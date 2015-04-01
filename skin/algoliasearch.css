@@ -15,14 +15,14 @@
     padding: 5px 0;
 }
 
-.result-set:last-child
-{
-    border-bottom: 1px solid #dddddd;
-}
-
 .algoliasearch-autocomplete-hit:not(:first-child):not(:last-child)
 {
     border-bottom: solid 1px #DDDDDD;
+}
+
+.result-set:last-child .algoliasearch-autocomplete-hit:last-child
+{
+    border-bottom: 1px solid #dddddd;
 }
 
 .algoliasearch-autocomplete-hit {
