@@ -328,6 +328,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $allAttributes = $config->getEntityAttributeCodes('catalog_category');
 
+            $categoryAttributes = array_merge($allAttributes, array('product_count', 'popularity'));
+
             $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
                 'custom_design', 'custom_design_from', 'custom_design_to', 'custom_layout_update', 'custom_use_parent_settings',
@@ -415,8 +417,21 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'objectID'      => $this->getProductObjectId($product),
             'name'          => $product->getName(),
             'price'         => $product->getPrice(),
-            'url'           => $product->getProductUrl()
+            'url'           => $product->getProductUrl(),
         );
+
+        $report = Mage::getResourceModel('reports/product_sold_collection')
+            ->addOrderedQty()
+            ->setStoreId($product->getStoreId())
+            ->addStoreFilter($product->getStoreId())
+            ->addFieldToFilter('entity_id', $product->getId())
+            ->getFirstItem();
+
+        $customData['sales_count'] = intval($report->getOrderedQty());
+
+        if ($this->isUseOrderedQtyAsPopularity($product->getStoreId()))
+            $customData['popularity'] = $customData['sales_count'];
+
         $description = $product->getDescription();
         if ( ! empty($description)) {
             $customData['description'] = $description;
@@ -492,9 +507,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'url'           => $category->getUrl(),
             '_tags'         => array('category'),
             'popularity'    => 1,
+            'product_count' => $category->getProductCount()
         );
+
         if ($this->isIndexProductCount()) {
-            $data['product_count'] = $data['popularity'] = $category->getProductCount();
+            $data['popularity'] = $data['product_count'];
         }
         if ( ! empty($imageUrl)) {
             $data['image_url'] = $imageUrl;
@@ -672,16 +689,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                         $default = isset($defaultData[$product->getId()]) ? (array) $defaultData[$product->getId()] : array();
 
                         $json = $this->getProductJSON($product, $default);
-
-                        if ($this->isUseOrderedQtyAsPopularity($storeId)) {
-                            $report = Mage::getResourceModel('reports/product_sold_collection')
-                                ->addOrderedQty()
-                                ->setStoreId($storeId)
-                                ->addStoreFilter($storeId)
-                                ->addFieldToFilter('entity_id', $product->getId())
-                                ->getFirstItem();
-                            $json['popularity'] = intval($report->getOrderedQty());
-                        }
 
                         array_push($indexData, $json);
                         if (count($indexData) >= self::BATCH_SIZE) {
