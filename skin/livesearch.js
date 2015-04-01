@@ -80,8 +80,10 @@ AlgoliaLiveSearch.prototype = {
         this.options.renderResults.call(this, content.results);
     },
     onKeyPress: function(event) {
-        if(this.active)
-            switch(event.keyCode) {
+        if(this.active) {
+            switch (event.keyCode) {
+                case 13:
+                    return;
                 case Event.KEY_RETURN:
                     this.selectEntry();
                     Event.stop(event);
@@ -103,6 +105,7 @@ AlgoliaLiveSearch.prototype = {
                     Event.stop(event);
                     return;
             }
+        }
         else
         if(event.keyCode==Event.KEY_TAB || event.keyCode==Event.KEY_RETURN ||
             (Prototype.Browser.WebKit > 0 && event.keyCode == 0)) return;
