@@ -26,6 +26,11 @@
     color: white;
 }
 
+.algoliasearch-autocomplete-hit.marked {
+    background: #F18200;
+    color: white;
+}
+
 .algoliasearch-autocomplete-hit em {
     font-weight: bold;
     font-style: normal;
