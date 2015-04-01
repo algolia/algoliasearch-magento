@@ -56,12 +56,13 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                     html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' +
                     (hit.image_url ? '<div class="thumb"><img src="' + hit.image_url + '" /></div>' : '') +
                     '<div class="info">' +
-                    hit._highlightResult.name.value +
-                    <?php if ($algoliaSearchHelper->isIndexProductCount()): ?>
-                    ' <small>(' + hit.product_count + ')</small>' +
-                    <?php endif ?>
-                    '</div>' +
-                    '<div class="clearfix"></div>' +
+                    hit._highlightResult.name.value;
+
+                    if (hit.product_count != undefined)
+                        html += ' <small>(' + hit.product_count + ')</small>';
+
+                    html += '</div>' +
+                    '<div style="clear: both;"></div>' +
                     '</a>';
                 }
             } else {
@@ -82,7 +83,7 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                         hit._highlightResult.name.value +
                         (hit.categories && hit.categories.length > 0 ? '<div class="algoliasearch-autocomplete-category">in ' + hit.categories.join(', ') + '</div>' : '') +
                         '</div>' +
-                        '<div class="clearfix"></div>' +
+                        '<div style="clear: both;"></div>' +
                         '</a>';
                     }
                 } else {

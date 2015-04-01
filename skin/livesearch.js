@@ -33,7 +33,7 @@ AlgoliaLiveSearch.prototype = {
 
         this.searchForm.field
             .observe('focus', this.submitSearchCallback)
-            .observe('blur', this.options.clearResults ? this.options.clearResults.bind(this) : function(){})
+            //.observe('blur', this.options.clearResults ? this.options.clearResults.bind(this) : function(){})
             .observe('blur', this.focusOutCallback)
             .observe('keydown', this.onKeyPress.bindAsEventListener(this));
 
