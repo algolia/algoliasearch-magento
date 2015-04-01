@@ -104,23 +104,30 @@
     </crontab>
     <default>
         <algoliasearch>
-            <settings>
-                <is_enabled>0</is_enabled>
-                <is_popup_enabled>0</is_popup_enabled>
-                <application_id backend_model="adminhtml/system_config_backend_encrypted" />
-                <api_key backend_model="adminhtml/system_config_backend_encrypted" />
-                <search_only_api_key backend_model="adminhtml/system_config_backend_encrypted" />
-                <index_prefix />
-                <remove_words_if_no_result>None</remove_words_if_no_result>
-                <custom_ranking_attributes>a:1:{i:0;a:2:{s:9:"attribute";s:10:"popularity";s:5:"order";s:4:"desc";}}</custom_ranking_attributes>
+            <credentials>
+                <application_id></application_id>
+                <search_only_api_key></search_only_api_key>
+                <api_key></api_key>
+                <index_prefix>magento_</index_prefix>
+                <is_enabled>1</is_enabled>
+                <is_popup_enabled>1</is_popup_enabled>
+            </credentials>
+            <products>
+                <product_additional_attributes></product_additional_attributes>
                 <use_ordered_qty_as_popularity>1</use_ordered_qty_as_popularity>
+                <custom_ranking_product_attributes></custom_ranking_product_attributes>
+            </products>
+            <categories>
+                <category_additional_attributes2></category_additional_attributes2>
                 <index_product_count>1</index_product_count>
-                <results_limit>1000</results_limit>
-            </settings>
+                <custom_ranking_category_attributes></custom_ranking_category_attributes>
+            </categories>
+            <relevance>
+                <remove_words_if_no_result></remove_words_if_no_result>
+            </relevance>
             <ui>
                 <number_suggestions>5</number_suggestions>
-                <minimal_query_length>0</minimal_query_length>
-                <search_delay>0</search_delay>
+                <save_last_query>0</save_last_query>
             </ui>
             <queue>
                 <active>1</active>
