@@ -9,8 +9,8 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
         <label for="search"><?php echo $this->__('Search:') ?></label>
         <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" value="<?php echo $catalogSearchHelper->getEscapedQueryText() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
         <div id="search_autocomplete" class="algoliasearch-autocomplete">
-            <div id="search_autocomplete_categories"></div>
-            <div id="search_autocomplete_products"></div>
+            <div class="result-set" id="search_autocomplete_categories"></div>
+            <div class="result-set" id="search_autocomplete_products"></div>
         </div>
     </div>
 </form>
