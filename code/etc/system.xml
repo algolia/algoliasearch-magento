@@ -138,6 +138,7 @@
                 <relevance translate="label">
                     <label>Query Expansion Settings</label>
                     <frontend_type>text</frontend_type>
+                    <expanded>0</expanded>
                     <sort_order>50</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
