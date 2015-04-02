@@ -93,16 +93,6 @@
                             <comment>List of attributes used to define an Algolia record.</comment>
                             <depends><is_enabled>1</is_enabled></depends>
                         </product_additional_attributes>
-                        <use_ordered_qty_as_popularity translate="label comment">
-                            <label>Use Ordered Quantity as Popularity</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The flag indicates whether the number of sales is added as a "sales_count" attribute.</comment>
-                        </use_ordered_qty_as_popularity>
                         <custom_ranking_product_attributes translate="label comment">
                             <label>Ranking</label>
                             <frontend_model>algoliasearch/system_config_form_field_customrankingproduct</frontend_model>
@@ -133,14 +123,6 @@
                             <show_in_store>1</show_in_store>
                             <comment>List of attributes used to define an Algolia record</comment>
                         </category_additional_attributes2>
-                        <index_product_count translate="label comment">
-                            <label>Index Product Count</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <comment>If Yes, the number of products contained in a category will be indexed as 'product_count' and will also override the default value for 'popularity'.</comment>
-                        </index_product_count>
                         <custom_ranking_category_attributes translate="label comment">
                             <label>Ranking</label>
                             <frontend_model>algoliasearch/system_config_form_field_customrankingcategory</frontend_model>
@@ -178,6 +160,7 @@
                 </relevance>
                 <ui translate="label">
                     <label>Search Bar UI/UX</label>
+                    <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
                     <sort_order>60</sort_order>
                     <show_in_default>1</show_in_default>
@@ -208,6 +191,7 @@
                 </ui>
                 <queue translate="label">
                     <label>Queue Configuration</label>
+                    <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
                     <sort_order>70</sort_order>
                     <show_in_default>1</show_in_default>
@@ -229,7 +213,7 @@
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
+                            <show_in_store>0</show_in_store>
                             <comment>Number of retries before giving up on unexpected errors.</comment>
                         </retries>
                     </fields>

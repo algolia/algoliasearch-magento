@@ -301,7 +301,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $allAttributes = $config->getEntityAttributeCodes('catalog_product');
 
-            $productAttributes = array_merge(array('name', 'path', 'categories', 'popularity', 'description'), $allAttributes);
+            $productAttributes = array_merge(array('name', 'path', 'categories', 'description', 'sales_count', 'stock_qty'), $allAttributes);
 
             $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
@@ -336,7 +336,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $allAttributes = $config->getEntityAttributeCodes('catalog_category');
 
-            $categoryAttributes = array_merge($allAttributes, array('product_count', 'popularity'));
+            $categoryAttributes = array_merge($allAttributes, array('product_count'));
 
             $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
@@ -346,7 +346,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 'page_layout', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
                 'visible_in_menu');
 
-            $categoryAttributes = array_diff($allAttributes, $excludedAttributes);
+            $categoryAttributes = array_diff($categoryAttributes, $excludedAttributes);
 
             foreach ($categoryAttributes as $attributeCode)
                 self::$_categoryAttributes[$attributeCode] = $config->getAttribute('catalog_category', $attributeCode)->getFrontendLabel();
@@ -436,9 +436,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             ->getFirstItem();
 
         $customData['sales_count'] = intval($report->getOrderedQty());
-
-        if ($this->isUseOrderedQtyAsPopularity($product->getStoreId()))
-            $customData['popularity'] = $customData['sales_count'];
+        $customData['stock_qty'] = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
 
         $description = $product->getDescription();
         if ( ! empty($description)) {
@@ -518,9 +516,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'product_count' => $category->getProductCount()
         );
 
-        if ($this->isIndexProductCount()) {
-            $data['popularity'] = $data['product_count'];
-        }
         if ( ! empty($imageUrl)) {
             $data['image_url'] = $imageUrl;
         }

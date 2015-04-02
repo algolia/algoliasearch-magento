@@ -113,14 +113,12 @@
                 <is_popup_enabled>1</is_popup_enabled>
             </credentials>
             <products>
-                <product_additional_attributes></product_additional_attributes>
-                <use_ordered_qty_as_popularity>1</use_ordered_qty_as_popularity>
-                <custom_ranking_product_attributes></custom_ranking_product_attributes>
+                <product_additional_attributes>a:10:{s:18:"_1427959997377_377";a:3:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960012597_597";a:3:{s:9:"attribute";s:11:"description";s:10:"searchable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427960251221_221";a:3:{s:9:"attribute";s:10:"categories";s:10:"searchable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961262735_735";a:3:{s:9:"attribute";s:10:"meta_title";s:10:"searchable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961263735_735";a:3:{s:9:"attribute";s:12:"meta_keyword";s:10:"searchable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961264377_377";a:3:{s:9:"attribute";s:16:"meta_description";s:10:"searchable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961289908_908";a:3:{s:9:"attribute";s:11:"sales_count";s:10:"searchable";s:1:"0";s:5:"order";s:7:"ordered";}s:18:"_1427961296876_876";a:3:{s:9:"attribute";s:3:"sku";s:10:"searchable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961324936_936";a:3:{s:9:"attribute";s:5:"price";s:10:"searchable";s:1:"0";s:5:"order";s:7:"ordered";}s:18:"_1427962021621_621";a:3:{s:9:"attribute";s:9:"stock_qty";s:10:"searchable";s:1:"0";s:5:"order";s:7:"ordered";}}</product_additional_attributes>
+                <custom_ranking_product_attributes>a:1:{s:18:"_1427960305274_274";a:2:{s:9:"attribute";s:11:"sales_count";s:5:"order";s:4:"desc";}}</custom_ranking_product_attributes>
             </products>
             <categories>
-                <category_additional_attributes2></category_additional_attributes2>
-                <index_product_count>1</index_product_count>
-                <custom_ranking_category_attributes></custom_ranking_category_attributes>
+                <category_additional_attributes2>a:6:{s:18:"_1427960339954_954";a:3:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960354437_437";a:3:{s:9:"attribute";s:11:"description";s:10:"searchable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961004989_989";a:3:{s:9:"attribute";s:10:"meta_title";s:10:"searchable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961205511_511";a:3:{s:9:"attribute";s:13:"meta_keywords";s:10:"searchable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961216134_134";a:3:{s:9:"attribute";s:16:"meta_description";s:10:"searchable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961216916_916";a:3:{s:9:"attribute";s:13:"product_count";s:10:"searchable";s:1:"0";s:5:"order";s:7:"ordered";}}</category_additional_attributes2>
+                <custom_ranking_category_attributes>a:1:{s:18:"_1427961035192_192";a:2:{s:9:"attribute";s:13:"product_count";s:5:"order";s:4:"desc";}}</custom_ranking_category_attributes>
             </categories>
             <relevance>
                 <remove_words_if_no_result></remove_words_if_no_result>
