@@ -498,6 +498,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             }
             $path .= $this->getCategoryName($categoryId, $storeId);
         }
+
         $imageUrl = NULL;
         try {
             $imageUrl = $category->getImageUrl();
@@ -514,6 +515,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'product_count' => $category->getProductCount()
         );
 
+
+
         if ( ! empty($imageUrl)) {
             $data['image_url'] = $imageUrl;
         }
@@ -521,10 +524,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $value = $category->hasData($this->_dataPrefix.$attribute['attribute'])
                 ? $category->getData($this->_dataPrefix.$attribute['attribute'])
                 : $category->getData($attribute['attribute']);
+
             $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attribute['attribute'], $value, $storeId, Mage_Catalog_Model_Category::ENTITY);
-            if ($value) {
+
+            if (isset($data[$attribute['attribute']]))
+                $value = $data[$attribute['attribute']];
+
+            if ($value)
                 $data[$attribute['attribute']] = $value;
-            }
         }
 
         $data = array_merge($data, $customData);
