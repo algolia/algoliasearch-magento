@@ -103,6 +103,16 @@
                             <show_in_store>1</show_in_store>
                             <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.</comment>
                         </custom_ranking_product_attributes>
+                        <results_limit translate="label comment">
+                            <label>Results Limit</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The maximum number of results to return for searches. Maximum is 1000.</comment>
+                        </results_limit>
                     </fields>
                 </products>
                 <categories translate="label">
@@ -168,16 +178,26 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <number_suggestions translate="label comment">
-                            <label>Number of suggestions</label>
+                        <number_category_suggestions translate="label comment">
+                            <label>Number of category suggestions</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of suggestion the auto-completion menu is displaying. Default value is 5.</comment>
-                        </number_suggestions>
+                            <comment>The number of category suggestions the auto-completion menu is displaying. Default value is 3.</comment>
+                        </number_category_suggestions>
+                        <number_product_suggestions translate="label comment">
+                            <label>Number of product suggestions</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The number of product suggestions the auto-completion menu is displaying. Default value is 5.</comment>
+                        </number_product_suggestions>
                         <save_last_query translate="label comment">
                             <label>Save Last Query</label>
                             <frontend_type>select</frontend_type>

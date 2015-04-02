@@ -9,7 +9,12 @@ AlgoliaLiveSearch.prototype = {
             searchDelay: 0,
             minLength: 0,
             resultLinks: null,
-            queryOptions: {
+            categoriesQueryOptions: {
+                hitsPerPage: 10,
+                attributesToRetrieve: null,
+                attributesToHighlight: 'name'
+            },
+            productsQueryOptions: {
                 hitsPerPage: 10,
                 attributesToRetrieve: null,
                 attributesToHighlight: 'name'
@@ -57,8 +62,8 @@ AlgoliaLiveSearch.prototype = {
         if (searchQuery.length >= this.options.minLength && searchQuery.lastIndexOf(' ') != searchQuery.length - 1)
         {
             this.algolia.startQueriesBatch();
-            this.algolia.addQueryInBatch(this.options.indexName + '_products', searchQuery, this.options.queryOptions);
-            this.algolia.addQueryInBatch(this.options.indexName + '_categories', searchQuery, this.options.queryOptions);
+            this.algolia.addQueryInBatch(this.options.indexName + '_products', searchQuery, this.options.productsQueryOptions);
+            this.algolia.addQueryInBatch(this.options.indexName + '_categories', searchQuery, this.options.categoriesQueryOptions);
             this.algolia.sendQueriesBatch(this.searchResultsCallback);
 
             Event.fire(document, 'algolia:search', {query: searchQuery});

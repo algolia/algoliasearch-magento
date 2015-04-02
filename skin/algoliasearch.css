@@ -55,6 +55,10 @@
     color: #666666;
 }
 
+.algoliasearch-autocomplete-price {
+    color: #666666;
+}
+
 .algoliasearch-autocomplete-hit .thumb {
     float: left;
 }

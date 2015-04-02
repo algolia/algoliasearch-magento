@@ -21,16 +21,17 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
         applicationID: '<?php echo $algoliaSearchHelper->getApplicationID() ?>',
         apiKey: '<?php echo $algoliaSearchHelper->getSearchOnlyAPIKey() ?>',
         indexName: '<?php echo $algoliaSearchHelper->getIndexName() ?>',
-        queryOptions: {
-            hitsPerPage: <?php echo (int) $algoliaSearchHelper->getNbSuggestions() ?>,
-            attributesToRetrieve: <?php echo json_encode($algoliaSearchHelper->getAttributesToRetrieve()) ?>,
+        productsQueryOptions: {
+            hitsPerPage: <?php echo (int) $algoliaSearchHelper->getNumberOfProductSuggestions() ?>,
+            attributesToHighlight: 'name'
+        },
+        categoriesQueryOptions: {
+            hitsPerPage: <?php echo (int) $algoliaSearchHelper->getNumberOfCategorySuggestions() ?>,
             attributesToHighlight: 'name'
         },
         renderResults: function (results) {
-
             var products_hits = results[0].hits;
             var categories_hits = results[1].hits;
-            var nbSuggestions = this.options.queryOptions.hitsPerPage;
             var products = [];
             var categories = [];
             var html;
@@ -53,9 +54,15 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                 for (i = 0; i < categories.length; ++i) {
                     hit = categories[i];
                     html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' +
-                    (hit.image_url ? '<div class="thumb"><img src="' + hit.image_url + '" /></div>' : '') +
-                    '<div class="info">' +
-                    hit._highlightResult.name.value;
+                    (hit.image_url ? '<div class="thumb"><img src="' + hit.image_url + '" /></div>' : '');
+
+                    if (hit.image_url)
+                        html += '<div class="info">';
+                    else
+                        html += '<div class="info-without-thumb">';
+
+
+                    html += hit._highlightResult.name.value;
 
                     if (hit.product_count != undefined)
                         html += ' <small>(' + hit.product_count + ')</small>';
@@ -81,6 +88,7 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                         '<div class="info">' +
                         hit._highlightResult.name.value +
                         (hit.categories && hit.categories.length > 0 ? '<div class="algoliasearch-autocomplete-category">in ' + hit.categories.join(', ') + '</div>' : '') +
+                        (hit.price && hit.price > 0 ? '<div class="algoliasearch-autocomplete-price">' + hit.price + '$</div>' : '') +
                         '</div>' +
                         '<div style="clear: both;"></div>' +
                         '</a>';
