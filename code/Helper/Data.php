@@ -80,9 +80,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function __construct()
     {
-        if ($this->isIndexProductCount()) {
-            self::$_predefinedCategoryAttributesToRetrieve[] = 'product_count';
-        }
     }
 
     /**
@@ -597,19 +594,26 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 $pages = ceil($size / $pageSize);
                 $categories->clear();
                 $page = 1;
-                while ($page <= $pages) {
+                while ($page <= $pages)
+                {
                     $collection = clone $categories;
                     $collection->setCurPage($page)->setPageSize($pageSize);
                     $collection->load();
-                    foreach ($collection as $category) { /** @var $category Mage_Catalog_Model_Category */
-                        if ( ! $this->isCategoryActive($category->getId(), $storeId)) {
+                    foreach ($collection as $category)
+                    {
+                        /** @var $category Mage_Catalog_Model_Category */
+                        if ( ! $this->isCategoryActive($category->getId(), $storeId))
                             continue;
-                        }
+
                         $category->setStoreId($storeId);
-                        if ($this->isIndexProductCount()) {
-                            $this->addCategoryProductCount($category);
-                        }
-                        array_push($indexData, $this->getCategoryJSON($category));
+
+                        $this->addCategoryProductCount($category);
+
+                        $category_obj = $this->getCategoryJSON($category);
+
+                        if ($category_obj['product_count'] > 0)
+                            array_push($indexData, $category_obj);
+
                         if (count($indexData) >= self::BATCH_SIZE) {
                             $indexer->addObjects($indexData);
                             $indexData = array();

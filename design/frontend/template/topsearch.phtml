@@ -27,7 +27,7 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
         },
         categoriesQueryOptions: {
             hitsPerPage: <?php echo (int) $algoliaSearchHelper->getNumberOfCategorySuggestions() ?>,
-            attributesToHighlight: 'name'
+            attributesToHighlight: 'path'
         },
         renderResults: function (results) {
             var products_hits = results[0].hits;
@@ -62,7 +62,7 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                         html += '<div class="info-without-thumb">';
 
 
-                    html += hit._highlightResult.name.value;
+                    html += hit._highlightResult.path.value;
 
                     if (hit.product_count != undefined)
                         html += ' <small>(' + hit.product_count + ')</small>';
