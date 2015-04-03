@@ -165,6 +165,7 @@
                             <comment><![CDATA[Optional property to avoid having an empty result page.<br/>
                              LastWords: when a query does not return any result, the last word will be added as optionalWords (the process is repeated with the n-1 word, n-2 word, ... until there is results). This option is particularly useful on e-commerce websites<br/>
                              LastWords: when a query does not return any result, the first word will be added as optionalWords (the process is repeated with the second word, third word, ... until there is results). This option is useful on address search<br/>
+                             allOptional: when a query does not return any result, all words will be optional
                              None: No specific processing is done when a query does not return any result<br/>]]></comment>
                         </remove_words_if_no_result>
                     </fields>

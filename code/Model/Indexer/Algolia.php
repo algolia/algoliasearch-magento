@@ -133,7 +133,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
      */
     public function getDescription()
     {
-        return Mage::helper('algoliasearch')->__('Rebuild product and category search index');
+        return Mage::helper('algoliasearch')->__('Rebuild product and category search index (cron jobs must be enabled)');
     }
 
     /**
