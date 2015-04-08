@@ -24,6 +24,7 @@ var algoliaLiveSearch = new AlgoliaLiveSearch({
     indexName: '<?php echo $algoliaSearchHelper->getIndexName() ?>',
     searchDelay: <?php echo (int) $algoliaSearchHelper->getSearchDelay() ?>,
     minLength: <?php echo (int) $algoliaSearchHelper->getMinimalQueryLength() ?>,
+    resultLinks: '.algoliasearch-autocomplete-hit',
     queryOptions: {
         hitsPerPage: <?php echo (int) $algoliaSearchHelper->getNbSuggestions() ?>,
         tagFilters: '(product,category)',
@@ -111,7 +112,7 @@ var algoliaLiveSearch = new AlgoliaLiveSearch({
         setTimeout(function() {
             $('search_autocomplete_categories').update('');
             $('search_autocomplete_products').update('');
-        }, 100);
+        }, 300);
     }
 });
 //]]>
