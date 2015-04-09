@@ -17,13 +17,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_SEARCH_ONLY_API_KEY              = 'algoliasearch/credentials/search_only_api_key';
     const XML_PATH_INDEX_PREFIX                     = 'algoliasearch/credentials/index_prefix';
 
-    const XML_PATH_USE_ORDERED_QTY_AS_POPULARITY    = 'algoliasearch/products/use_ordered_qty_as_popularity';
     const XML_PATH_PRODUCT_ATTRIBUTES               = 'algoliasearch/products/product_additional_attributes';
     const XML_PATH_PRODUCT_CUSTOM_RANKING           = 'algoliasearch/products/custom_ranking_product_attributes';
     const XML_PATH_RESULTS_LIMIT                    = 'algoliasearch/products/results_limit';
 
     const XML_PATH_CATEGORY_ATTRIBUTES              = 'algoliasearch/categories/category_additional_attributes2';
-    const XML_PATH_INDEX_PRODUCT_COUNT              = 'algoliasearch/categories/index_product_count';
     const XML_PATH_CATEGORY_CUSTOM_RANKING          = 'algoliasearch/categories/custom_ranking_category_attributes';
 
     const XML_PATH_REMOVE_IF_NO_RESULT              = 'algoliasearch/relevance/remove_words_if_no_result';
@@ -32,9 +30,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS   = 'algoliasearch/ui/number_category_suggestions';
     const XML_PATH_USE_RESULT_CACHE                 = 'algoliasearch/ui/use_result_cache';
     const XML_PATH_SAVE_LAST_QUERY                  = 'algoliasearch/ui/save_last_query';
-
-    const XML_PATH_CUSTOM_RANKING_ATTRIBUTES        = 'algoliasearch/queue/custom_ranking_attributes';
-    const XML_PATH_CUSTOM_INDEX_SETTINGS            = 'algoliasearch/queue/custom_index_settings';
 
 
     private static $_categoryNames;
@@ -963,16 +958,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfig(self::XML_PATH_INDEX_PREFIX, $storeId);
     }
 
-    public function isUseOrderedQtyAsPopularity($storeId = NULL)
-    {
-        return Mage::getStoreConfigFlag(self::XML_PATH_USE_ORDERED_QTY_AS_POPULARITY, $storeId);
-    }
-
-    public function isIndexProductCount()
-    {
-        return Mage::getStoreConfigFlag(self::XML_PATH_INDEX_PRODUCT_COUNT);
-    }
-
     public function getCategoryAdditionalAttributes($storeId = NULL)
     {
         $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_CATEGORY_ATTRIBUTES, $storeId));
@@ -1045,10 +1030,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getRemoveWordsIfNoResult($storeId = NULL)
     {
         return Mage::getStoreConfig(self::XML_PATH_REMOVE_IF_NO_RESULT, $storeId);
-    }
-
-    public function getCustomRankings($storeId = NULL) {
-        return unserialize(Mage::getStoreConfig(self::XML_PATH_CUSTOM_RANKING_ATTRIBUTES, $storeId));
     }
 
     public function getNumberOfProductSuggestions($storeId = NULL)
