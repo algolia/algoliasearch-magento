@@ -299,7 +299,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $allAttributes = $config->getEntityAttributeCodes('catalog_product');
 
-            $productAttributes = array_merge(array('name', 'path', 'categories', 'description', 'sales_count', 'stock_qty'), $allAttributes);
+            $productAttributes = array_merge(array('name', 'path', 'categories', 'description', 'ordered_qty', 'stock_qty'), $allAttributes);
 
             $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
@@ -433,7 +433,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             ->addFieldToFilter('entity_id', $product->getId())
             ->getFirstItem();
 
-        $customData['sales_count'] = intval($report->getOrderedQty());
+        $customData['ordered_qty'] = intval($report->getOrderedQty());
         $customData['stock_qty'] = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
 
         $description = $product->getDescription();
