@@ -22,6 +22,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_RESULTS_LIMIT                    = 'algoliasearch/products/results_limit';
 
     const XML_PATH_CATEGORY_ATTRIBUTES              = 'algoliasearch/categories/category_additional_attributes2';
+    const XML_PATH_INDEX_PRODUCT_COUNT              = 'algoliasearch/categories/index_product_count';
     const XML_PATH_CATEGORY_CUSTOM_RANKING          = 'algoliasearch/categories/custom_ranking_category_attributes';
 
     const XML_PATH_REMOVE_IF_NO_RESULT              = 'algoliasearch/relevance/remove_words_if_no_result';
@@ -30,7 +31,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS   = 'algoliasearch/ui/number_category_suggestions';
     const XML_PATH_USE_RESULT_CACHE                 = 'algoliasearch/ui/use_result_cache';
     const XML_PATH_SAVE_LAST_QUERY                  = 'algoliasearch/ui/save_last_query';
-
 
     private static $_categoryNames;
     private static $_activeCategories;
@@ -1030,6 +1030,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getRemoveWordsIfNoResult($storeId = NULL)
     {
         return Mage::getStoreConfig(self::XML_PATH_REMOVE_IF_NO_RESULT, $storeId);
+    }
+
+    public function getCustomRankings($storeId = NULL) {
+        return unserialize(Mage::getStoreConfig(self::XML_PATH_CUSTOM_RANKING_ATTRIBUTES, $storeId));
     }
 
     public function getNumberOfProductSuggestions($storeId = NULL)

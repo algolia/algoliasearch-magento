@@ -84,8 +84,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
         Mage_CatalogSearch_Model_Fulltext::XML_PATH_CATALOG_SEARCH_TYPE,
         Algolia_Algoliasearch_Helper_Data::XML_PATH_CATEGORY_ATTRIBUTES,
         Algolia_Algoliasearch_Helper_Data::XML_PATH_INDEX_PREFIX,
-        Algolia_Algoliasearch_Helper_Data::XML_PATH_INDEX_PRODUCT_COUNT,
-        Algolia_Algoliasearch_Helper_Data::XML_PATH_USE_ORDERED_QTY_AS_POPULARITY,
+        Algolia_Algoliasearch_Helper_Data::XML_PATH_INDEX_PRODUCT_COUNT
     );
 
     /**
@@ -94,8 +93,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
      * @var array
      */
     protected $_relatedConfigSettingsUpdate = array(
-        Algolia_Algoliasearch_Helper_Data::XML_PATH_CUSTOM_RANKING_ATTRIBUTES,
-        Algolia_Algoliasearch_Helper_Data::XML_PATH_CUSTOM_INDEX_SETTINGS,
     );
 
     /**
