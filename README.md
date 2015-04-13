@@ -1,20 +1,9 @@
 Algolia Search for Magento
 ==================
 
-[Algolia Search](http://www.algolia.com) is a search API that provides hosted full-text, numerical and faceted search.
-Algolia’s Search API makes it easy to deliver a great search experience in your apps & websites providing:
+[Algolia Search](http://www.algolia.com) is a hosted full-text, numerical, and faceted search engine capable of delivering realtime results from the first keystroke.
 
- * REST and JSON-based API
- * search among infinite attributes from a single searchbox
- * instant-search after each keystroke
- * relevance & popularity combination
- * typo-tolerance in any language
- * faceting
- * 99.99% SLA
- * first-class data security
-
-
-This module let you easily integrate the Algolia Search API to your Magento instance. The module is based on [algoliasearch-client-php](https://github.com/algolia/algoliasearch-client-php) and [algoliasearch-client-js](https://github.com/algolia/algoliasearch-client-js).
+This extension replaces the default search of Magento with a typo-tolerant, fast & relevant search experience backed by Algolia. It's based on [algoliasearch-client-php](https://github.com/algolia/algoliasearch-client-php) and [algoliasearch-client-js](https://github.com/algolia/algoliasearch-client-js).
 
 
 Installation
@@ -47,9 +36,9 @@ This extension adds an auto-completion menu to your search bar displaying produc
 
 ![Auto-completion](doc/auto-completion.gif)
 
-### Typo-tolerated full-text search
+### Typo-tolerant full-text search
 
-This extension is also able to replace the default full-text search engine handling typo-tolerance.
+This extension is replaces the default full-text search feature of your Magento instance providing you a typo-tolerant & relevant search experience.
 
 ![Full-text search](doc/fts.png)
 
@@ -59,19 +48,38 @@ Configuration
 
 To setup this module, you'll need an Algolia account. Just sign up [here](http://www.algolia.com/users/sign_up) to create an account and retrieve your credentials.
 
-### Credentials & Settings
+### Credentials & Activation
 
 Once the extension is installed, a new **Algolia Search** menu will appear in your **System > Configuration** menu.
 
 ![Configuration menu](doc/configuration-menu.png)
 
-In the configuration panel, you'll be able to setup your credentials as well as some other configuration variables.
+In the first block of the configuration panel, you'll be able to setup your credentials and to enable to search features.
 
-![Configuration panel](doc/configuration-panel.png)
+To replace Magento's default Full-Text search algorithm by Algolia, set **Enable Catalog Search** to `Yes`. To add an auto-completion menu to your search bar, set **Enable Auto-completion Menu** to `Yes`.
 
-To replace the full-text search engine of your Magento instance, please select **Algolia** in your **System > Catalog > Catalog Search > Search Engine** section:
+![Configuration panel](doc/configuration-credentials.png)
+
+Once done, go to **System > Catalog > Catalog Search > Search Engine** and select **Algolia** as the Search Engine used to search your catalog.
 
 ![Catalog search](doc/catalog-search.png)
+
+
+### Products Configuration
+
+This section of the configuration allows you to configure how your **Product** records will look like in Algolia. List here all the attributes you need to search, rank and display your products. The order of this setting matters as those at the top of the list are considered more important.
+
+Use the **Ranking** configuration to specify the numerical attribute used to reflect the popularity of your products. By default, we recommend using the number of ordered quantity as popularity criteria.
+
+![Configuration panel](doc/configuration-product.png)
+
+### Categories Configuration (auto-completion menu only)
+
+This section of the configuration allows you to configure how your **Category** records will look like in Algolia. List here all the attributes you need to search, rank and display your categories. The order of this setting matters as those at the top of the list are considered more important.
+
+Use the **Ranking** configuration to specify the numerical attribute used to reflect the popularity of your categories. By default, we recommend using the number of products in the category as popularity criteria.
+
+![Configuration panel](doc/configuration-category.png)
 
 Initial import
 -----------------
@@ -81,21 +89,8 @@ Once configured, do not forget to trigger the re-indexing in **System > Index Ma
 ![Index management](doc/index-management.png)
 
 
-Customization
-------------
-
-### Style
-
-Feel free to update the default style modifying ```skin/frontend/base/default/algoliasearch/algoliasearch.css```.
-
-### Observers
-
-We're dispatching events allowing you to customize the default behavior of the extension. You can add observers on the following events:
-
- * ```algolia_product_index_before```: triggered for each product, ability to add custom attributes using ```$observer->getCustomData()```.
- * ```algolia_category_index_before```:  triggered for each category, ability to add custom attributes using ```$observer->getCustomData()```.
-
-### Instant-search
+Instant-search
+---------------
 
 If you want to build an instant-search based result page refreshing the whole page (results, pagination & navigation filters) “as you type” you can follow this [tutorial](http://www.algolia.com/doc/tutorials/instant-search).
 
