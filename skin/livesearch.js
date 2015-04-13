@@ -88,6 +88,11 @@ AlgoliaLiveSearch.prototype = {
         if(this.active) {
             switch (event.keyCode) {
                 case 13:
+                    if (this.selectedEntry)
+                    {
+                        this.selectEntry();
+                        Event.stop(event);
+                    }
                     return;
                 case Event.KEY_RETURN:
                     this.selectEntry();
@@ -124,7 +129,6 @@ AlgoliaLiveSearch.prototype = {
         this.selectedEntry = this.options.markPrevious ? this.options.markPrevious.call(this) : this.markEntry(-1);
     },
     selectEntry: function(){
-        console.log(this.selectedEntry);
         if(this.options.selectEntry){
             this.options.selectEntry.call(this);
         }
