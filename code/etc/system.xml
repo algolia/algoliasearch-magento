@@ -90,7 +90,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>List of attributes used to define an Algolia record.</comment>
+                            <comment>Configure here the attributes you want to include in your Algolia records. The order of this setting matters as those at the top of the list are considered more important.</comment>
                             <depends><is_enabled>1</is_enabled></depends>
                         </product_additional_attributes>
                         <custom_ranking_product_attributes translate="label comment">
@@ -101,7 +101,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.</comment>
+                            <comment>Configure here the attributes used to reflect the popularity of your product (number of orders, number of likes, number of views, ...).</comment>
                         </custom_ranking_product_attributes>
                         <results_limit translate="label comment">
                             <label>Results Limit</label>
@@ -131,7 +131,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>List of attributes used to define an Algolia record</comment>
+                            <comment>Configure here the attributes you want to include in your Algolia records. The order of this setting matters as those at the top of the list are considered more important.</comment>
                         </category_additional_attributes2>
                         <custom_ranking_category_attributes translate="label comment">
                             <label>Ranking</label>
@@ -141,7 +141,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The list of attributes representing the record popularity (can be a rating, a number of views, an amount of revenue, ...) and their associated sort order.  Defaults to the popularity (product count) attribute in descending order.</comment>
+                            <comment>Configure here the attributes used to reflect the popularity of your product (number of orders, number of likes, number of views, ...).</comment>
                         </custom_ranking_category_attributes>
                     </fields>
                 </categories>
@@ -165,7 +165,7 @@
                             <comment><![CDATA[Optional property to avoid having an empty result page.<br/>
                              LastWords: when a query does not return any result, the last word will be added as optionalWords (the process is repeated with the n-1 word, n-2 word, ... until there is results). This option is particularly useful on e-commerce websites<br/>
                              LastWords: when a query does not return any result, the first word will be added as optionalWords (the process is repeated with the second word, third word, ... until there is results). This option is useful on address search<br/>
-                             allOptional: when a query does not return any result, all words will be optional
+                             allOptional: when a query does not return any result, all words will be optional<br/>
                              None: No specific processing is done when a query does not return any result<br/>]]></comment>
                         </remove_words_if_no_result>
                     </fields>
@@ -187,7 +187,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of category suggestions the auto-completion menu is displaying. Default value is 3.</comment>
+                            <comment>The number of category suggestions the auto-completion menu is displaying. Default value is 5.</comment>
                         </number_category_suggestions>
                         <number_product_suggestions translate="label comment">
                             <label>Number of product suggestions</label>
@@ -197,7 +197,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of product suggestions the auto-completion menu is displaying. Default value is 5.</comment>
+                            <comment>The number of product suggestions the auto-completion menu is displaying. Default value is 3.</comment>
                         </number_product_suggestions>
                         <save_last_query translate="label comment">
                             <label>Save Last Query</label>
