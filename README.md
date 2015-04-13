@@ -21,6 +21,9 @@ This module let you easily integrate the Algolia Search API to your Magento inst
 ![Auto-completion](https://img.shields.io/badge/magento-1.8.1-blue.svg)
 ![Auto-completion](https://img.shields.io/badge/magento-1.9-blue.svg)
 
+See features and benefits of [Algolia Search Extension for Magento](https://www.algolia.com/with/magento).
+
+
 Installation
 --------------
 
