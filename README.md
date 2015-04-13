@@ -12,8 +12,7 @@ See features and benefits of [Algolia Search Extension for Magento](https://www.
 ![Auto-completion](https://img.shields.io/badge/magento-1.7.1-blue.svg)
 ![Auto-completion](https://img.shields.io/badge/magento-1.8.1-blue.svg)
 ![Auto-completion](https://img.shields.io/badge/magento-1.9-blue.svg)
-
-![Auto-completion](https://img.shields.io/badge/php-%3E=5.3-blue.svg)
+![Auto-completion](https://img.shields.io/badge/php-%3E=5.3-green.svg)
 
 Installation
 --------------
