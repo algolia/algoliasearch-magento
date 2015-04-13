@@ -45,7 +45,7 @@ This extension adds an auto-completion menu to your search bar displaying produc
 
 ### Typo-tolerant full-text search
 
-This extension is replaces the default full-text search feature of your Magento instance providing you a typo-tolerant & relevant search experience.
+This extension replaces the default full-text search feature of your Magento instance providing you a typo-tolerant & relevant search experience.
 
 ![Full-text search](doc/fts.png)
 
