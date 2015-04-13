@@ -16,6 +16,10 @@ Algolia’s Search API makes it easy to deliver a great search experience in you
 
 This module let you easily integrate the Algolia Search API to your Magento instance. The module is based on [algoliasearch-client-php](https://github.com/algolia/algoliasearch-client-php) and [algoliasearch-client-js](https://github.com/algolia/algoliasearch-client-js).
 
+![Auto-completion](https://img.shields.io/badge/magento-1.6.2-blue.svg)
+![Auto-completion](https://img.shields.io/badge/magento-1.7.1-blue.svg)
+![Auto-completion](https://img.shields.io/badge/magento-1.8.1-blue.svg)
+![Auto-completion](https://img.shields.io/badge/magento-1.9-blue.svg)
 
 Installation
 --------------
