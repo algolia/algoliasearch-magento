@@ -492,21 +492,23 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $customData['type_id'] = $product->getTypeId();
 
-        foreach ($customData as &$data)
+        foreach ($customData as $key => &$data)
         {
             $data = $this->try_cast($data);
 
             if (is_array($data) === false)
+            {
                 $data = explode('|', $data);
 
-            if (count($data) == 1)
-            {
-                $data = $data[0];
-                $data = $this->try_cast($data);
+                if (count($data) == 1)
+                {
+                    $data = $data[0];
+                    $data = $this->try_cast($data);
+                }
+                else
+                    foreach($data as &$element)
+                        $element = $this->try_cast($element);
             }
-            else
-                foreach($data as &$element)
-                    $element = $this->try_cast($element);
         }
 
         return $customData;
