@@ -431,6 +431,30 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $customData['ordered_qty'] = intval($report->getOrderedQty());
         $customData['stock_qty'] = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
 
+        if ($product->getTypeId() == 'configurable')
+        {
+            $sub_products   = $product->getTypeInstance(true)->getUsedProducts(null, $product);
+            $ordered_qty    = 0;
+            $stock_qty      = 0;
+
+            foreach ($sub_products as $sub_product)
+            {
+                $stock_qty += (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($sub_product)->getQty();
+
+                $report = Mage::getResourceModel('reports/product_sold_collection')
+                    ->addOrderedQty()
+                    ->setStoreId($sub_product->getStoreId())
+                    ->addStoreFilter($sub_product->getStoreId())
+                    ->addFieldToFilter('entity_id', $sub_product->getId())
+                    ->getFirstItem();
+
+                $ordered_qty += intval($report->getOrderedQty());
+            }
+
+            $customData['ordered_qty']  = $ordered_qty;
+            $customData['stock_qty']    = $stock_qty;
+        }
+
         $description = $product->getDescription();
         if ( ! empty($description)) {
             $customData['description'] = $description;
@@ -466,8 +490,24 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $customData['price'] = floatval($customData['price']);
         }
 
+        $customData['type_id'] = $product->getTypeId();
+
         foreach ($customData as &$data)
+        {
             $data = $this->try_cast($data);
+
+            if (is_array($data) === false)
+                $data = explode('|', $data);
+
+            if (count($data) == 1)
+            {
+                $data = $data[0];
+                $data = $this->try_cast($data);
+            }
+            else
+                foreach($data as &$element)
+                    $element = $this->try_cast($element);
+        }
 
         return $customData;
     }

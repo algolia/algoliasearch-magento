@@ -83,6 +83,16 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                 if (products.length > 0) {
                     for (i = 0; i < products.length; ++i) {
                         var hit = products[i];
+
+                        /**
+                         * Handle Configurable Product
+                         */
+                        if (Array.isArray(hit._highlightResult.name))
+                            hit._highlightResult.name = hit._highlightResult.name[0];
+
+                        if (Array.isArray(hit.price))
+                            hit.price = hit.price[0];
+
                         html += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' +
                         (hit.thumbnail_url ? '<div class="thumb"><img src="' + hit.thumbnail_url + '" /></div>' : '') +
                         '<div class="info">' +
