@@ -161,7 +161,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getProductIndexSettings($storeId)
     {
-        $attributesToIndex = array();
+        $attributesToIndex          = array();
+        $unretrievableAttributes    = array();
 
         foreach ($this->getProductAdditionalAttributes($storeId) as $attribute)
         {
@@ -172,6 +173,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 else
                     $attributesToIndex[] = 'unordered('.$attribute['attribute'].')';
             }
+
+            if ($attribute['retrievable'] != '1')
+                $unretrievableAttributes[] = $attribute['attribute'];
         }
 
         $customRankings = $this->getProductCustomRanking($storeId);
@@ -182,8 +186,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $customRankingsArr[] =  $ranking['order'] . '(' . $ranking['attribute'] . ')';
 
         $indexSettings = array(
-            'attributesToIndex'    => array_values(array_unique($attributesToIndex)),
-            'customRanking'        => $customRankingsArr
+            'attributesToIndex'         => array_values(array_unique($attributesToIndex)),
+            'customRanking'             => $customRankingsArr,
+            'unretrievableAttributes'   => $unretrievableAttributes
         );
 
         // Additional index settings from event observer
@@ -198,7 +203,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getCategoryIndexSettings($storeId)
     {
-        $attributesToIndex = array();
+        $attributesToIndex          = array();
+        $unretrievableAttributes    = array();
 
         foreach ($this->getCategoryAdditionalAttributes($storeId) as $attribute)
         {
@@ -209,6 +215,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 else
                     $attributesToIndex[] = 'unordered('.$attribute['attribute'].')';
             }
+
+            if ($attribute['retrievable'] != '1')
+                $unretrievableAttributes[] = $attribute['attribute'];
         }
 
         $customRankings = $this->getCategoryCustomRanking($storeId);
@@ -220,8 +229,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         // Default index settings
         $indexSettings = array(
-            'attributesToIndex'    => array_values(array_unique($attributesToIndex)),
-            'customRanking'        => $customRankingsArr
+            'attributesToIndex'         => array_values(array_unique($attributesToIndex)),
+            'customRanking'             => $customRankingsArr,
+            'unretrievableAttributes'   => $unretrievableAttributes
         );
 
         // Additional index settings from event observer

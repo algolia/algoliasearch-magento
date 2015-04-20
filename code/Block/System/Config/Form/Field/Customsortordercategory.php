@@ -32,6 +32,12 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
                         '0' => 'No',
                     );
                     break;
+                case 'retrievable':
+                    $aOptions = array(
+                        '1' => 'Yes',
+                        '0' => 'No',
+                    );
+                    break;
                 case 'order':
                     $aOptions = array(
                         'ordered' => 'Ordered',
@@ -61,6 +67,10 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
             'label' => Mage::helper('adminhtml')->__('Searchable'),
             'renderer'=> $this->getRenderer('searchable'),
         ));
+        $this->addColumn('retrievable', array(
+            'label' => Mage::helper('adminhtml')->__('Retrievable'),
+            'renderer'=> $this->getRenderer('retrievable'),
+        ));
         $this->addColumn('order', array(
             'label' => Mage::helper('adminhtml')->__('Ordered / Unordered'),
             'renderer'=> $this->getRenderer('order'),
@@ -80,6 +90,11 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
         $row->setData(
             'option_extra_attr_' . $this->getRenderer('searchable')->calcOptionHash(
                 $row->getSearchable()),
+            'selected="selected"'
+        );
+        $row->setData(
+            'option_extra_attr_' . $this->getRenderer('searchable')->calcOptionHash(
+                $row->getRetrievable()),
             'selected="selected"'
         );
         $row->setData(
