@@ -1,6 +1,6 @@
 ## Change Log
 
-### 
+### 1.1.1 
 
 - Add price with tax to product records
 - Add a retrievable collumn to config
