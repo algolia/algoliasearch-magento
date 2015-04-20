@@ -3,7 +3,7 @@
 ### 1.1.1 
 
 - Add price with tax to product records
-- Add a retrievable collumn to config
+- Add a retrievable column to config
 
 ### 1.1.0
  - Administration panel refactoring & rewriting:
