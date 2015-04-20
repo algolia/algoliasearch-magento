@@ -431,6 +431,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'url'           => $product->getProductUrl(),
         );
 
+        $price_with_tax = Mage::helper('tax')->getPrice($product, $product->getPrice(), true, null, null, null, null, false);
+
+        $customData['price_with_tax'] = $price_with_tax;
+
         $report = Mage::getResourceModel('reports/product_sold_collection')
             ->addOrderedQty()
             ->setStoreId($product->getStoreId())
