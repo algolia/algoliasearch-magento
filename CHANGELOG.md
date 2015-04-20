@@ -1,5 +1,10 @@
 ## Change Log
 
+### 
+
+- Add price with tax to product records
+- Add a retrievable collumn to config
+
 ### 1.1.0
  - Administration panel refactoring & rewriting:
    - simplify the searchable attributes configuration
