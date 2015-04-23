@@ -262,6 +262,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Varien_Profiler::start('Algolia-FullText-getSearchResult');
         try {
             $resultsLimit = $this->getResultsLimit($storeId);
+
             $answer = $this->query($this->getStoreProductIndexName($storeId), $queryText, array(
                 'hitsPerPage' => max(5, min($resultsLimit, 1000)), // retrieve all the hits (hard limit is 1000)
                 'attributesToRetrieve' => 'objectID',
@@ -1103,7 +1104,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getResultsLimit($storeId = NULL)
     {
-        return Mage::getStoreConfigFlag(self::XML_PATH_RESULTS_LIMIT, $storeId);
+        return Mage::getStoreConfig(self::XML_PATH_RESULTS_LIMIT, $storeId);
     }
 
     public function useResultCache($storeId = NULL)
