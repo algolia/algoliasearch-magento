@@ -73,7 +73,15 @@
             </enterprise_search>
         </models>
         <events>
-
+            <admin_system_config_changed_section_algoliasearch>
+                <observers>
+                    <algolia_search>
+                        <type>singleton</type>
+                        <class>algoliasearch/observer</class>
+                        <method>configSaved</method>
+                    </algolia_search>
+                </observers>
+            </admin_system_config_changed_section_algoliasearch>
         </events>
         <resources>
             <algoliasearch_setup>
@@ -113,7 +121,7 @@
                 <is_popup_enabled>1</is_popup_enabled>
             </credentials>
             <products>
-                <product_additional_attributes>a:12:{s:18:"_1427959997377_377";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960012597_597";a:4:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960251221_221";a:4:{s:9:"attribute";s:11:"description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961262735_735";a:4:{s:9:"attribute";s:10:"categories";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961263735_735";a:4:{s:9:"attribute";s:10:"meta_title";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961264377_377";a:4:{s:9:"attribute";s:12:"meta_keyword";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961289908_908";a:4:{s:9:"attribute";s:16:"meta_description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961296876_876";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961324936_936";a:4:{s:9:"attribute";s:3:"sku";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427962021621_621";a:4:{s:9:"attribute";s:5:"price";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427977839554_554";a:4:{s:9:"attribute";s:9:"stock_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}s:18:"_1428566173508_508";a:4:{s:9:"attribute";s:11:"ordered_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}}</product_additional_attributes>
+                <product_additional_attributes>a:11:{s:18:"_1427959997377_377";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960012597_597";a:4:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960251221_221";a:4:{s:9:"attribute";s:11:"description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961262735_735";a:4:{s:9:"attribute";s:10:"categories";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961263735_735";a:4:{s:9:"attribute";s:10:"meta_title";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961264377_377";a:4:{s:9:"attribute";s:12:"meta_keyword";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961289908_908";a:4:{s:9:"attribute";s:16:"meta_description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961324936_936";a:4:{s:9:"attribute";s:3:"sku";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427962021621_621";a:4:{s:9:"attribute";s:5:"price";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427977839554_554";a:4:{s:9:"attribute";s:9:"stock_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}s:18:"_1428566173508_508";a:4:{s:9:"attribute";s:11:"ordered_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}}</product_additional_attributes>
                 <custom_ranking_product_attributes>a:1:{s:18:"_1427960305274_274";a:2:{s:9:"attribute";s:11:"ordered_qty";s:5:"order";s:4:"desc";}}</custom_ranking_product_attributes>
                 <results_limit>1000</results_limit>
             </products>

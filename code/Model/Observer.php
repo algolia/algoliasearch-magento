@@ -46,6 +46,13 @@ class Algolia_Algoliasearch_Model_Observer
         return Mage::helper('algoliasearch');
     }
 
+    public function configSaved(Varien_Event_Observer $observer)
+    {
+        foreach (Mage::app()->getStores() as $store) /** @var $store Mage_Core_Model_Store */
+            if ($store->getIsActive())
+                Mage::helper('algoliasearch')->setIndexSettings($store->getId());
+    }
+
     /**
      * Check whether algolia search popup is allowed
      *
