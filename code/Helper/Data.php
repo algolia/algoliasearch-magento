@@ -121,6 +121,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->getIndex($this->getIndexName($storeId).'_categories');
     }
 
+    public function getStorePageIndex($storeId = NULL)
+    {
+        return $this->getIndex($this->getIndexName($storeId).'_pages');
+    }
+
     public function getIndexName($storeId = NULL)
     {
         return (string)$this->getIndexPrefix($storeId) . Mage::app()->getStore($storeId)->getCode();
@@ -157,6 +162,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $index = $this->getStoreCategoryIndex($storeId);
         $index->setSettings($this->getCategoryIndexSettings($storeId));
+
+        $index = $this->getStorePageIndex($storeId);
+        $index->setSettings($this->getPageIndexSettings($storeId));
     }
 
     public function getProductIndexSettings($storeId)
@@ -197,6 +205,15 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $indexSettings = $transport->getData();
 
         $this->mergeSettings($this->getStoreProductIndexName($storeId), $indexSettings);
+
+        return $indexSettings;
+    }
+
+    public function getPageIndexSettings($storeId)
+    {
+        $indexSettings = array(
+            'attributesToIndex'         => array('slug', 'name', 'unordered(content)'),
+        );
 
         return $indexSettings;
     }
@@ -595,6 +612,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $data;
     }
 
+    private function strip($s)
+    {
+        $s = trim(preg_replace('/\s+/', ' ', $s));
+        $s = preg_replace('/&nbsp;/', ' ', $s);
+        $s = preg_replace('!\s+!', ' ', $s);
+        return trim(strip_tags($s));
+    }
+
     /**
      * Adding product count when load collection is incorrect.
      * The method applies the same limitation as on frontend to get correct product count for the category in the specified store.
@@ -609,6 +634,51 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $category->setProductCount($productCollection->addMinimalPrice()->count());
         return $this;
     }
+
+    public function rebuiltStorePageIndex($storeId)
+    {
+        $emulationInfo = $this->startEmulation($storeId);
+
+        $indexer = $this->getStorePageIndex($storeId);
+
+        $indexer->clearIndex();
+
+        try
+        {
+            $magento_pages = Mage::getModel('cms/page')->getCollection()->addFieldToFilter('is_active',1);
+
+            $ids = $magento_pages->toOptionArray();
+
+            $pages = array();
+
+            foreach ($ids as $key => $value)
+            {
+                $page_obj = array();
+
+                $page_obj['objectID'] = $value['value'];
+                $page_obj['slug'] = $value['value'];
+                $page_obj['name'] = $value['label'];
+
+                $page = Mage::getModel('cms/page');
+                $page->setStoreId($storeId);
+                $page->load($page_obj['slug'], 'identifier');
+
+                $page_obj['content'] = $this->strip($page->getContent());
+
+                $pages[] = $page_obj;
+            }
+
+            $indexer->addObjects($pages);
+        }
+        catch (\Exception $e)
+        {
+            $this->stopEmulation($emulationInfo);
+            throw $e;
+        }
+
+        $this->stopEmulation($emulationInfo);
+    }
+
 
     /**
      * Rebuild store category index
@@ -715,6 +785,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function rebuildStoreProductIndex($storeId, $productIds, $defaultData = NULL)
     {
+        if (count($productIds) > 0)
+            $this->rebuiltStorePageIndex($storeId);
+
         $emulationInfo = $this->startEmulation($storeId);
 
         try {
