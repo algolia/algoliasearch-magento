@@ -29,6 +29,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     const XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS    = 'algoliasearch/ui/number_product_suggestions';
     const XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS   = 'algoliasearch/ui/number_category_suggestions';
+    const XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS   = 'algoliasearch/ui/number_page_suggestions';
+
     const XML_PATH_USE_RESULT_CACHE                 = 'algoliasearch/ui/use_result_cache';
     const XML_PATH_SAVE_LAST_QUERY                  = 'algoliasearch/ui/save_last_query';
 
@@ -655,7 +657,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             {
                 $page_obj = array();
 
-                $page_obj['objectID'] = $value['value'];
                 $page_obj['slug'] = $value['value'];
                 $page_obj['name'] = $value['label'];
 
@@ -663,6 +664,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 $page->setStoreId($storeId);
                 $page->load($page_obj['slug'], 'identifier');
 
+                $page_obj['objectID'] = $page->getId();
+
+                $page_obj['url'] = Mage::helper('cms/page')->getPageUrl($page->getId());
                 $page_obj['content'] = $this->strip($page->getContent());
 
                 $pages[] = $page_obj;
@@ -1175,6 +1179,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getNumberOfCategorySuggestions($storeId = NULL)
     {
         return Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS, $storeId);
+    }
+
+    public function getNumberOfPageSuggestions($storeId = NULL)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS, $storeId);
     }
 
     public function getResultsLimit($storeId = NULL)
