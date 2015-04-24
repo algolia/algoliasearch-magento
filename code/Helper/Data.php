@@ -396,46 +396,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $value;
     }
 
-    /**
-     * Prepare product JSON
-     *
-     * @param Mage_Catalog_Model_Product $product
-     * @param array                      $defaultData
-     * @return array
-     */
-    public function getProductJSON(Mage_Catalog_Model_Product $product, $defaultData = array())
+    private function getReportForProduct($product)
     {
-        $transport = new Varien_Object($defaultData);
-        Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'custom_data' => $transport));
-        $defaultData = $transport->getData();
-
-        $defaultData = is_array($defaultData) ? $defaultData : explode("|",$defaultData);
-
-        $categories = array();
-        foreach ($this->getProductActiveCategories($product, $product->getStoreId()) as $categoryId) {
-            if ($categoryName = $this->getCategoryName($categoryId, $product->getStoreId())) {
-                array_push($categories, $categoryName);
-            }
-        }
-        $imageUrl = NULL;
-        $thumbnailUrl = NULL;
-        try {
-            $thumbnailUrl = $product->getThumbnailUrl();
-        } catch (Exception $e) { /* no thumbnail, no default: not fatal */ }
-        try {
-            $imageUrl = $product->getImageUrl();
-        } catch (Exception $e) { /* no image, no default: not fatal */ }
-        $customData = array(
-            'objectID'      => $this->getProductObjectId($product),
-            'name'          => $product->getName(),
-            'price'         => $product->getPrice(),
-            'url'           => $product->getProductUrl(),
-        );
-
-        $price_with_tax = Mage::helper('tax')->getPrice($product, $product->getPrice(), true, null, null, null, null, false);
-
-        $customData['price_with_tax'] = $price_with_tax;
-
         $report = Mage::getResourceModel('reports/product_sold_collection')
             ->addOrderedQty()
             ->setStoreId($product->getStoreId())
@@ -443,70 +405,12 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             ->addFieldToFilter('entity_id', $product->getId())
             ->getFirstItem();
 
-        $customData['ordered_qty'] = intval($report->getOrderedQty());
-        $customData['stock_qty'] = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
+        return $report;
+    }
 
-        if ($product->getTypeId() == 'configurable')
-        {
-            $sub_products   = $product->getTypeInstance(true)->getUsedProducts(null, $product);
-            $ordered_qty    = 0;
-            $stock_qty      = 0;
-
-            foreach ($sub_products as $sub_product)
-            {
-                $stock_qty += (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($sub_product)->getQty();
-
-                $report = Mage::getResourceModel('reports/product_sold_collection')
-                    ->addOrderedQty()
-                    ->setStoreId($sub_product->getStoreId())
-                    ->addStoreFilter($sub_product->getStoreId())
-                    ->addFieldToFilter('entity_id', $sub_product->getId())
-                    ->getFirstItem();
-
-                $ordered_qty += intval($report->getOrderedQty());
-            }
-
-            $customData['ordered_qty']  = $ordered_qty;
-            $customData['stock_qty']    = $stock_qty;
-        }
-
-        $description = $product->getDescription();
-        if ( ! empty($description)) {
-            $customData['description'] = $description;
-        }
-        if ( ! empty($categories)) {
-            $customData['categories'] = $categories;
-        }
-        if ( ! empty($thumbnailUrl)) {
-            $customData['thumbnail_url'] = $thumbnailUrl;
-        }
-        if ( ! empty($imageUrl)) {
-            $customData['image_url'] = $imageUrl;
-        }
-
-        $storeId = $product->getStoreId();
-
-        foreach ($this->getProductAdditionalAttributes($storeId) as $attribute)
-        {
-            $value = $product->hasData($this->_dataPrefix.$attribute['attribute'])
-                ? $product->getData($this->_dataPrefix.$attribute['attribute'])
-                : $product->getData($attribute['attribute']);
-
-            $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attribute['attribute'], $value, $storeId, Mage_Catalog_Model_Product::ENTITY);
-            if ($value) {
-                $customData[$attribute['attribute']] = $value;
-            }
-        }
-
-        $customData = array_merge($customData, $defaultData);
-
-        if (isset($customData['price'])) {
-            $customData['price'] = floatval($customData['price']);
-        }
-
-        $customData['type_id'] = $product->getTypeId();
-
-        foreach ($customData as $key => &$data)
+    private function castProductObject(&$productData)
+    {
+        foreach ($productData as $key => &$data)
         {
             $data = $this->try_cast($data);
 
@@ -524,6 +428,104 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                         $element = $this->try_cast($element);
             }
         }
+    }
+
+    private function isAttributeEnabled($additionalAttributes, $attr_name)
+    {
+        foreach ($additionalAttributes as $attr)
+            if ($attr['attribute'] == $attr_name)
+                return true;
+
+        return false;
+    }
+
+    /**
+     * Prepare product JSON
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @param array                      $defaultData
+     * @return array
+     */
+    public function getProductJSON(Mage_Catalog_Model_Product $product, $defaultData = array())
+    {
+        $transport      = new Varien_Object($defaultData);
+
+        Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'custom_data' => $transport));
+
+        $defaultData    = $transport->getData();
+
+        $defaultData    = is_array($defaultData) ? $defaultData : explode("|",$defaultData);
+
+
+        $customData = array(
+            'objectID'          => $this->getProductObjectId($product),
+            'name'              => $product->getName(),
+            'price'             => $product->getPrice(),
+            'price_with_tax'    => Mage::helper('tax')->getPrice($product, $product->getPrice(), true, null, null, null, null, false),
+            'url'               => $product->getProductUrl(),
+            'description'       => $product->getDescription()
+        );
+
+        $categories     = array();
+
+        foreach ($this->getProductActiveCategories($product, $product->getStoreId()) as $categoryId)
+            if ($categoryName = $this->getCategoryName($categoryId, $product->getStoreId()))
+                array_push($categories, $categoryName);
+
+        try { $customData['thumbnail_url'] = $product->getThumbnailUrl(); } catch(\Exception $e) {}
+        try { $customData['image_url'] = $product->getImageUrl();  } catch(\Exception $e) {}
+
+        $report = $this->getReportForProduct($product);
+
+        $customData['ordered_qty'] = intval($report->getOrderedQty());
+        $customData['stock_qty'] = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
+
+        if ($product->getTypeId() == 'configurable')
+        {
+            $sub_products   = $product->getTypeInstance(true)->getUsedProducts(null, $product);
+            $ordered_qty    = 0;
+            $stock_qty      = 0;
+
+            foreach ($sub_products as $sub_product)
+            {
+                $stock_qty += (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($sub_product)->getQty();
+
+                $report = $this->getReportForProduct($sub_product);
+
+                $ordered_qty += intval($report->getOrderedQty());
+            }
+
+            $customData['ordered_qty']  = $ordered_qty;
+            $customData['stock_qty']    = $stock_qty;
+        }
+
+        $additionalAttributes = $this->getProductAdditionalAttributes($product->getStoreId());
+
+
+        if ($this->isAttributeEnabled($additionalAttributes, 'ordered_qty') == false)
+            unset($customData['ordered_qty']);
+
+        if ($this->isAttributeEnabled($additionalAttributes, 'stock_qty') == false)
+            unset($customData['stock_qty']);
+
+        foreach ($additionalAttributes as $attribute)
+        {
+            $value = $product->hasData($this->_dataPrefix . $attribute['attribute'])
+                ? $product->getData($this->_dataPrefix . $attribute['attribute'])
+                : $product->getData($attribute['attribute']);
+
+            $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attribute['attribute'], $value, $product->getStoreId(), Mage_Catalog_Model_Product::ENTITY);
+            if ($value)
+            {
+                $customData[$attribute['attribute']] = $value;
+            }
+        }
+
+        $customData = array_merge($customData, $defaultData);
+
+        $customData['type_id'] = $product->getTypeId();
+
+        $this->castProductObject($customData);
 
         return $customData;
     }
@@ -550,9 +552,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $path .= $this->getCategoryName($categoryId, $storeId);
         }
 
-        $imageUrl = NULL;
+        $image_url = NULL;
         try {
-            $imageUrl = $category->getImageUrl();
+            $image_url = $category->getImageUrl();
         } catch (Exception $e) { /* no image, no default: not fatal */
         }
         $data = array(
@@ -568,8 +570,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
 
 
-        if ( ! empty($imageUrl)) {
-            $data['image_url'] = $imageUrl;
+        if ( ! empty($image_url)) {
+            $data['image_url'] = $image_url;
         }
         foreach ($this->getCategoryAdditionalAttributes($storeId) as $attribute) {
             $value = $category->hasData($this->_dataPrefix.$attribute['attribute'])
