@@ -2,6 +2,8 @@
 
 ### 1.1.2
 - Fix issues with product deletions
+- Add support of pages
+- Add a setting on save of config
 
 ### 1.1.1 
 
