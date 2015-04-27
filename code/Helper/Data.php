@@ -105,31 +105,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->getClient()->initIndex($index)->search($q, $params);
     }
 
-    public function getStoreProductIndexName($storeId = NULL)
-    {
-        return $this->getIndexName($storeId).'_products';
-    }
-
-    public function getStoreCategoryIndexName($storeId = NULL)
-    {
-        return $this->getIndexName($storeId).'_categories';
-    }
-
-    public function getStoreProductIndex($storeId = NULL)
-    {
-        return $this->getIndex($this->getIndexName($storeId).'_products');
-    }
-
-    public function getStoreCategoryIndex($storeId = NULL)
-    {
-        return $this->getIndex($this->getIndexName($storeId).'_categories');
-    }
-
-    public function getStorePageIndex($storeId = NULL)
-    {
-        return $this->getIndex($this->getIndexName($storeId).'_pages');
-    }
-
     public function getIndexName($storeId = NULL)
     {
         return (string)$this->getIndexPrefix($storeId) . Mage::app()->getStore($storeId)->getCode();
@@ -147,12 +122,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         {
         }
 
-        $removes = array('slaves');
-
-        foreach ($removes as $remove)
-            if (isset($onlineSettings[$remove]))
-                unset($onlineSettings[$remove]);
-
         foreach ($settings as $key => $value)
             $onlineSettings[$key] = $value;
 
@@ -161,13 +130,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function setIndexSettings($storeId = NULL)
     {
-        $index = $this->getStoreProductIndex($storeId);
+        $index = $this->getIndex($this->getIndexName($storeId).'_products');
         $index->setSettings($this->getProductIndexSettings($storeId));
 
-        $index = $this->getStoreCategoryIndex($storeId);
+        $index = $this->getIndex($this->getIndexName($storeId).'_categories');
         $index->setSettings($this->getCategoryIndexSettings($storeId));
 
-        $index = $this->getStorePageIndex($storeId);
+        $index = $this->getIndex($this->getIndexName($storeId).'_pages');
         $index->setSettings($this->getPageIndexSettings($storeId));
     }
 
@@ -208,7 +177,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport));
         $indexSettings = $transport->getData();
 
-        $this->mergeSettings($this->getStoreProductIndexName($storeId), $indexSettings);
+        $this->mergeSettings($this->getIndex($this->getIndexName($storeId).'_products'), $indexSettings);
 
         return $indexSettings;
     }
@@ -260,7 +229,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport));
         $indexSettings = $transport->getData();
 
-        $this->mergeSettings($this->getStoreCategoryIndexName($storeId), $indexSettings);
+        $this->mergeSettings($this->getIndex($this->getIndexName($storeId).'_categories'), $indexSettings);
 
         return $indexSettings;
     }
@@ -284,7 +253,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         try {
             $resultsLimit = $this->getResultsLimit($storeId);
 
-            $answer = $this->query($this->getStoreProductIndexName($storeId), $queryText, array(
+            $answer = $this->query($this->getIndex($this->getIndexName($storeId).'_products'), $queryText, array(
                 'hitsPerPage' => max(5, min($resultsLimit, 1000)), // retrieve all the hits (hard limit is 1000)
                 'attributesToRetrieve' => 'objectID',
                 'attributesToHighlight' => '',
@@ -385,26 +354,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     /************/
 
     /**
-     * Retrieve object id for the product
-     *
-     * @param Mage_Catalog_Model_Product $product
-     * @return string
-     */
-    public function getProductObjectId(Mage_Catalog_Model_Product $product)
-    {
-        return 'product_' . $product->getId();
-    }
-
-    /**
      * Retrieve object id for the category
      *
      * @param Mage_Catalog_Model_Category $category
      * @return string
      */
-    public function getCategoryObjectId(Mage_Catalog_Model_Category $category)
-    {
-        return 'category_' . $category->getId();
-    }
 
     private function try_cast($value)
     {
@@ -460,6 +414,55 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return false;
     }
 
+    public function removeProduct($id, $store_id = NULL)
+    {
+        $object_id = $id;
+
+        $store_ids = array();
+
+        if ($store_id == NULL)
+        {
+            foreach (Mage::app()->getStores() as $store)
+                if ($store->getIsActive())
+                    $store_ids[] = $store->getId();
+        }
+        else
+            $store_ids = array($store_id);
+
+        echo '<pre>';
+        print_r($object_id);
+
+        foreach ($store_ids as $store_id)
+        {
+            $index = $this->getIndex($this->getIndexName($store_id).'_products');
+
+            $index->deleteObject($object_id);
+        }
+    }
+
+    public function removeCategory($id, $store_id = NULL)
+    {
+        $object_id = $id;
+
+        $store_ids = array();
+
+        if ($store_id == NULL)
+        {
+            foreach (Mage::app()->getStores() as $store)
+                if ($store->getIsActive())
+                    $store_ids[] = $store->getId();
+        }
+        else
+            $store_ids = array($store_id);
+
+        foreach ($store_ids as $store_id)
+        {
+            $index = $this->getIndex($this->getIndexName($store_id).'_categories');
+
+            $index->deleteObject($object_id);
+        }
+    }
+
     /**
      * Prepare product JSON
      *
@@ -479,7 +482,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
 
         $customData = array(
-            'objectID'          => $this->getProductObjectId($product),
+            'objectID'          => $product->getId(),
             'name'              => $product->getName(),
             'price'             => $product->getPrice(),
             'price_with_tax'    => Mage::helper('tax')->getPrice($product, $product->getPrice(), true, null, null, null, null, false),
@@ -579,7 +582,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         } catch (Exception $e) { /* no image, no default: not fatal */
         }
         $data = array(
-            'objectID'      => $this->getCategoryObjectId($category),
+            'objectID'      => $category->getId(),
             'name'          => $category->getName(),
             'path'          => $path,
             'level'         => $category->getLevel(),
@@ -643,9 +646,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $emulationInfo = $this->startEmulation($storeId);
 
-        $indexer = $this->getStorePageIndex($storeId);
-
-        $indexer->clearIndex();
+        $indexer = $this->getIndex($this->getIndexName($storeId).'_pages_tmp');
 
         try
         {
@@ -685,7 +686,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 $pages[] = $page_obj;
             }
 
-            $indexer->addObjects($pages);
+            foreach (array_chunk($pages, 100) as $chunk)
+                $indexer->addObjects($chunk);
+
+            $this->getClient()->moveIndex($this->getIndexName($storeId).'_pages_tmp', $this->getIndexName($storeId).'_pages');
         }
         catch (\Exception $e)
         {
@@ -709,10 +713,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $emulationInfo = $this->startEmulation($storeId);
 
-        try {
+        try
+        {
             $storeRootCategoryPath = sprintf('%d/%d', $this->getRootCategoryId(), Mage::app()->getStore($storeId)->getRootCategoryId());
 
-            $indexer = $this->getStoreCategoryIndex($storeId);
+            $indexer = $this->getIndex($this->getIndexName($storeId).'_categories');
 
             $categories = Mage::getResourceModel('catalog/category_collection'); /** @var $categories Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
 
@@ -802,13 +807,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function rebuildStoreProductIndex($storeId, $productIds, $defaultData = NULL)
     {
-        if (count($productIds) > 0)
+        if (count($productIds) > 1)
             $this->rebuiltStorePageIndex($storeId);
 
         $emulationInfo = $this->startEmulation($storeId);
 
-        try {
-            $indexer = $this->getStoreProductIndex($storeId);
+        try
+        {
+            $indexer = $this->getIndex($this->getIndexName($storeId).'_products');
             $products = Mage::getResourceModel('catalog/product_collection'); /** @var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
 
             $additionalAttr = array();
@@ -830,38 +836,49 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before', array('store' => $storeId, 'collection' => $products));
             $size = $products->getSize();
 
-            if ($size > 0) {
+            if ($size > 0)
+            {
                 $indexData = array();
                 $pageSize = self::COLLECTION_PAGE_SIZE;
                 $pages = ceil($size / $pageSize);
                 $products->clear();
                 $page = 1;
-                while ($page <= $pages) {
+
+                while ($page <= $pages)
+                {
                     $collection = clone $products;
                     $collection->setCurPage($page)->setPageSize($pageSize);
                     $collection->load();
                     $collection->addCategoryIds();
                     $collection->addUrlRewrite();
-                    foreach ($collection as $product) { /** @var $product Mage_Catalog_Model_Product */
+
+                    /** @var $product Mage_Catalog_Model_Product */
+                    foreach ($collection as $product)
+                    {
                         $product->setStoreId($storeId);
+
                         $default = isset($defaultData[$product->getId()]) ? (array) $defaultData[$product->getId()] : array();
 
                         $json = $this->getProductJSON($product, $default);
 
                         array_push($indexData, $json);
-                        if (count($indexData) >= self::BATCH_SIZE) {
+
+                        if (count($indexData) >= self::BATCH_SIZE)
+                        {
                             $indexer->addObjects($indexData);
                             $indexData = array();
                         }
                     }
+
                     $collection->walk('clearInstance');
                     $collection->clear();
                     unset($collection);
                     $page++;
                 }
-                if (count($indexData) > 0) {
+
+                if (count($indexData) > 0)
                     $indexer->addObjects($indexData);
-                }
+
                 unset($indexData);
             }
         }
@@ -1146,11 +1163,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return array();
     }
 
-    public function getNbSuggestions($storeId = NULL)
-    {
-        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_SUGGESTIONS, $storeId);
-    }
-
     public function getSaveLastQuery($storeId = NULL)
     {
         return Mage::getStoreConfigFlag(self::XML_PATH_SAVE_LAST_QUERY, $storeId);
@@ -1166,27 +1178,19 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return ($this->isEnabled($storeId) && Mage::getStoreConfigFlag(self::XML_PATH_IS_POPUP_ENABLED, $storeId));
     }
 
-    public function getAttributesToRetrieve()
-    {
-        return array_merge(
-            self::$_predefinedProductAttributesToRetrieve,
-            self::$_predefinedCategoryAttributesToRetrieve,
-            self::$_predefinedSpecialAttributes
-        );
-    }
-
     public function getExcludedPages($storeId = NULL)
     {
-        return unserialize(Mage::getStoreConfig(self::XML_PATH_EXCLUDED_PAGES, $storeId));
+        $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_EXCLUDED_PAGES, $storeId));
+
+        if (is_array($attrs))
+            return $attrs;
+
+        return array();
     }
 
     public function getRemoveWordsIfNoResult($storeId = NULL)
     {
         return Mage::getStoreConfig(self::XML_PATH_REMOVE_IF_NO_RESULT, $storeId);
-    }
-
-    public function getCustomRankings($storeId = NULL) {
-        return unserialize(Mage::getStoreConfig(self::XML_PATH_CUSTOM_RANKING_ATTRIBUTES, $storeId));
     }
 
     public function getNumberOfProductSuggestions($storeId = NULL)

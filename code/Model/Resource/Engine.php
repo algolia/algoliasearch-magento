@@ -82,12 +82,20 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
      */
     protected function _cleanEntityIndex($entity, $storeId = NULL, $entityId = NULL)
     {
-        $data = array(
-            'entity'    => $entity,
-            'store_id'  => $storeId,
-            'entity_id' => $entityId,
-        );
-        $this->_queue->add('algoliasearch/observer', 'cleanIndex', $data, 1);
+        $data = $entityId;
+
+        if (is_array($data) == false)
+            $data = array($data);
+
+        foreach ($data as $id)
+        {
+            if ($entity == 'product')
+                $this->_helper->removeProduct($id, $storeId);
+
+            if ($entity == 'category')
+                $this->_helper->removeCategory($id, $storeId);
+        }
+
         return $this;
     }
 
