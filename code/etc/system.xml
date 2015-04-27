@@ -162,7 +162,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the attributes you want to include in your Algolia records. The order of this setting matters as those at the top of the list are considered more important.</comment>
+                            <comment>Configure here the pages you want to exclude from indexation</comment>
                         </excluded_pages>
                     </fields>
                 </pages>
