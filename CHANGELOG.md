@@ -1,5 +1,8 @@
 ## Change Log
 
+### 1.1.2
+- Fix issues with product deletions
+
 ### 1.1.1 
 
 - Add price with tax to product records
