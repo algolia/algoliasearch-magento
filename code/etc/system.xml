@@ -145,6 +145,27 @@
                         </custom_ranking_category_attributes>
                     </fields>
                 </categories>
+                <pages>
+                    <label>Pages Configuration</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>45</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <excluded_pages translate="label comment">
+                            <label>Category Attributes</label>
+                            <frontend_model>algoliasearch/system_config_form_field_custompages</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Configure here the attributes you want to include in your Algolia records. The order of this setting matters as those at the top of the list are considered more important.</comment>
+                        </excluded_pages>
+                    </fields>
+                </pages>
                 <relevance translate="label">
                     <label>Query Expansion Settings</label>
                     <frontend_type>text</frontend_type>
