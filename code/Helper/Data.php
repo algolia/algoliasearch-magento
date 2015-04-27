@@ -414,10 +414,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return false;
     }
 
-    public function removeProduct($id, $store_id = NULL)
+    public function removeProducts($ids, $store_id = NULL)
     {
-        $object_id = $id;
-
         $store_ids = array();
 
         if ($store_id == NULL)
@@ -429,21 +427,16 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         else
             $store_ids = array($store_id);
 
-        echo '<pre>';
-        print_r($object_id);
-
         foreach ($store_ids as $store_id)
         {
             $index = $this->getIndex($this->getIndexName($store_id).'_products');
 
-            $index->deleteObject($object_id);
+            $index->deleteObjects($ids);
         }
     }
 
-    public function removeCategory($id, $store_id = NULL)
+    public function removeCategories($ids, $store_id = NULL)
     {
-        $object_id = $id;
-
         $store_ids = array();
 
         if ($store_id == NULL)
@@ -459,7 +452,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         {
             $index = $this->getIndex($this->getIndexName($store_id).'_categories');
 
-            $index->deleteObject($object_id);
+            $index->deleteObjects($ids);
         }
     }
 

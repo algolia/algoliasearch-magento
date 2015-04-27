@@ -87,14 +87,11 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         if (is_array($data) == false)
             $data = array($data);
 
-        foreach ($data as $id)
-        {
-            if ($entity == 'product')
-                $this->_helper->removeProduct($id, $storeId);
+        if ($entity == 'product')
+            $this->_helper->removeProducts($data, $storeId);
 
-            if ($entity == 'category')
-                $this->_helper->removeCategory($id, $storeId);
-        }
+        if ($entity == 'category')
+            $this->_helper->removeCategories($data, $storeId);
 
         return $this;
     }
