@@ -135,6 +135,7 @@
             <ui>
                 <number_category_suggestions>5</number_category_suggestions>
                 <number_product_suggestions>3</number_product_suggestions>
+                <number_page_suggestions>3</number_page_suggestions>
                 <save_last_query>0</save_last_query>
             </ui>
             <queue>

@@ -183,7 +183,7 @@
                             <label>Number of category suggestions</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
-                            <sort_order>10</sort_order>
+                            <sort_order>9</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -193,12 +193,22 @@
                             <label>Number of product suggestions</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
-                            <sort_order>10</sort_order>
+                            <sort_order>8</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>The number of product suggestions the auto-completion menu is displaying. Default value is 3.</comment>
                         </number_product_suggestions>
+                        <number_page_suggestions translate="label comment">
+                            <label>Number of page suggestions</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The number of page suggestions the auto-completion menu is displaying. Default value is 3.</comment>
+                        </number_page_suggestions>
                         <save_last_query translate="label comment">
                             <label>Save Last Query</label>
                             <frontend_type>select</frontend_type>
