@@ -25,6 +25,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_INDEX_PRODUCT_COUNT              = 'algoliasearch/categories/index_product_count';
     const XML_PATH_CATEGORY_CUSTOM_RANKING          = 'algoliasearch/categories/custom_ranking_category_attributes';
 
+    const XML_PATH_EXCLUDED_PAGES                   = 'algoliasearch/pages/excluded_pages';
+
     const XML_PATH_REMOVE_IF_NO_RESULT              = 'algoliasearch/relevance/remove_words_if_no_result';
 
     const XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS    = 'algoliasearch/ui/number_product_suggestions';
@@ -651,10 +653,18 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $ids = $magento_pages->toOptionArray();
 
+            $excluded_pages = array_values($this->getExcludedPages());
+
+            foreach ($excluded_pages as &$excluded_page)
+                $excluded_page = $excluded_page['pages'];
+
             $pages = array();
 
             foreach ($ids as $key => $value)
             {
+                if (in_array($value['value'], $excluded_pages))
+                    continue;
+
                 $page_obj = array();
 
                 $page_obj['slug'] = $value['value'];
@@ -663,6 +673,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 $page = Mage::getModel('cms/page');
                 $page->setStoreId($storeId);
                 $page->load($page_obj['slug'], 'identifier');
+
+                if (! $page->getId())
+                    continue;
 
                 $page_obj['objectID'] = $page->getId();
 
@@ -1160,6 +1173,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             self::$_predefinedCategoryAttributesToRetrieve,
             self::$_predefinedSpecialAttributes
         );
+    }
+
+    public function getExcludedPages($storeId = NULL)
+    {
+        return unserialize(Mage::getStoreConfig(self::XML_PATH_EXCLUDED_PAGES, $storeId));
     }
 
     public function getRemoveWordsIfNoResult($storeId = NULL)
