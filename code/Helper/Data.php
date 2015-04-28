@@ -429,9 +429,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         else
             $store_ids = array($store_id);
 
-        echo '<pre>';
-        print_r($object_id);
-
         foreach ($store_ids as $store_id)
         {
             $index = $this->getIndex($this->getIndexName($store_id).'_products');
@@ -480,7 +477,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $defaultData    = is_array($defaultData) ? $defaultData : explode("|",$defaultData);
 
-
         $customData = array(
             'objectID'          => $product->getId(),
             'name'              => $product->getName(),
@@ -496,14 +492,25 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             if ($categoryName = $this->getCategoryName($categoryId, $product->getStoreId()))
                 array_push($categories, $categoryName);
 
-        try { $customData['thumbnail_url'] = $product->getThumbnailUrl(); } catch(\Exception $e) {}
-        try { $customData['image_url'] = $product->getImageUrl();  } catch(\Exception $e) {}
+        try
+        {
+            $customData['thumbnail_url'] = $product->getThumbnailUrl();
+            $customData['thumbnail_url'] = str_replace(array('https://', 'http://'), '//', $customData['thumbnail_url']);
+        }
+        catch(\Exception $e) {}
+
+        try
+        {
+            $customData['image_url'] = $product->getImageUrl();
+            $customData['image_url'] = str_replace(array('https://', 'http://'), '//', $customData['image_url']);
+        }
+        catch(\Exception $e) {}
 
         $report = $this->getReportForProduct($product);
 
-        $customData['ordered_qty'] = intval($report->getOrderedQty());
-        $customData['stock_qty'] = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
-
+        $customData['ordered_qty']      = intval($report->getOrderedQty());
+        $customData['stock_qty']        = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
+        
         if ($product->getTypeId() == 'configurable')
         {
             $sub_products   = $product->getTypeInstance(true)->getUsedProducts(null, $product);
