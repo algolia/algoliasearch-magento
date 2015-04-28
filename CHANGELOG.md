@@ -1,5 +1,8 @@
 ## Change Log
 
+### 1.1.3
+- Change url protocol of thumbnail
+
 ### 1.1.2
 - Fix issues with product deletions
 - Add support of pages
