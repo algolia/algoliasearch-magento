@@ -100,9 +100,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->getClient()->deleteIndex($this->getIndexName($storeId));
     }
 
-    public function query($index, $q, $params)
+    public function query($index_name, $q, $params)
     {
-        return $this->getClient()->initIndex($index)->search($q, $params);
+        return $this->getClient()->initIndex($index_name)->search($q, $params);
     }
 
     public function getIndexName($storeId = NULL)
@@ -250,30 +250,35 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getSearchResult($queryText, $storeId)
     {
         Varien_Profiler::start('Algolia-FullText-getSearchResult');
-        try {
+
+        try
+        {
             $resultsLimit = $this->getResultsLimit($storeId);
 
-            $answer = $this->query($this->getIndex($this->getIndexName($storeId).'_products'), $queryText, array(
+            $answer = $this->query($this->getIndexName($storeId).'_products', $queryText, array(
                 'hitsPerPage' => max(5, min($resultsLimit, 1000)), // retrieve all the hits (hard limit is 1000)
                 'attributesToRetrieve' => 'objectID',
                 'attributesToHighlight' => '',
                 'attributesToSnippet' => '',
                 'removeWordsIfNoResult'=> $this->getRemoveWordsIfNoResult($storeId),
             ));
-
-        } catch (Exception $e) {
+        }
+        catch (Exception $e)
+        {
             Varien_Profiler::stop('Algolia-FullText-getSearchResult');
             throw $e;
         }
 
         $data = array();
-        foreach ($answer['hits'] as $i => $hit) {
-            $objectIdParts = explode('_', $hit['objectID'], 2);
-            $productId = ! empty($objectIdParts[1]) && ctype_digit($objectIdParts[1]) ? (int)$objectIdParts[1] : NULL;
-            if ($productId) {
+
+        foreach ($answer['hits'] as $i => $hit)
+        {
+            $productId = $hit['objectID'];
+
+            if ($productId)
                 $data[$productId] = $resultsLimit - $i;
-            }
         }
+
         Varien_Profiler::stop('Algolia-FullText-getSearchResult');
 
         return $data;

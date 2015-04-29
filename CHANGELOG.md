@@ -2,6 +2,7 @@
 
 ### 1.1.3
 - Change url protocol of thumbnail
+- Fix bug affecting search in the backend due to bad objectID
 
 ### 1.1.2
 - Fix issues with product deletions
