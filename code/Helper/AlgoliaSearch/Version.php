@@ -25,6 +25,14 @@
  */
 namespace AlgoliaSearch;
 
-class Version {
-  const VALUE = "1.5.5 (Magento)";
+class Version
+{
+    const VALUE                   = "1.5.6";
+
+    public static $custom_value   = "";
+
+    public static function get()
+    {
+        return self::VALUE.static::$custom_value;
+    }
 }

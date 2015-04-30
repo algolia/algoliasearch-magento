@@ -31,7 +31,7 @@ namespace AlgoliaSearch;
  */
 class Index {
 
-    private $indexName;
+    public $indexName;
     private $client;
     private $urlIndexName;
 
@@ -127,12 +127,12 @@ class Index {
             throw new \Exception('No list of objectID provided');
         }
         $requests = array();
-        foreach ($objectIDs as $object) {            
+        foreach ($objectIDs as $object) {
             $req = array("indexName" => $this->indexName, "objectID" => $object);
             array_push($requests, $req);
         }
         return $this->client->request($this->context, "POST", "/1/indexes/*/objects", array(), array("requests" => $requests), $this->context->readHostsArray, $this->context->connectTimeout, $this->context->readTimeout);
-   }
+    }
 
     /*
      * Update partially an object (only update attributes passed in argument)
@@ -151,7 +151,7 @@ class Index {
      */
     public function partialUpdateObjects($objects, $objectIDKey = "objectID", $createIfNotExists = true) {
         if ($createIfNotExists) {
-           $requests = $this->buildBatch("partialUpdateObject", $objects, true, $objectIDKey);
+            $requests = $this->buildBatch("partialUpdateObject", $objects, true, $objectIDKey);
         } else {
             $requests = $this->buildBatch("partialUpdateObjectNoCreate", $objects, true, $objectIDKey);
         }
@@ -210,18 +210,18 @@ class Index {
      * @param params the optional query parameters
      */
     public function deleteByQuery($query, $args = array()) {
-      $params["attributeToRetrieve"] = array('objectID');
-      $params["hitsPerPage"] = 1000;
-      $results = $this->search($query, $args);
-      while ($results['nbHits'] != 0) {
-        $objectIDs = array();
-        foreach ($results['hits'] as $elt) {
-          array_push($objectIDs, $elt['objectID']);
-        }
-        $res = $this->deleteObjects($objectIDs);
-        $this->waitTask($res['taskID']);
+        $params["attributeToRetrieve"] = array('objectID');
+        $params["hitsPerPage"] = 1000;
         $results = $this->search($query, $args);
-      }
+        while ($results['nbHits'] != 0) {
+            $objectIDs = array();
+            foreach ($results['hits'] as $elt) {
+                array_push($objectIDs, $elt['objectID']);
+            }
+            $res = $this->deleteObjects($objectIDs);
+            $this->waitTask($res['taskID']);
+            $results = $this->search($query, $args);
+        }
     }
 
     /*
@@ -305,82 +305,82 @@ class Index {
      * ex: { "my_facet1" => ["my_value1", ["my_value2"], "my_disjunctive_facet1" => ["my_value1", "my_value2"] }
      */
     public function searchDisjunctiveFaceting($query, $disjunctive_facets, $params = array(), $refinements = array()) {
-      if (gettype($disjunctive_facets) != "string" && gettype($disjunctive_facets) != "array") {
-        throw new AlgoliaException("Argument \"disjunctive_facets\" must be a String or an Array");
-      }
-      if (gettype($refinements) != "array") {
-        throw new AlgoliaException("Argument \"refinements\" must be a Hash of Arrays");
-      }
-
-      if (gettype($disjunctive_facets) == "string") {
-        $disjunctive_facets = split(",", $disjunctive_facets);
-      }
-
-      $disjunctive_refinements = array();
-      foreach ($refinements as $key => $value) {
-        if (in_array($key, $disjunctive_facets)) {
-          $disjunctive_refinements[$key] = $value;
+        if (gettype($disjunctive_facets) != "string" && gettype($disjunctive_facets) != "array") {
+            throw new AlgoliaException("Argument \"disjunctive_facets\" must be a String or an Array");
         }
-      }
-      $queries = array();
-      $filters = array();
-
-      foreach ($refinements as $key => $value) {
-        $r = array_map(function ($val) use ($key) { return $key . ":" . $val;}, $value);
-
-        if (in_array($key, $disjunctive_refinements)) {
-          $filter = array_merge($filters, $r);
-        } else {
-          array_push($filters, $r);
+        if (gettype($refinements) != "array") {
+            throw new AlgoliaException("Argument \"refinements\" must be a Hash of Arrays");
         }
-      }
-      $params["indexName"] = $this->indexName;
-      $params["query"] = $query;
-      $params["facetFilters"] = $filters;
-      array_push($queries, $params);
-      foreach ($disjunctive_facets as $disjunctive_facet) {
-        $filters = array();
+
+        if (gettype($disjunctive_facets) == "string") {
+            $disjunctive_facets = split(",", $disjunctive_facets);
+        }
+
+        $disjunctive_refinements = array();
         foreach ($refinements as $key => $value) {
-          if ($key != $disjunctive_facet) {
-            $r = array_map(function($val) use($key) { return $key . ":" . $val;}, $value);
+            if (in_array($key, $disjunctive_facets)) {
+                $disjunctive_refinements[$key] = $value;
+            }
+        }
+        $queries = array();
+        $filters = array();
+
+        foreach ($refinements as $key => $value) {
+            $r = array_map(function ($val) use ($key) { return $key . ":" . $val;}, $value);
 
             if (in_array($key, $disjunctive_refinements)) {
-              $filter = array_merge($filters, $r);
+                $filter = array_merge($filters, $r);
             } else {
-              array_push($filters, $r);
+                array_push($filters, $r);
             }
-          }
         }
         $params["indexName"] = $this->indexName;
         $params["query"] = $query;
         $params["facetFilters"] = $filters;
-        $params["page"] = 0;
-        $params["hitsPerPage"] = 0;
-        $params["attributesToRetrieve"] = array();
-        $params["attributesToHighlight"] = array();
-        $params["attributesToSnippet"] = array();
-        $params["facets"] = $disjunctive_facet;
-        $params["analytics"] = false;
         array_push($queries, $params);
-      }
-      $answers = $this->client->multipleQueries($queries);
+        foreach ($disjunctive_facets as $disjunctive_facet) {
+            $filters = array();
+            foreach ($refinements as $key => $value) {
+                if ($key != $disjunctive_facet) {
+                    $r = array_map(function($val) use($key) { return $key . ":" . $val;}, $value);
 
-      $aggregated_answer = $answers['results'][0];
-      $aggregated_answer['disjunctiveFacets'] = array();
-      for ($i = 1; $i < count($answers['results']); $i++) {
-        foreach ($answers['results'][$i]['facets'] as $key => $facet) {
-          $aggregated_answer['disjunctiveFacets'][$key] = $facet;
-          if (!in_array($key, $disjunctive_refinements)) {
-            continue;
-          }
-          foreach ($disjunctive_refinements[$key] as $r) {
-            if (is_null($aggregated_answer['disjunctiveFacets'][$key][$r])) {
-              $aggregated_answer['disjunctiveFacets'][$key][$r] = 0;
+                    if (in_array($key, $disjunctive_refinements)) {
+                        $filter = array_merge($filters, $r);
+                    } else {
+                        array_push($filters, $r);
+                    }
+                }
             }
-          }
+            $params["indexName"] = $this->indexName;
+            $params["query"] = $query;
+            $params["facetFilters"] = $filters;
+            $params["page"] = 0;
+            $params["hitsPerPage"] = 0;
+            $params["attributesToRetrieve"] = array();
+            $params["attributesToHighlight"] = array();
+            $params["attributesToSnippet"] = array();
+            $params["facets"] = $disjunctive_facet;
+            $params["analytics"] = false;
+            array_push($queries, $params);
         }
-      }
-      return $aggregated_answer;
+        $answers = $this->client->multipleQueries($queries);
+
+        $aggregated_answer = $answers['results'][0];
+        $aggregated_answer['disjunctiveFacets'] = array();
+        for ($i = 1; $i < count($answers['results']); $i++) {
+            foreach ($answers['results'][$i]['facets'] as $key => $facet) {
+                $aggregated_answer['disjunctiveFacets'][$key] = $facet;
+                if (!in_array($key, $disjunctive_refinements)) {
+                    continue;
+                }
+                foreach ($disjunctive_refinements[$key] as $r) {
+                    if (is_null($aggregated_answer['disjunctiveFacets'][$key][$r])) {
+                        $aggregated_answer['disjunctiveFacets'][$key][$r] = 0;
+                    }
+                }
+            }
+        }
+        return $aggregated_answer;
     }
 
     /*
@@ -392,7 +392,7 @@ class Index {
      */
     public function browse($page = 0, $hitsPerPage = 1000) {
         return $this->client->request($this->context, "GET", "/1/indexes/" . $this->urlIndexName . "/browse",
-                                    array("page" => $page, "hitsPerPage" => $hitsPerPage), null, $this->context->readHostsArray, $this->context->connectTimeout, $this->context->readTimeout);
+            array("page" => $page, "hitsPerPage" => $hitsPerPage), null, $this->context->readHostsArray, $this->context->connectTimeout, $this->context->readTimeout);
     }
 
     /*
@@ -508,7 +508,18 @@ class Index {
     /*
      * Create a new user key associated to this index
      *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
+     * @param obj can be two different parameters:
+     * The list of parameters for this key. Defined by a NSDictionary that
+     * can contains the following values:
+     *   - acl: array of string
+     *   - indices: array of string
+     *   - validity: int
+     *   - referers: array of string
+     *   - description: string
+     *   - maxHitsPerQuery: integer
+     *   - queryParameters: string
+     *   - maxQueriesPerIPPerHour: integer
+     * Or the list of ACL for this key. Defined by an array of NSString that
      * can contains the following values:
      *   - search: allow to search (https and http)
      *   - addObject: allows to add/update an object in the index (https only)
@@ -520,16 +531,39 @@ class Index {
      * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
      * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
      */
-    public function addUserKey($acls, $validity = 0, $maxQueriesPerIPPerHour = 0, $maxHitsPerQuery = 0) {
-        return $this->client->request($this->context, "POST", "/1/indexes/" . $this->urlIndexName . "/keys", array(),
-            array("acl" => $acls, "validity" => $validity, "maxQueriesPerIPPerHour" => $maxQueriesPerIPPerHour, "maxHitsPerQuery" => $maxHitsPerQuery),
+    public function addUserKey($obj, $validity = 0, $maxQueriesPerIPPerHour = 0, $maxHitsPerQuery = 0) {
+        if ($obj !== array_values($obj)) { // is dict of value
+            $params = $obj;
+            $params["validity"] = $validity;
+            $params["maxQueriesPerIPPerHour"] = $maxQueriesPerIPPerHour;
+            $params["maxHitsPerQuery"] = $maxHitsPerQuery;
+        } else {
+            $params = array(
+                "acl" => $obj,
+                "validity" => $validity,
+                "maxQueriesPerIPPerHour" => $maxQueriesPerIPPerHour,
+                "maxHitsPerQuery" => $maxHitsPerQuery
+            );
+        }
+        return $this->client->request($this->context, "POST", "/1/indexes/" . $this->urlIndexName . "/keys", array(), $params,
             $this->context->writeHostsArray, $this->context->connectTimeout, $this->context->readTimeout);
     }
 
     /*
      * Update a user key associated to this index
      *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
+     * @param obj can be two different parameters:
+     * The list of parameters for this key. Defined by a NSDictionary that
+     * can contains the following values:
+     *   - acl: array of string
+     *   - indices: array of string
+     *   - validity: int
+     *   - referers: array of string
+     *   - description: string
+     *   - maxHitsPerQuery: integer
+     *   - queryParameters: string
+     *   - maxQueriesPerIPPerHour: integer
+     * Or the list of ACL for this key. Defined by an array of NSString that
      * can contains the following values:
      *   - search: allow to search (https and http)
      *   - addObject: allows to add/update an object in the index (https only)
@@ -541,9 +575,21 @@ class Index {
      * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
      * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
      */
-    public function updateUserKey($key, $acls, $validity = 0, $maxQueriesPerIPPerHour = 0, $maxHitsPerQuery = 0) {
-        return $this->client->request($this->context, "PUT", "/1/indexes/" . $this->urlIndexName . "/keys/" . $key , array(),
-            array("acl" => $acls, "validity" => $validity, "maxQueriesPerIPPerHour" => $maxQueriesPerIPPerHour, "maxHitsPerQuery" => $maxHitsPerQuery),
+    public function updateUserKey($key, $obj, $validity = 0, $maxQueriesPerIPPerHour = 0, $maxHitsPerQuery = 0) {
+        if ($obj !== array_values($obj)) { // is dict of value
+            $params = $obj;
+            $params["validity"] = $validity;
+            $params["maxQueriesPerIPPerHour"] = $maxQueriesPerIPPerHour;
+            $params["maxHitsPerQuery"] = $maxHitsPerQuery;
+        } else {
+            $params = array(
+                "acl" => $obj,
+                "validity" => $validity,
+                "maxQueriesPerIPPerHour" => $maxQueriesPerIPPerHour,
+                "maxHitsPerQuery" => $maxHitsPerQuery
+            );
+        }
+        return $this->client->request($this->context, "PUT", "/1/indexes/" . $this->urlIndexName . "/keys/" . $key , array(), $params,
             $this->context->writeHostsArray, $this->context->connectTimeout, $this->context->readTimeout);
     }
 
@@ -553,7 +599,7 @@ class Index {
      */
     public function batch($requests) {
         return $this->client->request($this->context, "POST", "/1/indexes/" . $this->urlIndexName . "/batch", array(), $requests,
-                                      $this->context->writeHostsArray, $this->context->connectTimeout, $this->context->readTimeout);
+            $this->context->writeHostsArray, $this->context->connectTimeout, $this->context->readTimeout);
     }
 
     /**

@@ -81,7 +81,7 @@ class ClientContext {
     public function releaseMHandle($curlHandle) {
         curl_multi_remove_handle($this->curlMHandle, $curlHandle);
     }
-    
+
     public function setRateLimit($adminAPIKey, $endUserIP, $rateLimitAPIKey) {
         $this->adminAPIKey = $adminAPIKey;
         $this->endUserIP = $endUserIP;

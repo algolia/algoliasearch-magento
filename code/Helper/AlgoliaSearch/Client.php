@@ -76,13 +76,13 @@ class Client {
      * @param searchTimeout the read timeout used for search queries only
      */
     public function setConnectTimeout($connectTimeout, $timeout = 30, $searchTimeout = 5) {
-      $version = curl_version();
-      if ((version_compare(phpversion(), '5.2.3', '<') || version_compare($version['version'], '7.16.2', '<')) && $this->context->connectTimeout < 1) {
-        throw new AlgoliaException("The timeout can't be a float with a PHP version less than 5.2.3 or a curl version less than 7.16.2");
-      }
-      $this->context->connectTimeout = $connectTimeout;
-      $this->context->readTimeout = $timeout;
-      $this->context->searchTimeout = $searchTimeout;
+        $version = curl_version();
+        if ((version_compare(phpversion(), '5.2.3', '<') || version_compare($version['version'], '7.16.2', '<')) && $this->context->connectTimeout < 1) {
+            throw new AlgoliaException("The timeout can't be a float with a PHP version less than 5.2.3 or a curl version less than 7.16.2");
+        }
+        $this->context->connectTimeout = $connectTimeout;
+        $this->context->readTimeout = $timeout;
+        $this->context->searchTimeout = $searchTimeout;
     }
 
     /*
@@ -106,42 +106,42 @@ class Client {
     /*
      * Call isAlive
      */
-     public function isAlive() {
+    public function isAlive() {
         $this->request($this->context, "GET", "/1/isalive", null, null, $this->context->readHostsArray, $this->context->connectTimeout, $this->context->readTimeout);
-     }
+    }
 
     /*
      * Allow to set custom headers
      */
-     public function setExtraHeader($key, $value) {
+    public function setExtraHeader($key, $value) {
         $this->context->setExtraHeader($key, $value);
-     }
+    }
 
     /*
      * This method allows to query multiple indexes with one API call
      *
      */
-    public function multipleQueries($queries, $indexNameKey = "indexName") {
+    public function multipleQueries($queries, $indexNameKey = "indexName", $strategy = "none") {
         if ($queries == null) {
             throw new \Exception('No query provided');
         }
         $requests = array();
-        foreach ($queries as $query) {            
+        foreach ($queries as $query) {
             if (array_key_exists($indexNameKey, $query)) {
                 $indexes = $query[$indexNameKey];
-                unset($query[$indexNameKey]);    
+                unset($query[$indexNameKey]);
             } else {
                 throw new \Exception('indexName is mandatory');
             }
             foreach ($query as $key => $value) {
-              if (gettype($value) == "array") {
-                $query[$key] = json_encode($value);
-              }
+                if (gettype($value) == "array") {
+                    $query[$key] = json_encode($value);
+                }
             }
             $req = array("indexName" => $indexes, "params" => http_build_query($query));
             array_push($requests, $req);
         }
-        return $this->request($this->context, "POST", "/1/indexes/*/queries", array(), array("requests" => $requests), $this->context->readHostsArray, $this->context->connectTimeout, $this->context->searchTimeout);
+        return $this->request($this->context, "POST", "/1/indexes/*/queries?strategy=" . $strategy, array(), array("requests" => $requests), $this->context->readHostsArray, $this->context->connectTimeout, $this->context->searchTimeout);
     }
 
     /*
@@ -210,7 +210,7 @@ class Client {
     public function initIndex($indexName) {
         if (empty($indexName)) {
             throw new AlgoliaException('Invalid index name: empty string');
-	}
+        }
         return new Index($this->context, $this, $indexName);
     }
 
@@ -241,7 +241,18 @@ class Client {
     /*
      * Create a new user key
      *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
+     * @param obj can be two different parameters:
+     * The list of parameters for this key. Defined by a NSDictionary that
+     * can contains the following values:
+     *   - acl: array of string
+     *   - indices: array of string
+     *   - validity: int
+     *   - referers: array of string
+     *   - description: string
+     *   - maxHitsPerQuery: integer
+     *   - queryParameters: string
+     *   - maxQueriesPerIPPerHour: integer
+     * Or the list of ACL for this key. Defined by an array of NSString that
      * can contains the following values:
      *   - search: allow to search (https and http)
      *   - addObject: allows to add/update an object in the index (https only)
@@ -254,13 +265,21 @@ class Client {
      * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
      * @param indexes Specify the list of indices to target (null means all)
      */
-    public function addUserKey($acls, $validity = 0, $maxQueriesPerIPPerHour = 0, $maxHitsPerQuery = 0, $indexes = null) {
-        $params = array(
-            "acl" => $acls,
-            "validity" => $validity,
-            "maxQueriesPerIPPerHour" => $maxQueriesPerIPPerHour,
-            "maxHitsPerQuery" => $maxHitsPerQuery
-        );
+    public function addUserKey($obj, $validity = 0, $maxQueriesPerIPPerHour = 0, $maxHitsPerQuery = 0, $indexes = null) {
+        if ($obj !== array_values($obj)) { // is dict of value
+            $params = $obj;
+            $params["validity"] = $validity;
+            $params["maxQueriesPerIPPerHour"] = $maxQueriesPerIPPerHour;
+            $params["maxHitsPerQuery"] = $maxHitsPerQuery;
+        } else {
+            $params = array(
+                "acl" => $obj,
+                "validity" => $validity,
+                "maxQueriesPerIPPerHour" => $maxQueriesPerIPPerHour,
+                "maxHitsPerQuery" => $maxHitsPerQuery
+            );
+        }
+
         if ($indexes != null) {
             $params['indexes'] = $indexes;
         }
@@ -270,7 +289,18 @@ class Client {
     /*
      * Update a user key
      *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
+     * @param obj can be two different parameters:
+     * The list of parameters for this key. Defined by a NSDictionary that
+     * can contains the following values:
+     *   - acl: array of string
+     *   - indices: array of string
+     *   - validity: int
+     *   - referers: array of string
+     *   - description: string
+     *   - maxHitsPerQuery: integer
+     *   - queryParameters: string
+     *   - maxQueriesPerIPPerHour: integer
+     * Or the list of ACL for this key. Defined by an array of NSString that
      * can contains the following values:
      *   - search: allow to search (https and http)
      *   - addObject: allows to add/update an object in the index (https only)
@@ -283,17 +313,33 @@ class Client {
      * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
      * @param indexes Specify the list of indices to target (null means all)
      */
-    public function updateUserKey($key, $acls, $validity = 0, $maxQueriesPerIPPerHour = 0, $maxHitsPerQuery = 0, $indexes = null) {
-        $params = array(
-            "acl" => $acls,
-            "validity" => $validity,
-            "maxQueriesPerIPPerHour" => $maxQueriesPerIPPerHour,
-            "maxHitsPerQuery" => $maxHitsPerQuery
-        );
+    public function updateUserKey($key, $obj, $validity = 0, $maxQueriesPerIPPerHour = 0, $maxHitsPerQuery = 0, $indexes = null) {
+        if ($obj !== array_values($obj)) { // is dict of value
+            $params = $obj;
+            $params["validity"] = $validity;
+            $params["maxQueriesPerIPPerHour"] = $maxQueriesPerIPPerHour;
+            $params["maxHitsPerQuery"] = $maxHitsPerQuery;
+        } else {
+            $params = array(
+                "acl" => $obj,
+                "validity" => $validity,
+                "maxQueriesPerIPPerHour" => $maxQueriesPerIPPerHour,
+                "maxHitsPerQuery" => $maxHitsPerQuery
+            );
+        }
         if ($indexes != null) {
             $params['indexes'] = $indexes;
         }
         return $this->request($this->context, "PUT", "/1/keys/" . $key, array(), $params, $this->context->writeHostsArray, $this->context->connectTimeout, $this->context->readTimeout);
+    }
+
+    /**
+     * Send a batch request targeting multiple indices
+     * @param  $requests an associative array defining the batch request body
+     */
+    public function batch($requests) {
+        return $this->request($this->context, "POST", "/1/indexes/*/batch", array(), array("requests" => $requests),
+            $this->context->writeHostsArray, $this->context->connectTimeout, $this->context->readTimeout);
     }
 
     /*
@@ -362,27 +408,27 @@ class Client {
                 }
             }
             $url .= "?" . http_build_query($params2);
-            
+
         }
         // initialize curl library
         $curlHandle = curl_init();
         //curl_setopt($curlHandle, CURLOPT_VERBOSE, true);
         if ($context->adminAPIKey == null) {
             curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array_merge(array(
-                        'X-Algolia-Application-Id: ' . $context->applicationID,
-                        'X-Algolia-API-Key: ' . $context->apiKey,
-                        'Content-type: application/json'
-                        ), $context->headers));
+                'X-Algolia-Application-Id: ' . $context->applicationID,
+                'X-Algolia-API-Key: ' . $context->apiKey,
+                'Content-type: application/json'
+            ), $context->headers));
         } else {
-             curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array_merge(array(
-                    'X-Algolia-Application-Id: ' . $context->applicationID,
-                    'X-Algolia-API-Key: ' . $context->adminAPIKey,
-                    'X-Forwarded-For: ' . $context->endUserIP,
-                    'X-Forwarded-API-Key: ' . $context->rateLimitAPIKey,
-                    'Content-type: application/json'
-                    ), $context->headers));
+            curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array_merge(array(
+                'X-Algolia-Application-Id: ' . $context->applicationID,
+                'X-Algolia-API-Key: ' . $context->adminAPIKey,
+                'X-Forwarded-For: ' . $context->endUserIP,
+                'X-Forwarded-API-Key: ' . $context->rateLimitAPIKey,
+                'Content-type: application/json'
+            ), $context->headers));
         }
-        curl_setopt($curlHandle, CURLOPT_USERAGENT, "Algolia for PHP " . Version::VALUE);
+        curl_setopt($curlHandle, CURLOPT_USERAGENT, "Algolia for PHP " . Version::get());
         //Return the output instead of printing it
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
@@ -390,7 +436,7 @@ class Client {
         curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($curlHandle, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($curlHandle, CURLOPT_CAINFO, $this->cainfoPath);
-        
+
         curl_setopt($curlHandle, CURLOPT_URL, $url);
         $version = curl_version();
         if (version_compare(phpversion(), '5.2.3', '>=') && version_compare($version['version'], '7.16.2', '>=') && $connectTimeout < 1) {
@@ -430,12 +476,12 @@ class Client {
             $mrc = curl_multi_exec($mhandle, $running);
         } while ($mrc == CURLM_CALL_MULTI_PERFORM);
         while ($running && $mrc == CURLM_OK) {
-          if (curl_multi_select($mhandle, 0.1) == -1) {
-            usleep(100);
-          }
-          do {
-            $mrc = curl_multi_exec($mhandle, $running);
-          } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+            if (curl_multi_select($mhandle, 0.1) == -1) {
+                usleep(100);
+            }
+            do {
+                $mrc = curl_multi_exec($mhandle, $running);
+            } while ($mrc == CURLM_CALL_MULTI_PERFORM);
         }
         $http_status = (int)curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
         $response = curl_multi_getcontent($curlHandle);
@@ -482,11 +528,10 @@ class Client {
                 $errorMsg = null;
                 break;
         }
-        if ($errorMsg !== null) 
+        if ($errorMsg !== null)
             throw new AlgoliaException($errorMsg);
 
         return $answer;
     }
 }
-
 
