@@ -34,7 +34,7 @@ $ modman clone https://github.com/algolia/algoliasearch-magento.git
 
 ### Using Composer
 
-To setup this module using [Composer](https://getcomposer.org/) (a dependency manager for PHP), just add ```"algolia/algoliasearch-magento": "*"``` to your ```composer.json``` file.
+To setup this module using [Composer](https://getcomposer.org/) (a dependency manager for PHP), just add ```"algolia/algoliasearch-magento": "1.1.*"``` to your ```composer.json``` file.
 
 Features
 --------
