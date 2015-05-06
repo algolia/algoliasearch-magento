@@ -358,7 +358,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                     }
                     if ( ! $rebuildIndex) {
                         foreach (Mage::helper('algoliasearch')->getCategoryAdditionalAttributes($category->getStoreId()) as $attribute) {
-                            if ($category->dataHasChangedFor($attribute)) {
+                            if ($category->dataHasChangedFor($attribute->attribute)) {
                                 $rebuildIndex = TRUE;
                                 break;
                             }
