@@ -1,5 +1,8 @@
 ## Change Log
 
+### 1.1.4
+- Fix call to undefined method isIndexProductCount
+
 ### 1.1.3
 - Change url protocol of thumbnail
 - Fix bug affecting search in the backend due to bad objectID
