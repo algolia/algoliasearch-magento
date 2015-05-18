@@ -452,7 +452,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
              * It's low priority so no need to automatically reindex all related categories after deleting each product.
              * Do not reindex all if affected categories are given or product count is not indexed.
              */
-            if ( ! isset($data['catalogsearch_update_category_id']) && Mage::helper('algoliasearch')->isIndexProductCount()) {
+            if ( ! isset($data['catalogsearch_update_category_id'])) {
                 $process = $event->getProcess();
                 $process->changeStatus(Mage_Index_Model_Process::STATUS_REQUIRE_REINDEX);
             }
@@ -469,7 +469,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
              * It's low priority so no need to automatically reindex all related products after deleting each category.
              * Do not reindex all if affected products are given or product count is not indexed.
              */
-            if ( ! isset($data['catalogsearch_update_product_id']) && Mage::helper('algoliasearch')->isIndexProductCount()) {
+            if ( ! isset($data['catalogsearch_update_product_id'])) {
                 $process = $event->getProcess();
                 $process->changeStatus(Mage_Index_Model_Process::STATUS_REQUIRE_REINDEX);
             }
