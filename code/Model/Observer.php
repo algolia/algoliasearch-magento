@@ -61,7 +61,7 @@ class Algolia_Algoliasearch_Model_Observer
      */
     public function useAlgoliaSearchPopup(Varien_Event_Observer $observer)
     {
-        if (Mage::helper('algoliasearch')->isPopupEnabled()) {
+        if (Mage::helper('algoliasearch')->isPopupEnabled() || Mage::helper('algoliasearch')->isInstantEnabled()) {
             $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
         }
         return $this;

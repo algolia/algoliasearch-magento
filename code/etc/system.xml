@@ -72,6 +72,25 @@
                             <show_in_store>1</show_in_store>
                             <comment>The flag indicates whether the search-as-you-type auto-completion menu is enabled. It requires your theme to expose a "top.search" template.</comment>
                         </is_popup_enabled>
+                        <is_instant_enabled translate="label comment">
+                            <label>Enable Instant Search</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The flag indicates whether the search-as-you-type instant search is enabled. It requires your theme to expose a "top.search" template.</comment>
+                        </is_instant_enabled>
+                        <instant_selector translate="label comment">
+                            <label>Instant Search Selector</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The prototype selector to put the instant result in</comment>
+                        </instant_selector>
                     </fields>
                 </credentials>
                 <products translate="label">
@@ -83,7 +102,7 @@
                     <show_in_store>1</show_in_store>
                     <fields>
                         <product_additional_attributes translate="label comment">
-                            <label>Product Attributes</label>
+                            <label>Product Attributes &lt;br&gt;(&lt;span style=&quot;color: red; font-size: 20px;&quot;&gt;&amp;#9888;&lt;/span&gt; Retrievable&lt;br&gt;need to be set to &lt;br&gt;"Yes" in order &lt;br&gt;to be displayed)</label>
                             <frontend_model>algoliasearch/system_config_form_field_customsortorderproduct</frontend_model>
                             <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
                             <sort_order>10</sort_order>
@@ -93,6 +112,17 @@
                             <comment>Configure here the attributes you want to include in your Algolia records. The order of this setting matters as those at the top of the list are considered more important.</comment>
                             <depends><is_enabled>1</is_enabled></depends>
                         </product_additional_attributes>
+                        <facets>
+                            <label>Product Attributes</label>
+                            <frontend_model>algoliasearch/system_config_form_field_facets</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Configure the facets</comment>
+                            <depends><is_enabled>1</is_enabled></depends>
+                        </facets>
                         <custom_ranking_product_attributes translate="label comment">
                             <label>Ranking</label>
                             <frontend_model>algoliasearch/system_config_form_field_customrankingproduct</frontend_model>

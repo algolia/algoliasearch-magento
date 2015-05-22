@@ -1,12 +1,7 @@
-var AlgoliaLiveSearch = Class.create();
-AlgoliaLiveSearch.prototype = {
+var AlgoliaLiveSearchAutocomplete = Class.create();
+AlgoliaLiveSearchAutocomplete.prototype = {
     initialize: function(options) {
         this.options = Object.extend({
-            placeholder: 'Search...',
-            applicationID: null,
-            apiKey: null,
-            indexName: null,
-            searchDelay: 0,
             minLength: 0,
             resultLinks: null,
             categoriesQueryOptions: {
@@ -30,14 +25,14 @@ AlgoliaLiveSearch.prototype = {
             markPrevious: null,
             selectEntry: null
         }, options || {});
+
+
         this.searchForm = new Varien.searchForm('search_mini_form', 'search', this.options.placeholder);
         this.algolia = new AlgoliaSearch(this.options.applicationID, this.options.apiKey);
-        this.searchTimeoutId = null;
         this.active = false;
         this.index  = 0;
 
-        this.submitSearchCallback = this.submitSearch.bind(this);
-        this.performSearchCallback = this.performSearch.bind(this);
+        this.submitSearchCallback = this.performSearch.bind(this);
         this.searchResultsCallback = this.searchResults.bind(this);
         this.focusOutCallback = this.focusOut.bind(this);
 
@@ -45,25 +40,21 @@ AlgoliaLiveSearch.prototype = {
             .observe('focus', this.submitSearchCallback)
             .observe('blur', this.options.clearResults ? this.options.clearResults.bind(this) : function(){})
             .observe('blur', this.focusOutCallback)
-            .observe('keydown', this.onKeyPress.bindAsEventListener(this));
+            .observe('keyup', this.onKeyPress.bindAsEventListener(this));
 
         if (Mage && Mage.Cookies && Mage.Cookies.get('lastSearchQuery')) {
             this.searchForm.field.value = Mage.Cookies.get('lastSearchQuery');
             Mage.Cookies.set('lastSearchQuery', '');
         }
     },
-    submitSearch: function(event) {
-        if (this.searchTimeoutId) {
-            clearTimeout(this.searchTimeoutId);
-        }
-        this.searchTimeoutId = setTimeout(this.performSearchCallback, this.options.searchDelay);
-    },
     performSearch: function() {
         var searchQuery = this.searchForm.field.getValue();
+
         if (searchQuery === '') {
             this.options.clearResults && this.options.clearResults.call(this);
             return;
         }
+
         if (searchQuery.length >= this.options.minLength && searchQuery.lastIndexOf(' ') != searchQuery.length - 1)
         {
             this.algolia.startQueriesBatch();
@@ -133,7 +124,7 @@ AlgoliaLiveSearch.prototype = {
         if(event.keyCode==Event.KEY_TAB || event.keyCode==Event.KEY_RETURN ||
             (Prototype.Browser.WebKit > 0 && event.keyCode == 0)) return;
 
-        this.submitSearch();
+        this.performSearch();
     },
     markNext: function() {
         this.selectedEntry = this.options.markNext ? this.options.markNext.call(this) : this.markEntry(1);

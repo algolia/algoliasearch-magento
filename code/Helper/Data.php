@@ -12,12 +12,15 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED        = 'algoliasearch/credentials/is_enabled';
     const XML_PATH_IS_POPUP_ENABLED                 = 'algoliasearch/credentials/is_popup_enabled';
+    const XML_PATH_INSTANT_SELECTOR                 = 'algoliasearch/credentials/instant_selector';
+    const XML_PATH_IS_INSTANT_ENABLED               = 'algoliasearch/credentials/is_instant_enabled';
     const XML_PATH_APPLICATION_ID                   = 'algoliasearch/credentials/application_id';
     const XML_PATH_API_KEY                          = 'algoliasearch/credentials/api_key';
     const XML_PATH_SEARCH_ONLY_API_KEY              = 'algoliasearch/credentials/search_only_api_key';
     const XML_PATH_INDEX_PREFIX                     = 'algoliasearch/credentials/index_prefix';
 
     const XML_PATH_PRODUCT_ATTRIBUTES               = 'algoliasearch/products/product_additional_attributes';
+    const XML_PATH_FACETS                           = 'algoliasearch/products/facets';
     const XML_PATH_PRODUCT_CUSTOM_RANKING           = 'algoliasearch/products/custom_ranking_product_attributes';
     const XML_PATH_RESULTS_LIMIT                    = 'algoliasearch/products/results_limit';
 
@@ -31,7 +34,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     const XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS    = 'algoliasearch/ui/number_product_suggestions';
     const XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS   = 'algoliasearch/ui/number_category_suggestions';
-    const XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS   = 'algoliasearch/ui/number_page_suggestions';
+    const XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS       = 'algoliasearch/ui/number_page_suggestions';
 
     const XML_PATH_USE_RESULT_CACHE                 = 'algoliasearch/ui/use_result_cache';
     const XML_PATH_SAVE_LAST_QUERY                  = 'algoliasearch/ui/save_last_query';
@@ -145,6 +148,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $attributesToIndex          = array();
         $unretrievableAttributes    = array();
+        $attributesForFaceting      = array();
 
         foreach ($this->getProductAdditionalAttributes($storeId) as $attribute)
         {
@@ -164,13 +168,19 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $customRankingsArr = array();
 
+        $facets = $this->getFacets();
+
+        foreach($facets as $facet)
+            $attributesForFaceting[] = $facet['attribute'];
+
         foreach ($customRankings as $ranking)
             $customRankingsArr[] =  $ranking['order'] . '(' . $ranking['attribute'] . ')';
 
         $indexSettings = array(
             'attributesToIndex'         => array_values(array_unique($attributesToIndex)),
             'customRanking'             => $customRankingsArr,
-            'unretrievableAttributes'   => $unretrievableAttributes
+            'unretrievableAttributes'   => $unretrievableAttributes,
+            'attributesForFaceting'     => $attributesForFaceting
         );
 
         // Additional index settings from event observer
@@ -493,6 +503,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         foreach ($this->getProductActiveCategories($product, $product->getStoreId()) as $categoryId)
             if ($categoryName = $this->getCategoryName($categoryId, $product->getStoreId()))
                 array_push($categories, $categoryName);
+
+        $customData['categories'] = $categories;
 
         try
         {
@@ -1152,6 +1164,16 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return array();
     }
 
+    public function getFacets($storeId = NULL)
+    {
+        $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_FACETS, $storeId));
+
+        if (is_array($attrs))
+            return $attrs;
+
+        return array();
+    }
+
     public function getCategoryCustomRanking($storeId = NULL)
     {
         $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_CATEGORY_CUSTOM_RANKING, $storeId));
@@ -1185,6 +1207,16 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function isPopupEnabled($storeId = NULL)
     {
         return ($this->isEnabled($storeId) && Mage::getStoreConfigFlag(self::XML_PATH_IS_POPUP_ENABLED, $storeId));
+    }
+
+    public function isInstantEnabled($storeId = NULL)
+    {
+        return ($this->isEnabled($storeId) && Mage::getStoreConfigFlag(self::XML_PATH_IS_INSTANT_ENABLED, $storeId));
+    }
+
+    public function getInstantSelector($storeId = NULL)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_INSTANT_SELECTOR, $storeId);
     }
 
     public function getExcludedPages($storeId = NULL)

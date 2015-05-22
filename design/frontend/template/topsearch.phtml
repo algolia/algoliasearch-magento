@@ -15,198 +15,378 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
         </div>
     </div>
 </form>
+
+<script type="text/template" id="autocomplete_products_template">
+    {{#data.length}}
+    <div class="algoliasearch-autocomplete-title">{{title}}</div>
+    {{/data.length}}
+    {{#data}}
+    <a class="algoliasearch-autocomplete-hit" href="{{url}}">
+        {{#thumbnail_url}}
+        <div class="thumb"><img src="{{thumbnail_url}}" /></div>
+        {{/thumbnail_url}}
+        <div class="info">
+            {{{_highlightResult.name.value}}}
+
+            {{#categories}}
+            <div class="algoliasearch-autocomplete-category">
+                in {{categories}}
+            </div>
+            {{/categories}}
+
+            {{#price}}
+            <div class="algoliasearch-autocomplete-price">
+                {{price}} $
+            </div>
+            {{/price}}
+        </div>
+        <div style="clear: both;"></div>
+    </a>
+    {{/data}}
+</script>
+
+<script type="text/template" id="autocomplete_categories_template">
+
+    {{#data.length}}
+    <div class="algoliasearch-autocomplete-title">{{title}}</div>
+    {{/data.length}}
+
+    {{#data}}
+    <a class="algoliasearch-autocomplete-hit" href="{{url}}">
+        {{#image_url}}
+        <div class="thumb">
+            <img src="{{image_url}}" />
+        </div>
+        {{/image_url}}
+
+        {{#image_url}}
+        <div class="info">
+            {{/image_url}}
+            {{^image_url}}
+            <div class="info-without-thumb">
+                {{{_highlightResult.path.value}}}
+
+                {{#product_count}}
+                <small>( {{product_count}} )</small>
+                {{/product_count}}
+
+            </div>
+            <div style="clear: both;"></div>
+            {{/image_url}}
+    </a>
+    {{/data}}
+</script>
+
+<script type="text/template" id="autocomplete_pages_template">
+    {{#data.length}}
+    <div class="algoliasearch-autocomplete-title">{{title}}</div>
+    {{/data.length}}
+
+    {{#data}}
+    <a class="algoliasearch-autocomplete-hit" href="{{url}}">
+        <div class="info-without-thumb">
+            {{{_highlightResult.name.value}}}
+        </div>
+        <div style="clear: both;"></div>
+    </a>
+    {{/data}}
+</script>
+
+<script type="text/template" id="instant-content-template">
+    <div class="hits{{#facets_count}} with_facets{{/facets_count}}">
+        {{#hits.length}}
+        <div class="infos">
+            <div style="float: left">
+                {{nbHits}} result{{^nbHits_one}}s{{/nbHits_one}} found matching "<strong>{{query}}</strong>" in {{processingTimeMS}} ms
+            </div>
+            <div class="logo" style="float: right;">
+                by <img src="<?php echo plugin_dir_url(__FILE__); ?>../../front/algolia-logo.png">
+            </div>
+            {{#sorting_indices.length}}
+            <div style="float: right; margin-right: 10px;">
+                Order by
+                <select id="index_to_use">
+                    <option {{#sortSelected}}{{relevance_index_name}}{{/sortSelected}} value="{{relevance_index_name}}">relevance</option>
+                    {{#sorting_indices}}
+                    <option {{#sortSelected}}{{index_name}}{{/sortSelected}} value="{{index_name}}">{{label}}</option>
+                    {{/sorting_indices}}
+                </select>
+            </div>
+            {{/sorting_indices.length}}
+            <div style="clear: both;"></div>
+        </div>
+        {{/hits.length}}
+
+        {{#hits}}
+        <a href="{{permalink}}">
+            <div class="result-wrapper">
+                <div class="result">
+                    <div class="result-content">
+                        <div>
+                            <h1 class="result-title">
+                                {{{ _highlightResult.title.value }}}
+                            </h1>
+                        </div>
+                        <div class="result-sub-content">
+                            <div class="result-thumbnail">
+                                {{#featureImage}}
+                                <img height="216" src="{{{ featureImage.file }}}" />
+                                {{/featureImage}}
+                                {{^featureImage}}
+                                <div style="height: 216px;"></div>
+                                {{/featureImage}}
+                            </div>
+                            <div class="result-excerpt">
+                                <div class="price">Price : {{_price}}€</div>
+                                <div class="rating">Rating : {{average_rating}}/5</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {{/hits}}
+        {{^hits.length}}
+        <div class="infos">
+            No results found matching "<strong>{{query}}</strong>".
+        </div>
+        {{/hits.length}}
+        <div style="clear: both;"></div>
+    </div>
+</script>
+
+<script type="text/template" id="instant-facets-template">
+    <div class="facets{{#count}} with_facets{{/count}}">
+        {{#facets}}
+        {{#count}}
+        <div class="facet">
+            <div class="name">
+                {{ facet_categorie_name }}
+            </div>
+            <div>
+                {{#sub_facets}}
+
+                {{#type.menu}}
+                <div data-tax="{{tax}}" data-name="{{nameattr}}" data-type="menu" class="{{#checked}}checked {{/checked}}sub_facet menu">
+                    <input style="display: none;" data-tax="{{tax}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
+                    {{name}} {{#print_count}}({{count}}){{/print_count}}
+                </div>
+                {{/type.menu}}
+
+                {{#type.conjunctive}}
+                <div data-name="{{tax}}" data-type="conjunctive" class="{{#checked}}checked {{/checked}}sub_facet conjunctive">
+                    <input style="display: none;" data-tax="{{tax}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
+                    {{name}} ({{count}})
+                </div>
+                {{/type.conjunctive}}
+
+                {{#type.slider}}
+                <div class="algolia-slider algolia-slider-true" data-tax="{{tax}}" data-min="{{min}}" data-max="{{max}}"></div>
+                <div class="algolia-slider-info">
+                    <div class="min" style="float: left;">{{current_min}}</div>
+                    <div class="max" style="float: right;">{{current_max}}</div>
+                    <div style="clear: both"></div>
+                </div>
+                {{/type.slider}}
+
+                {{#type.disjunctive}}
+                <div data-name="{{tax}}" data-type="disjunctive" class="{{#checked}}checked {{/checked}}sub_facet disjunctive">
+                    <input data-tax="{{tax}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
+                    {{name}} ({{count}})
+                </div>
+                {{/type.disjunctive}}
+
+                {{/sub_facets}}
+            </div>
+        </div>
+        {{/count}}
+        {{/facets}}
+    </div>
+</script>
+
+<script type="text/template" id="instant-pagination-template">
+    <div class="pagination-wrapper{{#facets_count}} with_facets{{/facets_count}}">
+        <div class="text-center">
+            <ul class="algolia-pagination">
+                <a href="#" data-page="{{prev_page}}">
+                    <li {{^prev_page}}class="disabled"{{/prev_page}}>
+                    &laquo;
+                    </li>
+                </a>
+
+                {{#pages}}
+                <a href="#" data-page="{{number}}" return false;">
+                <li class="{{#current}}active{{/current}}{{#disabled}}disabled{{/disabled}}">
+                    {{ number }}
+                </li>
+                </a>
+                {{/pages}}
+                <a href="#" data-page="{{next_page}}">
+                    <li {{^next_page}}class="disabled"{{/next_page}}>
+                    &raquo;
+                    </li>
+                </a>
+            </ul>
+        </div>
+    </div>
+</script>
+
 <script type="text/javascript">
     //<![CDATA[
-    var algoliaLiveSearch = new AlgoliaLiveSearch({
-        placeholder: '<?php echo $this->__('Search entire store here...') ?>',
-        applicationID: '<?php echo $algoliaSearchHelper->getApplicationID() ?>',
-        apiKey: '<?php echo $algoliaSearchHelper->getSearchOnlyAPIKey() ?>',
-        indexName: '<?php echo $algoliaSearchHelper->getIndexName() ?>',
-        productsQueryOptions: {
-            hitsPerPage: <?php echo (int) $algoliaSearchHelper->getNumberOfProductSuggestions() ?>,
-            attributesToHighlight: 'name'
-        },
-        categoriesQueryOptions: {
-            hitsPerPage: <?php echo (int) $algoliaSearchHelper->getNumberOfCategorySuggestions() ?>,
-            attributesToHighlight: 'path'
-        },
-        pagesQueryOptions: {
-            hitsPerPage: <?php echo (int) $algoliaSearchHelper->getNumberOfPageSuggestions() ?>,
-            attributesToHighlight: 'name'
-        },
 
-        renderResults: function (results) {
-            var k = 0;
+    var autocompleteEnabled = "<?php echo $algoliaSearchHelper->isPopupEnabled(); ?>" == "1" ? true : false;
+    var instantEnabled = "<?php echo $algoliaSearchHelper->isInstantEnabled(); ?>" == "1" ? true : false;
 
+    if (autocompleteEnabled)
+    {
+        var autocomplete_products_template      = Hogan.compile($('autocomplete_products_template').innerHTML);
+        var autocomplete_categories_template    = Hogan.compile($('autocomplete_categories_template').innerHTML);
+        var autocomplete_pages_template         = Hogan.compile($('autocomplete_pages_template').innerHTML);
 
-            $('search_autocomplete_products').update('');
-            $('search_autocomplete_categories').update('');
-            $('search_autocomplete_pages').update('');
+        var autocomplete_product_title          = '<?php echo $this->__('Products'); ?>';
+        var autocomplete_categories_title       = '<?php echo $this->__('Categories') ?>';
+        var autocomplete_pages_title            = '<?php echo $this->__('Pages') ?>';
 
-            /**
-             * Handle products
-             */
+        var algoliaLiveSearch = new AlgoliaLiveSearchAutocomplete({
+            placeholder:            '<?php echo $this->__('Search entire store here...') ?>',
+            applicationID:          '<?php echo $algoliaSearchHelper->getApplicationID() ?>',
+            apiKey:                 '<?php echo $algoliaSearchHelper->getSearchOnlyAPIKey() ?>',
+            indexName:              '<?php echo $algoliaSearchHelper->getIndexName() ?>',
+            productsQueryOptions: {
+                hitsPerPage:        <?php echo (int) $algoliaSearchHelper->getNumberOfProductSuggestions() ?>,
+                attributesToHighlight: 'name'
+            },
+            categoriesQueryOptions: {
+                hitsPerPage:        <?php echo (int) $algoliaSearchHelper->getNumberOfCategorySuggestions() ?>,
+                attributesToHighlight: 'path'
+            },
+            pagesQueryOptions: {
+                hitsPerPage:        <?php echo (int) $algoliaSearchHelper->getNumberOfPageSuggestions() ?>,
+                attributesToHighlight: 'name'
+            },
 
-            if (this.options.productsQueryOptions.hitsPerPage > 0)
-            {
-                var products_hits   = results[k].hits;
-                var products = [];
-                var html_products;
+            renderResults: function (results) {
+                var k = 0;
 
-                products_hits.each(function(hit) {
-                    products.push(hit);
-                });
-
-                if (products.length > 0)
-                {
-                    html_products = '<div class="algoliasearch-autocomplete-title"><?php echo $this->__('Products') ?></div>';
-                    if (products.length > 0)
-                    {
-                        for (var i = 0; i < products.length; ++i)
-                        {
-                            var hit = products[i];
-
-                            /** Handle Configurable Product **/
-                            if (Array.isArray(hit._highlightResult.name))
-                                hit._highlightResult.name = hit._highlightResult.name[0];
-
-                            if (Array.isArray(hit.price))
-                                hit.price = hit.price[0];
-
-                            html_products += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' +
-                            (hit.thumbnail_url ? '<div class="thumb"><img src="' + hit.thumbnail_url + '" /></div>' : '') +
-                            '<div class="info">' +
-                            hit._highlightResult.name.value +
-                            (hit.categories && hit.categories.length > 0 ? '<div class="algoliasearch-autocomplete-category">in ' + hit.categories.join(', ') + '</div>' : '') +
-                            (hit.price && hit.price > 0 ? '<div class="algoliasearch-autocomplete-price">' + hit.price + '$</div>' : '') +
-                            '</div>' +
-                            '<div style="clear: both;"></div>' +
-                            '</a>';
-                        }
-                    }
-                    else
-                        html_products += '<div><?php echo $this->__('No results.') ?></div>'
-                }
-                else
-                    html_products = '';
-
-                $('search_autocomplete_products').update(html_products);
-
-                k++;
-            }
-
-
-
-
-            /**
-             * Handle categories
-             */
-
-            if (this.options.categoriesQueryOptions.hitsPerPage > 0)
-            {
-                var categories_hits = results[k].hits;
-                var categories = [];
-                var html_categories;
-
-                categories_hits.each(function(hit) {
-                    categories.push(hit);
-                });
-
-                if (categories.length > 0)
-                {
-                    html_categories = '<div class="algoliasearch-autocomplete-title"><?php echo $this->__('Categories') ?></div>';
-
-                    for (i = 0; i < categories.length; ++i)
-                    {
-                        hit = categories[i];
-                        html_categories += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">' +
-                        (hit.image_url ? '<div class="thumb"><img src="' + hit.image_url + '" /></div>' : '');
-
-                        if (hit.image_url)
-                            html_categories += '<div class="info">';
-                        else
-                            html_categories += '<div class="info-without-thumb">';
-
-
-                        html_categories += hit._highlightResult.path.value;
-
-                        if (hit.product_count != undefined)
-                            html_categories += ' <small>(' + hit.product_count + ')</small>';
-
-                        html_categories += '</div>' +
-                        '<div style="clear: both;"></div>' +
-                        '</a>';
-                    }
-                }
-                else
-                    html_categories = '';
-
-                $('search_autocomplete_categories').update(html_categories);
-
-                k++;
-            }
-
-
-            /**
-             * Handle Pages
-             */
-
-            if (this.options.pagesQueryOptions.hitsPerPage > 0)
-            {
-                var pages_hits = results[k].hits;
-                var pages = [];
-                var html_pages;
-
-                pages_hits.each(function(hit) {
-                    pages.push(hit);
-                });
-
-                if (pages.length > 0)
-                {
-                    html_pages = '<div class="algoliasearch-autocomplete-title"><?php echo $this->__('Pages') ?></div>';
-
-                    for (i = 0; i < pages.length; ++i)
-                    {
-                        hit = pages[i];
-                        html_pages += '<a class="algoliasearch-autocomplete-hit" href="' + hit.url + '">';
-
-                        html_pages += '<div class="info-without-thumb">';
-
-                        html_pages += hit._highlightResult.name.value;
-
-                        html_pages += '</div>' +
-                        '<div style="clear: both;"></div>' +
-                        '</a>';
-                    }
-                }
-                else
-                    html_pages = '';
-
-                $('search_autocomplete_pages').update(html_pages);
-
-                k++;
-            }
-
-
-            this.options.resultLinks = $('search_autocomplete').select('a');
-
-            <?php if ($algoliaSearchHelper->getSaveLastQuery()): ?>
-            var searchQuery = algoliaLiveSearch.searchForm.field.getValue();
-            if(searchQuery){
-                $('search_autocomplete').select('a').invoke('observe', 'click', function(e){
-                    Mage.Cookies.set('lastSearchQuery', searchQuery);
-                });
-            }
-            <?php endif ?>
-        },
-        clearResults: function() {
-            // delay the dropdown menu clearing to ensure the click on hits can be processed
-            setTimeout(function() {
-                $('search_autocomplete_categories').update('');
                 $('search_autocomplete_products').update('');
+                $('search_autocomplete_categories').update('');
                 $('search_autocomplete_pages').update('');
-            }, 100);
-        }
-    });
+
+                if (this.options.productsQueryOptions.hitsPerPage > 0)
+                {
+                    for (var i = 0; i < results[k].hits.length; ++i)
+                    {
+                        if (Array.isArray(results[k].hits[i].categories))
+                            results[k].hits[i].categories = results[k].hits[i].categories.join(', ');
+
+                        if (Array.isArray(results[k].hits[i]._highlightResult.name))
+                            results[k].hits[i]._highlightResult.name = results[k].hits[i]._highlightResult.name[0];
+
+                        if (Array.isArray(results[k].hits[i].price))
+                            results[k].hits[i].price = results[k].hits[i].price[0];
+                    }
+
+                    $('search_autocomplete_products').update(autocomplete_products_template.render({
+                        title: autocomplete_product_title,
+                        data : results[k].hits
+                    }));
+
+                    k++;
+                }
+
+                if (this.options.categoriesQueryOptions.hitsPerPage > 0)
+                {
+                    $('search_autocomplete_categories').update(autocomplete_categories_template.render({
+                        title: autocomplete_categories_title,
+                        data: results[k].hits
+                    }));
+
+                    k++;
+                }
+
+                if (this.options.pagesQueryOptions.hitsPerPage > 0)
+                {
+                    $('search_autocomplete_pages').update(autocomplete_pages_template.render({
+                        title: autocomplete_pages_title,
+                        data: results[k].hits
+                    }));
+
+                    k++;
+                }
+
+
+                this.options.resultLinks = $('search_autocomplete').select('a');
+
+                <?php if ($algoliaSearchHelper->getSaveLastQuery()): ?>
+                var searchQuery = algoliaLiveSearch.searchForm.field.getValue();
+                if(searchQuery){
+                    $('search_autocomplete').select('a').invoke('observe', 'click', function(e){
+                        Mage.Cookies.set('lastSearchQuery', searchQuery);
+                    });
+                }
+                <?php endif ?>
+            },
+            clearResults: function() {
+                // delay the dropdown menu clearing to ensure the click on hits can be processed
+                setTimeout(function() {
+                    $('search_autocomplete_categories').update('');
+                    $('search_autocomplete_products').update('');
+                    $('search_autocomplete_pages').update('');
+                }, 100);
+            }
+        });
+    }
+
+    if (instantEnabled)
+    {
+        Event.observe(window, 'load', function() {
+            var instant_selector = "<?php echo $algoliaSearchHelper->getInstantSelector(); ?>";
+            var facets = "<?php echo json_encode($algoliaSearchHelper->getFacets()); ?>";
+            instant_selector = $$(instant_selector);
+
+            if (instant_selector.length <= 0)
+                throw '[Algolia] Invalid instant-search selector: ' + instant_selector;
+
+            instant_selector = instant_selector[0];
+
+            var old_content         = instant_selector.innerHTML;
+
+            var resultsTemplate     = Hogan.compile($('instant-content-template').innerHTML);
+            var facetsTemplate      = Hogan.compile($('instant-facets-template').innerHTML);
+            var paginationTemplate  = Hogan.compile($('instant-pagination-template').innerHTML);
+
+            var conjunctive_facets  = [];
+            var disjunctive_facets  = [];
+
+            console.log(facets);
+
+            /*for (var i = 0; i < algoliaSettings.facets.length; i++)
+             {
+             if (algoliaSettings.facets[i].type == "conjunctive")
+             conjunctive_facets.push(algoliaSettings.facets[i].tax);
+
+             if (algoliaSettings.facets[i].type == "disjunctive")
+             disjunctive_facets.push(algoliaSettings.facets[i].tax);
+
+             if (algoliaSettings.facets[i].type == "slider")
+             disjunctive_facets.push(algoliaSettings.facets[i].tax);
+
+             if (algoliaSettings.facets[i].type == "menu")
+             disjunctive_facets.push(algoliaSettings.facets[i].tax);
+             }
+
+             algoliaSettings.facets = algoliaSettings.facets.sort(facetsCompare);
+
+             var helper = algoliasearchHelper(algolia_client, algoliaSettings.index_name + 'all', {
+             facets: conjunctive_facets,
+             disjunctiveFacets: disjunctive_facets,
+             hitsPerPage: algoliaSettings.number_by_page
+             });*/
+
+
+        });
+    }
+
+
     //]]>
 </script>
