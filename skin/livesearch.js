@@ -34,7 +34,7 @@ custom_facets_types["slider"] = function (engine, content, facet) {
     return [];
 };
 
-jQuery(document).ready(function($) {
+$algoliaJQuery(document).ready(function($) {
     engine = new function () {
 
         this.helper = undefined;

@@ -1,1 +1,1 @@
-$j = $.noConflict();
+$algoliaJQuery = $.noConflict();
