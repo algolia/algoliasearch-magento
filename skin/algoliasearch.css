@@ -1,31 +1,33 @@
-.algoliasearch-autocomplete {
+.twitter-typeahead
+{
+    float: left;
+}
+
+.tt-dropdown-menu {
     background: white;
     position: absolute;
     left: 0px;
     right: 0px;
     top: 30px;
     width: 100%;
+    min-width: 330px;
     z-index: 1000;
+    border-bottom: 1px solid #dddddd;
 }
 
-.algoliasearch-autocomplete-title {
+.tt-dropdown-menu .category {
     background-color: #F5F5F5;
     text-align: center;
     border: 1px solid #dddddd;
     padding: 5px 0;
 }
 
-.algoliasearch-autocomplete-hit:not(:first-child):not(:last-child)
+.tt-dropdown-menu .tt-suggestion:not(:last-child) .algoliasearch-autocomplete-hit
 {
     border-bottom: solid 1px #DDDDDD;
 }
 
-.result-set:last-child .algoliasearch-autocomplete-hit:last-child
-{
-    border-bottom: 1px solid #dddddd;
-}
-
-.algoliasearch-autocomplete-hit {
+.tt-dropdown-menu .algoliasearch-autocomplete-hit {
     display: block;
     text-decoration: none;
     clear: both;
@@ -36,45 +38,281 @@
     color: #000000;
 }
 
-.algoliasearch-autocomplete-hit:hover {
+.tt-dropdown-menu .tt-cursor {
     background-color: #E5E5E5;
     color: black;
 }
 
-.algoliasearch-autocomplete-hit.marked {
-    background-color: #E5E5E5;
-    color: black;
-}
-
-.algoliasearch-autocomplete-hit em {
+.tt-dropdown-menu .algoliasearch-autocomplete-hit em {
     font-weight: bold;
     font-style: normal;
 }
 
-.algoliasearch-autocomplete-category {
+.tt-dropdown-menu .category {
     color: #666666;
 }
 
-.algoliasearch-autocomplete-price {
+.tt-dropdown-menu .algoliasearch-autocomplete-price {
     color: #666666;
 }
 
-.algoliasearch-autocomplete-hit .thumb {
+.tt-dropdown-menu .algoliasearch-autocomplete-hit .thumb {
     float: left;
 }
 
-.algoliasearch-autocomplete-hit .thumb img {
+.tt-dropdown-menu .algoliasearch-autocomplete-hit .thumb img {
     width: 50px;
 }
 
-.algoliasearch-autocomplete-hit .info {
+.tt-dropdown-menu .algoliasearch-autocomplete-hit .info {
     margin-left: 60px;
 }
 
-.algoliasearch-autocomplete-hit .clearfix:after {
+.tt-dropdown-menu .algoliasearch-autocomplete-hit .clearfix:after {
     content: " ";
     visibility: hidden;
     display: block;
     height: 0;
     clear: both;
+}
+
+
+/**
+ * Instant Search
+ */
+
+#algolia_instant_selector
+{
+    margin: 10px;
+}
+
+#algolia_instant_selector:after
+{
+    content: ' ';
+    clear: both;
+    display: block;
+}
+
+#algolia_instant_selector .category
+{
+
+}
+
+#algolia_instant_selector .result-wrapper
+{
+    width: 33.33333333%;
+    display: inline;
+    float: left;
+}
+
+#algolia_instant_selector .title
+{
+
+}
+
+#algolia_instant_selector .title img
+{
+    width: 200px;
+}
+
+#algolia_instant_selector .hits.with_facets
+{
+    float: left;
+    width: 80%;
+}
+
+#algolia_instant_selector .hits .infos
+{
+    margin: 0 10px 10px 10px;
+    padding: 10px;
+    background-color: #F5F5F5;
+    text-align: center;
+    border: solid 1px #DDDDDD;
+}
+
+#algolia_instant_selector .hits .infos
+{
+    margin: 0 10px 10px 10px;
+    padding: 10px;
+    background-color: #F5F5F5;
+    text-align: center;
+    border: solid 1px #DDDDDD;
+}
+
+#algolia_instant_selector .hits .infos .clear
+{
+    cursor: pointer;
+    background-color: #F0F0F0;
+    border: solid 1px #DDDDDD;
+    padding: 5px;
+    margin-left: 20px;
+}
+
+#algolia_instant_selector .hits .infos .clear:hover
+{
+    background-color: #DDDDDD;
+}
+
+/**
+ * Facets
+ */
+
+#algolia_instant_selector .infos .logo
+{
+    font-size: 10px;
+}
+
+#algolia_instant_selector .facets.with_facets
+{
+    float: left;
+    width: 20%;
+}
+
+#algolia_instant_selector .facet
+{
+    border: solid 1px #DDDDDD;
+    background-color: white;
+}
+
+#algolia_instant_selector .facet:not(:first-child)
+{
+    margin-top: 10px;
+}
+
+#algolia_instant_selector .facet .name
+{
+    padding: 10px;
+    background-color: #F5F5F5;
+    text-align: center;
+    border-bottom: solid 1px #DDDDDD;
+}
+
+#algolia_instant_selector .facet .sub_facet
+{
+    padding: 10px;
+    cursor: pointer;
+}
+
+#algolia_instant_selector .facet .sub_facet.checked
+{
+    background-color: #E5E5E5;
+}
+
+#algolia_instant_selector .facet .sub_facet:not(:last-child)
+{
+    border-bottom: solid 1px #F5F5F5;
+}
+
+#algolia_instant_selector .algolia-slider
+{
+    margin: 15px;
+}
+
+#algolia_instant_selector .algolia-slider-info
+{
+    margin: 10px 5px;
+}
+
+#algolia_instant_selector .pagination-wrapper
+{
+    width: 100%;
+}
+
+#algolia_instant_selector .pagination-wrapper.with_facets
+{
+    width: 80%;
+    margin-left: 20%;
+}
+
+#algolia_instant_selector .algolia-pagination
+{
+    display: inline-block;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+#algolia_instant_selector .algolia-pagination li
+{
+    float: left;
+    display: inline;
+    border: solid 1px #DDDDDD;
+    padding: 0px 10px;
+    margin: 0 5px;
+    line-height: 25px;
+    background-color: white;
+}
+
+#algolia_instant_selector .algolia-pagination li.active
+{
+    background-color: #F5F5F5;
+}
+
+#algolia_instant_selector .algolia-pagination li.disabled
+{
+    display: none;
+}
+
+#algolia_instant_selector .text-center
+{
+    text-align: center;
+}
+
+#algolia_instant_selector em
+{
+    background-color: #ffffe0;
+    font-style: normal;
+}
+
+#algolia_instant_selector h1
+{
+    margin: 0;
+}
+
+#algolia_instant_selector .result
+{
+    border: solid 1px #dddddd;
+    background-color: white;
+    margin: 20px 10px;
+}
+
+#algolia_instant_selector .result .result-sub-content
+{
+    padding: 10px;
+}
+
+#algolia_instant_selector .result .result-thumbnail
+{
+    text-align: center;
+    padding: 10px;
+}
+
+#algolia_instant_selector .result .result-excerpt
+{
+    text-align: center;
+}
+
+#algolia_instant_selector .result .result-excerpt .price
+{
+    color: #77a464;
+}
+
+#algolia_instant_selector .result .result-title
+{
+    padding: 10px;
+    background-color: #F5F5F5;
+    text-align: center;
+    border-bottom: solid 1px #DDDDDD;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#algolia_instant_selector .ui-widget-header {
+    background-color: #bcbcbc;
+}
+
+#algolia_instant_selector .result-thumbnail img
+{
+    width: 100%;
 }

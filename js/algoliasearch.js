@@ -1,2232 +1,3980 @@
-/*
- * Copyright (c) 2013 Algolia
- * http://www.algolia.com/
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+/*! algoliasearch 3.3.2 | © 2014, 2015 Algolia SAS | github.com/algolia/algoliasearch-client-js */
+(function(f){var g;if(typeof window!=='undefined'){g=window}else if(typeof self!=='undefined'){g=self}g.ALGOLIA_MIGRATION_LAYER=f()})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
-var ALGOLIA_VERSION = '2.6.0';
+    module.exports = function load (src, opts, cb) {
+        var head = document.head || document.getElementsByTagName('head')[0]
+        var script = document.createElement('script')
 
-/*
- * Copyright (c) 2013 Algolia
- * http://www.algolia.com/
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
-/*
- * Algolia Search library initialization
- * @param applicationID the application ID you have in your admin interface
- * @param apiKey a valid API key for the service
- * @param method specify if the protocol used is http or https (http by default to make the first search query faster).
- *        You need to use https is you are doing something else than just search queries.
- * @param resolveDNS let you disable first empty query that is launch to warmup the service
- * @param hostsArray (optionnal) the list of hosts that you have received for the service
- */
-var AlgoliaSearch = function(applicationID, apiKey, method, resolveDNS, hostsArray) {
-    var self = this;
-    this.applicationID = applicationID;
-    this.apiKey = apiKey;
-    this.hosts = [];
-
-    if (this._isUndefined(hostsArray)) {
-        hostsArray = [
-            applicationID + '-1.algolia.io',
-            applicationID + '-2.algolia.io',
-            applicationID + '-3.algolia.io'
-        ];
-    }
-    this.hosts = [];
-    // Add hosts in random order
-    for (var i = 0; i < hostsArray.length; ++i) {
-        if (Math.random() > 0.5) {
-            this.hosts.reverse();
+        if (typeof opts === 'function') {
+            cb = opts
+            opts = {}
         }
-        if (this._isUndefined(method) || method === null) {
-            this.hosts.push(('https:' == document.location.protocol ? 'https' : 'http') + '://' + hostsArray[i]);
-        } else if (method === 'https' || method === 'HTTPS') {
-            this.hosts.push('https://' + hostsArray[i]);
+
+        opts = opts || {}
+        cb = cb || function() {}
+
+        script.type = opts.type || 'text/javascript'
+        script.charset = opts.charset || 'utf8';
+        script.async = 'async' in opts ? !!opts.async : true
+        script.src = src
+
+        if (opts.attrs) {
+            setAttributes(script, opts.attrs)
+        }
+
+        if (opts.text) {
+            script.text = '' + opts.text
+        }
+
+        var onend = 'onload' in script ? stdOnEnd : ieOnEnd
+        onend(script, cb)
+
+        // some good legacy browsers (firefox) fail the 'in' detection above
+        // so as a fallback we always set onload
+        // old IE will ignore this and new IE will set onload
+        if (!script.onload) {
+            stdOnEnd(script, cb);
+        }
+
+        head.appendChild(script)
+    }
+
+    function setAttributes(script, attrs) {
+        for (var attr in attrs) {
+            script.setAttribute(attr, attrs[attr]);
+        }
+    }
+
+    function stdOnEnd (script, cb) {
+        script.onload = function () {
+            this.onerror = this.onload = null
+            cb(null, script)
+        }
+        script.onerror = function () {
+            // this.onload = null here is necessary
+            // because even IE9 works not like others
+            this.onerror = this.onload = null
+            cb(new Error('Failed to load ' + this.src), script)
+        }
+    }
+
+    function ieOnEnd (script, cb) {
+        script.onreadystatechange = function () {
+            if (this.readyState != 'complete' && this.readyState != 'loaded') return
+            this.onreadystatechange = null
+            cb(null, script) // there is no way to catch loading errors in IE8
+        }
+    }
+
+},{}],2:[function(require,module,exports){
+// this module helps finding if the current page is using
+// the cdn.jsdelivr.net/algoliasearch/latest/$BUILDNAME.min.js version
+
+    module.exports = isUsingLatest;
+
+    function isUsingLatest(buildName) {
+        var toFind = new RegExp('cdn\\.jsdelivr\\.net/algoliasearch/latest/' +
+        buildName.replace('.', '\\.') + // algoliasearch, algoliasearch.angular
+        '(?:\\.min)?\\.js$'); // [.min].js
+
+        var scripts = document.getElementsByTagName('script');
+        var found = false;
+        for (var currentScript = 0, nbScripts = scripts.length;
+             currentScript < nbScripts;
+             currentScript++) {
+            if (scripts[currentScript].src && toFind.test(scripts[currentScript].src)) {
+                found = true;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+},{}],3:[function(require,module,exports){
+    (function (global){
+        module.exports = loadV2;
+
+        function loadV2(buildName) {
+            var loadScript = require(1);
+            var v2ScriptUrl = '//cdn.jsdelivr.net/algoliasearch/2/' + buildName + '.min.js';
+
+            var message =
+                '-- AlgoliaSearch `latest` warning --\n' +
+                'Warning, you are using the `latest` version string from jsDelivr to load the AlgoliaSearch library.\n' +
+                'Using `latest` is no more recommended, you should load //cdn.jsdelivr.net/algoliasearch/2/algoliasearch.min.js\n\n' +
+                'Also, we updated the AlgoliaSearch JavaScript client to V3. If you want to upgrade,\n' +
+                'please read our migration guide at https://github.com/algolia/algoliasearch-client-js/wiki/Migration-guide-from-2.x.x-to-3.x.x\n' +
+                '-- /AlgoliaSearch  `latest` warning --';
+
+            if (global.console) {
+                if (global.console.warn) {
+                    global.console.warn(message);
+                } else if (global.console.log) {
+                    global.console.log(message);
+                }
+            }
+
+            // If current script loaded asynchronously,
+            // it will load the script with DOMElement
+            // otherwise, it will load the script with document.write
+            try {
+                // why \x3c? http://stackoverflow.com/a/236106/147079
+                document.write('\x3Cscript>window.ALGOLIA_SUPPORTS_DOCWRITE = true\x3C/script>');
+
+                if (global.ALGOLIA_SUPPORTS_DOCWRITE === true) {
+                    document.write('\x3Cscript src="' + v2ScriptUrl + '">\x3C/script>');
+                    scriptLoaded('document.write')();
+                } else {
+                    loadScript(v2ScriptUrl, scriptLoaded('DOMElement'));
+                }
+            } catch(e) {
+                loadScript(v2ScriptUrl, scriptLoaded('DOMElement'));
+            }
+        }
+
+        function scriptLoaded(method) {
+            return function log() {
+                var message = 'AlgoliaSearch: loaded V2 script using ' + method;
+
+                global.console && global.console.log && global.console.log(message);
+            };
+        }
+
+    }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"1":1}],4:[function(require,module,exports){
+    (function (global){
+        /*global AlgoliaExplainResults:true*/
+        /*eslint no-unused-vars: [2, {"vars": "local"}]*/
+
+        module.exports = oldGlobals;
+
+// put old window.AlgoliaSearch.. into window. again so that
+// users upgrading to V3 without changing their code, will be warned
+        function oldGlobals() {
+            var message =
+                '-- AlgoliaSearch V2 => V3 error --\n' +
+                'You are trying to use a new version of the AlgoliaSearch JavaScript client with an old notation.\n' +
+                'Please read our migration guide at https://github.com/algolia/algoliasearch-client-js/wiki/Migration-guide-from-2.x.x-to-3.x.x\n' +
+                '-- /AlgoliaSearch V2 => V3 error --';
+
+            global.AlgoliaSearch = function() {
+                throw new Error(message);
+            };
+
+            global.AlgoliaSearchHelper = function() {
+                throw new Error(message);
+            };
+
+            // cannot use window.AlgoliaExplainResults on old IEs, dunno why
+            AlgoliaExplainResults = function() {
+                throw new Error(message);
+            };
+        }
+
+    }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],5:[function(require,module,exports){
+// This script will be browserified and prepended to the normal build
+// directly in window, not wrapped in any module definition
+// To avoid cases where we are loaded with /latest/ along with
+    migrationLayer("algoliasearch");
+
+// Now onto the V2 related code:
+//  If the client is using /latest/$BUILDNAME.min.js, load V2 of the library
+//
+//  Otherwise, setup a migration layer that will throw on old constructors like
+//  new AlgoliaSearch().
+//  So that users upgrading from v2 to v3 will have a clear information
+//  message on what to do if they did not read the migration guide
+    function migrationLayer(buildName) {
+        var isUsingLatest = require(2);
+        var loadV2 = require(3);
+        var oldGlobals = require(4);
+
+        if (isUsingLatest(buildName)) {
+            loadV2(buildName);
         } else {
-            this.hosts.push('http://' + hostsArray[i]);
+            oldGlobals();
         }
     }
-    if (Math.random() > 0.5) {
-        this.hosts.reverse();
+
+},{"2":2,"3":3,"4":4}]},{},[5])(5)
+});(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.algoliasearch = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+// shim for using process in browser
+
+    var process = module.exports = {};
+    var queue = [];
+    var draining = false;
+
+    function drainQueue() {
+        if (draining) {
+            return;
+        }
+        draining = true;
+        var currentQueue;
+        var len = queue.length;
+        while(len) {
+            currentQueue = queue;
+            queue = [];
+            var i = -1;
+            while (++i < len) {
+                currentQueue[i]();
+            }
+            len = queue.length;
+        }
+        draining = false;
+    }
+    process.nextTick = function (fun) {
+        queue.push(fun);
+        if (!draining) {
+            setTimeout(drainQueue, 0);
+        }
+    };
+
+    process.title = 'browser';
+    process.browser = true;
+    process.env = {};
+    process.argv = [];
+    process.version = ''; // empty string to avoid regexp issues
+    process.versions = {};
+
+    function noop() {}
+
+    process.on = noop;
+    process.addListener = noop;
+    process.once = noop;
+    process.off = noop;
+    process.removeListener = noop;
+    process.removeAllListeners = noop;
+    process.emit = noop;
+
+    process.binding = function (name) {
+        throw new Error('process.binding is not supported');
+    };
+
+// TODO(shtylman)
+    process.cwd = function () { return '/' };
+    process.chdir = function (dir) {
+        throw new Error('process.chdir is not supported');
+    };
+    process.umask = function() { return 0; };
+
+},{}],2:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+    'use strict';
+
+// If obj.hasOwnProperty has been overridden, then calling
+// obj.hasOwnProperty(prop) will break.
+// See: https://github.com/joyent/node/issues/1707
+    function hasOwnProperty(obj, prop) {
+        return Object.prototype.hasOwnProperty.call(obj, prop);
     }
 
-    // resolve DNS + check CORS support (JSONP fallback)
-    this.requestTimeoutInMs = 2000;
-    this.currentHostIndex = 0;
-    this.jsonp = null;
-    this.jsonpWait = 0;
-    this._jsonRequest({
-        method: 'GET',
-        url: '/1/isalive',
-        callback: function(success, content) {
-            self.jsonp = !success;
-        },
-        removeCustomHTTPHeaders: true
-    });
-    this.extraHeaders = [];
-};
+    module.exports = function(qs, sep, eq, options) {
+        sep = sep || '&';
+        eq = eq || '=';
+        var obj = {};
 
-function AlgoliaExplainResults(hit, titleAttribute, otherAttributes) {
+        if (typeof qs !== 'string' || qs.length === 0) {
+            return obj;
+        }
 
-    function _getHitExplanationForOneAttr_recurse(obj, foundWords) {
+        var regexp = /\+/g;
+        qs = qs.split(sep);
+
+        var maxKeys = 1000;
+        if (options && typeof options.maxKeys === 'number') {
+            maxKeys = options.maxKeys;
+        }
+
+        var len = qs.length;
+        // maxKeys <= 0 means that we should not limit keys count
+        if (maxKeys > 0 && len > maxKeys) {
+            len = maxKeys;
+        }
+
+        for (var i = 0; i < len; ++i) {
+            var x = qs[i].replace(regexp, '%20'),
+                idx = x.indexOf(eq),
+                kstr, vstr, k, v;
+
+            if (idx >= 0) {
+                kstr = x.substr(0, idx);
+                vstr = x.substr(idx + 1);
+            } else {
+                kstr = x;
+                vstr = '';
+            }
+
+            k = decodeURIComponent(kstr);
+            v = decodeURIComponent(vstr);
+
+            if (!hasOwnProperty(obj, k)) {
+                obj[k] = v;
+            } else if (isArray(obj[k])) {
+                obj[k].push(v);
+            } else {
+                obj[k] = [obj[k], v];
+            }
+        }
+
+        return obj;
+    };
+
+    var isArray = Array.isArray || function (xs) {
+            return Object.prototype.toString.call(xs) === '[object Array]';
+        };
+
+},{}],3:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+    'use strict';
+
+    var stringifyPrimitive = function(v) {
+        switch (typeof v) {
+            case 'string':
+                return v;
+
+            case 'boolean':
+                return v ? 'true' : 'false';
+
+            case 'number':
+                return isFinite(v) ? v : '';
+
+            default:
+                return '';
+        }
+    };
+
+    module.exports = function(obj, sep, eq, name) {
+        sep = sep || '&';
+        eq = eq || '=';
+        if (obj === null) {
+            obj = undefined;
+        }
+
+        if (typeof obj === 'object') {
+            return map(objectKeys(obj), function(k) {
+                var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+                if (isArray(obj[k])) {
+                    return map(obj[k], function(v) {
+                        return ks + encodeURIComponent(stringifyPrimitive(v));
+                    }).join(sep);
+                } else {
+                    return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
+                }
+            }).join(sep);
+
+        }
+
+        if (!name) return '';
+        return encodeURIComponent(stringifyPrimitive(name)) + eq +
+            encodeURIComponent(stringifyPrimitive(obj));
+    };
+
+    var isArray = Array.isArray || function (xs) {
+            return Object.prototype.toString.call(xs) === '[object Array]';
+        };
+
+    function map (xs, f) {
+        if (xs.map) return xs.map(f);
         var res = [];
-        if (typeof obj === 'object' && 'matchedWords' in obj && 'value' in obj) {
-            var match = false;
-            for (var j = 0; j < obj.matchedWords.length; ++j) {
-                var word = obj.matchedWords[j];
-                if (!(word in foundWords)) {
-                    foundWords[word] = 1;
-                    match = true;
-                }
-            }
-            if (match) {
-                res.push(obj.value);
-            }
-        } else if (Object.prototype.toString.call(obj) === '[object Array]') {
-            for (var i = 0; i < obj.length; ++i) {
-                var array = _getHitExplanationForOneAttr_recurse(obj[i], foundWords);
-                res = res.concat(array);
-            }
-        } else if (typeof obj === 'object') {
-            for (var prop in obj) {
-                if (obj.hasOwnProperty(prop)){
-                    res = res.concat(_getHitExplanationForOneAttr_recurse(obj[prop], foundWords));
-                }
-            }
+        for (var i = 0; i < xs.length; i++) {
+            res.push(f(xs[i], i));
         }
         return res;
     }
-    
-    function _getHitExplanationForOneAttr(hit, foundWords, attr) {
-        var base = hit._highlightResult || hit;
-        if (attr.indexOf('.') === -1) {
-            if (attr in base) {
-                return _getHitExplanationForOneAttr_recurse(base[attr], foundWords);
+
+    var objectKeys = Object.keys || function (obj) {
+            var res = [];
+            for (var key in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
             }
-            return [];
-        }
-        var array = attr.split('.');
-        var obj = base;
-        for (var i = 0; i < array.length; ++i) {
-            if (Object.prototype.toString.call(obj) === '[object Array]') {
-                var res = [];
-                for (var j = 0; j < obj.length; ++j) {
-                    res = res.concat(_getHitExplanationForOneAttr(obj[j], foundWords, array.slice(i).join('.')));
-                }
-                return res;
-            }
-            if (array[i] in obj) {
-                obj = obj[array[i]];
-            } else {
-                return [];
-            }
-        }
-        return _getHitExplanationForOneAttr_recurse(obj, foundWords);
-    }
-
-    var res = {};
-    var foundWords = {};
-    var title = _getHitExplanationForOneAttr(hit, foundWords, titleAttribute);
-    res.title = (title.length > 0) ? title[0] : '';
-    res.subtitles = [];
-
-    if (typeof otherAttributes !== 'undefined') {
-        for (var i = 0; i < otherAttributes.length; ++i) {
-            var attr = _getHitExplanationForOneAttr(hit, foundWords, otherAttributes[i]);
-            for (var j = 0; j < attr.length; ++j) {
-                res.subtitles.push({ attr: otherAttributes[i], value: attr[j] });
-            }
-        }
-    }
-    return res;
-}
-
-
-AlgoliaSearch.prototype = {
-    /*
-     * Delete an index
-     *
-     * @param indexName the name of index to delete
-     * @param callback the result callback with two arguments
-     *  success: boolean set to true if the request was successfull
-     *  content: the server answer that contains the task ID
-     */
-    deleteIndex: function(indexName, callback) {
-        this._jsonRequest({ method: 'DELETE',
-                            url: '/1/indexes/' + encodeURIComponent(indexName),
-                            callback: callback });
-    },
-    /**
-     * Move an existing index.
-     * @param srcIndexName the name of index to copy.
-     * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
-     * @param callback the result callback with two arguments
-     *  success: boolean set to true if the request was successfull
-     *  content: the server answer that contains the task ID
-     */
-    moveIndex: function(srcIndexName, dstIndexName, callback) {
-        var postObj = {operation: 'move', destination: dstIndexName};
-        this._jsonRequest({ method: 'POST',
-                            url: '/1/indexes/' + encodeURIComponent(srcIndexName) + '/operation',
-                            body: postObj,
-                            callback: callback });
-
-    },
-    /**
-     * Copy an existing index.
-     * @param srcIndexName the name of index to copy.
-     * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
-     * @param callback the result callback with two arguments
-     *  success: boolean set to true if the request was successfull
-     *  content: the server answer that contains the task ID
-     */
-    copyIndex: function(srcIndexName, dstIndexName, callback) {
-        var postObj = {operation: 'copy', destination: dstIndexName};
-        this._jsonRequest({ method: 'POST',
-                            url: '/1/indexes/' + encodeURIComponent(srcIndexName) + '/operation',
-                            body: postObj,
-                            callback: callback });
-    },
-    /**
-     * Return last log entries.
-     * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
-     * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
-     * @param callback the result callback with two arguments
-     *  success: boolean set to true if the request was successfull
-     *  content: the server answer that contains the task ID
-     */
-    getLogs: function(callback, offset, length) {
-        if (this._isUndefined(offset)) {
-            offset = 0;
-        }
-        if (this._isUndefined(length)) {
-            length = 10;
-        }
-
-        this._jsonRequest({ method: 'GET',
-                            url: '/1/logs?offset=' + offset + '&length=' + length,
-                            callback: callback });
-    },
-    /*
-     * List all existing indexes (paginated)
-     *
-     * @param callback the result callback with two arguments
-     *  success: boolean set to true if the request was successfull
-     *  content: the server answer with index list or error description if success is false.
-     * @param page The page to retrieve, starting at 0.
-     */
-    listIndexes: function(callback, page) {
-        var params = page ? '?page=' + page : '';
-        this._jsonRequest({ method: 'GET',
-                            url: '/1/indexes' + params,
-                            callback: callback });
-    },
-
-    /*
-     * Get the index object initialized
-     *
-     * @param indexName the name of index
-     * @param callback the result callback with one argument (the Index instance)
-     */
-    initIndex: function(indexName) {
-        return new this.Index(this, indexName);
-    },
-    /*
-     * List all existing user keys with their associated ACLs
-     *
-     * @param callback the result callback with two arguments
-     *  success: boolean set to true if the request was successfull
-     *  content: the server answer with user keys list or error description if success is false.
-     */
-    listUserKeys: function(callback) {
-        this._jsonRequest({ method: 'GET',
-                            url: '/1/keys',
-                            callback: callback });
-    },
-    /*
-     * Get ACL of a user key
-     *
-     * @param callback the result callback with two arguments
-     *  success: boolean set to true if the request was successfull
-     *  content: the server answer with user keys list or error description if success is false.
-     */
-    getUserKeyACL: function(key, callback) {
-        this._jsonRequest({ method: 'GET',
-                            url: '/1/keys/' + key,
-                            callback: callback });
-    },
-    /*
-     * Delete an existing user key
-     *
-     * @param callback the result callback with two arguments
-     *  success: boolean set to true if the request was successfull
-     *  content: the server answer with user keys list or error description if success is false.
-     */
-    deleteUserKey: function(key, callback) {
-        this._jsonRequest({ method: 'DELETE',
-                            url: '/1/keys/' + key,
-                            callback: callback });
-    },
-    /*
-     * Add an existing user key
-     *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
-     * can contains the following values:
-     *   - search: allow to search (https and http)
-     *   - addObject: allows to add/update an object in the index (https only)
-     *   - deleteObject : allows to delete an existing object (https only)
-     *   - deleteIndex : allows to delete index content (https only)
-     *   - settings : allows to get index settings (https only)
-     *   - editSettings : allows to change index settings (https only)
-     * @param callback the result callback with two arguments
-     *  success: boolean set to true if the request was successfull
-     *  content: the server answer with user keys list or error description if success is false.
-     */
-    addUserKey: function(acls, callback) {
-        var aclsObject = {};
-        aclsObject.acl = acls;
-        this._jsonRequest({ method: 'POST',
-                            url: '/1/keys',
-                            body: aclsObject,
-                            callback: callback });
-    },
-    /*
-     * Add an existing user key
-     *
-     * @param acls the list of ACL for this key. Defined by an array of strings that
-     * can contains the following values:
-     *   - search: allow to search (https and http)
-     *   - addObject: allows to add/update an object in the index (https only)
-     *   - deleteObject : allows to delete an existing object (https only)
-     *   - deleteIndex : allows to delete index content (https only)
-     *   - settings : allows to get index settings (https only)
-     *   - editSettings : allows to change index settings (https only)
-     * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
-     * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.
-     * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call.
-     * @param callback the result callback with two arguments
-     *  success: boolean set to true if the request was successfull
-     *  content: the server answer with user keys list or error description if success is false.
-     */
-    addUserKeyWithValidity: function(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery, callback) {
-        var indexObj = this;
-        var aclsObject = {};
-        aclsObject.acl = acls;
-        aclsObject.validity = validity;
-        aclsObject.maxQueriesPerIPPerHour = maxQueriesPerIPPerHour;
-        aclsObject.maxHitsPerQuery = maxHitsPerQuery;
-        this._jsonRequest({ method: 'POST',
-                            url: '/1/indexes/' + indexObj.indexName + '/keys',
-                            body: aclsObject,
-                            callback: callback });
-    },
-
-    /**
-     * Set the extra security tagFilters header
-     * @param {string|array} tags The list of tags defining the current security filters
-     */
-    setSecurityTags: function(tags) {
-        if (Object.prototype.toString.call(tags) === '[object Array]') {
-            var strTags = [];
-            for (var i = 0; i < tags.length; ++i) {
-                if (Object.prototype.toString.call(tags[i]) === '[object Array]') {
-                    var oredTags = [];
-                    for (var j = 0; j < tags[i].length; ++j) {
-                        oredTags.push(tags[i][j]);
-                    }
-                    strTags.push('(' + oredTags.join(',') + ')');
-                } else {
-                    strTags.push(tags[i]);
-                }
-            }
-            tags = strTags.join(',');
-        }
-        this.tagFilters = tags;
-    },
-
-    /**
-     * Set the extra user token header
-     * @param {string} userToken The token identifying a uniq user (used to apply rate limits)
-     */
-    setUserToken: function(userToken) {
-        this.userToken = userToken;
-    },
-
-    /*
-     * Initialize a new batch of search queries
-     */
-    startQueriesBatch: function() {
-        this.batch = [];
-    },
-    /*
-     * Add a search query in the batch
-     *
-     * @param query the full text query
-     * @param args (optional) if set, contains an object with query parameters:
-     *  - attributes: an array of object attribute names to retrieve
-     *     (if not set all attributes are retrieve)
-     *  - attributesToHighlight: an array of object attribute names to highlight
-     *     (if not set indexed attributes are highlighted)
-     *  - minWordSizefor1Typo: the minimum number of characters to accept one typo.
-     *     Defaults to 3.
-     *  - minWordSizefor2Typos: the minimum number of characters to accept two typos.
-     *     Defaults to 7.
-     *  - getRankingInfo: if set, the result hits will contain ranking information in
-     *     _rankingInfo attribute
-     *  - page: (pagination parameter) page to retrieve (zero base). Defaults to 0.
-     *  - hitsPerPage: (pagination parameter) number of hits per page. Defaults to 10.
-     */
-    addQueryInBatch: function(indexName, query, args) {
-        var params = 'query=' + encodeURIComponent(query);
-        if (!this._isUndefined(args) && args !== null) {
-            params = this._getSearchParams(args, params);
-        }
-        this.batch.push({ indexName: indexName, params: params });
-    },
-    /*
-     * Clear all queries in cache
-     */
-    clearCache: function() {
-        this.cache = {};
-    },
-    /*
-     * Launch the batch of queries using XMLHttpRequest.
-     * (Optimized for browser using a POST query to minimize number of OPTIONS queries)
-     *
-     * @param callback the function that will receive results
-     * @param delay (optional) if set, wait for this delay (in ms) and only send the batch if there was no other in the meantime.
-     */
-    sendQueriesBatch: function(callback, delay) {
-        var as = this;
-        var params = {requests: [], apiKey: this.apiKey, appID: this.applicationID};
-        if (this.userToken) {
-            params['X-Algolia-UserToken'] = this.userToken;
-        }
-        if (this.tagFilters) {
-            params['X-Algolia-TagFilters'] = this.tagFilters;
-        }
-        for (var i = 0; i < as.batch.length; ++i) {
-            params.requests.push(as.batch[i]);
-        }
-        window.clearTimeout(as.onDelayTrigger);
-        if (!this._isUndefined(delay) && delay !== null && delay > 0) {
-            var onDelayTrigger = window.setTimeout( function() {
-                as._sendQueriesBatch(params, callback);
-            }, delay);
-            as.onDelayTrigger = onDelayTrigger;
-        } else {
-            this._sendQueriesBatch(params, callback);
-        }
-    },
-
-   /**
-     * Set the number of milliseconds a request can take before automatically being terminated.
-     * 
-     * @param {Number} milliseconds
-     */
-    setRequestTimeout: function(milliseconds)
-    {
-        if (milliseconds) {
-            this.requestTimeoutInMs = parseInt(milliseconds, 10);
-        }
-    },
-
-    /*
-     * Index class constructor.
-     * You should not use this method directly but use initIndex() function
-     */
-    Index: function(algoliasearch, indexName) {
-        this.indexName = indexName;
-        this.as = algoliasearch;
-        this.typeAheadArgs = null;
-        this.typeAheadValueOption = null;
-    },
-   /**
-     * Add an extra field to the HTTP request
-     * 
-     * @param key the header field name
-     * @param value the header field value
-     */
-    setExtraHeader: function(key, value) {
-        this.extraHeaders.push({ key: key, value: value});
-    },
-
-    _sendQueriesBatch: function(params, callback) {
-        if (this.jsonp === null) {
-            var self = this;
-            this._waitReady(function() { self._sendQueriesBatch(params, callback); });
-            return;
-        }
-        if (this.jsonp) {
-            var jsonpParams = '';
-            for (var i = 0; i < params.requests.length; ++i) {
-                var q = '/1/indexes/' + encodeURIComponent(params.requests[i].indexName) + '?' + params.requests[i].params;
-                jsonpParams += i + '=' + encodeURIComponent(q) + '&';
-            }
-            this._jsonRequest({ cache: this.cache,
-                                   method: 'GET', jsonp: true,
-                                   url: '/1/indexes/*',
-                                   body: { params: jsonpParams },
-                                   callback: callback });
-        } else {
-            this._jsonRequest({ cache: this.cache,
-                                   method: 'POST',
-                                   url: '/1/indexes/*/queries',
-                                   body: params,
-       	                           callback: callback,
-                                   removeCustomHTTPHeaders: true});
-        }
-    },
-    /*
-     * Wrapper that try all hosts to maximize the quality of service
-     */
-    _jsonRequest: function(opts) {
-        var successiveRetryCount = 0;
-        var self = this;
-        var callback = opts.callback;
-        var cache = null;
-        var cacheID = opts.url;
-        if (!this._isUndefined(opts.body)) {
-            cacheID = opts.url + '_body_' + JSON.stringify(opts.body);
-        }
-        if (!this._isUndefined(opts.cache)) {
-            cache = opts.cache;
-            if (!this._isUndefined(cache[cacheID])) {
-                if (!this._isUndefined(callback)) {
-                    setTimeout(function () { callback(true, cache[cacheID]); }, 1);
-                }
-                return;
-            }
-        }
-
-        var impl = function() {
-            if (successiveRetryCount >= self.hosts.length) {
-                console && console.log('Cannot connect the Algolia\'s InstantSearch API. Please send an email to support@algolia.com to report the issue.');
-                return;
-            }
-            opts.callback = function(retry, success, res, body) {
-                if (!success && !self._isUndefined(body)) {
-                    console && console.log('Error: ' + body.message);
-                }
-                if (success && !self._isUndefined(opts.cache)) {
-                    cache[cacheID] = body;
-                }
-                if (!success && retry && self.currentHostIndex <= self.hosts.length) {
-                    self.currentHostIndex = ++self.currentHostIndex % self.hosts.length;
-                    successiveRetryCount += 1;
-                    console && console.log('self.currentHostIndex', self.currentHostIndex, successiveRetryCount);
-                    impl();
-                } else {
-                    if (!self._isUndefined(callback)) {
-                        successiveRetryCount = 0;
-                        callback(success, body);
-                    }
-                }
-            };
-            opts.hostname = self.hosts[self.currentHostIndex];
-            self._jsonRequestByHost(opts);
-        };
-        impl();
-    },
-
-    _jsonRequestByHost: function(opts) {
-        var self = this;
-        var url = opts.hostname + opts.url;
-
-        if (this.jsonp) {
-            this._makeJsonpRequestByHost(url, opts);
-        } else {
-            this._makeXmlHttpRequestByHost(url, opts);
-        }
-    },
-
-    /**
-     * Make a JSONP request
-     *
-     * @param url request url (includes endpoint and path)
-     * @param opts all request options
-     */
-    _makeJsonpRequestByHost: function(url, opts) {
-        if (!opts.jsonp) {
-            opts.callback(true, false, null, { 'message': 'Method ' + opts.method + ' ' + url + ' is not supported by JSONP.' });
-            return;
-        }
-
-        this.jsonpCounter = this.jsonpCounter || 0;
-        this.jsonpCounter += 1;
-        var head = document.getElementsByTagName('head')[0];
-        var script = document.createElement('script');
-        var cb = 'algoliaJSONP_' + this.jsonpCounter;
-        var done = false;
-        var ontimeout = null;
-
-        window[cb] = function(data) {
-            opts.callback(false, true, null, data);
-            try { delete window[cb]; } catch (e) { window[cb] = undefined; }
-        };
-        
-        script.type = 'text/javascript';
-        script.src = url + '?callback=' + cb + ',' + this.applicationID + ',' + this.apiKey;
-        
-        if (opts['X-Algolia-TagFilters']) {
-            script.src += '&X-Algolia-TagFilters=' + opts['X-Algolia-TagFilters'];
-        }
-        
-        if (opts['X-Algolia-UserToken']) {
-            script.src += '&X-Algolia-UserToken=' + opts['X-Algolia-UserToken'];
-        }
-        
-        if (opts.body && opts.body.params) {
-            script.src += '&' + opts.body.params;
-        }
-        
-        ontimeout = setTimeout(function() {
-            script.onload = script.onreadystatechange = script.onerror = null;
-            window[cb] = function(data) {
-                try { delete window[cb]; } catch (e) { window[cb] = undefined; }
-            };
-            
-            opts.callback(true, false, null, { 'message': 'Timeout - Failed to load JSONP script.' });
-            head.removeChild(script);
-            
-            clearTimeout(ontimeout);
-            ontimeout = null;
-
-        }, this.requestTimeoutInMs);
-
-        script.onload = script.onreadystatechange = function() {
-            clearTimeout(ontimeout);
-            ontimeout = null;
-
-            if (!done && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete')) {
-                done = true;
-
-                if (typeof window[cb + '_loaded'] === 'undefined') {
-                    opts.callback(true, false, null, { 'message': 'Failed to load JSONP script.' });
-                    try { delete window[cb]; } catch (e) { window[cb] = undefined; }
-                } else {
-                    try { delete window[cb + '_loaded']; } catch (e) { window[cb + '_loaded'] = undefined; }
-                }
-                script.onload = script.onreadystatechange = null; // Handle memory leak in IE
-                head.removeChild(script);
-            }
+            return res;
         };
 
-        script.onerror = function() {
-            clearTimeout(ontimeout);
-            ontimeout = null;
-
-            opts.callback(true, false, null, { 'message': 'Failed to load JSONP script.' });
-            head.removeChild(script);
-            try { delete window[cb]; } catch (e) { window[cb] = undefined; }
-        };
-
-        head.appendChild(script);
-    },
-
-    /**
-     * Make a XmlHttpRequest
-     * 
-     * @param url request url (includes endpoint and path)
-     * @param opts all request opts
-     */
-    _makeXmlHttpRequestByHost: function(url, opts) {
-        var self = this;
-        var xmlHttp = window.XMLHttpRequest ? new XMLHttpRequest() : {};
-        var body = null;
-        var ontimeout = null;
-
-        if (!this._isUndefined(opts.body)) {
-            body = JSON.stringify(opts.body);
-        }
-        
-        if ('withCredentials' in xmlHttp) {
-            xmlHttp.open(opts.method, url , true);
-            if (this._isUndefined(opts.removeCustomHTTPHeaders) || !opts.removeCustomHTTPHeaders) {
-                      xmlHttp.setRequestHeader('X-Algolia-API-Key', this.apiKey);
-                      xmlHttp.setRequestHeader('X-Algolia-Application-Id', this.applicationID);
-            }
-            xmlHttp.timeout = this.requestTimeoutInMs;
-            for (var i = 0; i < this.extraHeaders.length; ++i) {
-                xmlHttp.setRequestHeader(this.extraHeaders[i].key, this.extraHeaders[i].value);
-            }
-            if (body !== null) {
-                xmlHttp.setRequestHeader('Content-type', 'application/json');
-            }
-        } else if (typeof XDomainRequest != 'undefined') {
-            // Handle IE8/IE9
-            // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
-            xmlHttp = new XDomainRequest();
-            xmlHttp.open(opts.method, url);
-        } else {
-            // very old browser, not supported
-            console && console.log('Your browser is too old to support CORS requests');
-            opts.callback(false, false, null, { 'message': 'CORS not supported' });
-            return;
-        }
-
-        ontimeout = setTimeout(function() {
-            xmlHttp.abort();
-            // Prevent Internet Explorer 9, JScript Error c00c023f
-            if (xmlHttp.aborted === true) {
-              stopLoadAnimation();
-              return;
-            }
-            opts.callback(true, false, null, { 'message': 'Timeout - Could not connect to endpoint ' + url } );
-
-            clearTimeout(ontimeout);
-            ontimeout = null;
-
-        }, this.requestTimeoutInMs);
-
-        xmlHttp.onload = function(event) {
-            clearTimeout(ontimeout);
-            ontimeout = null;
-
-            if (!self._isUndefined(event) && event.target !== null) {
-                var retry = (event.target.status === 0 || event.target.status === 503);
-                var success = (event.target.status === 200 || event.target.status === 201);
-                opts.callback(retry, success, event.target, event.target.response !== null ? JSON.parse(event.target.response) : null);
-            } else {
-                opts.callback(false, true, event, JSON.parse(xmlHttp.responseText));
-            }
-        };
-	xmlHttp.ontimeout = function(event) { // stop the network call but rely on ontimeout to call opt.callback
-        }
-        xmlHttp.onerror = function(event) {
-            clearTimeout(ontimeout);
-            ontimeout = null;
-
-            opts.callback(true, false, null, { 'message': 'Could not connect to host', 'error': event } );
-        };
-
-        xmlHttp.send(body);
-    },
-
-    /**
-     * Wait until JSONP flag has been set to perform the first query
-     */
-    _waitReady: function(cb) {
-        if (this.jsonp === null) {
-            this.jsonpWait += 100;
-            if (this.jsonpWait > 2000) {
-                this.jsonp = true;
-            }
-            setTimeout(cb, 100);
-        }
-    },
-
-     /*
-     * Transform search param object in query string
-     */
-    _getSearchParams: function(args, params) {
-        if (this._isUndefined(args) || args === null) {
-            return params;
-        }
-        for (var key in args) {
-            if (key !== null && args.hasOwnProperty(key)) {
-                params += (params.length === 0) ? '?' : '&';
-                params += key + '=' + encodeURIComponent(Object.prototype.toString.call(args[key]) === '[object Array]' ? JSON.stringify(args[key]) : args[key]);
-            }
-        }
-        return params;
-    },
-    _isUndefined: function(obj) {
-        return obj === void 0;
-    },
-
-    /// internal attributes
-    applicationID: null,
-    apiKey: null,
-    tagFilters: null,
-    userToken: null,
-    hosts: [],
-    cache: {},
-    extraHeaders: []
-};
-
-/*
- * Contains all the functions related to one index
- * You should use AlgoliaSearch.initIndex(indexName) to retrieve this object
- */
-AlgoliaSearch.prototype.Index.prototype = {
-        /*
-         * Clear all queries in cache
-         */
-        clearCache: function() {
-            this.cache = {};
-        },
-        /*
-         * Add an object in this index
-         *
-         * @param content contains the javascript object to add inside the index
-         * @param callback (optional) the result callback with two arguments:
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer that contains 3 elements: createAt, taskId and objectID
-         * @param objectID (optional) an objectID you want to attribute to this object
-         * (if the attribute already exist the old object will be overwrite)
-         */
-        addObject: function(content, callback, objectID) {
-            var indexObj = this;
-            if (this.as._isUndefined(objectID)) {
-                this.as._jsonRequest({ method: 'POST',
-                                       url: '/1/indexes/' + encodeURIComponent(indexObj.indexName),
-                                       body: content,
-                                       callback: callback });
-            } else {
-                this.as._jsonRequest({ method: 'PUT',
-                                       url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/' + encodeURIComponent(objectID),
-                                       body: content,
-                                       callback: callback });
-            }
-
-        },
-        /*
-         * Add several objects
-         *
-         * @param objects contains an array of objects to add
-         * @param callback (optional) the result callback with two arguments:
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer that updateAt and taskID
-         */
-        addObjects: function(objects, callback) {
-            var indexObj = this;
-            var postObj = {requests:[]};
-            for (var i = 0; i < objects.length; ++i) {
-                var request = { action: 'addObject',
-                                body: objects[i] };
-                postObj.requests.push(request);
-            }
-            this.as._jsonRequest({ method: 'POST',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/batch',
-                                   body: postObj,
-                                   callback: callback });
-        },
-        /*
-         * Get an object from this index
-         *
-         * @param objectID the unique identifier of the object to retrieve
-         * @param callback (optional) the result callback with two arguments
-         *  success: boolean set to true if the request was successfull
-         *  content: the object to retrieve or the error message if a failure occured
-         * @param attributes (optional) if set, contains the array of attribute names to retrieve
-         */
-        getObject: function(objectID, callback, attributes) {
-            if (this.as.jsonp === null) {
-                var self = this;
-                this.as._waitReady(function() { self.getObject(objectID, callback, attributes); });
-                return;
-            }
-            var indexObj = this;
-            var params = '';
-            if (!this.as._isUndefined(attributes)) {
-                params = '?attributes=';
-                for (var i = 0; i < attributes.length; ++i) {
-                    if (i !== 0) {
-                        params += ',';
-                    }
-                    params += attributes[i];
-                }
-            }
-            this.as._jsonRequest({ method: 'GET', jsonp: true,
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/' + encodeURIComponent(objectID) + params,
-                                   callback: callback });
-        },
-
-        /*
-         * Update partially an object (only update attributes passed in argument)
-         *
-         * @param partialObject contains the javascript attributes to override, the
-         *  object must contains an objectID attribute
-         * @param callback (optional) the result callback with two arguments:
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer that contains 3 elements: createAt, taskId and objectID
-         */
-        partialUpdateObject: function(partialObject, callback) {
-            var indexObj = this;
-            this.as._jsonRequest({ method: 'POST',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/' + encodeURIComponent(partialObject.objectID) + '/partial',
-                                   body: partialObject,
-                                   callback:  callback });
-        },
-        /*
-         * Partially Override the content of several objects
-         *
-         * @param objects contains an array of objects to update (each object must contains a objectID attribute)
-         * @param callback (optional) the result callback with two arguments:
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer that updateAt and taskID
-         */
-        partialUpdateObjects: function(objects, callback) {
-            var indexObj = this;
-            var postObj = {requests:[]};
-            for (var i = 0; i < objects.length; ++i) {
-                var request = { action: 'partialUpdateObject',
-                                objectID: objects[i].objectID,
-                                body: objects[i] };
-                postObj.requests.push(request);
-            }
-            this.as._jsonRequest({ method: 'POST',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/batch',
-                                   body: postObj,
-                                   callback: callback });
-        },
-        /*
-         * Override the content of object
-         *
-         * @param object contains the javascript object to save, the object must contains an objectID attribute
-         * @param callback (optional) the result callback with two arguments:
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer that updateAt and taskID
-         */
-        saveObject: function(object, callback) {
-            var indexObj = this;
-            this.as._jsonRequest({ method: 'PUT',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/' + encodeURIComponent(object.objectID),
-                                   body: object,
-                                   callback: callback });
-        },
-        /*
-         * Override the content of several objects
-         *
-         * @param objects contains an array of objects to update (each object must contains a objectID attribute)
-         * @param callback (optional) the result callback with two arguments:
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer that updateAt and taskID
-         */
-        saveObjects: function(objects, callback) {
-            var indexObj = this;
-            var postObj = {requests:[]};
-            for (var i = 0; i < objects.length; ++i) {
-                var request = { action: 'updateObject',
-                                objectID: objects[i].objectID,
-                                body: objects[i] };
-                postObj.requests.push(request);
-            }
-            this.as._jsonRequest({ method: 'POST',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/batch',
-                                   body: postObj,
-                                   callback: callback });
-        },
-        /*
-         * Delete an object from the index
-         *
-         * @param objectID the unique identifier of object to delete
-         * @param callback (optional) the result callback with two arguments:
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer that contains 3 elements: createAt, taskId and objectID
-         */
-        deleteObject: function(objectID, callback) {
-            if (objectID === null || objectID.length === 0) {
-                callback(false, { message: 'empty objectID'});
-                return;
-            }
-            var indexObj = this;
-            this.as._jsonRequest({ method: 'DELETE',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/' + encodeURIComponent(objectID),
-                                   callback: callback });
-        },
-        /*
-         * Search inside the index using XMLHttpRequest request (Using a POST query to
-         * minimize number of OPTIONS queries: Cross-Origin Resource Sharing).
-         *
-         * @param query the full text query
-         * @param callback the result callback with two arguments:
-         *  success: boolean set to true if the request was successfull. If false, the content contains the error.
-         *  content: the server answer that contains the list of results.
-         * @param args (optional) if set, contains an object with query parameters:
-         * - page: (integer) Pagination parameter used to select the page to retrieve.
-         *                   Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
-         * - hitsPerPage: (integer) Pagination parameter used to select the number of hits per page. Defaults to 20.
-         * - attributesToRetrieve: a string that contains the list of object attributes you want to retrieve (let you minimize the answer size).
-         *   Attributes are separated with a comma (for example "name,address").
-         *   You can also use a string array encoding (for example ["name","address"]).
-         *   By default, all attributes are retrieved. You can also use '*' to retrieve all values when an attributesToRetrieve setting is specified for your index.
-         * - attributesToHighlight: a string that contains the list of attributes you want to highlight according to the query.
-         *   Attributes are separated by a comma. You can also use a string array encoding (for example ["name","address"]).
-         *   If an attribute has no match for the query, the raw value is returned. By default all indexed text attributes are highlighted.
-         *   You can use `*` if you want to highlight all textual attributes. Numerical attributes are not highlighted.
-         *   A matchLevel is returned for each highlighted attribute and can contain:
-         *      - full: if all the query terms were found in the attribute,
-         *      - partial: if only some of the query terms were found,
-         *      - none: if none of the query terms were found.
-         * - attributesToSnippet: a string that contains the list of attributes to snippet alongside the number of words to return (syntax is `attributeName:nbWords`).
-         *    Attributes are separated by a comma (Example: attributesToSnippet=name:10,content:10).
-         *    You can also use a string array encoding (Example: attributesToSnippet: ["name:10","content:10"]). By default no snippet is computed.
-         * - minWordSizefor1Typo: the minimum number of characters in a query word to accept one typo in this word. Defaults to 3.
-         * - minWordSizefor2Typos: the minimum number of characters in a query word to accept two typos in this word. Defaults to 7.
-         * - getRankingInfo: if set to 1, the result hits will contain ranking information in _rankingInfo attribute.
-         * - aroundLatLng: search for entries around a given latitude/longitude (specified as two floats separated by a comma).
-         *   For example aroundLatLng=47.316669,5.016670).
-         *   You can specify the maximum distance in meters with the aroundRadius parameter (in meters) and the precision for ranking with aroundPrecision
-         *   (for example if you set aroundPrecision=100, two objects that are distant of less than 100m will be considered as identical for "geo" ranking parameter).
-         *   At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form {"_geoloc":{"lat":48.853409, "lng":2.348800}})
-         * - insideBoundingBox: search entries inside a given area defined by the two extreme points of a rectangle (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).
-         *   For example insideBoundingBox=47.3165,4.9665,47.3424,5.0201).
-         *   At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form {"_geoloc":{"lat":48.853409, "lng":2.348800}})
-         * - numericFilters: a string that contains the list of numeric filters you want to apply separated by a comma.
-         *   The syntax of one filter is `attributeName` followed by `operand` followed by `value`. Supported operands are `<`, `<=`, `=`, `>` and `>=`.
-         *   You can have multiple conditions on one attribute like for example numericFilters=price>100,price<1000.
-         *   You can also use a string array encoding (for example numericFilters: ["price>100","price<1000"]).
-         * - tagFilters: filter the query by a set of tags. You can AND tags by separating them by commas.
-         *   To OR tags, you must add parentheses. For example, tags=tag1,(tag2,tag3) means tag1 AND (tag2 OR tag3).
-         *   You can also use a string array encoding, for example tagFilters: ["tag1",["tag2","tag3"]] means tag1 AND (tag2 OR tag3).
-         *   At indexing, tags should be added in the _tags** attribute of objects (for example {"_tags":["tag1","tag2"]}).
-         * - facetFilters: filter the query by a list of facets.
-         *   Facets are separated by commas and each facet is encoded as `attributeName:value`.
-         *   For example: `facetFilters=category:Book,author:John%20Doe`.
-         *   You can also use a string array encoding (for example `["category:Book","author:John%20Doe"]`).
-         * - facets: List of object attributes that you want to use for faceting.
-         *   Attributes are separated with a comma (for example `"category,author"` ).
-         *   You can also use a JSON string array encoding (for example ["category","author"]).
-         *   Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter.
-         *   You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
-         * - queryType: select how the query words are interpreted, it can be one of the following value:
-         *    - prefixAll: all query words are interpreted as prefixes,
-         *    - prefixLast: only the last word is interpreted as a prefix (default behavior),
-         *    - prefixNone: no query word is interpreted as a prefix. This option is not recommended.
-         * - optionalWords: a string that contains the list of words that should be considered as optional when found in the query.
-         *   The list of words is comma separated.
-         * - distinct: If set to 1, enable the distinct feature (disabled by default) if the attributeForDistinct index setting is set.
-         *   This feature is similar to the SQL "distinct" keyword: when enabled in a query with the distinct=1 parameter,
-         *   all hits containing a duplicate value for the attributeForDistinct attribute are removed from results.
-         *   For example, if the chosen attribute is show_name and several hits have the same value for show_name, then only the best
-         *   one is kept and others are removed.
-         * @param delay (optional) if set, wait for this delay (in ms) and only send the query if there was no other in the meantime.
-         */
-        search: function(query, callback, args, delay) {
-            var indexObj = this;
-            var params = 'query=' + encodeURIComponent(query);
-            if (!this.as._isUndefined(args) && args !== null) {
-                params = this.as._getSearchParams(args, params);
-            }
-            window.clearTimeout(indexObj.onDelayTrigger);
-            if (!this.as._isUndefined(delay) && delay !== null && delay > 0) {
-                var onDelayTrigger = window.setTimeout( function() {
-                    indexObj._search(params, callback);
-                }, delay);
-                indexObj.onDelayTrigger = onDelayTrigger;
-            } else {
-                this._search(params, callback);
-            }
-        },
-
-        /*
-         * Browse all index content
-         *
-         * @param page Pagination parameter used to select the page to retrieve.
-         *             Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
-         * @param hitsPerPage: Pagination parameter used to select the number of hits per page. Defaults to 1000.
-         */
-        browse: function(page, callback, hitsPerPage) {
-            var indexObj = this;
-            var params = '?page=' + page;
-            if (!_.isUndefined(hitsPerPage)) {
-                params += '&hitsPerPage=' + hitsPerPage;
-            }
-            this.as._jsonRequest({ method: 'GET',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/browse' + params,
-                                   callback: callback });
-        },
-
-        /*
-         * Get a Typeahead.js adapter
-         * @param searchParams contains an object with query parameters (see search for details)
-         */
-        ttAdapter: function(params) {
-            var self = this;
-            return function(query, cb) {
-                self.search(query, function(success, content) {
-                    if (success) {
-                        cb(content.hits);
-                    }
-                }, params);
-            };
-        },
-
-        /*
-         * Wait the publication of a task on the server.
-         * All server task are asynchronous and you can check with this method that the task is published.
-         *
-         * @param taskID the id of the task returned by server
-         * @param callback the result callback with with two arguments:
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer that contains the list of results
-         */
-        waitTask: function(taskID, callback) {
-            var indexObj = this;
-            this.as._jsonRequest({ method: 'GET',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/task/' + taskID,
-                                   callback: function(success, body) {
-                if (success) {
-                    if (body.status === 'published') {
-                        callback(true, body);
-                    } else {
-                        setTimeout(function() { indexObj.waitTask(taskID, callback); }, 100);
-                    }
-                } else {
-                    callback(false, body);
-                }
-            }});
-        },
-
-        /*
-         * This function deletes the index content. Settings and index specific API keys are kept untouched.
-         *
-         * @param callback (optional) the result callback with two arguments
-         *  success: boolean set to true if the request was successfull
-         *  content: the settings object or the error message if a failure occured
-         */
-        clearIndex: function(callback) {
-            var indexObj = this;
-            this.as._jsonRequest({ method: 'POST',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/clear',
-                                   callback: callback });
-        },
-        /*
-         * Get settings of this index
-         *
-         * @param callback (optional) the result callback with two arguments
-         *  success: boolean set to true if the request was successfull
-         *  content: the settings object or the error message if a failure occured
-         */
-        getSettings: function(callback) {
-            var indexObj = this;
-            this.as._jsonRequest({ method: 'GET',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/settings',
-                                   callback: callback });
-        },
-
-        /*
-         * Set settings for this index
-         *
-         * @param settigns the settings object that can contains :
-         * - minWordSizefor1Typo: (integer) the minimum number of characters to accept one typo (default = 3).
-         * - minWordSizefor2Typos: (integer) the minimum number of characters to accept two typos (default = 7).
-         * - hitsPerPage: (integer) the number of hits per page (default = 10).
-         * - attributesToRetrieve: (array of strings) default list of attributes to retrieve in objects.
-         *   If set to null, all attributes are retrieved.
-         * - attributesToHighlight: (array of strings) default list of attributes to highlight.
-         *   If set to null, all indexed attributes are highlighted.
-         * - attributesToSnippet**: (array of strings) default list of attributes to snippet alongside the number of words to return (syntax is attributeName:nbWords).
-         *   By default no snippet is computed. If set to null, no snippet is computed.
-         * - attributesToIndex: (array of strings) the list of fields you want to index.
-         *   If set to null, all textual and numerical attributes of your objects are indexed, but you should update it to get optimal results.
-         *   This parameter has two important uses:
-         *     - Limit the attributes to index: For example if you store a binary image in base64, you want to store it and be able to
-         *       retrieve it but you don't want to search in the base64 string.
-         *     - Control part of the ranking*: (see the ranking parameter for full explanation) Matches in attributes at the beginning of
-         *       the list will be considered more important than matches in attributes further down the list.
-         *       In one attribute, matching text at the beginning of the attribute will be considered more important than text after, you can disable
-         *       this behavior if you add your attribute inside `unordered(AttributeName)`, for example attributesToIndex: ["title", "unordered(text)"].
-         * - attributesForFaceting: (array of strings) The list of fields you want to use for faceting.
-         *   All strings in the attribute selected for faceting are extracted and added as a facet. If set to null, no attribute is used for faceting.
-         * - attributeForDistinct: (string) The attribute name used for the Distinct feature. This feature is similar to the SQL "distinct" keyword: when enabled
-         *   in query with the distinct=1 parameter, all hits containing a duplicate value for this attribute are removed from results.
-         *   For example, if the chosen attribute is show_name and several hits have the same value for show_name, then only the best one is kept and others are removed.
-         * - ranking: (array of strings) controls the way results are sorted.
-         *   We have six available criteria:
-         *    - typo: sort according to number of typos,
-         *    - geo: sort according to decreassing distance when performing a geo-location based search,
-         *    - proximity: sort according to the proximity of query words in hits,
-         *    - attribute: sort according to the order of attributes defined by attributesToIndex,
-         *    - exact:
-         *        - if the user query contains one word: sort objects having an attribute that is exactly the query word before others.
-         *          For example if you search for the "V" TV show, you want to find it with the "V" query and avoid to have all popular TV
-         *          show starting by the v letter before it.
-         *        - if the user query contains multiple words: sort according to the number of words that matched exactly (and not as a prefix).
-         *    - custom: sort according to a user defined formula set in **customRanking** attribute.
-         *   The standard order is ["typo", "geo", "proximity", "attribute", "exact", "custom"]
-         * - customRanking: (array of strings) lets you specify part of the ranking.
-         *   The syntax of this condition is an array of strings containing attributes prefixed by asc (ascending order) or desc (descending order) operator.
-         *   For example `"customRanking" => ["desc(population)", "asc(name)"]`
-         * - queryType: Select how the query words are interpreted, it can be one of the following value:
-         *   - prefixAll: all query words are interpreted as prefixes,
-         *   - prefixLast: only the last word is interpreted as a prefix (default behavior),
-         *   - prefixNone: no query word is interpreted as a prefix. This option is not recommended.
-         * - highlightPreTag: (string) Specify the string that is inserted before the highlighted parts in the query result (default to "<em>").
-         * - highlightPostTag: (string) Specify the string that is inserted after the highlighted parts in the query result (default to "</em>").
-         * - optionalWords: (array of strings) Specify a list of words that should be considered as optional when found in the query.
-         * @param callback (optional) the result callback with two arguments
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer or the error message if a failure occured
-         */
-        setSettings: function(settings, callback) {
-            var indexObj = this;
-            this.as._jsonRequest({ method: 'PUT',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/settings',
-                                   body: settings,
-                                   callback: callback });
-        },
-        /*
-         * List all existing user keys associated to this index
-         *
-         * @param callback the result callback with two arguments
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer with user keys list or error description if success is false.
-         */
-        listUserKeys: function(callback) {
-            var indexObj = this;
-            this.as._jsonRequest({ method: 'GET',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/keys',
-                                   callback: callback });
-        },
-        /*
-         * Get ACL of a user key associated to this index
-         *
-         * @param callback the result callback with two arguments
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer with user keys list or error description if success is false.
-         */
-        getUserKeyACL: function(key, callback) {
-            var indexObj = this;
-            this.as._jsonRequest({ method: 'GET',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/keys/' + key,
-                                   callback: callback });
-        },
-        /*
-         * Delete an existing user key associated to this index
-         *
-         * @param callback the result callback with two arguments
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer with user keys list or error description if success is false.
-         */
-        deleteUserKey: function(key, callback) {
-            var indexObj = this;
-            this.as._jsonRequest({ method: 'DELETE',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/keys/' + key,
-                                   callback: callback });
-        },
-        /*
-         * Add an existing user key associated to this index
-         *
-         * @param acls the list of ACL for this key. Defined by an array of strings that
-         * can contains the following values:
-         *   - search: allow to search (https and http)
-         *   - addObject: allows to add/update an object in the index (https only)
-         *   - deleteObject : allows to delete an existing object (https only)
-         *   - deleteIndex : allows to delete index content (https only)
-         *   - settings : allows to get index settings (https only)
-         *   - editSettings : allows to change index settings (https only)
-         * @param callback the result callback with two arguments
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer with user keys list or error description if success is false.
-         */
-        addUserKey: function(acls, callback) {
-            var indexObj = this;
-            var aclsObject = {};
-            aclsObject.acl = acls;
-            this.as._jsonRequest({ method: 'POST',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/keys',
-                                   body: aclsObject,
-                                   callback: callback });
-        },
-        /*
-         * Add an existing user key associated to this index
-         *
-         * @param acls the list of ACL for this key. Defined by an array of strings that
-         * can contains the following values:
-         *   - search: allow to search (https and http)
-         *   - addObject: allows to add/update an object in the index (https only)
-         *   - deleteObject : allows to delete an existing object (https only)
-         *   - deleteIndex : allows to delete index content (https only)
-         *   - settings : allows to get index settings (https only)
-         *   - editSettings : allows to change index settings (https only)
-         * @param validity the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
-         * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.
-         * @param maxHitsPerQuery Specify the maximum number of hits this API key can retrieve in one call.
-         * @param callback the result callback with two arguments
-         *  success: boolean set to true if the request was successfull
-         *  content: the server answer with user keys list or error description if success is false.
-         */
-        addUserKeyWithValidity: function(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery, callback) {
-            var indexObj = this;
-            var aclsObject = {};
-            aclsObject.acl = acls;
-            aclsObject.validity = validity;
-            aclsObject.maxQueriesPerIPPerHour = maxQueriesPerIPPerHour;
-            aclsObject.maxHitsPerQuery = maxHitsPerQuery;
-            this.as._jsonRequest({ method: 'POST',
-                                   url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/keys',
-                                   body: aclsObject,
-                                   callback: callback });
-        },
-        ///
-        /// Internal methods only after this line
-        ///
-        _search: function(params, callback) {
-            if (this.as.jsonp === null) {
-                var self = this;
-                this.as._waitReady(function() { self._search(params, callback); });
-                return;
-            }
-            var pObj = {params: params, apiKey: this.as.apiKey, appID: this.as.applicationID};
-            if (this.as.tagFilters) {
-                pObj['X-Algolia-TagFilters'] = this.as.tagFilters;
-            }
-            if (this.as.userToken) {
-                pObj['X-Algolia-UserToken'] = this.as.userToken;
-            }
-            if (this.as.jsonp) {
-                this.as._jsonRequest({ cache: this.cache,
-                                       method: 'GET', jsonp: true,
-                                       url: '/1/indexes/' + encodeURIComponent(this.indexName),
-                                       body: pObj,
-                                       callback: callback });
-            } else {
-                this.as._jsonRequest({ cache: this.cache,
-                                       method: 'POST',
-                                       url: '/1/indexes/' + encodeURIComponent(this.indexName) + '/query',
-                                       body: pObj,
-                                       callback: callback,
-                                       removeCustomHTTPHeaders: true});
-            }
-        },
-
-        // internal attributes
-        as: null,
-        indexName: null,
-        cache: {},
-        typeAheadArgs: null,
-        typeAheadValueOption: null,
-        emptyConstructor: function() {}
-};
-
-/*
- * Copyright (c) 2014 Algolia
- * http://www.algolia.com/
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
-(function($) {
-  var extend = function(out) {
-    out = out || {};
-    for (var i = 1; i < arguments.length; i++) {
-      if (!arguments[i]) {
-        continue;
-      }
-      for (var key in arguments[i]) {
-        if (arguments[i].hasOwnProperty(key)) {
-          out[key] = arguments[i][key];
-        }
-      }
-    }
-    return out;
-  };
-  
-  /**
-   * Algolia Search Helper providing faceting and disjunctive faceting
-   * @param {AlgoliaSearch} client an AlgoliaSearch client
-   * @param {string} index the index name to query
-   * @param {hash} options an associative array defining the hitsPerPage, list of facets and list of disjunctive facets
-   */
-  window.AlgoliaSearchHelper = function(client, index, options) {
-    /// Default options
-    var defaults = {
-      facets: [],            // list of facets to compute
-      disjunctiveFacets: [], // list of disjunctive facets to compute
-      hitsPerPage: 20        // number of hits per page
-    };
-
-    this.init(client, index, extend({}, defaults, options));
-  };
-
-  AlgoliaSearchHelper.prototype = {
-    /**
-     * Initialize a new AlgoliaSearchHelper
-     * @param  {AlgoliaSearch} client an AlgoliaSearch client
-     * @param  {string} index the index name to query
-     * @param  {hash} options an associative array defining the hitsPerPage, list of facets and list of disjunctive facets
-     * @return {AlgoliaSearchHelper}
-     */
-    init: function(client, index, options) {
-      this.client = client;
-      this.index = index;
-      this.options = options;
-      this.page = 0;
-      this.refinements = {};
-      this.disjunctiveRefinements = {};
-    },
-
-    /**
-     * Perform a query
-     * @param  {string} q the user query
-     * @param  {function} searchCallback the result callback called with two arguments:
-     *  success: boolean set to true if the request was successfull
-     *  content: the query answer with an extra 'disjunctiveFacets' attribute
-     */
-    search: function(q, searchCallback, searchParams) {
-      this.q = q;
-      this.searchCallback = searchCallback;
-      this.searchParams = searchParams || {};
-      this.page = this.page || 0;
-      this.refinements = this.refinements || {};
-      this.disjunctiveRefinements = this.disjunctiveRefinements || {};
-      this._search();
-    },
-    
-    /**
-     * Remove all refinements (disjunctive + conjunctive)
-     */
-    clearRefinements: function() {
-      this.disjunctiveRefinements = {};
-      this.refinements = {};
-    },
-
-    /**
-     * Ensure a facet refinement exists
-     * @param  {string} facet the facet to refine
-     * @param  {string} value the associated value
-     */
-    addDisjunctiveRefine: function(facet, value) {
-      this.disjunctiveRefinements = this.disjunctiveRefinements || {};
-      this.disjunctiveRefinements[facet] = this.disjunctiveRefinements[facet] || {};
-      this.disjunctiveRefinements[facet][value] = true;
-    },
-
-    /**
-     * Ensure a facet refinement does not exist
-     * @param  {string} facet the facet to refine
-     * @param  {string} value the associated value
-     */
-    removeDisjunctiveRefine: function(facet, value) {
-      this.disjunctiveRefinements = this.disjunctiveRefinements || {};
-      this.disjunctiveRefinements[facet] = this.disjunctiveRefinements[facet] || {};
-      try {
-        delete this.disjunctiveRefinements[facet][value];
-      } catch (e) {
-        this.disjunctiveRefinements[facet][value] = undefined; // IE compat
-      }
-    },
-
-    /**
-     * Ensure a facet refinement exists
-     * @param  {string} facet the facet to refine
-     * @param  {string} value the associated value
-     */
-    addRefine: function(facet, value) {
-      var refinement = facet + ':' + value;
-      this.refinements = this.refinements || {};
-      this.refinements[refinement] = true;
-    },
-
-    /**
-     * Ensure a facet refinement does not exist
-     * @param  {string} facet the facet to refine
-     * @param  {string} value the associated value
-     */
-    removeRefine: function(facet, value) {
-      var refinement = facet + ':' + value;
-      this.refinements = this.refinements || {};
-      this.refinements[refinement] = false;
-    },
-
-    /**
-     * Toggle refinement state of a facet
-     * @param  {string} facet the facet to refine
-     * @param  {string} value the associated value
-     * @return {boolean} true if the facet has been found
-     */
-    toggleRefine: function(facet, value) {
-      for (var i = 0; i < this.options.facets.length; ++i) {
-        if (this.options.facets[i] == facet) {
-          var refinement = facet + ':' + value;
-          this.refinements[refinement] = !this.refinements[refinement];
-          this.page = 0;
-          this._search();
-          return true;
-        }
-      }
-      this.disjunctiveRefinements[facet] = this.disjunctiveRefinements[facet] || {};
-      for (var j = 0; j < this.options.disjunctiveFacets.length; ++j) {
-        if (this.options.disjunctiveFacets[j] == facet) {
-          this.disjunctiveRefinements[facet][value] = !this.disjunctiveRefinements[facet][value];
-          this.page = 0;
-          this._search();
-          return true;
-        }
-      }
-      return false;
-    },
-
-    /**
-     * Check the refinement state of a facet
-     * @param  {string}  facet the facet
-     * @param  {string}  value the associated value
-     * @return {boolean} true if refined
-     */
-    isRefined: function(facet, value) {
-      var refinement = facet + ':' + value;
-      if (this.refinements[refinement]) {
-        return true;
-      }
-      if (this.disjunctiveRefinements[facet] && this.disjunctiveRefinements[facet][value]) {
-        return true;
-      }
-      return false;
-    },
-
-    /**
-     * Go to next page
-     */
-    nextPage: function() {
-      this._gotoPage(this.page + 1);
-    },
-
-    /**
-     * Go to previous page
-     */
-    previousPage: function() {
-      if (this.page > 0) {
-        this._gotoPage(this.page - 1);
-      }
-    },
-
-    /**
-     * Goto a page
-     * @param  {integer} page The page number
-     */
-    gotoPage: function(page) {
-        this._gotoPage(page);
-    },
-
-    /**
-     * Configure the page but do not trigger a reload
-     * @param  {integer} page The page number
-     */
-    setPage: function(page) {
-      this.page = page;
-    },
-
-    /**
-     * Configure the underlying index name
-     * @param {string} name the index name
-     */
-    setIndex: function(name) {
-      this.index = name;
-    },
-
-    /**
-     * Get the underlying configured index name
-     */
-    getIndex: function() {
-      return this.index;
-    },
-
-    ///////////// PRIVATE
-
-    /**
-     * Goto a page
-     * @param  {integer} page The page number
-     */
-    _gotoPage: function(page) {
-      this.page = page;
-      this._search();
-    },
-
-    /**
-     * Perform the underlying queries
-     */
-    _search: function() {
-      this.client.startQueriesBatch();
-      this.client.addQueryInBatch(this.index, this.q, this._getHitsSearchParams());
-      for (var i = 0; i < this.options.disjunctiveFacets.length; ++i) {
-        this.client.addQueryInBatch(this.index, this.q, this._getDisjunctiveFacetSearchParams(this.options.disjunctiveFacets[i]));
-      }
-      var self = this;
-      this.client.sendQueriesBatch(function(success, content) {
-        if (!success) {
-          self.searchCallback(false, content);
-          return;
-        }
-        var aggregatedAnswer = content.results[0];
-        aggregatedAnswer.disjunctiveFacets = {};
-        aggregatedAnswer.facetStats = {};
-        for (var i = 1; i < content.results.length; ++i) {
-          for (var facet in content.results[i].facets) {
-            aggregatedAnswer.disjunctiveFacets[facet] = content.results[i].facets[facet];
-            if (self.disjunctiveRefinements[facet]) {
-              for (var value in self.disjunctiveRefinements[facet]) {
-                if (!aggregatedAnswer.disjunctiveFacets[facet][value] && self.disjunctiveRefinements[facet][value]) {
-                  aggregatedAnswer.disjunctiveFacets[facet][value] = 0;
-                }
-              }
-            }
-          }
-          for (var stats in content.results[i].facets_stats)
-          {
-            aggregatedAnswer.facetStats[stats] = content.results[i].facets_stats[stats];
-          }
-        }
-        self.searchCallback(true, aggregatedAnswer);
-      });
-    },
-
-    /**
-     * Build search parameters used to fetch hits
-     * @return {hash}
-     */
-    _getHitsSearchParams: function() {
-      return extend({}, {
-        hitsPerPage: this.options.hitsPerPage,
-        page: this.page,
-        facets: this.options.facets,
-        facetFilters: this._getFacetFilters()
-      }, this.searchParams);
-    },
-
-    /**
-     * Build search parameters used to fetch a disjunctive facet
-     * @param  {string} facet the associated facet name
-     * @return {hash}
-     */
-    _getDisjunctiveFacetSearchParams: function(facet) {
-      return extend({}, this.searchParams, {
-        hitsPerPage: 1,
-        page: 0,
-        facets: facet,
-        facetFilters: this._getFacetFilters(facet)
-      });
-    },
-
-    /**
-     * Build facetFilters parameter based on current refinements
-     * @param  {string} facet if set, the current disjunctive facet
-     * @return {hash}
-     */
-    _getFacetFilters: function(facet) {
-      var facetFilters = [];
-      for (var refinement in this.refinements) {
-        if (this.refinements[refinement]) {
-          facetFilters.push(refinement);
-        }
-      }
-      for (var disjunctiveRefinement in this.disjunctiveRefinements) {
-        if (disjunctiveRefinement != facet) {
-          var refinements = [];
-          for (var value in this.disjunctiveRefinements[disjunctiveRefinement]) {
-            if (this.disjunctiveRefinements[disjunctiveRefinement][value]) {
-              refinements.push(disjunctiveRefinement + ':' + value);
-            }
-          }
-          if (refinements.length > 0) {
-            facetFilters.push(refinements);
-          }
-        }
-      }
-      return facetFilters;
-    }
-  };
-})();
-
-/*
- * Copyright (c) 2014 Algolia
- * http://www.algolia.com/
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
-(function($) {
-  
-  /**
-   * Algolia Places API
-   * @param {string} Your application ID
-   * @param {string} Your API Key
-   */
-  window.AlgoliaPlaces = function(applicationID, apiKey) {
-     this.init(applicationID, apiKey);
-  };
-
-  AlgoliaPlaces.prototype = {
-    /**
-     * @param {string} Your application ID
-     * @param {string} Your API Key
-     */
-    init: function(applicationID, apiKey) {
-      this.client = new AlgoliaSearch(applicationID, apiKey, 'http', true, ['places-1.algolia.io', 'places-2.algolia.io', 'places-3.algolia.io']);
-      this.cache = {};
-    },
-
-    /**
-     * Perform a query
-     * @param  {string} q the user query
-     * @param  {function} searchCallback the result callback called with two arguments:
-     *  success: boolean set to true if the request was successfull
-     *  content: the query answer with an extra 'disjunctiveFacets' attribute
-     * @param {hash} the list of search parameters
-     */
-    search: function(q, searchCallback, searchParams) {
-      var indexObj = this;
-      var params = 'query=' + encodeURIComponent(q);
-      if (!this.client._isUndefined(searchParams) && searchParams != null) {
-          params = this.client._getSearchParams(searchParams, params);
-      }
-      var pObj = {params: params, apiKey: this.client.apiKey, appID: this.client.applicationID};
-      this.client._jsonRequest({ cache: this.cache,
-                                 method: 'POST',
-                                 url: '/1/places/query',
-                                 body: pObj,
-                                 callback: searchCallback,
-                                 removeCustomHTTPHeaders: true });
-    }
-  };
-})();
-
-/*
-    json2.js
-    2014-02-04
-
-    Public Domain.
-
-    NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
-
-    See http://www.JSON.org/js.html
-
-
-    This code should be minified before deployment.
-    See http://javascript.crockford.com/jsmin.html
-
-    USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
-    NOT CONTROL.
-
-
-    This file creates a global JSON object containing two methods: stringify
-    and parse.
-
-        JSON.stringify(value, replacer, space)
-            value       any JavaScript value, usually an object or array.
-
-            replacer    an optional parameter that determines how object
-                        values are stringified for objects. It can be a
-                        function or an array of strings.
-
-            space       an optional parameter that specifies the indentation
-                        of nested structures. If it is omitted, the text will
-                        be packed without extra whitespace. If it is a number,
-                        it will specify the number of spaces to indent at each
-                        level. If it is a string (such as '\t' or '&nbsp;'),
-                        it contains the characters used to indent at each level.
-
-            This method produces a JSON text from a JavaScript value.
-
-            When an object value is found, if the object contains a toJSON
-            method, its toJSON method will be called and the result will be
-            stringified. A toJSON method does not serialize: it returns the
-            value represented by the name/value pair that should be serialized,
-            or undefined if nothing should be serialized. The toJSON method
-            will be passed the key associated with the value, and this will be
-            bound to the value
-
-            For example, this would serialize Dates as ISO strings.
-
-                Date.prototype.toJSON = function (key) {
-                    function f(n) {
-                        // Format integers to have at least two digits.
-                        return n < 10 ? '0' + n : n;
-                    }
-
-                    return this.getUTCFullYear()   + '-' +
-                         f(this.getUTCMonth() + 1) + '-' +
-                         f(this.getUTCDate())      + 'T' +
-                         f(this.getUTCHours())     + ':' +
-                         f(this.getUTCMinutes())   + ':' +
-                         f(this.getUTCSeconds())   + 'Z';
-                };
-
-            You can provide an optional replacer method. It will be passed the
-            key and value of each member, with this bound to the containing
-            object. The value that is returned from your method will be
-            serialized. If your method returns undefined, then the member will
-            be excluded from the serialization.
-
-            If the replacer parameter is an array of strings, then it will be
-            used to select the members to be serialized. It filters the results
-            such that only members with keys listed in the replacer array are
-            stringified.
-
-            Values that do not have JSON representations, such as undefined or
-            functions, will not be serialized. Such values in objects will be
-            dropped; in arrays they will be replaced with null. You can use
-            a replacer function to replace those with JSON values.
-            JSON.stringify(undefined) returns undefined.
-
-            The optional space parameter produces a stringification of the
-            value that is filled with line breaks and indentation to make it
-            easier to read.
-
-            If the space parameter is a non-empty string, then that string will
-            be used for indentation. If the space parameter is a number, then
-            the indentation will be that many spaces.
-
-            Example:
-
-            text = JSON.stringify(['e', {pluribus: 'unum'}]);
-            // text is '["e",{"pluribus":"unum"}]'
-
-
-            text = JSON.stringify(['e', {pluribus: 'unum'}], null, '\t');
-            // text is '[\n\t"e",\n\t{\n\t\t"pluribus": "unum"\n\t}\n]'
-
-            text = JSON.stringify([new Date()], function (key, value) {
-                return this[key] instanceof Date ?
-                    'Date(' + this[key] + ')' : value;
-            });
-            // text is '["Date(---current time---)"]'
-
-
-        JSON.parse(text, reviver)
-            This method parses a JSON text to produce an object or array.
-            It can throw a SyntaxError exception.
-
-            The optional reviver parameter is a function that can filter and
-            transform the results. It receives each of the keys and values,
-            and its return value is used instead of the original value.
-            If it returns what it received, then the structure is not modified.
-            If it returns undefined then the member is deleted.
-
-            Example:
-
-            // Parse the text. Values that look like ISO date strings will
-            // be converted to Date objects.
-
-            myData = JSON.parse(text, function (key, value) {
-                var a;
-                if (typeof value === 'string') {
-                    a =
-/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
-                    if (a) {
-                        return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4],
-                            +a[5], +a[6]));
-                    }
-                }
-                return value;
-            });
-
-            myData = JSON.parse('["Date(09/09/2001)"]', function (key, value) {
-                var d;
-                if (typeof value === 'string' &&
-                        value.slice(0, 5) === 'Date(' &&
-                        value.slice(-1) === ')') {
-                    d = new Date(value.slice(5, -1));
-                    if (d) {
-                        return d;
-                    }
-                }
-                return value;
-            });
-
-
-    This is a reference implementation. You are free to copy, modify, or
-    redistribute.
-*/
-
-/*jslint evil: true, regexp: true */
-
-/*members "", "\b", "\t", "\n", "\f", "\r", "\"", JSON, "\\", apply,
-    call, charCodeAt, getUTCDate, getUTCFullYear, getUTCHours,
-    getUTCMinutes, getUTCMonth, getUTCSeconds, hasOwnProperty, join,
-    lastIndex, length, parse, prototype, push, replace, slice, stringify,
-    test, toJSON, toString, valueOf
-*/
-
-
-// Create a JSON object only if one does not already exist. We create the
-// methods in a closure to avoid creating global variables.
-
-if (typeof JSON !== 'object') {
-    JSON = {};
-}
-
-(function () {
+},{}],4:[function(require,module,exports){
     'use strict';
 
-    function f(n) {
-        // Format integers to have at least two digits.
-        return n < 10 ? '0' + n : n;
+    exports.decode = exports.parse = require(2);
+    exports.encode = exports.stringify = require(3);
+
+},{"2":2,"3":3}],5:[function(require,module,exports){
+
+    /**
+     * This is the web browser implementation of `debug()`.
+     *
+     * Expose `debug()` as the module.
+     */
+
+    exports = module.exports = require(6);
+    exports.log = log;
+    exports.formatArgs = formatArgs;
+    exports.save = save;
+    exports.load = load;
+    exports.useColors = useColors;
+
+    /**
+     * Use chrome.storage.local if we are in an app
+     */
+
+    var storage;
+
+    if (typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined')
+        storage = chrome.storage.local;
+    else
+        storage = localstorage();
+
+    /**
+     * Colors.
+     */
+
+    exports.colors = [
+        'lightseagreen',
+        'forestgreen',
+        'goldenrod',
+        'dodgerblue',
+        'darkorchid',
+        'crimson'
+    ];
+
+    /**
+     * Currently only WebKit-based Web Inspectors, Firefox >= v31,
+     * and the Firebug extension (any Firefox version) are known
+     * to support "%c" CSS customizations.
+     *
+     * TODO: add a `localStorage` variable to explicitly enable/disable colors
+     */
+
+    function useColors() {
+        // is webkit? http://stackoverflow.com/a/16459606/376773
+        return ('WebkitAppearance' in document.documentElement.style) ||
+                // is firebug? http://stackoverflow.com/a/398120/376773
+            (window.console && (console.firebug || (console.exception && console.table))) ||
+                // is firefox >= v31?
+                // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
+            (navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31);
     }
 
-    if (typeof Date.prototype.toJSON !== 'function') {
+    /**
+     * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
+     */
 
-        Date.prototype.toJSON = function () {
-
-            return isFinite(this.valueOf())
-                ? this.getUTCFullYear()     + '-' +
-                    f(this.getUTCMonth() + 1) + '-' +
-                    f(this.getUTCDate())      + 'T' +
-                    f(this.getUTCHours())     + ':' +
-                    f(this.getUTCMinutes())   + ':' +
-                    f(this.getUTCSeconds())   + 'Z'
-                : null;
-        };
-
-        String.prototype.toJSON      =
-            Number.prototype.toJSON  =
-            Boolean.prototype.toJSON = function () {
-                return this.valueOf();
-            };
-    }
-
-    var cx,
-        escapable,
-        gap,
-        indent,
-        meta,
-        rep;
+    exports.formatters.j = function(v) {
+        return JSON.stringify(v);
+    };
 
 
-    function quote(string) {
+    /**
+     * Colorize log arguments if enabled.
+     *
+     * @api public
+     */
 
-// If the string contains no control characters, no quote characters, and no
-// backslash characters, then we can safely slap some quotes around it.
-// Otherwise we must also replace the offending characters with safe escape
-// sequences.
+    function formatArgs() {
+        var args = arguments;
+        var useColors = this.useColors;
 
-        escapable.lastIndex = 0;
-        return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
-            var c = meta[a];
-            return typeof c === 'string'
-                ? c
-                : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
-        }) + '"' : '"' + string + '"';
-    }
+        args[0] = (useColors ? '%c' : '')
+        + this.namespace
+        + (useColors ? ' %c' : ' ')
+        + args[0]
+        + (useColors ? '%c ' : ' ')
+        + '+' + exports.humanize(this.diff);
 
+        if (!useColors) return args;
 
-    function str(key, holder) {
+        var c = 'color: ' + this.color;
+        args = [args[0], c, 'color: inherit'].concat(Array.prototype.slice.call(args, 1));
 
-// Produce a string from holder[key].
-
-        var i,          // The loop counter.
-            k,          // The member key.
-            v,          // The member value.
-            length,
-            mind = gap,
-            partial,
-            value = holder[key];
-
-// If the value has a toJSON method, call it to obtain a replacement value.
-
-        if (value && typeof value === 'object' &&
-                typeof value.toJSON === 'function') {
-            value = value.toJSON(key);
-        }
-
-// If we were called with a replacer function, then call the replacer to
-// obtain a replacement value.
-
-        if (typeof rep === 'function') {
-            value = rep.call(holder, key, value);
-        }
-
-// What happens next depends on the value's type.
-
-        switch (typeof value) {
-        case 'string':
-            return quote(value);
-
-        case 'number':
-
-// JSON numbers must be finite. Encode non-finite numbers as null.
-
-            return isFinite(value) ? String(value) : 'null';
-
-        case 'boolean':
-        case 'null':
-
-// If the value is a boolean or null, convert it to a string. Note:
-// typeof null does not produce 'null'. The case is included here in
-// the remote chance that this gets fixed someday.
-
-            return String(value);
-
-// If the type is 'object', we might be dealing with an object or an array or
-// null.
-
-        case 'object':
-
-// Due to a specification blunder in ECMAScript, typeof null is 'object',
-// so watch out for that case.
-
-            if (!value) {
-                return 'null';
+        // the final "%c" is somewhat tricky, because there could be other
+        // arguments passed either before or after the %c, so we need to
+        // figure out the correct index to insert the CSS into
+        var index = 0;
+        var lastC = 0;
+        args[0].replace(/%[a-z%]/g, function(match) {
+            if ('%%' === match) return;
+            index++;
+            if ('%c' === match) {
+                // we only are interested in the *last* %c
+                // (the user may have provided their own)
+                lastC = index;
             }
+        });
 
-// Make an array to hold the partial results of stringifying this object value.
+        args.splice(lastC, 0, c);
+        return args;
+    }
 
-            gap += indent;
-            partial = [];
+    /**
+     * Invokes `console.log()` when available.
+     * No-op when `console.log` is not a "function".
+     *
+     * @api public
+     */
 
-// Is the value an array?
+    function log() {
+        // this hackery is required for IE8/9, where
+        // the `console.log` function doesn't have 'apply'
+        return 'object' === typeof console
+            && console.log
+            && Function.prototype.apply.call(console.log, console, arguments);
+    }
 
-            if (Object.prototype.toString.apply(value) === '[object Array]') {
+    /**
+     * Save `namespaces`.
+     *
+     * @param {String} namespaces
+     * @api private
+     */
 
-// The value is an array. Stringify every element. Use null as a placeholder
-// for non-JSON values.
-
-                length = value.length;
-                for (i = 0; i < length; i += 1) {
-                    partial[i] = str(i, value) || 'null';
-                }
-
-// Join all of the elements together, separated with commas, and wrap them in
-// brackets.
-
-                v = partial.length === 0
-                    ? '[]'
-                    : gap
-                    ? '[\n' + gap + partial.join(',\n' + gap) + '\n' + mind + ']'
-                    : '[' + partial.join(',') + ']';
-                gap = mind;
-                return v;
-            }
-
-// If the replacer is an array, use it to select the members to be stringified.
-
-            if (rep && typeof rep === 'object') {
-                length = rep.length;
-                for (i = 0; i < length; i += 1) {
-                    if (typeof rep[i] === 'string') {
-                        k = rep[i];
-                        v = str(k, value);
-                        if (v) {
-                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
-                        }
-                    }
-                }
+    function save(namespaces) {
+        try {
+            if (null == namespaces) {
+                storage.removeItem('debug');
             } else {
+                storage.debug = namespaces;
+            }
+        } catch(e) {}
+    }
 
-// Otherwise, iterate through all of the keys in the object.
+    /**
+     * Load `namespaces`.
+     *
+     * @return {String} returns the previously persisted debug modes
+     * @api private
+     */
 
-                for (k in value) {
-                    if (Object.prototype.hasOwnProperty.call(value, k)) {
-                        v = str(k, value);
-                        if (v) {
-                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
-                        }
-                    }
-                }
+    function load() {
+        var r;
+        try {
+            r = storage.debug;
+        } catch(e) {}
+        return r;
+    }
+
+    /**
+     * Enable namespaces listed in `localStorage.debug` initially.
+     */
+
+    exports.enable(load());
+
+    /**
+     * Localstorage attempts to return the localstorage.
+     *
+     * This is necessary because safari throws
+     * when a user disables cookies/localstorage
+     * and you attempt to access it.
+     *
+     * @return {LocalStorage}
+     * @api private
+     */
+
+    function localstorage(){
+        try {
+            return window.localStorage;
+        } catch (e) {}
+    }
+
+},{"6":6}],6:[function(require,module,exports){
+
+    /**
+     * This is the common logic for both the Node.js and web browser
+     * implementations of `debug()`.
+     *
+     * Expose `debug()` as the module.
+     */
+
+    exports = module.exports = debug;
+    exports.coerce = coerce;
+    exports.disable = disable;
+    exports.enable = enable;
+    exports.enabled = enabled;
+    exports.humanize = require(7);
+
+    /**
+     * The currently active debug mode names, and names to skip.
+     */
+
+    exports.names = [];
+    exports.skips = [];
+
+    /**
+     * Map of special "%n" handling functions, for the debug "format" argument.
+     *
+     * Valid key names are a single, lowercased letter, i.e. "n".
+     */
+
+    exports.formatters = {};
+
+    /**
+     * Previously assigned color.
+     */
+
+    var prevColor = 0;
+
+    /**
+     * Previous log timestamp.
+     */
+
+    var prevTime;
+
+    /**
+     * Select a color.
+     *
+     * @return {Number}
+     * @api private
+     */
+
+    function selectColor() {
+        return exports.colors[prevColor++ % exports.colors.length];
+    }
+
+    /**
+     * Create a debugger with the given `namespace`.
+     *
+     * @param {String} namespace
+     * @return {Function}
+     * @api public
+     */
+
+    function debug(namespace) {
+
+        // define the `disabled` version
+        function disabled() {
+        }
+        disabled.enabled = false;
+
+        // define the `enabled` version
+        function enabled() {
+
+            var self = enabled;
+
+            // set `diff` timestamp
+            var curr = +new Date();
+            var ms = curr - (prevTime || curr);
+            self.diff = ms;
+            self.prev = prevTime;
+            self.curr = curr;
+            prevTime = curr;
+
+            // add the `color` if not set
+            if (null == self.useColors) self.useColors = exports.useColors();
+            if (null == self.color && self.useColors) self.color = selectColor();
+
+            var args = Array.prototype.slice.call(arguments);
+
+            args[0] = exports.coerce(args[0]);
+
+            if ('string' !== typeof args[0]) {
+                // anything else let's inspect with %o
+                args = ['%o'].concat(args);
             }
 
-// Join all of the member texts together, separated with commas,
-// and wrap them in braces.
+            // apply any `formatters` transformations
+            var index = 0;
+            args[0] = args[0].replace(/%([a-z%])/g, function(match, format) {
+                // if we encounter an escaped % then don't increase the array index
+                if (match === '%%') return match;
+                index++;
+                var formatter = exports.formatters[format];
+                if ('function' === typeof formatter) {
+                    var val = args[index];
+                    match = formatter.call(self, val);
 
-            v = partial.length === 0
-                ? '{}'
-                : gap
-                ? '{\n' + gap + partial.join(',\n' + gap) + '\n' + mind + '}'
-                : '{' + partial.join(',') + '}';
-            gap = mind;
-            return v;
+                    // now we need to remove `args[index]` since it's inlined in the `format`
+                    args.splice(index, 1);
+                    index--;
+                }
+                return match;
+            });
+
+            if ('function' === typeof exports.formatArgs) {
+                args = exports.formatArgs.apply(self, args);
+            }
+            var logFn = enabled.log || exports.log || console.log.bind(console);
+            logFn.apply(self, args);
+        }
+        enabled.enabled = true;
+
+        var fn = exports.enabled(namespace) ? enabled : disabled;
+
+        fn.namespace = namespace;
+
+        return fn;
+    }
+
+    /**
+     * Enables a debug mode by namespaces. This can include modes
+     * separated by a colon and wildcards.
+     *
+     * @param {String} namespaces
+     * @api public
+     */
+
+    function enable(namespaces) {
+        exports.save(namespaces);
+
+        var split = (namespaces || '').split(/[\s,]+/);
+        var len = split.length;
+
+        for (var i = 0; i < len; i++) {
+            if (!split[i]) continue; // ignore empty strings
+            namespaces = split[i].replace(/\*/g, '.*?');
+            if (namespaces[0] === '-') {
+                exports.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
+            } else {
+                exports.names.push(new RegExp('^' + namespaces + '$'));
+            }
         }
     }
 
-// If the JSON object does not yet have a stringify method, give it one.
+    /**
+     * Disable debug output.
+     *
+     * @api public
+     */
 
-    if (typeof JSON.stringify !== 'function') {
-        escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
-        meta = {    // table of character substitutions
-            '\b': '\\b',
-            '\t': '\\t',
-            '\n': '\\n',
-            '\f': '\\f',
-            '\r': '\\r',
-            '"' : '\\"',
-            '\\': '\\\\'
-        };
-        JSON.stringify = function (value, replacer, space) {
-
-// The stringify method takes a value and an optional replacer, and an optional
-// space parameter, and returns a JSON text. The replacer can be a function
-// that can replace values, or an array of strings that will select the keys.
-// A default replacer method can be provided. Use of the space parameter can
-// produce text that is more easily readable.
-
-            var i;
-            gap = '';
-            indent = '';
-
-// If the space parameter is a number, make an indent string containing that
-// many spaces.
-
-            if (typeof space === 'number') {
-                for (i = 0; i < space; i += 1) {
-                    indent += ' ';
-                }
-
-// If the space parameter is a string, it will be used as the indent string.
-
-            } else if (typeof space === 'string') {
-                indent = space;
-            }
-
-// If there is a replacer, it must be a function or an array.
-// Otherwise, throw an error.
-
-            rep = replacer;
-            if (replacer && typeof replacer !== 'function' &&
-                    (typeof replacer !== 'object' ||
-                    typeof replacer.length !== 'number')) {
-                throw new Error('JSON.stringify');
-            }
-
-// Make a fake root object containing our value under the key of ''.
-// Return the result of stringifying the value.
-
-            return str('', {'': value});
-        };
+    function disable() {
+        exports.enable('');
     }
 
+    /**
+     * Returns true if the given mode name is enabled, false otherwise.
+     *
+     * @param {String} name
+     * @return {Boolean}
+     * @api public
+     */
 
-// If the JSON object does not yet have a parse method, give it one.
+    function enabled(name) {
+        var i, len;
+        for (i = 0, len = exports.skips.length; i < len; i++) {
+            if (exports.skips[i].test(name)) {
+                return false;
+            }
+        }
+        for (i = 0, len = exports.names.length; i < len; i++) {
+            if (exports.names[i].test(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    if (typeof JSON.parse !== 'function') {
-        cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
-        JSON.parse = function (text, reviver) {
+    /**
+     * Coerce `val`.
+     *
+     * @param {Mixed} val
+     * @return {Mixed}
+     * @api private
+     */
 
-// The parse method takes a text and an optional reviver function, and returns
-// a JavaScript value if the text is a valid JSON text.
+    function coerce(val) {
+        if (val instanceof Error) return val.stack || val.message;
+        return val;
+    }
 
-            var j;
+},{"7":7}],7:[function(require,module,exports){
+    /**
+     * Helpers.
+     */
 
-            function walk(holder, key) {
+    var s = 1000;
+    var m = s * 60;
+    var h = m * 60;
+    var d = h * 24;
+    var y = d * 365.25;
 
-// The walk method is used to recursively walk the resulting structure so
-// that modifications can be made.
+    /**
+     * Parse or format the given `val`.
+     *
+     * Options:
+     *
+     *  - `long` verbose formatting [false]
+     *
+     * @param {String|Number} val
+     * @param {Object} options
+     * @return {String|Number}
+     * @api public
+     */
 
-                var k, v, value = holder[key];
-                if (value && typeof value === 'object') {
-                    for (k in value) {
-                        if (Object.prototype.hasOwnProperty.call(value, k)) {
-                            v = walk(value, k);
-                            if (v !== undefined) {
-                                value[k] = v;
-                            } else {
-                                delete value[k];
-                            }
-                        }
-                    }
-                }
-                return reviver.call(holder, key, value);
+    module.exports = function(val, options){
+        options = options || {};
+        if ('string' == typeof val) return parse(val);
+        return options.long
+            ? long(val)
+            : short(val);
+    };
+
+    /**
+     * Parse the given `str` and return milliseconds.
+     *
+     * @param {String} str
+     * @return {Number}
+     * @api private
+     */
+
+    function parse(str) {
+        var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
+        if (!match) return;
+        var n = parseFloat(match[1]);
+        var type = (match[2] || 'ms').toLowerCase();
+        switch (type) {
+            case 'years':
+            case 'year':
+            case 'yrs':
+            case 'yr':
+            case 'y':
+                return n * y;
+            case 'days':
+            case 'day':
+            case 'd':
+                return n * d;
+            case 'hours':
+            case 'hour':
+            case 'hrs':
+            case 'hr':
+            case 'h':
+                return n * h;
+            case 'minutes':
+            case 'minute':
+            case 'mins':
+            case 'min':
+            case 'm':
+                return n * m;
+            case 'seconds':
+            case 'second':
+            case 'secs':
+            case 'sec':
+            case 's':
+                return n * s;
+            case 'milliseconds':
+            case 'millisecond':
+            case 'msecs':
+            case 'msec':
+            case 'ms':
+                return n;
+        }
+    }
+
+    /**
+     * Short format for `ms`.
+     *
+     * @param {Number} ms
+     * @return {String}
+     * @api private
+     */
+
+    function short(ms) {
+        if (ms >= d) return Math.round(ms / d) + 'd';
+        if (ms >= h) return Math.round(ms / h) + 'h';
+        if (ms >= m) return Math.round(ms / m) + 'm';
+        if (ms >= s) return Math.round(ms / s) + 's';
+        return ms + 'ms';
+    }
+
+    /**
+     * Long format for `ms`.
+     *
+     * @param {Number} ms
+     * @return {String}
+     * @api private
+     */
+
+    function long(ms) {
+        return plural(ms, d, 'day')
+            || plural(ms, h, 'hour')
+            || plural(ms, m, 'minute')
+            || plural(ms, s, 'second')
+            || ms + ' ms';
+    }
+
+    /**
+     * Pluralization helper.
+     */
+
+    function plural(ms, n, name) {
+        if (ms < n) return;
+        if (ms < n * 1.5) return Math.floor(ms / n) + ' ' + name;
+        return Math.ceil(ms / n) + ' ' + name + 's';
+    }
+
+},{}],8:[function(require,module,exports){
+    (function (process,global){
+        /*!
+         * @overview es6-promise - a tiny implementation of Promises/A+.
+         * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
+         * @license   Licensed under MIT license
+         *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
+         * @version   2.0.1
+         */
+
+        (function() {
+            "use strict";
+
+            function $$utils$$objectOrFunction(x) {
+                return typeof x === 'function' || (typeof x === 'object' && x !== null);
             }
 
+            function $$utils$$isFunction(x) {
+                return typeof x === 'function';
+            }
 
-// Parsing happens in four stages. In the first stage, we replace certain
-// Unicode characters with escape sequences. JavaScript handles many characters
-// incorrectly, either silently deleting them, or treating them as line endings.
+            function $$utils$$isMaybeThenable(x) {
+                return typeof x === 'object' && x !== null;
+            }
 
-            text = String(text);
-            cx.lastIndex = 0;
-            if (cx.test(text)) {
-                text = text.replace(cx, function (a) {
-                    return '\\u' +
-                        ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+            var $$utils$$_isArray;
+
+            if (!Array.isArray) {
+                $$utils$$_isArray = function (x) {
+                    return Object.prototype.toString.call(x) === '[object Array]';
+                };
+            } else {
+                $$utils$$_isArray = Array.isArray;
+            }
+
+            var $$utils$$isArray = $$utils$$_isArray;
+            var $$utils$$now = Date.now || function() { return new Date().getTime(); };
+            function $$utils$$F() { }
+
+            var $$utils$$o_create = (Object.create || function (o) {
+                if (arguments.length > 1) {
+                    throw new Error('Second argument not supported');
+                }
+                if (typeof o !== 'object') {
+                    throw new TypeError('Argument must be an object');
+                }
+                $$utils$$F.prototype = o;
+                return new $$utils$$F();
+            });
+
+            var $$asap$$len = 0;
+
+            var $$asap$$default = function asap(callback, arg) {
+                $$asap$$queue[$$asap$$len] = callback;
+                $$asap$$queue[$$asap$$len + 1] = arg;
+                $$asap$$len += 2;
+                if ($$asap$$len === 2) {
+                    // If len is 1, that means that we need to schedule an async flush.
+                    // If additional callbacks are queued before the queue is flushed, they
+                    // will be processed by this flush that we are scheduling.
+                    $$asap$$scheduleFlush();
+                }
+            };
+
+            var $$asap$$browserGlobal = (typeof window !== 'undefined') ? window : {};
+            var $$asap$$BrowserMutationObserver = $$asap$$browserGlobal.MutationObserver || $$asap$$browserGlobal.WebKitMutationObserver;
+
+            // test for web worker but not in IE10
+            var $$asap$$isWorker = typeof Uint8ClampedArray !== 'undefined' &&
+                typeof importScripts !== 'undefined' &&
+                typeof MessageChannel !== 'undefined';
+
+            // node
+            function $$asap$$useNextTick() {
+                return function() {
+                    process.nextTick($$asap$$flush);
+                };
+            }
+
+            function $$asap$$useMutationObserver() {
+                var iterations = 0;
+                var observer = new $$asap$$BrowserMutationObserver($$asap$$flush);
+                var node = document.createTextNode('');
+                observer.observe(node, { characterData: true });
+
+                return function() {
+                    node.data = (iterations = ++iterations % 2);
+                };
+            }
+
+            // web worker
+            function $$asap$$useMessageChannel() {
+                var channel = new MessageChannel();
+                channel.port1.onmessage = $$asap$$flush;
+                return function () {
+                    channel.port2.postMessage(0);
+                };
+            }
+
+            function $$asap$$useSetTimeout() {
+                return function() {
+                    setTimeout($$asap$$flush, 1);
+                };
+            }
+
+            var $$asap$$queue = new Array(1000);
+
+            function $$asap$$flush() {
+                for (var i = 0; i < $$asap$$len; i+=2) {
+                    var callback = $$asap$$queue[i];
+                    var arg = $$asap$$queue[i+1];
+
+                    callback(arg);
+
+                    $$asap$$queue[i] = undefined;
+                    $$asap$$queue[i+1] = undefined;
+                }
+
+                $$asap$$len = 0;
+            }
+
+            var $$asap$$scheduleFlush;
+
+            // Decide what async method to use to triggering processing of queued callbacks:
+            if (typeof process !== 'undefined' && {}.toString.call(process) === '[object process]') {
+                $$asap$$scheduleFlush = $$asap$$useNextTick();
+            } else if ($$asap$$BrowserMutationObserver) {
+                $$asap$$scheduleFlush = $$asap$$useMutationObserver();
+            } else if ($$asap$$isWorker) {
+                $$asap$$scheduleFlush = $$asap$$useMessageChannel();
+            } else {
+                $$asap$$scheduleFlush = $$asap$$useSetTimeout();
+            }
+
+            function $$$internal$$noop() {}
+            var $$$internal$$PENDING   = void 0;
+            var $$$internal$$FULFILLED = 1;
+            var $$$internal$$REJECTED  = 2;
+            var $$$internal$$GET_THEN_ERROR = new $$$internal$$ErrorObject();
+
+            function $$$internal$$selfFullfillment() {
+                return new TypeError("You cannot resolve a promise with itself");
+            }
+
+            function $$$internal$$cannotReturnOwn() {
+                return new TypeError('A promises callback cannot return that same promise.')
+            }
+
+            function $$$internal$$getThen(promise) {
+                try {
+                    return promise.then;
+                } catch(error) {
+                    $$$internal$$GET_THEN_ERROR.error = error;
+                    return $$$internal$$GET_THEN_ERROR;
+                }
+            }
+
+            function $$$internal$$tryThen(then, value, fulfillmentHandler, rejectionHandler) {
+                try {
+                    then.call(value, fulfillmentHandler, rejectionHandler);
+                } catch(e) {
+                    return e;
+                }
+            }
+
+            function $$$internal$$handleForeignThenable(promise, thenable, then) {
+                $$asap$$default(function(promise) {
+                    var sealed = false;
+                    var error = $$$internal$$tryThen(then, thenable, function(value) {
+                        if (sealed) { return; }
+                        sealed = true;
+                        if (thenable !== value) {
+                            $$$internal$$resolve(promise, value);
+                        } else {
+                            $$$internal$$fulfill(promise, value);
+                        }
+                    }, function(reason) {
+                        if (sealed) { return; }
+                        sealed = true;
+
+                        $$$internal$$reject(promise, reason);
+                    }, 'Settle: ' + (promise._label || ' unknown promise'));
+
+                    if (!sealed && error) {
+                        sealed = true;
+                        $$$internal$$reject(promise, error);
+                    }
+                }, promise);
+            }
+
+            function $$$internal$$handleOwnThenable(promise, thenable) {
+                if (thenable._state === $$$internal$$FULFILLED) {
+                    $$$internal$$fulfill(promise, thenable._result);
+                } else if (promise._state === $$$internal$$REJECTED) {
+                    $$$internal$$reject(promise, thenable._result);
+                } else {
+                    $$$internal$$subscribe(thenable, undefined, function(value) {
+                        $$$internal$$resolve(promise, value);
+                    }, function(reason) {
+                        $$$internal$$reject(promise, reason);
+                    });
+                }
+            }
+
+            function $$$internal$$handleMaybeThenable(promise, maybeThenable) {
+                if (maybeThenable.constructor === promise.constructor) {
+                    $$$internal$$handleOwnThenable(promise, maybeThenable);
+                } else {
+                    var then = $$$internal$$getThen(maybeThenable);
+
+                    if (then === $$$internal$$GET_THEN_ERROR) {
+                        $$$internal$$reject(promise, $$$internal$$GET_THEN_ERROR.error);
+                    } else if (then === undefined) {
+                        $$$internal$$fulfill(promise, maybeThenable);
+                    } else if ($$utils$$isFunction(then)) {
+                        $$$internal$$handleForeignThenable(promise, maybeThenable, then);
+                    } else {
+                        $$$internal$$fulfill(promise, maybeThenable);
+                    }
+                }
+            }
+
+            function $$$internal$$resolve(promise, value) {
+                if (promise === value) {
+                    $$$internal$$reject(promise, $$$internal$$selfFullfillment());
+                } else if ($$utils$$objectOrFunction(value)) {
+                    $$$internal$$handleMaybeThenable(promise, value);
+                } else {
+                    $$$internal$$fulfill(promise, value);
+                }
+            }
+
+            function $$$internal$$publishRejection(promise) {
+                if (promise._onerror) {
+                    promise._onerror(promise._result);
+                }
+
+                $$$internal$$publish(promise);
+            }
+
+            function $$$internal$$fulfill(promise, value) {
+                if (promise._state !== $$$internal$$PENDING) { return; }
+
+                promise._result = value;
+                promise._state = $$$internal$$FULFILLED;
+
+                if (promise._subscribers.length === 0) {
+                } else {
+                    $$asap$$default($$$internal$$publish, promise);
+                }
+            }
+
+            function $$$internal$$reject(promise, reason) {
+                if (promise._state !== $$$internal$$PENDING) { return; }
+                promise._state = $$$internal$$REJECTED;
+                promise._result = reason;
+
+                $$asap$$default($$$internal$$publishRejection, promise);
+            }
+
+            function $$$internal$$subscribe(parent, child, onFulfillment, onRejection) {
+                var subscribers = parent._subscribers;
+                var length = subscribers.length;
+
+                parent._onerror = null;
+
+                subscribers[length] = child;
+                subscribers[length + $$$internal$$FULFILLED] = onFulfillment;
+                subscribers[length + $$$internal$$REJECTED]  = onRejection;
+
+                if (length === 0 && parent._state) {
+                    $$asap$$default($$$internal$$publish, parent);
+                }
+            }
+
+            function $$$internal$$publish(promise) {
+                var subscribers = promise._subscribers;
+                var settled = promise._state;
+
+                if (subscribers.length === 0) { return; }
+
+                var child, callback, detail = promise._result;
+
+                for (var i = 0; i < subscribers.length; i += 3) {
+                    child = subscribers[i];
+                    callback = subscribers[i + settled];
+
+                    if (child) {
+                        $$$internal$$invokeCallback(settled, child, callback, detail);
+                    } else {
+                        callback(detail);
+                    }
+                }
+
+                promise._subscribers.length = 0;
+            }
+
+            function $$$internal$$ErrorObject() {
+                this.error = null;
+            }
+
+            var $$$internal$$TRY_CATCH_ERROR = new $$$internal$$ErrorObject();
+
+            function $$$internal$$tryCatch(callback, detail) {
+                try {
+                    return callback(detail);
+                } catch(e) {
+                    $$$internal$$TRY_CATCH_ERROR.error = e;
+                    return $$$internal$$TRY_CATCH_ERROR;
+                }
+            }
+
+            function $$$internal$$invokeCallback(settled, promise, callback, detail) {
+                var hasCallback = $$utils$$isFunction(callback),
+                    value, error, succeeded, failed;
+
+                if (hasCallback) {
+                    value = $$$internal$$tryCatch(callback, detail);
+
+                    if (value === $$$internal$$TRY_CATCH_ERROR) {
+                        failed = true;
+                        error = value.error;
+                        value = null;
+                    } else {
+                        succeeded = true;
+                    }
+
+                    if (promise === value) {
+                        $$$internal$$reject(promise, $$$internal$$cannotReturnOwn());
+                        return;
+                    }
+
+                } else {
+                    value = detail;
+                    succeeded = true;
+                }
+
+                if (promise._state !== $$$internal$$PENDING) {
+                    // noop
+                } else if (hasCallback && succeeded) {
+                    $$$internal$$resolve(promise, value);
+                } else if (failed) {
+                    $$$internal$$reject(promise, error);
+                } else if (settled === $$$internal$$FULFILLED) {
+                    $$$internal$$fulfill(promise, value);
+                } else if (settled === $$$internal$$REJECTED) {
+                    $$$internal$$reject(promise, value);
+                }
+            }
+
+            function $$$internal$$initializePromise(promise, resolver) {
+                try {
+                    resolver(function resolvePromise(value){
+                        $$$internal$$resolve(promise, value);
+                    }, function rejectPromise(reason) {
+                        $$$internal$$reject(promise, reason);
+                    });
+                } catch(e) {
+                    $$$internal$$reject(promise, e);
+                }
+            }
+
+            function $$$enumerator$$makeSettledResult(state, position, value) {
+                if (state === $$$internal$$FULFILLED) {
+                    return {
+                        state: 'fulfilled',
+                        value: value
+                    };
+                } else {
+                    return {
+                        state: 'rejected',
+                        reason: value
+                    };
+                }
+            }
+
+            function $$$enumerator$$Enumerator(Constructor, input, abortOnReject, label) {
+                this._instanceConstructor = Constructor;
+                this.promise = new Constructor($$$internal$$noop, label);
+                this._abortOnReject = abortOnReject;
+
+                if (this._validateInput(input)) {
+                    this._input     = input;
+                    this.length     = input.length;
+                    this._remaining = input.length;
+
+                    this._init();
+
+                    if (this.length === 0) {
+                        $$$internal$$fulfill(this.promise, this._result);
+                    } else {
+                        this.length = this.length || 0;
+                        this._enumerate();
+                        if (this._remaining === 0) {
+                            $$$internal$$fulfill(this.promise, this._result);
+                        }
+                    }
+                } else {
+                    $$$internal$$reject(this.promise, this._validationError());
+                }
+            }
+
+            $$$enumerator$$Enumerator.prototype._validateInput = function(input) {
+                return $$utils$$isArray(input);
+            };
+
+            $$$enumerator$$Enumerator.prototype._validationError = function() {
+                return new Error('Array Methods must be provided an Array');
+            };
+
+            $$$enumerator$$Enumerator.prototype._init = function() {
+                this._result = new Array(this.length);
+            };
+
+            var $$$enumerator$$default = $$$enumerator$$Enumerator;
+
+            $$$enumerator$$Enumerator.prototype._enumerate = function() {
+                var length  = this.length;
+                var promise = this.promise;
+                var input   = this._input;
+
+                for (var i = 0; promise._state === $$$internal$$PENDING && i < length; i++) {
+                    this._eachEntry(input[i], i);
+                }
+            };
+
+            $$$enumerator$$Enumerator.prototype._eachEntry = function(entry, i) {
+                var c = this._instanceConstructor;
+                if ($$utils$$isMaybeThenable(entry)) {
+                    if (entry.constructor === c && entry._state !== $$$internal$$PENDING) {
+                        entry._onerror = null;
+                        this._settledAt(entry._state, i, entry._result);
+                    } else {
+                        this._willSettleAt(c.resolve(entry), i);
+                    }
+                } else {
+                    this._remaining--;
+                    this._result[i] = this._makeResult($$$internal$$FULFILLED, i, entry);
+                }
+            };
+
+            $$$enumerator$$Enumerator.prototype._settledAt = function(state, i, value) {
+                var promise = this.promise;
+
+                if (promise._state === $$$internal$$PENDING) {
+                    this._remaining--;
+
+                    if (this._abortOnReject && state === $$$internal$$REJECTED) {
+                        $$$internal$$reject(promise, value);
+                    } else {
+                        this._result[i] = this._makeResult(state, i, value);
+                    }
+                }
+
+                if (this._remaining === 0) {
+                    $$$internal$$fulfill(promise, this._result);
+                }
+            };
+
+            $$$enumerator$$Enumerator.prototype._makeResult = function(state, i, value) {
+                return value;
+            };
+
+            $$$enumerator$$Enumerator.prototype._willSettleAt = function(promise, i) {
+                var enumerator = this;
+
+                $$$internal$$subscribe(promise, undefined, function(value) {
+                    enumerator._settledAt($$$internal$$FULFILLED, i, value);
+                }, function(reason) {
+                    enumerator._settledAt($$$internal$$REJECTED, i, reason);
+                });
+            };
+
+            var $$promise$all$$default = function all(entries, label) {
+                return new $$$enumerator$$default(this, entries, true /* abort on reject */, label).promise;
+            };
+
+            var $$promise$race$$default = function race(entries, label) {
+                /*jshint validthis:true */
+                var Constructor = this;
+
+                var promise = new Constructor($$$internal$$noop, label);
+
+                if (!$$utils$$isArray(entries)) {
+                    $$$internal$$reject(promise, new TypeError('You must pass an array to race.'));
+                    return promise;
+                }
+
+                var length = entries.length;
+
+                function onFulfillment(value) {
+                    $$$internal$$resolve(promise, value);
+                }
+
+                function onRejection(reason) {
+                    $$$internal$$reject(promise, reason);
+                }
+
+                for (var i = 0; promise._state === $$$internal$$PENDING && i < length; i++) {
+                    $$$internal$$subscribe(Constructor.resolve(entries[i]), undefined, onFulfillment, onRejection);
+                }
+
+                return promise;
+            };
+
+            var $$promise$resolve$$default = function resolve(object, label) {
+                /*jshint validthis:true */
+                var Constructor = this;
+
+                if (object && typeof object === 'object' && object.constructor === Constructor) {
+                    return object;
+                }
+
+                var promise = new Constructor($$$internal$$noop, label);
+                $$$internal$$resolve(promise, object);
+                return promise;
+            };
+
+            var $$promise$reject$$default = function reject(reason, label) {
+                /*jshint validthis:true */
+                var Constructor = this;
+                var promise = new Constructor($$$internal$$noop, label);
+                $$$internal$$reject(promise, reason);
+                return promise;
+            };
+
+            var $$es6$promise$promise$$counter = 0;
+
+            function $$es6$promise$promise$$needsResolver() {
+                throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
+            }
+
+            function $$es6$promise$promise$$needsNew() {
+                throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
+            }
+
+            var $$es6$promise$promise$$default = $$es6$promise$promise$$Promise;
+
+            /**
+             Promise objects represent the eventual result of an asynchronous operation. The
+             primary way of interacting with a promise is through its `then` method, which
+             registers callbacks to receive either a promise’s eventual value or the reason
+             why the promise cannot be fulfilled.
+
+             Terminology
+             -----------
+
+             - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
+             - `thenable` is an object or function that defines a `then` method.
+             - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
+             - `exception` is a value that is thrown using the throw statement.
+             - `reason` is a value that indicates why a promise was rejected.
+             - `settled` the final resting state of a promise, fulfilled or rejected.
+
+             A promise can be in one of three states: pending, fulfilled, or rejected.
+
+             Promises that are fulfilled have a fulfillment value and are in the fulfilled
+             state.  Promises that are rejected have a rejection reason and are in the
+             rejected state.  A fulfillment value is never a thenable.
+
+             Promises can also be said to *resolve* a value.  If this value is also a
+             promise, then the original promise's settled state will match the value's
+             settled state.  So a promise that *resolves* a promise that rejects will
+             itself reject, and a promise that *resolves* a promise that fulfills will
+             itself fulfill.
+
+
+             Basic Usage:
+             ------------
+
+             ```js
+             var promise = new Promise(function(resolve, reject) {
+        // on success
+        resolve(value);
+
+        // on failure
+        reject(reason);
+      });
+
+             promise.then(function(value) {
+        // on fulfillment
+      }, function(reason) {
+        // on rejection
+      });
+             ```
+
+             Advanced Usage:
+             ---------------
+
+             Promises shine when abstracting away asynchronous interactions such as
+             `XMLHttpRequest`s.
+
+             ```js
+             function getJSON(url) {
+        return new Promise(function(resolve, reject){
+          var xhr = new XMLHttpRequest();
+
+          xhr.open('GET', url);
+          xhr.onreadystatechange = handler;
+          xhr.responseType = 'json';
+          xhr.setRequestHeader('Accept', 'application/json');
+          xhr.send();
+
+          function handler() {
+            if (this.readyState === this.DONE) {
+              if (this.status === 200) {
+                resolve(this.response);
+              } else {
+                reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
+              }
+            }
+          };
+        });
+      }
+
+             getJSON('/posts.json').then(function(json) {
+        // on fulfillment
+      }, function(reason) {
+        // on rejection
+      });
+             ```
+
+             Unlike callbacks, promises are great composable primitives.
+
+             ```js
+             Promise.all([
+             getJSON('/posts'),
+             getJSON('/comments')
+             ]).then(function(values){
+        values[0] // => postsJSON
+        values[1] // => commentsJSON
+
+        return values;
+      });
+             ```
+
+             @class Promise
+             @param {function} resolver
+             Useful for tooling.
+             @constructor
+             */
+            function $$es6$promise$promise$$Promise(resolver) {
+                this._id = $$es6$promise$promise$$counter++;
+                this._state = undefined;
+                this._result = undefined;
+                this._subscribers = [];
+
+                if ($$$internal$$noop !== resolver) {
+                    if (!$$utils$$isFunction(resolver)) {
+                        $$es6$promise$promise$$needsResolver();
+                    }
+
+                    if (!(this instanceof $$es6$promise$promise$$Promise)) {
+                        $$es6$promise$promise$$needsNew();
+                    }
+
+                    $$$internal$$initializePromise(this, resolver);
+                }
+            }
+
+            $$es6$promise$promise$$Promise.all = $$promise$all$$default;
+            $$es6$promise$promise$$Promise.race = $$promise$race$$default;
+            $$es6$promise$promise$$Promise.resolve = $$promise$resolve$$default;
+            $$es6$promise$promise$$Promise.reject = $$promise$reject$$default;
+
+            $$es6$promise$promise$$Promise.prototype = {
+                constructor: $$es6$promise$promise$$Promise,
+
+                /**
+                 The primary way of interacting with a promise is through its `then` method,
+                 which registers callbacks to receive either a promise's eventual value or the
+                 reason why the promise cannot be fulfilled.
+
+                 ```js
+                 findUser().then(function(user){
+        // user is available
+      }, function(reason){
+        // user is unavailable, and you are given the reason why
+      });
+                 ```
+
+                 Chaining
+                 --------
+
+                 The return value of `then` is itself a promise.  This second, 'downstream'
+                 promise is resolved with the return value of the first promise's fulfillment
+                 or rejection handler, or rejected if the handler throws an exception.
+
+                 ```js
+                 findUser().then(function (user) {
+        return user.name;
+      }, function (reason) {
+        return 'default name';
+      }).then(function (userName) {
+        // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+        // will be `'default name'`
+      });
+
+                 findUser().then(function (user) {
+        throw new Error('Found user, but still unhappy');
+      }, function (reason) {
+        throw new Error('`findUser` rejected and we're unhappy');
+      }).then(function (value) {
+        // never reached
+      }, function (reason) {
+        // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+        // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
+      });
+                 ```
+                 If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+
+                 ```js
+                 findUser().then(function (user) {
+        throw new PedagogicalException('Upstream error');
+      }).then(function (value) {
+        // never reached
+      }).then(function (value) {
+        // never reached
+      }, function (reason) {
+        // The `PedgagocialException` is propagated all the way down to here
+      });
+                 ```
+
+                 Assimilation
+                 ------------
+
+                 Sometimes the value you want to propagate to a downstream promise can only be
+                 retrieved asynchronously. This can be achieved by returning a promise in the
+                 fulfillment or rejection handler. The downstream promise will then be pending
+                 until the returned promise is settled. This is called *assimilation*.
+
+                 ```js
+                 findUser().then(function (user) {
+        return findCommentsByAuthor(user);
+      }).then(function (comments) {
+        // The user's comments are now available
+      });
+                 ```
+
+                 If the assimliated promise rejects, then the downstream promise will also reject.
+
+                 ```js
+                 findUser().then(function (user) {
+        return findCommentsByAuthor(user);
+      }).then(function (comments) {
+        // If `findCommentsByAuthor` fulfills, we'll have the value here
+      }, function (reason) {
+        // If `findCommentsByAuthor` rejects, we'll have the reason here
+      });
+                 ```
+
+                 Simple Example
+                 --------------
+
+                 Synchronous Example
+
+                 ```javascript
+                 var result;
+
+                 try {
+        result = findResult();
+        // success
+      } catch(reason) {
+        // failure
+      }
+                 ```
+
+                 Errback Example
+
+                 ```js
+                 findResult(function(result, err){
+        if (err) {
+          // failure
+        } else {
+          // success
+        }
+      });
+                 ```
+
+                 Promise Example;
+
+                 ```javascript
+                 findResult().then(function(result){
+        // success
+      }, function(reason){
+        // failure
+      });
+                 ```
+
+                 Advanced Example
+                 --------------
+
+                 Synchronous Example
+
+                 ```javascript
+                 var author, books;
+
+                 try {
+        author = findAuthor();
+        books  = findBooksByAuthor(author);
+        // success
+      } catch(reason) {
+        // failure
+      }
+                 ```
+
+                 Errback Example
+
+                 ```js
+
+                 function foundBooks(books) {
+
+      }
+
+                 function failure(reason) {
+
+      }
+
+                 findAuthor(function(author, err){
+        if (err) {
+          failure(err);
+          // failure
+        } else {
+          try {
+            findBoooksByAuthor(author, function(books, err) {
+              if (err) {
+                failure(err);
+              } else {
+                try {
+                  foundBooks(books);
+                } catch(reason) {
+                  failure(reason);
+                }
+              }
+            });
+          } catch(error) {
+            failure(err);
+          }
+          // success
+        }
+      });
+                 ```
+
+                 Promise Example;
+
+                 ```javascript
+                 findAuthor().
+                 then(findBooksByAuthor).
+                 then(function(books){
+          // found books
+      }).catch(function(reason){
+        // something went wrong
+      });
+                 ```
+
+                 @method then
+                 @param {Function} onFulfilled
+                 @param {Function} onRejected
+                 Useful for tooling.
+                 @return {Promise}
+                 */
+                then: function(onFulfillment, onRejection) {
+                    var parent = this;
+                    var state = parent._state;
+
+                    if (state === $$$internal$$FULFILLED && !onFulfillment || state === $$$internal$$REJECTED && !onRejection) {
+                        return this;
+                    }
+
+                    var child = new this.constructor($$$internal$$noop);
+                    var result = parent._result;
+
+                    if (state) {
+                        var callback = arguments[state - 1];
+                        $$asap$$default(function(){
+                            $$$internal$$invokeCallback(state, child, callback, result);
+                        });
+                    } else {
+                        $$$internal$$subscribe(parent, child, onFulfillment, onRejection);
+                    }
+
+                    return child;
+                },
+
+                /**
+                 `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+                 as the catch block of a try/catch statement.
+
+                 ```js
+                 function findAuthor(){
+        throw new Error('couldn't find that author');
+      }
+
+                 // synchronous
+                 try {
+        findAuthor();
+      } catch(reason) {
+        // something went wrong
+      }
+
+                 // async with promises
+                 findAuthor().catch(function(reason){
+        // something went wrong
+      });
+                 ```
+
+                 @method catch
+                 @param {Function} onRejection
+                 Useful for tooling.
+                 @return {Promise}
+                 */
+                'catch': function(onRejection) {
+                    return this.then(null, onRejection);
+                }
+            };
+
+            var $$es6$promise$polyfill$$default = function polyfill() {
+                var local;
+
+                if (typeof global !== 'undefined') {
+                    local = global;
+                } else if (typeof window !== 'undefined' && window.document) {
+                    local = window;
+                } else {
+                    local = self;
+                }
+
+                var es6PromiseSupport =
+                    "Promise" in local &&
+                        // Some of these methods are missing from
+                        // Firefox/Chrome experimental implementations
+                    "resolve" in local.Promise &&
+                    "reject" in local.Promise &&
+                    "all" in local.Promise &&
+                    "race" in local.Promise &&
+                        // Older version of the spec had a resolver object
+                        // as the arg rather than a function
+                    (function() {
+                        var resolve;
+                        new local.Promise(function(r) { resolve = r; });
+                        return $$utils$$isFunction(resolve);
+                    }());
+
+                if (!es6PromiseSupport) {
+                    local.Promise = $$es6$promise$promise$$default;
+                }
+            };
+
+            var es6$promise$umd$$ES6Promise = {
+                'Promise': $$es6$promise$promise$$default,
+                'polyfill': $$es6$promise$polyfill$$default
+            };
+
+            /* global define:true module:true window: true */
+            if (typeof define === 'function' && define['amd']) {
+                define(function() { return es6$promise$umd$$ES6Promise; });
+            } else if (typeof module !== 'undefined' && module['exports']) {
+                module['exports'] = es6$promise$umd$$ES6Promise;
+            } else if (typeof this !== 'undefined') {
+                this['ES6Promise'] = es6$promise$umd$$ES6Promise;
+            }
+        }).call(this);
+    }).call(this,require(1),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"1":1}],9:[function(require,module,exports){
+    var hasOwn = Object.prototype.hasOwnProperty;
+    var toString = Object.prototype.toString;
+    var undefined;
+
+    var isArray = require(10);
+
+    var isPlainObject = function isPlainObject(obj) {
+        'use strict';
+        if (!obj || toString.call(obj) !== '[object Object]') {
+            return false;
+        }
+
+        var has_own_constructor = hasOwn.call(obj, 'constructor');
+        var has_is_property_of_method = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+        // Not own constructor property must be Object
+        if (obj.constructor && !has_own_constructor && !has_is_property_of_method) {
+            return false;
+        }
+
+        // Own properties are enumerated firstly, so to speed up,
+        // if last one is own, then all properties are own.
+        var key;
+        for (key in obj) {}
+
+        return key === undefined || hasOwn.call(obj, key);
+    };
+
+    module.exports = function extend() {
+        'use strict';
+        var options, name, src, copy, copyIsArray, clone,
+            target = arguments[0],
+            i = 1,
+            length = arguments.length,
+            deep = false;
+
+        // Handle a deep copy situation
+        if (typeof target === 'boolean') {
+            deep = target;
+            target = arguments[1] || {};
+            // skip the boolean and the target
+            i = 2;
+        } else if ((typeof target !== 'object' && typeof target !== 'function') || target == null) {
+            target = {};
+        }
+
+        for (; i < length; ++i) {
+            options = arguments[i];
+            // Only deal with non-null/undefined values
+            if (options != null) {
+                // Extend the base object
+                for (name in options) {
+                    src = target[name];
+                    copy = options[name];
+
+                    // Prevent never-ending loop
+                    if (target === copy) {
+                        continue;
+                    }
+
+                    // Recurse if we're merging plain objects or arrays
+                    if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+                        if (copyIsArray) {
+                            copyIsArray = false;
+                            clone = src && isArray(src) ? src : [];
+                        } else {
+                            clone = src && isPlainObject(src) ? src : {};
+                        }
+
+                        // Never move original objects, clone them
+                        target[name] = extend(deep, clone, copy);
+
+                        // Don't bring in undefined values
+                    } else if (copy !== undefined) {
+                        target[name] = copy;
+                    }
+                }
+            }
+        }
+
+        // Return the modified object
+        return target;
+    };
+
+
+},{"10":10}],10:[function(require,module,exports){
+    module.exports = Array.isArray || function (arr) {
+        return Object.prototype.toString.call(arr) == '[object Array]';
+    };
+
+},{}],11:[function(require,module,exports){
+
+    var hasOwn = Object.prototype.hasOwnProperty;
+    var toString = Object.prototype.toString;
+
+    module.exports = function forEach (obj, fn, ctx) {
+        if (toString.call(fn) !== '[object Function]') {
+            throw new TypeError('iterator must be a function');
+        }
+        var l = obj.length;
+        if (l === +l) {
+            for (var i = 0; i < l; i++) {
+                fn.call(ctx, obj[i], i, obj);
+            }
+        } else {
+            for (var k in obj) {
+                if (hasOwn.call(obj, k)) {
+                    fn.call(ctx, obj[k], k, obj);
+                }
+            }
+        }
+    };
+
+
+},{}],12:[function(require,module,exports){
+    if (typeof Object.create === 'function') {
+        // implementation from standard node.js 'util' module
+        module.exports = function inherits(ctor, superCtor) {
+            ctor.super_ = superCtor
+            ctor.prototype = Object.create(superCtor.prototype, {
+                constructor: {
+                    value: ctor,
+                    enumerable: false,
+                    writable: true,
+                    configurable: true
+                }
+            });
+        };
+    } else {
+        // old school shim for old browsers
+        module.exports = function inherits(ctor, superCtor) {
+            ctor.super_ = superCtor
+            var TempCtor = function () {}
+            TempCtor.prototype = superCtor.prototype
+            ctor.prototype = new TempCtor()
+            ctor.prototype.constructor = ctor
+        }
+    }
+
+},{}],13:[function(require,module,exports){
+    (function (process){
+        module.exports = AlgoliaSearch;
+
+// default debug activated in dev environments
+// this is triggered in package.json, using the envify transform
+        if (process.env.NODE_ENV === 'development') {
+            require(5).enable('algoliasearch*');
+        }
+
+        var debug = require(5)('algoliasearch');
+        var foreach = require(11);
+
+        /*
+         * Algolia Search library initialization
+         * https://www.algolia.com/
+         *
+         * @param {string} applicationID - Your applicationID, found in your dashboard
+         * @param {string} apiKey - Your API key, found in your dashboard
+         * @param {Object} [opts]
+         * @param {number} [opts.timeout=2000] - The request timeout set in milliseconds, another request will be issued after this timeout
+         * @param {string} [opts.protocol='http:'] - The protocol used to query Algolia Search API.
+         *                                        Set to 'https:' to force using https. Default to document.location.protocol in browsers
+         * @param {string[]} [opts.hosts=[
+         *          this.applicationID + '-1.algolianet.com',
+         *          this.applicationID + '-2.algolianet.com',
+         *          this.applicationID + '-3.algolianet.com']
+         *        ] - The hosts to use for Algolia Search API. If you provide them, you will no more benefit from our HA implementation
+         */
+        function AlgoliaSearch(applicationID, apiKey, opts) {
+            var extend = require(9);
+
+            var usage = 'Usage: algoliasearch(applicationID, apiKey, opts)';
+
+            if (!applicationID) {
+                throw new Error('algoliasearch: Please provide an application ID. ' + usage);
+            }
+
+            if (!apiKey) {
+                throw new Error('algoliasearch: Please provide an API key. ' + usage);
+            }
+
+            this.applicationID = applicationID;
+            this.apiKey = apiKey;
+
+            var defaultHosts = [
+                this.applicationID + '-1.algolianet.com',
+                this.applicationID + '-2.algolianet.com',
+                this.applicationID + '-3.algolianet.com'
+            ];
+            this.hosts = {
+                read: [],
+                write: []
+            };
+
+            this.hostIndex = {
+                read: 0,
+                write: 0
+            };
+
+            opts = opts || {};
+
+            var protocol = opts.protocol || 'https:';
+            var timeout = opts.timeout === undefined ? 2000 : opts.timeout;
+
+            // while we advocate for colon-at-the-end values: 'http:' for `opts.protocol`
+            // we also accept `http` and `https`. It's a common error.
+            if (!/:$/.test(protocol)) {
+                protocol = protocol + ':';
+            }
+
+            if (opts.protocol !== 'http:' && opts.protocol !== 'https:') {
+                throw new Error('algoliasearch: protocol must be `http:` or `https:` (was `' + opts.protocol + '`)');
+            }
+
+            // no hosts given, add defaults
+            if (!opts.hosts) {
+                this.hosts.read = [this.applicationID + '-dsn.algolia.net'].concat(defaultHosts);
+                this.hosts.write = [this.applicationID + '.algolia.net'].concat(defaultHosts);
+            } else {
+                this.hosts.read = extend([], opts.hosts);
+                this.hosts.write = extend([], opts.hosts);
+            }
+
+            // add protocol and lowercase hosts
+            this.hosts.read = map(this.hosts.read, prepareHost(protocol));
+            this.hosts.write = map(this.hosts.write, prepareHost(protocol));
+            this.requestTimeout = timeout;
+
+            this.extraHeaders = [];
+            this.cache = {};
+
+            this._ua = opts._ua;
+            this._useCache = opts._useCache === undefined ? true : opts._useCache;
+
+            this._setTimeout = opts._setTimeout;
+
+            debug('init done, %j', this);
+        }
+
+        AlgoliaSearch.prototype = {
+            /*
+             * Delete an index
+             *
+             * @param indexName the name of index to delete
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer that contains the task ID
+             */
+            deleteIndex: function(indexName, callback) {
+                return this._jsonRequest({ method: 'DELETE',
+                    url: '/1/indexes/' + encodeURIComponent(indexName),
+                    hostType: 'write',
+                    callback: callback });
+            },
+            /**
+             * Move an existing index.
+             * @param srcIndexName the name of index to copy.
+             * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer that contains the task ID
+             */
+            moveIndex: function(srcIndexName, dstIndexName, callback) {
+                var postObj = {operation: 'move', destination: dstIndexName};
+                return this._jsonRequest({ method: 'POST',
+                    url: '/1/indexes/' + encodeURIComponent(srcIndexName) + '/operation',
+                    body: postObj,
+                    hostType: 'write',
+                    callback: callback });
+
+            },
+            /**
+             * Copy an existing index.
+             * @param srcIndexName the name of index to copy.
+             * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer that contains the task ID
+             */
+            copyIndex: function(srcIndexName, dstIndexName, callback) {
+                var postObj = {operation: 'copy', destination: dstIndexName};
+                return this._jsonRequest({ method: 'POST',
+                    url: '/1/indexes/' + encodeURIComponent(srcIndexName) + '/operation',
+                    body: postObj,
+                    hostType: 'write',
+                    callback: callback });
+            },
+            /**
+             * Return last log entries.
+             * @param offset Specify the first entry to retrieve (0-based, 0 is the most recent log entry).
+             * @param length Specify the maximum number of entries to retrieve starting at offset. Maximum allowed value: 1000.
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer that contains the task ID
+             */
+            getLogs: function(offset, length, callback) {
+                if (arguments.length === 0 || typeof offset === 'function') {
+                    // getLogs([cb])
+                    callback = offset;
+                    offset = 0;
+                    length = 10;
+                } else if (arguments.length === 1 || typeof length === 'function') {
+                    // getLogs(1, [cb)]
+                    callback = length;
+                    length = 10;
+                }
+
+                return this._jsonRequest({ method: 'GET',
+                    url: '/1/logs?offset=' + offset + '&length=' + length,
+                    hostType: 'read',
+                    callback: callback });
+            },
+            /*
+             * List all existing indexes (paginated)
+             *
+             * @param page The page to retrieve, starting at 0.
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer with index list
+             */
+            listIndexes: function(page, callback) {
+                var params = '';
+
+                if (page === undefined || typeof page === 'function') {
+                    callback = page;
+                } else {
+                    params = '?page=' + page;
+                }
+
+                return this._jsonRequest({ method: 'GET',
+                    url: '/1/indexes' + params,
+                    hostType: 'read',
+                    callback: callback });
+            },
+
+            /*
+             * Get the index object initialized
+             *
+             * @param indexName the name of index
+             * @param callback the result callback with one argument (the Index instance)
+             */
+            initIndex: function(indexName) {
+                return new this.Index(this, indexName);
+            },
+            /*
+             * List all existing user keys with their associated ACLs
+             *
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer with user keys list
+             */
+            listUserKeys: function(callback) {
+                return this._jsonRequest({ method: 'GET',
+                    url: '/1/keys',
+                    hostType: 'read',
+                    callback: callback });
+            },
+            /*
+             * Get ACL of a user key
+             *
+             * @param key
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer with user keys list
+             */
+            getUserKeyACL: function(key, callback) {
+                return this._jsonRequest({ method: 'GET',
+                    url: '/1/keys/' + key,
+                    hostType: 'read',
+                    callback: callback });
+            },
+            /*
+             * Delete an existing user key
+             * @param key
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer with user keys list
+             */
+            deleteUserKey: function(key, callback) {
+                return this._jsonRequest({ method: 'DELETE',
+                    url: '/1/keys/' + key,
+                    hostType: 'write',
+                    callback: callback });
+            },
+            /*
+             * Add an existing user key
+             *
+             * @param {string[]} acls - The list of ACL for this key. Defined by an array of strings that
+             *   can contains the following values:
+             *     - search: allow to search (https and http)
+             *     - addObject: allows to add/update an object in the index (https only)
+             *     - deleteObject : allows to delete an existing object (https only)
+             *     - deleteIndex : allows to delete index content (https only)
+             *     - settings : allows to get index settings (https only)
+             *     - editSettings : allows to change index settings (https only)
+             * @param {Object} [params] - Optionnal parameters to set for the key
+             * @param {number} params.validity - Number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+             * @param {number} params.maxQueriesPerIPPerHour - Number of API calls allowed from an IP address per hour
+             * @param {number} params.maxHitsPerQuery - Number of hits this API key can retrieve in one call
+             * @param {string[]} params.indexes - Allowed targeted indexes for this key
+             * @param {Function} callback - The result callback called with two arguments
+             *   error: null or Error('message')
+             *   content: the server answer with user keys list
+             * @return {Promise|undefined} Returns a promise if no callback given
+             */
+            addUserKey: function(acls, params, callback) {
+                if (arguments.length === 1 || typeof params === 'function') {
+                    callback = params;
+                    params = null;
+                }
+
+                var postObj = {
+                    acl: acls
+                };
+
+                if (params) {
+                    postObj.validity = params.validity;
+                    postObj.maxQueriesPerIPPerHour = params.maxQueriesPerIPPerHour;
+                    postObj.maxHitsPerQuery = params.maxHitsPerQuery;
+                    postObj.indexes = params.indexes;
+                }
+
+                return this._jsonRequest({
+                    method: 'POST',
+                    url: '/1/keys',
+                    body: postObj,
+                    hostType: 'write',
+                    callback: callback
+                });
+            },
+            /**
+             * Add an existing user key
+             * @deprecated Please use client.addUserKey()
+             */
+            addUserKeyWithValidity: deprecate(function(acls, params, callback) {
+                return this.addUserKey(acls, params, callback);
+            }, deprecatedMessage('client.addUserKeyWithValidity()', 'client.addUserKey()')),
+
+            /**
+             * Update an existing user key
+             * @param {string} key - The key to update
+             * @param {string[]} acls - The list of ACL for this key. Defined by an array of strings that
+             *   can contains the following values:
+             *     - search: allow to search (https and http)
+             *     - addObject: allows to add/update an object in the index (https only)
+             *     - deleteObject : allows to delete an existing object (https only)
+             *     - deleteIndex : allows to delete index content (https only)
+             *     - settings : allows to get index settings (https only)
+             *     - editSettings : allows to change index settings (https only)
+             * @param {Object} [params] - Optionnal parameters to set for the key
+             * @param {number} params.validity - Number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+             * @param {number} params.maxQueriesPerIPPerHour - Number of API calls allowed from an IP address per hour
+             * @param {number} params.maxHitsPerQuery - Number of hits this API key can retrieve in one call
+             * @param {string[]} params.indexes - Allowed targeted indexes for this key
+             * @param {Function} callback - The result callback called with two arguments
+             *   error: null or Error('message')
+             *   content: the server answer with user keys list
+             * @return {Promise|undefined} Returns a promise if no callback given
+             */
+            updateUserKey: function(key, acls, params, callback) {
+                if (arguments.length === 2 || typeof params === 'function') {
+                    callback = params;
+                    params = null;
+                }
+
+                var putObj = {
+                    acl: acls
+                };
+
+                if (params) {
+                    putObj.validity = params.validity;
+                    putObj.maxQueriesPerIPPerHour = params.maxQueriesPerIPPerHour;
+                    putObj.maxHitsPerQuery = params.maxHitsPerQuery;
+                    putObj.indexes = params.indexes;
+                }
+
+                return this._jsonRequest({
+                    method: 'PUT',
+                    url: '/1/keys/' + key,
+                    body: putObj,
+                    hostType: 'write',
+                    callback: callback
+                });
+            },
+
+            /**
+             * Set the extra security tagFilters header
+             * @param {string|array} tags The list of tags defining the current security filters
+             */
+            setSecurityTags: function(tags) {
+                if (Object.prototype.toString.call(tags) === '[object Array]') {
+                    var strTags = [];
+                    for (var i = 0; i < tags.length; ++i) {
+                        if (Object.prototype.toString.call(tags[i]) === '[object Array]') {
+                            var oredTags = [];
+                            for (var j = 0; j < tags[i].length; ++j) {
+                                oredTags.push(tags[i][j]);
+                            }
+                            strTags.push('(' + oredTags.join(',') + ')');
+                        } else {
+                            strTags.push(tags[i]);
+                        }
+                    }
+                    tags = strTags.join(',');
+                }
+
+                this.securityTags = tags;
+            },
+
+            /**
+             * Set the extra user token header
+             * @param {string} userToken The token identifying a uniq user (used to apply rate limits)
+             */
+            setUserToken: function(userToken) {
+                this.userToken = userToken;
+            },
+
+            /**
+             * Initialize a new batch of search queries
+             * @deprecated use client.search()
+             */
+            startQueriesBatch: deprecate(function() {
+                this._batch = [];
+            }, deprecatedMessage('client.startQueriesBatch()', 'client.search()')),
+
+            /**
+             * Add a search query in the batch
+             * @deprecated use client.search()
+             */
+            addQueryInBatch: deprecate(function(indexName, query, args) {
+                this._batch.push({
+                    indexName: indexName,
+                    query: query,
+                    params: args
+                });
+            }, deprecatedMessage('client.addQueryInBatch()', 'client.search()')),
+
+            /**
+             * Clear all queries in client's cache
+             * @return undefined
+             */
+            clearCache: function() {
+                this.cache = {};
+            },
+
+            /**
+             * Launch the batch of queries using XMLHttpRequest.
+             * @deprecated use client.search()
+             */
+            sendQueriesBatch: deprecate(function(callback) {
+                return this.search(this._batch, callback);
+            }, deprecatedMessage('client.sendQueriesBatch()', 'client.search()')),
+
+            /**
+             * Set the number of milliseconds a request can take before automatically being terminated.
+             *
+             * @param {Number} milliseconds
+             */
+            setRequestTimeout: function(milliseconds) {
+                if (milliseconds) {
+                    this.requestTimeout = parseInt(milliseconds, 10);
+                }
+            },
+
+            /**
+             * Search through multiple indices at the same time
+             * @param  {Object[]}   queries  An array of queries you want to run.
+             * @param {string} queries[].indexName The index name you want to target
+             * @param {string} [queries[].query] The query to issue on this index. Can also be passed into `params`
+             * @param {Object} queries[].params Any search param like hitsPerPage, ..
+             * @param  {Function} callback Callback to be called
+             * @return {Promise|undefined} Returns a promise if no callback given
+             */
+            search: function(queries, callback) {
+                var client = this;
+
+                var postObj = {
+                    requests: map(queries, function prepareRequest(query) {
+                        var params = '';
+
+                        // allow query.query
+                        // so we are mimicing the index.search(query, params) method
+                        // {indexName:, query:, params:}
+                        if (query.query !== undefined) {
+                            params += 'query=' + encodeURIComponent(query.query)
+                        }
+
+                        return {
+                            indexName: query.indexName,
+                            params: client._getSearchParams(query.params, params)
+                        };
+                    })
+                };
+
+                return this._jsonRequest({
+                    cache: this.cache,
+                    method: 'POST',
+                    url: '/1/indexes/*/queries',
+                    body: postObj,
+                    hostType: 'read',
+                    callback: callback
+                });
+            },
+
+            // environment specific methods
+            destroy: notImplemented,
+            enableRateLimitForward: notImplemented,
+            disableRateLimitForward: notImplemented,
+            useSecuredAPIKey: notImplemented,
+            disableSecuredAPIKey: notImplemented,
+            generateSecuredApiKey: notImplemented,
+            /*
+             * Index class constructor.
+             * You should not use this method directly but use initIndex() function
+             */
+            Index: function(algoliasearch, indexName) {
+                this.indexName = indexName;
+                this.as = algoliasearch;
+                this.typeAheadArgs = null;
+                this.typeAheadValueOption = null;
+
+                // make sure every index instance has it's own cache
+                this.cache = {};
+            },
+            /**
+             * Add an extra field to the HTTP request
+             *
+             * @param name the header field name
+             * @param value the header field value
+             */
+            setExtraHeader: function(name, value) {
+                this.extraHeaders.push({ name: name.toLowerCase(), value: value});
+            },
+
+            _sendQueriesBatch: function(params, callback) {
+                return this._jsonRequest({ cache: this.cache,
+                    method: 'POST',
+                    url: '/1/indexes/*/queries',
+                    body: params,
+                    hostType: 'read',
+                    fallback: {
+                        method: 'GET',
+                        url: '/1/indexes/*',
+                        body: {params: (function() {
+                            var reqParams = '';
+                            for (var i = 0; i < params.requests.length; ++i) {
+                                var q = '/1/indexes/' + encodeURIComponent(params.requests[i].indexName) + '?' + params.requests[i].params;
+                                reqParams += i + '=' + encodeURIComponent(q) + '&';
+                            }
+                            return reqParams;
+                        }())}
+                    },
+                    callback: callback
+                });
+            },
+            /*
+             * Wrapper that try all hosts to maximize the quality of service
+             */
+            _jsonRequest: function(opts) {
+                var requestDebug = require(5)('algoliasearch:' + opts.url);
+
+                var body;
+                var cache = opts.cache;
+                var client = this;
+                var tries = 0;
+                var usingFallback = false;
+
+                if (opts.body !== undefined) {
+                    body = JSON.stringify(opts.body);
+                }
+
+                requestDebug('request start');
+
+                function doRequest(requester, reqOpts) {
+                    var cacheID;
+
+                    if (client._useCache) {
+                        cacheID = opts.url;
+                    }
+
+                    // as we sometime use POST requests to pass parameters (like query='aa'),
+                    // the cacheID must also include the body to be different between calls
+                    if (client._useCache && body) {
+                        cacheID += '_body_' + reqOpts.body;
+                    }
+
+                    // handle cache existence
+                    if (client._useCache && cache && cache[cacheID] !== undefined) {
+                        requestDebug('serving response from cache');
+                        return client._promise.resolve(cache[cacheID]);
+                    }
+
+                    if (tries >= client.hosts[opts.hostType].length) {
+                        if (!opts.fallback || !client._request.fallback || usingFallback) {
+                            // could not get a response even using the fallback if one was available
+                            return client._promise.reject(new Error(
+                                'Cannot connect to the AlgoliaSearch API.' +
+                                ' Send an email to support@algolia.com to report and resolve the issue.'
+                            ));
+                        }
+
+                        // let's try the fallback starting from here
+                        tries = 0;
+
+                        // method, url and body are fallback dependent
+                        reqOpts.method = opts.fallback.method;
+                        reqOpts.url = opts.fallback.url;
+                        reqOpts.jsonBody = opts.fallback.body;
+                        if (reqOpts.jsonBody) {
+                            reqOpts.body = JSON.stringify(opts.fallback.body);
+                        }
+
+                        reqOpts.timeout = client.requestTimeout * (tries + 1);
+                        client.hostIndex[opts.hostType] = 0;
+                        client.useFallback = true; // now we will only use JSONP, even on future requests
+                        usingFallback = true; // the current request is now using fallback
+                        return doRequest(client._request.fallback, reqOpts);
+                    }
+
+                    // `requester` is any of this._request or this._request.fallback
+                    // thus it needs to be called using the client as context
+                    return requester.call(client,
+                        // http(s)://currenthost/url(?qs)
+                        client.hosts[opts.hostType][client.hostIndex[opts.hostType]] + reqOpts.url, {
+                            body: body,
+                            jsonBody: opts.body,
+                            method: reqOpts.method,
+                            headers: client._computeRequestHeaders(),
+                            timeout: reqOpts.timeout,
+                            debug: requestDebug
+                        }
+                    )
+                        .then(function success(httpResponse) {
+                            // timeout case, retry immediately
+                            if (httpResponse instanceof Error) {
+                                requestDebug('error: %s', httpResponse.message);
+                                return retryRequest();
+                            }
+
+                            requestDebug('received response: %j', httpResponse);
+
+                            var status =
+                                // When in browser mode, using XDR or JSONP
+                                // We rely on our own API response `status`, only
+                                // provided when an error occurs, we also expect a .message along
+                                // Otherwise, it could be a `waitTask` status, that's the only
+                                // case where we have a response.status that's not the http statusCode
+                                httpResponse && httpResponse.body && httpResponse.body.message && httpResponse.body.status ||
+
+                                    // this is important to check the request statusCode AFTER the body eventual
+                                    // statusCode because some implementations (jQuery XDomainRequest transport) may
+                                    // send statusCode 200 while we had an error
+                                httpResponse.statusCode ||
+
+                                    // When in browser mode, using XDR or JSONP
+                                    // we default to success when no error (no response.status && response.message)
+                                    // If there was a JSON.parse() error then body is null and it fails
+                                httpResponse && httpResponse.body && 200;
+
+                            var ok = status === 200 || status === 201;
+                            var retry = !ok && Math.floor(status / 100) !== 4 && Math.floor(status / 100) !== 1;
+
+                            if (client._useCache && ok && cache) {
+                                cache[cacheID] = httpResponse.body;
+                            }
+
+                            if (ok) {
+                                return httpResponse.body;
+                            }
+
+                            if (retry) {
+                                return retryRequest();
+                            }
+
+                            var unrecoverableError = new Error(
+                                httpResponse.body && httpResponse.body.message || 'Unknown error'
+                            );
+
+                            return client._promise.reject(unrecoverableError);
+                        }, tryFallback);
+
+                    function retryRequest() {
+                        client.hostIndex[opts.hostType] = ++client.hostIndex[opts.hostType] % client.hosts[opts.hostType].length;
+                        tries += 1;
+                        reqOpts.timeout = client.requestTimeout * (tries + 1);
+                        return doRequest(requester, reqOpts);
+                    }
+
+                    function tryFallback(err) {
+                        // error cases:
+                        //  While not in fallback mode:
+                        //    - CORS not supported
+                        //    - network error
+                        //  While in fallback mode:
+                        //    - timeout
+                        //    - network error
+                        //    - badly formatted JSONP (script loaded, did not call our callback)
+                        //  In both cases:
+                        //    - uncaught exception occurs (TypeError)
+                        requestDebug('error: %s, stack: %s', err.message, err.stack);
+
+                        // we were not using the fallback, try now
+                        // if we are switching to fallback right now, set tries to maximum
+                        if (!client.useFallback) {
+                            // next time doRequest is called, simulate we tried all hosts,
+                            // this will force to use the fallback
+                            tries = client.hosts[opts.hostType].length;
+                        } else {
+                            // we were already using the fallback, but something went wrong (script error)
+                            client.hostIndex[opts.hostType] = ++client.hostIndex[opts.hostType] % client.hosts[opts.hostType].length;
+                            tries += 1;
+                        }
+
+                        return doRequest(requester, reqOpts);
+                    }
+                }
+
+                // we can use a fallback if forced AND fallback parameters are available
+                var useFallback = client.useFallback && opts.fallback;
+                var requestOptions = useFallback ? opts.fallback : opts;
+
+                var promise = doRequest(
+                    // set the requester
+                    useFallback ? client._request.fallback : client._request, {
+                        url: requestOptions.url,
+                        method: requestOptions.method,
+                        body: body,
+                        jsonBody: opts.body,
+                        timeout: client.requestTimeout * (tries + 1)
+                    }
+                );
+
+                // either we have a callback
+                // either we are using promises
+                if (opts.callback) {
+                    promise.then(function okCb(content) {
+                        exitPromise(function() {
+                            opts.callback(null, content);
+                        }, client._setTimeout || setTimeout);
+                    }, function nookCb(err) {
+                        exitPromise(function() {
+                            opts.callback(err);
+                        }, client._setTimeout || setTimeout);
+                    });
+                } else {
+                    return promise;
+                }
+            },
+
+            /*
+             * Transform search param object in query string
+             */
+            _getSearchParams: function(args, params) {
+                if (this._isUndefined(args) || args === null) {
+                    return params;
+                }
+                for (var key in args) {
+                    if (key !== null && args.hasOwnProperty(key)) {
+                        params += params === '' ? '' : '&';
+                        params += key + '=' + encodeURIComponent(Object.prototype.toString.call(args[key]) === '[object Array]' ? JSON.stringify(args[key]) : args[key]);
+                    }
+                }
+                return params;
+            },
+
+            _isUndefined: function(obj) {
+                return obj === void 0;
+            },
+
+            _computeRequestHeaders: function() {
+                var requestHeaders = {
+                    'x-algolia-api-key': this.apiKey,
+                    'x-algolia-application-id': this.applicationID,
+                    'x-user-agent': this._ua
+                };
+
+                if (this.userToken) {
+                    requestHeaders['x-algolia-usertoken'] = this.userToken;
+                }
+
+                if (this.securityTags) {
+                    requestHeaders['x-algolia-tagfilters'] = this.securityTags;
+                }
+
+                if (this.extraHeaders) {
+                    foreach(this.extraHeaders, function addToRequestHeaders(header) {
+                        requestHeaders[header.name] = header.value;
+                    });
+                }
+
+                return requestHeaders;
+            }
+        };
+
+        /*
+         * Contains all the functions related to one index
+         * You should use AlgoliaSearch.initIndex(indexName) to retrieve this object
+         */
+        AlgoliaSearch.prototype.Index.prototype = {
+            /*
+             * Clear all queries in cache
+             */
+            clearCache: function() {
+                this.cache = {};
+            },
+            /*
+             * Add an object in this index
+             *
+             * @param content contains the javascript object to add inside the index
+             * @param objectID (optional) an objectID you want to attribute to this object
+             * (if the attribute already exist the old object will be overwrite)
+             * @param callback (optional) the result callback called with two arguments:
+             *  error: null or Error('message')
+             *  content: the server answer that contains 3 elements: createAt, taskId and objectID
+             */
+            addObject: function(content, objectID, callback) {
+                var indexObj = this;
+
+                if (arguments.length === 1 || typeof objectID === 'function') {
+                    callback = objectID;
+                    objectID = undefined;
+                }
+
+                return this.as._jsonRequest({
+                    method: objectID !== undefined ?
+                        'PUT' : // update or create
+                        'POST', // create (API generates an objectID)
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + // create
+                    (objectID !== undefined ? '/' + encodeURIComponent(objectID) : ''), // update or create
+                    body: content,
+                    hostType: 'write',
+                    callback: callback
+                });
+            },
+            /*
+             * Add several objects
+             *
+             * @param objects contains an array of objects to add
+             * @param callback (optional) the result callback called with two arguments:
+             *  error: null or Error('message')
+             *  content: the server answer that updateAt and taskID
+             */
+            addObjects: function(objects, callback) {
+                var indexObj = this;
+                var postObj = {requests: []};
+                for (var i = 0; i < objects.length; ++i) {
+                    var request = { action: 'addObject',
+                        body: objects[i] };
+                    postObj.requests.push(request);
+                }
+                return this.as._jsonRequest({ method: 'POST',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/batch',
+                    body: postObj,
+                    hostType: 'write',
+                    callback: callback });
+            },
+            /*
+             * Get an object from this index
+             *
+             * @param objectID the unique identifier of the object to retrieve
+             * @param attrs (optional) if set, contains the array of attribute names to retrieve
+             * @param callback (optional) the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the object to retrieve or the error message if a failure occured
+             */
+            getObject: function(objectID, attrs, callback) {
+                var indexObj = this;
+
+                if (arguments.length === 1 || typeof attrs === 'function') {
+                    callback = attrs;
+                    attrs = undefined;
+                }
+
+                var params = '';
+                if (attrs !== undefined) {
+                    params = '?attributes=';
+                    for (var i = 0; i < attrs.length; ++i) {
+                        if (i !== 0) {
+                            params += ',';
+                        }
+                        params += attrs[i];
+                    }
+                }
+
+                return this.as._jsonRequest({
+                    method: 'GET',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/' + encodeURIComponent(objectID) + params,
+                    hostType: 'read',
+                    callback: callback
+                });
+            },
+
+            /*
+             * Get several objects from this index
+             *
+             * @param objectIDs the array of unique identifier of objects to retrieve
+             */
+            getObjects: function(objectIDs, callback) {
+                var indexObj = this;
+
+                var body = {
+                    requests: map(objectIDs, function prepareRequest(objectID) {
+                        return {
+                            'indexName': indexObj.indexName,
+                            'objectID': objectID
+                        };
+                    })
+                };
+
+                return this.as._jsonRequest({
+                    method: 'POST',
+                    url: '/1/indexes/*/objects',
+                    hostType: 'read',
+                    body: body,
+                    callback: callback
+                });
+            },
+
+            /*
+             * Update partially an object (only update attributes passed in argument)
+             *
+             * @param partialObject contains the javascript attributes to override, the
+             *  object must contains an objectID attribute
+             * @param callback (optional) the result callback called with two arguments:
+             *  error: null or Error('message')
+             *  content: the server answer that contains 3 elements: createAt, taskId and objectID
+             */
+            partialUpdateObject: function(partialObject, callback) {
+                var indexObj = this;
+                return this.as._jsonRequest({ method: 'POST',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/' + encodeURIComponent(partialObject.objectID) + '/partial',
+                    body: partialObject,
+                    hostType: 'write',
+                    callback: callback });
+            },
+            /*
+             * Partially Override the content of several objects
+             *
+             * @param objects contains an array of objects to update (each object must contains a objectID attribute)
+             * @param callback (optional) the result callback called with two arguments:
+             *  error: null or Error('message')
+             *  content: the server answer that updateAt and taskID
+             */
+            partialUpdateObjects: function(objects, callback) {
+                var indexObj = this;
+                var postObj = {requests: []};
+                for (var i = 0; i < objects.length; ++i) {
+                    var request = { action: 'partialUpdateObject',
+                        objectID: objects[i].objectID,
+                        body: objects[i] };
+                    postObj.requests.push(request);
+                }
+                return this.as._jsonRequest({ method: 'POST',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/batch',
+                    body: postObj,
+                    hostType: 'write',
+                    callback: callback });
+            },
+            /*
+             * Override the content of object
+             *
+             * @param object contains the javascript object to save, the object must contains an objectID attribute
+             * @param callback (optional) the result callback called with two arguments:
+             *  error: null or Error('message')
+             *  content: the server answer that updateAt and taskID
+             */
+            saveObject: function(object, callback) {
+                var indexObj = this;
+                return this.as._jsonRequest({ method: 'PUT',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/' + encodeURIComponent(object.objectID),
+                    body: object,
+                    hostType: 'write',
+                    callback: callback });
+            },
+            /*
+             * Override the content of several objects
+             *
+             * @param objects contains an array of objects to update (each object must contains a objectID attribute)
+             * @param callback (optional) the result callback called with two arguments:
+             *  error: null or Error('message')
+             *  content: the server answer that updateAt and taskID
+             */
+            saveObjects: function(objects, callback) {
+                var indexObj = this;
+                var postObj = {requests: []};
+                for (var i = 0; i < objects.length; ++i) {
+                    var request = { action: 'updateObject',
+                        objectID: objects[i].objectID,
+                        body: objects[i] };
+                    postObj.requests.push(request);
+                }
+                return this.as._jsonRequest({ method: 'POST',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/batch',
+                    body: postObj,
+                    hostType: 'write',
+                    callback: callback });
+            },
+            /*
+             * Delete an object from the index
+             *
+             * @param objectID the unique identifier of object to delete
+             * @param callback (optional) the result callback called with two arguments:
+             *  error: null or Error('message')
+             *  content: the server answer that contains 3 elements: createAt, taskId and objectID
+             */
+            deleteObject: function(objectID, callback) {
+                if (typeof objectID === 'function' || typeof objectID !== 'string' && typeof objectID !== 'number') {
+                    var err = new Error('Cannot delete an object without an objectID');
+                    callback = objectID;
+                    if (typeof callback === 'function') {
+                        return callback(err);
+                    }
+
+                    return this.as._promise.reject(err);
+                }
+
+                var indexObj = this;
+                return this.as._jsonRequest({ method: 'DELETE',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/' + encodeURIComponent(objectID),
+                    hostType: 'write',
+                    callback: callback });
+            },
+            /*
+             * Delete several objects from an index
+             *
+             * @param objectIDs contains an array of objectID to delete
+             * @param callback (optional) the result callback called with two arguments:
+             *  error: null or Error('message')
+             *  content: the server answer that contains 3 elements: createAt, taskId and objectID
+             */
+            deleteObjects: function(objectIDs, callback) {
+                var indexObj = this;
+                var postObj = {
+                    requests: map(objectIDs, function prepareRequest(objectID) {
+                        return {
+                            action: 'deleteObject',
+                            objectID: objectID,
+                            body: {
+                                objectID: objectID
+                            }
+                        };
+                    })
+                };
+
+                return this.as._jsonRequest({
+                    method: 'POST',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/batch',
+                    body: postObj,
+                    hostType: 'write',
+                    callback: callback
+                });
+            },
+            /*
+             * Delete all objects matching a query
+             *
+             * @param query the query string
+             * @param params the optional query parameters
+             * @param callback (optional) the result callback called with one argument
+             *  error: null or Error('message')
+             */
+            deleteByQuery: function(query, params, callback) {
+                var indexObj = this;
+                var client = indexObj.as;
+
+                if (arguments.length === 1 || typeof params === 'function') {
+                    callback = params;
+                    params = {};
+                }
+
+                params.attributesToRetrieve = 'objectID';
+                params.hitsPerPage = 1000;
+
+                // when deleting, we should never use cache to get the
+                // search results
+                this.clearCache();
+
+                // there's a problem in how we use the promise chain,
+                // see how waitTask is done
+                var promise = this
+                    .search(query, params)
+                    .then(stopOrDelete);
+
+                function stopOrDelete(searchContent) {
+                    // stop here
+                    if (searchContent.nbHits === 0) {
+                        // return indexObj.as._request.resolve();
+                        return searchContent;
+                    }
+
+                    // continue and do a recursive call
+                    var objectIDs = map(searchContent.hits, function getObjectID(object) {
+                        return object.objectID;
+                    });
+
+                    return indexObj
+                        .deleteObjects(objectIDs)
+                        .then(waitTask)
+                        .then(deleteByQuery);
+                }
+
+                function waitTask(deleteObjectsContent) {
+                    return indexObj.waitTask(deleteObjectsContent.taskID);
+                }
+
+                function deleteByQuery() {
+                    return indexObj.deleteByQuery(query, params);
+                }
+
+                if (!callback) {
+                    return promise;
+                }
+
+                promise.then(success, failure);
+
+                function success() {
+                    exitPromise(function() {
+                        callback(null);
+                    }, client._setTimeout || setTimeout);
+                }
+
+                function failure(err) {
+                    exitPromise(function() {
+                        callback(err);
+                    }, client._setTimeout || setTimeout);
+                }
+            },
+            /*
+             * Search inside the index using XMLHttpRequest request (Using a POST query to
+             * minimize number of OPTIONS queries: Cross-Origin Resource Sharing).
+             *
+             * @param query the full text query
+             * @param args (optional) if set, contains an object with query parameters:
+             * - page: (integer) Pagination parameter used to select the page to retrieve.
+             *                   Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
+             * - hitsPerPage: (integer) Pagination parameter used to select the number of hits per page. Defaults to 20.
+             * - attributesToRetrieve: a string that contains the list of object attributes you want to retrieve (let you minimize the answer size).
+             *   Attributes are separated with a comma (for example "name,address").
+             *   You can also use an array (for example ["name","address"]).
+             *   By default, all attributes are retrieved. You can also use '*' to retrieve all values when an attributesToRetrieve setting is specified for your index.
+             * - attributesToHighlight: a string that contains the list of attributes you want to highlight according to the query.
+             *   Attributes are separated by a comma. You can also use an array (for example ["name","address"]).
+             *   If an attribute has no match for the query, the raw value is returned. By default all indexed text attributes are highlighted.
+             *   You can use `*` if you want to highlight all textual attributes. Numerical attributes are not highlighted.
+             *   A matchLevel is returned for each highlighted attribute and can contain:
+             *      - full: if all the query terms were found in the attribute,
+             *      - partial: if only some of the query terms were found,
+             *      - none: if none of the query terms were found.
+             * - attributesToSnippet: a string that contains the list of attributes to snippet alongside the number of words to return (syntax is `attributeName:nbWords`).
+             *    Attributes are separated by a comma (Example: attributesToSnippet=name:10,content:10).
+             *    You can also use an array (Example: attributesToSnippet: ['name:10','content:10']). By default no snippet is computed.
+             * - minWordSizefor1Typo: the minimum number of characters in a query word to accept one typo in this word. Defaults to 3.
+             * - minWordSizefor2Typos: the minimum number of characters in a query word to accept two typos in this word. Defaults to 7.
+             * - getRankingInfo: if set to 1, the result hits will contain ranking information in _rankingInfo attribute.
+             * - aroundLatLng: search for entries around a given latitude/longitude (specified as two floats separated by a comma).
+             *   For example aroundLatLng=47.316669,5.016670).
+             *   You can specify the maximum distance in meters with the aroundRadius parameter (in meters) and the precision for ranking with aroundPrecision
+             *   (for example if you set aroundPrecision=100, two objects that are distant of less than 100m will be considered as identical for "geo" ranking parameter).
+             *   At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+             * - insideBoundingBox: search entries inside a given area defined by the two extreme points of a rectangle (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).
+             *   For example insideBoundingBox=47.3165,4.9665,47.3424,5.0201).
+             *   At indexing, you should specify geoloc of an object with the _geoloc attribute (in the form {"_geoloc":{"lat":48.853409, "lng":2.348800}})
+             * - numericFilters: a string that contains the list of numeric filters you want to apply separated by a comma.
+             *   The syntax of one filter is `attributeName` followed by `operand` followed by `value`. Supported operands are `<`, `<=`, `=`, `>` and `>=`.
+             *   You can have multiple conditions on one attribute like for example numericFilters=price>100,price<1000.
+             *   You can also use an array (for example numericFilters: ["price>100","price<1000"]).
+             * - tagFilters: filter the query by a set of tags. You can AND tags by separating them by commas.
+             *   To OR tags, you must add parentheses. For example, tags=tag1,(tag2,tag3) means tag1 AND (tag2 OR tag3).
+             *   You can also use an array, for example tagFilters: ["tag1",["tag2","tag3"]] means tag1 AND (tag2 OR tag3).
+             *   At indexing, tags should be added in the _tags** attribute of objects (for example {"_tags":["tag1","tag2"]}).
+             * - facetFilters: filter the query by a list of facets.
+             *   Facets are separated by commas and each facet is encoded as `attributeName:value`.
+             *   For example: `facetFilters=category:Book,author:John%20Doe`.
+             *   You can also use an array (for example `["category:Book","author:John%20Doe"]`).
+             * - facets: List of object attributes that you want to use for faceting.
+             *   Comma separated list: `"category,author"` or array `['category','author']`
+             *   Only attributes that have been added in **attributesForFaceting** index setting can be used in this parameter.
+             *   You can also use `*` to perform faceting on all attributes specified in **attributesForFaceting**.
+             * - queryType: select how the query words are interpreted, it can be one of the following value:
+             *    - prefixAll: all query words are interpreted as prefixes,
+             *    - prefixLast: only the last word is interpreted as a prefix (default behavior),
+             *    - prefixNone: no query word is interpreted as a prefix. This option is not recommended.
+             * - optionalWords: a string that contains the list of words that should be considered as optional when found in the query.
+             *   Comma separated and array are accepted.
+             * - distinct: If set to 1, enable the distinct feature (disabled by default) if the attributeForDistinct index setting is set.
+             *   This feature is similar to the SQL "distinct" keyword: when enabled in a query with the distinct=1 parameter,
+             *   all hits containing a duplicate value for the attributeForDistinct attribute are removed from results.
+             *   For example, if the chosen attribute is show_name and several hits have the same value for show_name, then only the best
+             *   one is kept and others are removed.
+             * - restrictSearchableAttributes: List of attributes you want to use for textual search (must be a subset of the attributesToIndex index setting)
+             * either comma separated or as an array
+             * @param callback the result callback called with two arguments:
+             *  error: null or Error('message'). If false, the content contains the error.
+             *  content: the server answer that contains the list of results.
+             */
+            search: function(query, args, callback) {
+                // warn V2 users on how to search
+                if (typeof query === 'function' && typeof args === 'object' ||
+                    typeof callback === 'object') {
+                    // .search(query, params, cb)
+                    // .search(cb, params)
+                    throw new Error('algoliasearch: index.search usage is index.search(query, params, cb)');
+                }
+
+                if (arguments.length === 0 || typeof query === 'function') {
+                    // .search(), .search(cb)
+                    callback = query;
+                    query = '';
+                } else if (arguments.length === 1 || typeof args === 'function') {
+                    // .search(query/args), .search(query, cb)
+                    callback = args;
+                    args = undefined;
+                }
+
+                // .search(args), careful: typeof null === 'object'
+                if (typeof query === 'object' && query !== null) {
+                    args = query;
+                    query = undefined;
+                } else if (query === undefined || query === null) { // .search(undefined/null)
+                    query = '';
+                }
+
+                var params = '';
+
+                if (query !== undefined) {
+                    params += 'query=' + encodeURIComponent(query);
+                }
+
+                if (args !== undefined) {
+                    // `_getSearchParams` will augment params, do not be fooled by the = versus += from previous if
+                    params = this.as._getSearchParams(args, params);
+                }
+
+                return this._search(params, callback);
+            },
+
+            /*
+             * Browse all index content
+             *
+             * @param page Pagination parameter used to select the page to retrieve.
+             *             Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
+             * @param hitsPerPage: Pagination parameter used to select the number of hits per page. Defaults to 1000.
+             * @param callback the result callback called with two arguments:
+             *  error: null or Error('message'). If false, the content contains the error.
+             *  content: the server answer that contains the list of results.
+             */
+            browse: function(page, hitsPerPage, callback) {
+                var indexObj = this;
+
+                if (arguments.length === 1 || typeof hitsPerPage === 'function') {
+                    callback = hitsPerPage;
+                    hitsPerPage = undefined;
+                }
+
+                var params = '?page=' + page;
+                if (!this.as._isUndefined(hitsPerPage)) {
+                    params += '&hitsPerPage=' + hitsPerPage;
+                }
+                return this.as._jsonRequest({ method: 'GET',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/browse' + params,
+                    hostType: 'read',
+                    callback: callback });
+            },
+
+            /*
+             * Get a Typeahead.js adapter
+             * @param searchParams contains an object with query parameters (see search for details)
+             */
+            ttAdapter: function(params) {
+                var self = this;
+                return function(query, cb) {
+                    self.search(query, params, function(err, content) {
+                        if (err) {
+                            cb(err);
+                            return;
+                        }
+
+                        cb(content.hits);
+                    });
+                };
+            },
+
+            /*
+             * Wait the publication of a task on the server.
+             * All server task are asynchronous and you can check with this method that the task is published.
+             *
+             * @param taskID the id of the task returned by server
+             * @param callback the result callback with with two arguments:
+             *  error: null or Error('message')
+             *  content: the server answer that contains the list of results
+             */
+            waitTask: function(taskID, callback) {
+                // waitTask() must be handled differently from other methods,
+                // it's a recursive method using a timeout
+                var indexObj = this;
+                var client = indexObj.as;
+
+                var promise = this.as._jsonRequest({
+                    method: 'GET',
+                    hostType: 'read',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/task/' + taskID
+                }).then(function success(content) {
+                    if (content.status !== 'published') {
+                        return indexObj.as._promise.delay(100).then(function() {
+                            // do not forward the callback, we want the promise
+                            // on next iteration
+                            return indexObj.waitTask(taskID);
+                        });
+                    }
+
+                    return content;
+                });
+
+                if (!callback) {
+                    return promise;
+                }
+
+                promise.then(successCb, failureCb);
+
+                function successCb(content) {
+                    exitPromise(function() {
+                        callback(null, content);
+                    }, client._setTimeout || setTimeout);
+                }
+
+                function failureCb(err) {
+                    exitPromise(function() {
+                        callback(err);
+                    }, client._setTimeout || setTimeout);
+                }
+            },
+
+            /*
+             * This function deletes the index content. Settings and index specific API keys are kept untouched.
+             *
+             * @param callback (optional) the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the settings object or the error message if a failure occured
+             */
+            clearIndex: function(callback) {
+                var indexObj = this;
+                return this.as._jsonRequest({ method: 'POST',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/clear',
+                    hostType: 'write',
+                    callback: callback });
+            },
+            /*
+             * Get settings of this index
+             *
+             * @param callback (optional) the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the settings object or the error message if a failure occured
+             */
+            getSettings: function(callback) {
+                var indexObj = this;
+                return this.as._jsonRequest({ method: 'GET',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/settings',
+                    hostType: 'read',
+                    callback: callback });
+            },
+
+            /*
+             * Set settings for this index
+             *
+             * @param settigns the settings object that can contains :
+             * - minWordSizefor1Typo: (integer) the minimum number of characters to accept one typo (default = 3).
+             * - minWordSizefor2Typos: (integer) the minimum number of characters to accept two typos (default = 7).
+             * - hitsPerPage: (integer) the number of hits per page (default = 10).
+             * - attributesToRetrieve: (array of strings) default list of attributes to retrieve in objects.
+             *   If set to null, all attributes are retrieved.
+             * - attributesToHighlight: (array of strings) default list of attributes to highlight.
+             *   If set to null, all indexed attributes are highlighted.
+             * - attributesToSnippet**: (array of strings) default list of attributes to snippet alongside the number of words to return (syntax is attributeName:nbWords).
+             *   By default no snippet is computed. If set to null, no snippet is computed.
+             * - attributesToIndex: (array of strings) the list of fields you want to index.
+             *   If set to null, all textual and numerical attributes of your objects are indexed, but you should update it to get optimal results.
+             *   This parameter has two important uses:
+             *     - Limit the attributes to index: For example if you store a binary image in base64, you want to store it and be able to
+             *       retrieve it but you don't want to search in the base64 string.
+             *     - Control part of the ranking*: (see the ranking parameter for full explanation) Matches in attributes at the beginning of
+             *       the list will be considered more important than matches in attributes further down the list.
+             *       In one attribute, matching text at the beginning of the attribute will be considered more important than text after, you can disable
+             *       this behavior if you add your attribute inside `unordered(AttributeName)`, for example attributesToIndex: ["title", "unordered(text)"].
+             * - attributesForFaceting: (array of strings) The list of fields you want to use for faceting.
+             *   All strings in the attribute selected for faceting are extracted and added as a facet. If set to null, no attribute is used for faceting.
+             * - attributeForDistinct: (string) The attribute name used for the Distinct feature. This feature is similar to the SQL "distinct" keyword: when enabled
+             *   in query with the distinct=1 parameter, all hits containing a duplicate value for this attribute are removed from results.
+             *   For example, if the chosen attribute is show_name and several hits have the same value for show_name, then only the best one is kept and others are removed.
+             * - ranking: (array of strings) controls the way results are sorted.
+             *   We have six available criteria:
+             *    - typo: sort according to number of typos,
+             *    - geo: sort according to decreassing distance when performing a geo-location based search,
+             *    - proximity: sort according to the proximity of query words in hits,
+             *    - attribute: sort according to the order of attributes defined by attributesToIndex,
+             *    - exact:
+             *        - if the user query contains one word: sort objects having an attribute that is exactly the query word before others.
+             *          For example if you search for the "V" TV show, you want to find it with the "V" query and avoid to have all popular TV
+             *          show starting by the v letter before it.
+             *        - if the user query contains multiple words: sort according to the number of words that matched exactly (and not as a prefix).
+             *    - custom: sort according to a user defined formula set in **customRanking** attribute.
+             *   The standard order is ["typo", "geo", "proximity", "attribute", "exact", "custom"]
+             * - customRanking: (array of strings) lets you specify part of the ranking.
+             *   The syntax of this condition is an array of strings containing attributes prefixed by asc (ascending order) or desc (descending order) operator.
+             *   For example `"customRanking" => ["desc(population)", "asc(name)"]`
+             * - queryType: Select how the query words are interpreted, it can be one of the following value:
+             *   - prefixAll: all query words are interpreted as prefixes,
+             *   - prefixLast: only the last word is interpreted as a prefix (default behavior),
+             *   - prefixNone: no query word is interpreted as a prefix. This option is not recommended.
+             * - highlightPreTag: (string) Specify the string that is inserted before the highlighted parts in the query result (default to "<em>").
+             * - highlightPostTag: (string) Specify the string that is inserted after the highlighted parts in the query result (default to "</em>").
+             * - optionalWords: (array of strings) Specify a list of words that should be considered as optional when found in the query.
+             * @param callback (optional) the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer or the error message if a failure occured
+             */
+            setSettings: function(settings, callback) {
+                var indexObj = this;
+                return this.as._jsonRequest({ method: 'PUT',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/settings',
+                    hostType: 'write',
+                    body: settings,
+                    callback: callback });
+            },
+            /*
+             * List all existing user keys associated to this index
+             *
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer with user keys list
+             */
+            listUserKeys: function(callback) {
+                var indexObj = this;
+                return this.as._jsonRequest({ method: 'GET',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/keys',
+                    hostType: 'read',
+                    callback: callback });
+            },
+            /*
+             * Get ACL of a user key associated to this index
+             *
+             * @param key
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer with user keys list
+             */
+            getUserKeyACL: function(key, callback) {
+                var indexObj = this;
+                return this.as._jsonRequest({ method: 'GET',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/keys/' + key,
+                    hostType: 'read',
+                    callback: callback });
+            },
+            /*
+             * Delete an existing user key associated to this index
+             *
+             * @param key
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer with user keys list
+             */
+            deleteUserKey: function(key, callback) {
+                var indexObj = this;
+                return this.as._jsonRequest({ method: 'DELETE',
+                    url: '/1/indexes/' + encodeURIComponent(indexObj.indexName) + '/keys/' + key,
+                    hostType: 'write',
+                    callback: callback });
+            },
+            /*
+             * Add an existing user key associated to this index
+             *
+             * @param acls the list of ACL for this key. Defined by an array of strings that
+             * can contains the following values:
+             *   - search: allow to search (https and http)
+             *   - addObject: allows to add/update an object in the index (https only)
+             *   - deleteObject : allows to delete an existing object (https only)
+             *   - deleteIndex : allows to delete index content (https only)
+             *   - settings : allows to get index settings (https only)
+             *   - editSettings : allows to change index settings (https only)
+             * @param callback the result callback called with two arguments
+             *  error: null or Error('message')
+             *  content: the server answer with user keys list
+             */
+            addUserKey: function(acls, params, callback) {
+                if (arguments.length === 1 || typeof params === 'function') {
+                    callback = params;
+                    params = null;
+                }
+
+                var postObj = {
+                    acl: acls
+                };
+
+                if (params) {
+                    postObj.validity = params.validity;
+                    postObj.maxQueriesPerIPPerHour = params.maxQueriesPerIPPerHour;
+                    postObj.maxHitsPerQuery = params.maxHitsPerQuery;
+                }
+
+                return this.as._jsonRequest({
+                    method: 'POST',
+                    url: '/1/indexes/' + encodeURIComponent(this.indexName) + '/keys',
+                    body: postObj,
+                    hostType: 'write',
+                    callback: callback
+                });
+            },
+
+            /**
+             * Add an existing user key associated to this index
+             * @deprecated use index.addUserKey()
+             */
+            addUserKeyWithValidity: deprecate(function(acls, params, callback) {
+                return this.addUserKey(acls, params, callback);
+            }, deprecatedMessage('index.addUserKeyWithValidity()', 'index.addUserKey()')),
+
+            /**
+             * Update an existing user key associated to this index
+             * @param {string} key - The key to update
+             * @param {string[]} acls - The list of ACL for this key. Defined by an array of strings that
+             *   can contains the following values:
+             *     - search: allow to search (https and http)
+             *     - addObject: allows to add/update an object in the index (https only)
+             *     - deleteObject : allows to delete an existing object (https only)
+             *     - deleteIndex : allows to delete index content (https only)
+             *     - settings : allows to get index settings (https only)
+             *     - editSettings : allows to change index settings (https only)
+             * @param {Object} [params] - Optionnal parameters to set for the key
+             * @param {number} params.validity - Number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+             * @param {number} params.maxQueriesPerIPPerHour - Number of API calls allowed from an IP address per hour
+             * @param {number} params.maxHitsPerQuery - Number of hits this API key can retrieve in one call
+             * @param {Function} callback - The result callback called with two arguments
+             *   error: null or Error('message')
+             *   content: the server answer with user keys list
+             * @return {Promise|undefined} Returns a promise if no callback given
+             */
+            updateUserKey: function(key, acls, params, callback) {
+                if (arguments.length === 2 || typeof params === 'function') {
+                    callback = params;
+                    params = null;
+                }
+
+                var putObj = {
+                    acl: acls
+                };
+
+                if (params) {
+                    putObj.validity = params.validity;
+                    putObj.maxQueriesPerIPPerHour = params.maxQueriesPerIPPerHour;
+                    putObj.maxHitsPerQuery = params.maxHitsPerQuery;
+                }
+
+                return this.as._jsonRequest({
+                    method: 'PUT',
+                    url: '/1/indexes/' + encodeURIComponent(this.indexName) + '/keys/' + key,
+                    body: putObj,
+                    hostType: 'write',
+                    callback: callback
+                });
+            },
+
+            _search: function(params, callback) {
+                return this.as._jsonRequest({ cache: this.cache,
+                    method: 'POST',
+                    url: '/1/indexes/' + encodeURIComponent(this.indexName) + '/query',
+                    body: {params: params},
+                    hostType: 'read',
+                    fallback: {
+                        method: 'GET',
+                        url: '/1/indexes/' + encodeURIComponent(this.indexName),
+                        body: {params: params}
+                    },
+                    callback: callback
+                });
+            },
+
+            as: null,
+            indexName: null,
+            typeAheadArgs: null,
+            typeAheadValueOption: null
+        };
+
+// extracted from https://github.com/component/map/blob/master/index.js
+// without the crazy toFunction thing
+        function map(arr, fn){
+            var ret = [];
+            for (var i = 0; i < arr.length; ++i) {
+                ret.push(fn(arr[i], i));
+            }
+            return ret;
+        }
+
+        function prepareHost(protocol) {
+            return function prepare(host) {
+                return protocol + '//' + host.toLowerCase();
+            };
+        }
+
+        function notImplemented() {
+            var message = 'algoliasearch: Not implemented in this environment.\n' +
+                'If you feel this is a mistake, write to support@algolia.com';
+
+            throw new Error(message);
+        }
+
+        function deprecatedMessage(previousUsage, newUsage) {
+            var githubAnchorLink = previousUsage.toLowerCase()
+                .replace('.', '')
+                .replace('()', '');
+
+            return 'algoliasearch: `' + previousUsage + '` was replaced by `' +
+                newUsage + '`. Please see https://github.com/algolia/algoliasearch-client-js/wiki/Deprecated#' + githubAnchorLink
+        }
+
+// Parse cloud does not supports setTimeout
+// We do not store a setTimeout reference in the client everytime
+// We only fallback to a fake setTimeout when not available
+// setTimeout cannot be override globally sadly
+        function exitPromise(fn, _setTimeout) {
+            _setTimeout(fn, 0);
+        }
+
+        function deprecate(fn, message) {
+            var warned = false;
+
+            function deprecated() {
+                if (!warned) {
+                    console.log(message);
+                    warned = true;
+                }
+
+                return fn.apply(this, arguments);
+            }
+
+            return deprecated;
+        }
+
+    }).call(this,require(1))
+},{"1":1,"11":11,"5":5,"9":9}],14:[function(require,module,exports){
+    module.exports = JSONPRequest;
+
+    var JSONPCounter = 0;
+
+    function JSONPRequest(url, opts, cb) {
+        if (opts.method !== 'GET') {
+            cb(new Error('Method ' + opts.method + ' ' + url + ' is not supported by JSONP.'));
+            return;
+        }
+
+        opts.debug('JSONP: start');
+
+        var cbCalled = false;
+        var timedOut = false;
+
+        JSONPCounter += 1;
+        var head = document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        var cbName = 'algoliaJSONP_' + JSONPCounter;
+        var done = false;
+
+        window[cbName] = function(data) {
+            try {
+                delete window[cbName];
+            } catch (e) {
+                window[cbName] = undefined;
+            }
+
+            if (timedOut) {
+                return;
+            }
+
+            cbCalled = true;
+
+            clean();
+
+            cb(null, {
+                body: data/*,
+                 // We do not send the statusCode, there's no statusCode in JSONP, it will be
+                 // computed using data.status && data.message like with XDR
+                 statusCode*/
+            });
+        };
+
+        // add callback by hand
+        url += '&callback=' + cbName;
+
+        // add body params manually
+        if (opts.jsonBody && opts.jsonBody.params) {
+            url += '&' + opts.jsonBody.params;
+        }
+
+        var ontimeout = setTimeout(timeout, opts.timeout);
+
+        // script onreadystatechange needed only for
+        // <= IE8
+        // https://github.com/angular/angular.js/issues/4523
+        script.onreadystatechange = readystatechange;
+        script.onload = success;
+        script.onerror = error;
+
+        script.async = true;
+        script.defer = true;
+        script.src = url;
+        head.appendChild(script);
+
+        function success() {
+            opts.debug('JSONP: success');
+
+            if (done || timedOut) {
+                return;
+            }
+
+            done = true;
+
+            // script loaded but did not call the fn => script loading error
+            if (!cbCalled) {
+                opts.debug('JSONP: Fail. Script loaded but did not call the callback');
+                clean();
+                cb(new Error('Failed to load JSONP script'));
+            }
+        }
+
+        function readystatechange() {
+            if (this.readyState === 'loaded' || this.readyState === 'complete') {
+                success();
+            }
+        }
+
+        function clean() {
+            clearTimeout(ontimeout);
+            script.onload = null;
+            script.onreadystatechange = null;
+            script.onerror = null;
+            head.removeChild(script);
+
+            try {
+                delete window[cbName];
+                delete window[cbName + '_loaded'];
+            } catch (e) {
+                window[cbName] = null;
+                window[cbName + '_loaded'] = null;
+            }
+        }
+
+        function timeout() {
+            opts.debug('JSONP: Script timeout');
+
+            timedOut = true;
+            clean();
+            cb(new Error('Timeout - Could not connect to endpoint ' + url));
+        }
+
+        function error() {
+            opts.debug('JSONP: Script error');
+
+            if (done || timedOut) {
+                return;
+            }
+
+            clean();
+            cb(new Error('Failed to load JSONP script'));
+        }
+    }
+
+},{}],15:[function(require,module,exports){
+    (function (global){
+// This is the standalone browser build entry point
+// Browser implementation of the Algolia Search JavaScript client,
+// using XMLHttpRequest, XDomainRequest and JSONP as fallback
+        module.exports = algoliasearch;
+
+        var inherits = require(12);
+        var Promise = global.Promise || require(8).Promise;
+
+        var AlgoliaSearch = require(13);
+        var inlineHeaders = require(17);
+        var JSONPRequest = require(14);
+
+        function algoliasearch(applicationID, apiKey, opts) {
+            var extend = require(9);
+
+            var getDocumentProtocol = require(16);
+
+            opts = extend(true, {}, opts) || {};
+
+            if (opts.protocol === undefined) {
+                opts.protocol = getDocumentProtocol();
+            }
+
+            opts._ua = algoliasearch.ua;
+
+            return new AlgoliaSearchBrowser(applicationID, apiKey, opts);
+        }
+
+        algoliasearch.version = require(18);
+        algoliasearch.ua = 'Algolia for vanilla JavaScript ' + algoliasearch.version;
+
+        var support = {
+            hasXMLHttpRequest: 'XMLHttpRequest' in window,
+            hasXDomainRequest: 'XDomainRequest' in window,
+            cors: 'withCredentials' in new XMLHttpRequest(),
+            timeout: 'timeout' in new XMLHttpRequest()
+        };
+
+        function AlgoliaSearchBrowser() {
+            // call AlgoliaSearch constructor
+            AlgoliaSearch.apply(this, arguments);
+        }
+
+        inherits(AlgoliaSearchBrowser, AlgoliaSearch);
+
+        AlgoliaSearchBrowser.prototype._request = function(url, opts) {
+            return new Promise(function(resolve, reject) {
+                // no cors or XDomainRequest, no request
+                if (!support.cors && !support.hasXDomainRequest) {
+                    // very old browser, not supported
+                    reject(new Error('CORS not supported'));
+                    return;
+                }
+
+                url = inlineHeaders(url, opts.headers);
+
+                var body = opts.body;
+                var req = support.cors ? new XMLHttpRequest() : new XDomainRequest();
+                var ontimeout;
+                var timedOut;
+
+                // do not rely on default XHR async flag, as some analytics code like hotjar
+                // breaks it and set it to false by default
+                if (req instanceof XMLHttpRequest) {
+                    req.open(opts.method, url, true);
+                } else {
+                    req.open(opts.method, url);
+                }
+
+                if (support.cors && body && opts.method !== 'GET') {
+                    req.setRequestHeader('content-type', 'application/x-www-form-urlencoded');
+                }
+
+                // we set an empty onprogress listener
+                // so that XDomainRequest on IE9 is not aborted
+                // refs:
+                //  - https://github.com/algolia/algoliasearch-client-js/issues/76
+                //  - https://social.msdn.microsoft.com/Forums/ie/en-US/30ef3add-767c-4436-b8a9-f1ca19b4812e/ie9-rtm-xdomainrequest-issued-requests-may-abort-if-all-event-handlers-not-specified?forum=iewebdevelopment
+                req.onprogress = function noop() {};
+
+                req.onload = load;
+                req.onerror = error;
+
+                if (support.timeout) {
+                    // .timeout supported by both XHR and XDR,
+                    // we do receive timeout event, tested
+                    req.timeout = opts.timeout;
+
+                    req.ontimeout = timeout;
+                } else {
+                    ontimeout = setTimeout(timeout, opts.timeout);
+                }
+
+                req.send(body);
+
+                // event object not received in IE8, at least
+                // but we do not use it, still important to note
+                function load(/*event*/) {
+                    // When browser does not supports req.timeout, we can
+                    // have both a load and timeout event, since handled by a dumb setTimeout
+                    if (timedOut) {
+                        return;
+                    }
+
+                    if (!support.timeout) {
+                        clearTimeout(ontimeout);
+                    }
+
+                    var response = null;
+
+                    try {
+                        response = JSON.parse(req.responseText);
+                    } catch(e) {}
+
+                    resolve({
+                        body: response,
+                        statusCode: req.status
+                    });
+                }
+
+                function error(event) {
+                    if (timedOut) {
+                        return;
+                    }
+
+                    if (!support.timeout) {
+                        clearTimeout(ontimeout);
+                    }
+
+                    // error event is trigerred both with XDR/XHR on:
+                    //   - DNS error
+                    //   - unallowed cross domain request
+                    reject(new Error('Could not connect to host, error was:' + event));
+                }
+
+                function timeout() {
+                    if (!support.timeout) {
+                        timedOut = true;
+                        req.abort();
+                    }
+
+                    resolve(new Error('Timeout - Could not connect to endpoint ' + url));
+                }
+
+            });
+        };
+
+        AlgoliaSearchBrowser.prototype._request.fallback = function(url, opts) {
+            url = inlineHeaders(url, opts.headers);
+
+            return new Promise(function(resolve, reject) {
+                JSONPRequest(url, opts, function JSONPRequestDone(err, content) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+
+                    resolve(content);
+                });
+            });
+        };
+
+        AlgoliaSearchBrowser.prototype._promise = {
+            reject: function(val) {
+                return Promise.reject(val);
+            },
+            resolve: function(val) {
+                return Promise.resolve(val);
+            },
+            delay: function(ms) {
+                return new Promise(function(resolve/*, reject*/) {
+                    setTimeout(resolve, ms);
                 });
             }
+        };
 
-// In the second stage, we run the text against regular expressions that look
-// for non-JSON patterns. We are especially concerned with '()' and 'new'
-// because they can cause invocation, and '=' because it can cause mutation.
-// But just to be safe, we want to reject all unexpected forms.
+    }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"12":12,"13":13,"14":14,"16":16,"17":17,"18":18,"8":8,"9":9}],16:[function(require,module,exports){
+    (function (global){
+        module.exports = getDocumentProtocol;
 
-// We split the second stage into 4 regexp operations in order to work around
-// crippling inefficiencies in IE's and Safari's regexp engines. First we
-// replace the JSON backslash pairs with '@' (a non-JSON character). Second, we
-// replace all simple value tokens with ']' characters. Third, we delete all
-// open brackets that follow a colon or comma or that begin the text. Finally,
-// we look to see that the remaining characters are only whitespace or ']' or
-// ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.
+        function getDocumentProtocol() {
+            var protocol = global.document.location.protocol;
 
-            if (/^[\],:{}\s]*$/
-                    .test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@')
-                        .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
-                        .replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
-
-// In the third stage we use the eval function to compile the text into a
-// JavaScript structure. The '{' operator is subject to a syntactic ambiguity
-// in JavaScript: it can begin a block or an object literal. We wrap the text
-// in parens to eliminate the ambiguity.
-
-                j = eval('(' + text + ')');
-
-// In the optional fourth stage, we recursively walk the new structure, passing
-// each name/value pair to a reviver function for possible transformation.
-
-                return typeof reviver === 'function'
-                    ? walk({'': j}, '')
-                    : j;
+            // when in `file:` mode (local html file), default to `http:`
+            if (protocol !== 'http:' && protocol !== 'https:') {
+                protocol = 'http:';
             }
 
-// If the text is not JSON parseable, then a SyntaxError is thrown.
+            return protocol;
+        }
 
-            throw new SyntaxError('JSON.parse');
-        };
+    }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],17:[function(require,module,exports){
+    module.exports = inlineHeaders;
+
+    var querystring = require(4);
+
+    function inlineHeaders(url, headers) {
+        if (/\?/.test(url)) {
+            url += '&';
+        } else {
+            url += '?';
+        }
+
+        return url + querystring.encode(headers);
     }
-}());
+
+},{"4":4}],18:[function(require,module,exports){
+    module.exports="3.3.2"
+},{}]},{},[15])(15)
+});
