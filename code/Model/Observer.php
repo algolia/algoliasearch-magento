@@ -185,7 +185,7 @@ class Algolia_Algoliasearch_Model_Observer
         /* @var $block Mage_Page_Block_Html_Head */
         $block = $observer->getEvent()->getBlock();
 
-        if ("head" == $block->getNameInLayout()) {
+        if ("head" == $block->getNameInLayout() && Mage::getDesign()->getArea() != 'adminhtml') {
             $block->addJs('../skin/frontend/base/default/algoliasearch/jquery.min.js');
             $block->addJs('../skin/frontend/base/default/algoliasearch/jquery-ui.js');
             $block->addJs('../skin/frontend/base/default/algoliasearch/typeahead.min.js');
