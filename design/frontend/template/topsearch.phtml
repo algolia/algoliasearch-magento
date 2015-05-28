@@ -653,11 +653,11 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                 if (location.hash.length <= 1)
                 {
                     desactivateInstant();
-                    instant = false;
+                    instantEnabled = false;
                 }
                 else
                 {
-                    autocomplete = false;
+                    autocompleteEnabled = false;
                     desactivateAutocomplete();
                     $(algoliaSettings.search_input_selector+':first').focus();
                 }
