@@ -21,6 +21,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     const XML_PATH_PRODUCT_ATTRIBUTES               = 'algoliasearch/products/product_additional_attributes';
     const XML_PATH_FACETS                           = 'algoliasearch/products/facets';
+    const XML_PATH_SORTING_INDICES                  = 'algoliasearch/products/sorts';
     const XML_PATH_PRODUCT_CUSTOM_RANKING           = 'algoliasearch/products/custom_ranking_product_attributes';
     const XML_PATH_RESULTS_LIMIT                    = 'algoliasearch/products/results_limit';
 
@@ -33,6 +34,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_REMOVE_IF_NO_RESULT              = 'algoliasearch/relevance/remove_words_if_no_result';
 
     const XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS    = 'algoliasearch/ui/number_product_suggestions';
+    const XML_PATH_NUMBER_OF_PRODUCT_RESULTS        = 'algoliasearch/ui/number_product_results';
     const XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS   = 'algoliasearch/ui/number_category_suggestions';
     const XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS       = 'algoliasearch/ui/number_page_suggestions';
 
@@ -126,6 +128,12 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         {
         }
 
+        $removes = array('slaves');
+
+        foreach ($removes as $remove)
+            if (isset($onlineSettings[$remove]))
+                unset($onlineSettings[$remove]);
+
         foreach ($settings as $key => $value)
             $onlineSettings[$key] = $value;
 
@@ -176,11 +184,12 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         foreach ($customRankings as $ranking)
             $customRankingsArr[] =  $ranking['order'] . '(' . $ranking['attribute'] . ')';
 
+
         $indexSettings = array(
             'attributesToIndex'         => array_values(array_unique($attributesToIndex)),
             'customRanking'             => $customRankingsArr,
             'unretrievableAttributes'   => $unretrievableAttributes,
-            'attributesForFaceting'     => $attributesForFaceting
+            'attributesForFaceting'     => $attributesForFaceting,
         );
 
         // Additional index settings from event observer
@@ -188,9 +197,33 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport));
         $indexSettings = $transport->getData();
 
-        $this->mergeSettings($this->getIndex($this->getIndexName($storeId).'_products'), $indexSettings);
+        $mergeSettings = $this->mergeSettings($this->getIndex($this->getIndexName($storeId).'_products'), $indexSettings);
 
-        return $indexSettings;
+        /**
+         * Handle Slaves
+         */
+
+
+        if (count($this->getSortingIndices()) > 0)
+        {
+            $slaves = array();
+
+            foreach ($this->getSortingIndices() as $values)
+                $slaves[] = $this->getIndexName($storeId).'_products_'.$values['attribute'].'_'.$values['sort'];
+
+            $index = $this->getIndex($this->getIndexName($storeId).'_products');
+            $index->setSettings(array('slaves' => $slaves));
+
+            foreach ($this->getSortingIndices() as $values)
+            {
+                $mergeSettings['ranking'] = array($values['sort'].'('.$values['attribute'].')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
+
+                $index = $this->getIndex($this->getIndexName($storeId).'_products_'.$values['attribute'].'_'.$values['sort']);
+                $index->setSettings($mergeSettings);
+            }
+        }
+
+        return $mergeSettings;
     }
 
     public function getPageIndexSettings($storeId)
@@ -262,6 +295,15 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         Varien_Profiler::start('Algolia-FullText-getSearchResult');
 
+        if ($this->isInstantEnabled($storeId))
+        {
+            $url = Mage::getBaseUrl().'#q='.$queryText.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$this->getIndexName($storeId).'_products%22';
+
+            header('Location: '.$url);
+
+            die();
+        }
+
         try
         {
             $resultsLimit = $this->getResultsLimit($storeId);
@@ -311,7 +353,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $allAttributes = $config->getEntityAttributeCodes('catalog_product');
 
-            $productAttributes = array_merge(array('name', 'path', 'categories', 'description', 'ordered_qty', 'stock_qty'), $allAttributes);
+            $productAttributes = array_merge(array('name', 'path', 'categories', 'description', 'ordered_qty', 'stock_qty', 'price_with_tax'), $allAttributes);
 
             $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
@@ -1168,8 +1210,12 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_FACETS, $storeId));
 
+        foreach ($attrs as &$attr)
+            if ($attr['type'] == 'other')
+                $attr['type'] = $attr['other_type'];
+
         if (is_array($attrs))
-            return $attrs;
+            return array_values($attrs);
 
         return array();
     }
@@ -1229,6 +1275,19 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return array();
     }
 
+    public function getSortingIndices($storeId = NULL)
+    {
+        $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_SORTING_INDICES, $storeId));
+
+        foreach ($attrs as &$attr)
+            $attr['index_name'] = $this->getIndexName($storeId).'_products_'.$attr['attribute'].'_'.$attr['sort'];
+
+        if (is_array($attrs))
+            return $attrs;
+
+        return array();
+    }
+
     public function getRemoveWordsIfNoResult($storeId = NULL)
     {
         return Mage::getStoreConfig(self::XML_PATH_REMOVE_IF_NO_RESULT, $storeId);
@@ -1237,6 +1296,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function getNumberOfProductSuggestions($storeId = NULL)
     {
         return Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS, $storeId);
+    }
+
+    public function getNumberOfProductResults($storeId = NULL)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PRODUCT_RESULTS, $storeId);
     }
 
     public function getNumberOfCategorySuggestions($storeId = NULL)

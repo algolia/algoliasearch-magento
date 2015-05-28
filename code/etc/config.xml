@@ -82,6 +82,14 @@
                     </algolia_search>
                 </observers>
             </admin_system_config_changed_section_algoliasearch>
+            <core_block_abstract_prepare_layout_before>
+                <observers>
+                    <belvg_jquery_prepare_layout_before>
+                        <class>algoliasearch/observer</class>
+                        <method>prepareLayoutBefore</method>
+                    </belvg_jquery_prepare_layout_before>
+                </observers>
+            </core_block_abstract_prepare_layout_before>
         </events>
         <resources>
             <algoliasearch_setup>
@@ -134,6 +142,7 @@
                 <remove_words_if_no_result></remove_words_if_no_result>
             </relevance>
             <ui>
+                <number_product_results>9</number_product_results>
                 <number_category_suggestions>5</number_category_suggestions>
                 <number_product_suggestions>3</number_product_suggestions>
                 <number_page_suggestions>3</number_page_suggestions>

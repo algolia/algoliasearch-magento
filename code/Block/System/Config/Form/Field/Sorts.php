@@ -3,7 +3,7 @@
 /**
  * Algolia custom sort order field
  */
-class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
+class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
 {
     protected $selectFields = array();
 
@@ -29,18 +29,14 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
                     }
 
                     $selectField->setExtraParams('style="width:160px;"');
-
                     break;
-                case 'type':
+                case 'sort':
                     $aOptions = array(
-                        'conjunctive'   => 'Conjunctive',
-                        'disjunctive'   => 'Disjunctive',
-                        'slider'        => 'Slider',
-                        'other'         => 'Other ->'
+                        'asc'   => 'Ascending',
+                        'desc'  => 'Descending',
                     );
 
                     $selectField->setExtraParams('style="width:100px;"');
-
                     break;
                 default:
                     throw new Exception('Unknown attribute id ' . $columnId);
@@ -59,19 +55,14 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
             'renderer'=> $this->getRenderer('attribute'),
         ));
 
-        $this->addColumn('type', array(
-            'label' => Mage::helper('adminhtml')->__('Facet type'),
-            'renderer'=> $this->getRenderer('type'),
-        ));
-
-        $this->addColumn('other_type', array(
-            'label' => Mage::helper('adminhtml')->__('Other facet type'),
-            'style' => 'width: 100px;'
+        $this->addColumn('sort', array(
+            'label' => Mage::helper('adminhtml')->__('Sort'),
+            'renderer'=> $this->getRenderer('sort'),
         ));
 
         $this->addColumn('label', array(
             'label' => Mage::helper('adminhtml')->__('Label'),
-            'style' => 'width: 100px;'
+            'style' => 'width: 200px;'
         ));
 
         $this->_addAfter = false;
@@ -88,8 +79,8 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
         );
 
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('type')->calcOptionHash(
-                $row->getType()),
+            'option_extra_attr_' . $this->getRenderer('sort')->calcOptionHash(
+                $row->getSort()),
             'selected="selected"'
         );
     }
