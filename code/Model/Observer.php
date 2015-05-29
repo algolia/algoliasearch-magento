@@ -195,4 +195,24 @@ class Algolia_Algoliasearch_Model_Observer
 
         return $this;
     }
+
+    public function controllerFrontInitBefore(Varien_Event_Observer $observer)
+    {
+        if (Mage::helper('algoliasearch')->replaceCategories() == false)
+            return;
+        if (Mage::helper('algoliasearch')->isInstantEnabled() == false)
+            return;
+
+        if (Mage::app()->getRequest()->getControllerName() == 'category')
+        {
+            $categoryName = Mage::registry('current_category')->name;
+            $indexName = Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getStoreId()).'_products';
+
+            $url = '/#q=&page=0&refinements=%5B%7B%22categories%22%3A%22'.$categoryName.'%22%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
+
+            header('Location: '.$url);
+
+            die();
+        }
+    }
 }

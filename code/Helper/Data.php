@@ -12,16 +12,18 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED        = 'algoliasearch/credentials/is_enabled';
     const XML_PATH_IS_POPUP_ENABLED                 = 'algoliasearch/credentials/is_popup_enabled';
-    const XML_PATH_INSTANT_SELECTOR                 = 'algoliasearch/credentials/instant_selector';
-    const XML_PATH_IS_INSTANT_ENABLED               = 'algoliasearch/credentials/is_instant_enabled';
     const XML_PATH_APPLICATION_ID                   = 'algoliasearch/credentials/application_id';
     const XML_PATH_API_KEY                          = 'algoliasearch/credentials/api_key';
     const XML_PATH_SEARCH_ONLY_API_KEY              = 'algoliasearch/credentials/search_only_api_key';
     const XML_PATH_INDEX_PREFIX                     = 'algoliasearch/credentials/index_prefix';
 
+    const XML_PATH_IS_INSTANT_ENABLED               = 'algoliasearch/instant/is_instant_enabled';
+    const XML_PATH_REPLACE_CATEGORIES               = 'algoliasearch/instant/replace_categories';
+    const XML_PATH_INSTANT_SELECTOR                 = 'algoliasearch/instant/instant_selector';
+    const XML_PATH_FACETS                           = 'algoliasearch/instant/facets';
+    const XML_PATH_SORTING_INDICES                  = 'algoliasearch/instant/sorts';
+
     const XML_PATH_PRODUCT_ATTRIBUTES               = 'algoliasearch/products/product_additional_attributes';
-    const XML_PATH_FACETS                           = 'algoliasearch/products/facets';
-    const XML_PATH_SORTING_INDICES                  = 'algoliasearch/products/sorts';
     const XML_PATH_PRODUCT_CUSTOM_RANKING           = 'algoliasearch/products/custom_ranking_product_attributes';
     const XML_PATH_RESULTS_LIMIT                    = 'algoliasearch/products/results_limit';
 
@@ -1255,6 +1257,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function isPopupEnabled($storeId = NULL)
     {
         return ($this->isEnabled($storeId) && Mage::getStoreConfigFlag(self::XML_PATH_IS_POPUP_ENABLED, $storeId));
+    }
+
+    public function replaceCategories($storeId = NULL)
+    {
+        return Mage::getStoreConfigFlag(self::XML_PATH_REPLACE_CATEGORIES, $storeId);
     }
 
     public function isInstantEnabled($storeId = NULL)
