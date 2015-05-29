@@ -81,8 +81,8 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
             <div style="float: left">
                 {{nbHits}} result{{^nbHits_one}}s{{/nbHits_one}} found {{#query}}matching "<strong>{{query}}</strong>" {{/query}}in {{processingTimeMS}} ms
             </div>
-            <div class="algolia-logo" style="float: right;">
-                by <img src="/skin/frontend/base/default/algoliasearch/algolia-logo.png">
+            <div style="float: right;">
+                <img src="/skin/frontend/base/default/algoliasearch/algolia-logo.png">
             </div>
             {{#sorting_indices.length}}
             <div style="float: right; margin-right: 10px;">
