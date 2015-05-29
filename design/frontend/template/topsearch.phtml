@@ -100,32 +100,34 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
         {{/hits.length}}
 
         {{#hits}}
-        <a href="{{permalink}}">
-            <div class="result-wrapper">
-                <div class="result">
-                    <div class="result-content">
-                        <div>
-                            <h1 class="result-title">
+        <div class="result-wrapper">
+            <div class="result">
+                <div class="result-content">
+                    <div class="result-thumbnail" style="float: left; padding-right: 10px;">
+                        {{#image_url}}
+                        <a href="{{permalink}}">
+                            <img src="{{{ image_url }}}" style="width: 105px; max-height: 148px;" />
+                        </a>
+                        {{/image_url}}
+                        {{^image_url}}
+                        <div style="width: 105px; height: 148px;"></div>
+                        {{/image_url}}
+                    </div>
+                    <div class="result-sub-content" style="display: table-cell; width: 100000px;">
+                        <h1 class="result-title">
+                            <a href="{{permalink}}">
+                                <div class="price">{{price_with_tax}}€</div>
                                 {{{ _highlightResult.name.value }}}
-                            </h1>
-                        </div>
-                        <div class="result-sub-content">
-                            <div class="result-thumbnail">
-                                {{#image_url}}
-                                <img height="216" src="{{{ image_url }}}" />
-                                {{/image_url}}
-                                {{^image_url}}
-                                <div style="height: 216px;"></div>
-                                {{/image_url}}
-                            </div>
-                            <div class="result-excerpt">
-                                <div class="price">Price : {{price_with_tax}}€</div>
-                            </div>
+                            </a>
+                        </h1>
+                        <div class="result-excerpt">
+                            {{{ _highlightResult.short_description.value }}}
                         </div>
                     </div>
                 </div>
+                <div style="clear: both"></div>
             </div>
-        </a>
+        </div>
         {{/hits}}
         {{^hits.length}}
         <div class="infos">

@@ -100,9 +100,7 @@
 
 #algolia_instant_selector .result-wrapper
 {
-    width: 33.33333333%;
-    display: inline;
-    float: left;
+
 }
 
 #algolia_instant_selector .title
@@ -125,16 +123,7 @@
 {
     margin: 0 10px 10px 10px;
     padding: 10px;
-    background-color: #F5F5F5;
-    text-align: center;
-    border: solid 1px #DDDDDD;
-}
-
-#algolia_instant_selector .hits .infos
-{
-    margin: 0 10px 10px 10px;
-    padding: 10px;
-    background-color: #F5F5F5;
+    background-color: #FFFFFF;
     text-align: center;
     border: solid 1px #DDDDDD;
 }
@@ -289,23 +278,20 @@
 
 #algolia_instant_selector .result .result-excerpt
 {
-    text-align: center;
+    text-align: left;
 }
 
-#algolia_instant_selector .result .result-excerpt .price
+#algolia_instant_selector .result .price
 {
-    color: #77a464;
+    color: #3399cc;
+    float: right;
+    margin-top: 0;
+    margin-left: 20px;
 }
 
 #algolia_instant_selector .result .result-title
 {
-    padding: 10px;
-    background-color: #F5F5F5;
-    text-align: center;
-    border-bottom: solid 1px #DDDDDD;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+    text-align: left;
 }
 
 #algolia_instant_selector .ui-widget-header {
