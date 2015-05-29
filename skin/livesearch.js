@@ -149,10 +149,6 @@ $algoliaJQuery(document).ready(function($) {
                     }
                     catch(error)
                     {
-                        console.log(error.message);
-                        console.log(engine.helper.state.disjunctiveFacets);
-                        console.log(algoliaSettings.facets[i].attribute);
-                        console.log(content.getFacetByName(algoliaSettings.facets[i].attribute));
                         throw("Bad facet function for '" + algoliaSettings.facets[i].type + "'");
                     }
                 }
@@ -167,8 +163,9 @@ $algoliaJQuery(document).ready(function($) {
                     {
                         var checked = this.helper.isRefined(algoliaSettings.facets[i].attribute, key);
 
-                        var name = window.facetsLabels && window.facetsLabels[key] != undefined ? window.facetsLabels[key] : key;
-                        var nameattr = key;
+                        var nameattr = window.facetsLabels && window.facetsLabels[key] != undefined ? window.facetsLabels[key] : key;
+                        var explode = nameattr.split(' /// ');
+                        var name = explode[explode.length - 1];
 
                         var params = {
                             type: {},

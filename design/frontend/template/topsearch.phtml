@@ -450,7 +450,8 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                     all_unchecked = all_unchecked && !checked;
 
                     var name = window.facetsLabels && window.facetsLabels[key] != undefined ? window.facetsLabels[key] : key;
-                    var nameattr = key;
+                    var explode = name.split(' /// ');
+                    var nameattr = explode[explode.length - 1];
 
                     var params = {
                         type: {},

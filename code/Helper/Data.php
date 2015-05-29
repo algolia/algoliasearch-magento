@@ -544,13 +544,35 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'description'       => $product->getDescription()
         );
 
-        $categories     = array();
+        $categories             = array();
+        $categories_with_path   = array();
 
         foreach ($this->getProductActiveCategories($product, $product->getStoreId()) as $categoryId)
-            if ($categoryName = $this->getCategoryName($categoryId, $product->getStoreId()))
-                array_push($categories, $categoryName);
+        {
+            $category = Mage::getModel('catalog/category')->load($categoryId);
 
-        $customData['categories'] = $categories;
+            $categoryName = $category->getName();
+
+            if ($categoryName)
+                $categories[] = $categoryName;
+
+            $category->getUrlInstance()->setStore($product->getStoreId());
+            $path = '';
+
+            foreach ($category->getPathIds() as $treeCategoryId) {
+                if ($path != '') {
+                    $path .= ' /// ';
+                }
+
+                $path .= $this->getCategoryName($treeCategoryId, $product->getStoreId());
+            }
+
+            $categories_with_path[] = $path;
+        }
+
+        $customData['categories'] = $categories_with_path;
+
+        $customData['categories_without_path'] = $categories;
 
         try
         {

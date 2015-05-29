@@ -203,12 +203,26 @@ class Algolia_Algoliasearch_Model_Observer
         if (Mage::helper('algoliasearch')->isInstantEnabled() == false)
             return;
 
-        if (Mage::app()->getRequest()->getControllerName() == 'category')
+        if (Mage::app()->getRequest()->getControllerName() == 'category' && Mage::app()->getRequest()->getParam('category') == null)
         {
-            $categoryName = Mage::registry('current_category')->name;
+            //$category = Mage::getModel('catalog/category')->load($categoryId);
+            $category = Mage::registry('current_category');
+
+            $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
+
+            $path = '';
+
+            foreach ($category->getPathIds() as $treeCategoryId) {
+                if ($path != '') {
+                    $path .= ' /// ';
+                }
+
+                $path .= Mage::helper('algoliasearch')->getCategoryName($treeCategoryId, Mage::app()->getStore()->getStoreId());
+            }
+
             $indexName = Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getStoreId()).'_products';
 
-            $url = '/#q=&page=0&refinements=%5B%7B%22categories%22%3A%22'.$categoryName.'%22%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
+            $url = Mage::app()->getRequest()->getOriginalPathInfo().'?category=1#q=&page=0&refinements=%5B%7B%22categories%22%3A%22'.$path.'%22%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
 
             header('Location: '.$url);
 
