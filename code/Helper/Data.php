@@ -574,52 +574,53 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $customData['categories_without_path'] = $categories;
 
-        try
-        {
-            $customData['thumbnail_url'] = $product->getThumbnailUrl();
-            $customData['thumbnail_url'] = str_replace(array('https://', 'http://'), '//', $customData['thumbnail_url']);
+        if(false === isset($defaultData['thumbnail_url'])) {
+            try {
+                $customData['thumbnail_url'] = $product->getThumbnailUrl();
+                $customData['thumbnail_url'] = str_replace(array('https://', 'http://'
+                ), '//', $customData['thumbnail_url']);
+            } catch (\Exception $e) {}
         }
-        catch(\Exception $e) {}
 
-        try
-        {
-            $customData['image_url'] = $product->getImageUrl();
-            $customData['image_url'] = str_replace(array('https://', 'http://'), '//', $customData['image_url']);
-        }
-        catch(\Exception $e) {}
-
-        $report = $this->getReportForProduct($product);
-
-        $customData['ordered_qty']      = intval($report->getOrderedQty());
-        $customData['stock_qty']        = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
-        
-        if ($product->getTypeId() == 'configurable')
-        {
-            $sub_products   = $product->getTypeInstance(true)->getUsedProducts(null, $product);
-            $ordered_qty    = 0;
-            $stock_qty      = 0;
-
-            foreach ($sub_products as $sub_product)
-            {
-                $stock_qty += (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($sub_product)->getQty();
-
-                $report = $this->getReportForProduct($sub_product);
-
-                $ordered_qty += intval($report->getOrderedQty());
-            }
-
-            $customData['ordered_qty']  = $ordered_qty;
-            $customData['stock_qty']    = $stock_qty;
+        if(false === isset($defaultData['image_url'])) {
+            try {
+                $customData['image_url'] = $product->getImageUrl();
+                $customData['image_url'] = str_replace(array('https://', 'http://'), '//', $customData['image_url']);
+            } catch (\Exception $e) {}
         }
 
         $additionalAttributes = $this->getProductAdditionalAttributes($product->getStoreId());
 
+        // skip default calculation if we have provided these attributes via the observer in $defaultData
+        if(false === isset($defaultData['ordered_qty']) && false === isset($defaultData['stock_qty'])) {
+            $report = $this->getReportForProduct($product);
 
-        if ($this->isAttributeEnabled($additionalAttributes, 'ordered_qty') == false)
-            unset($customData['ordered_qty']);
+            $customData['ordered_qty'] = (int)$report->getOrderedQty();
+            $customData['stock_qty']   = (int)Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
 
-        if ($this->isAttributeEnabled($additionalAttributes, 'stock_qty') == false)
-            unset($customData['stock_qty']);
+            if ($product->getTypeId() == 'configurable') {
+                $sub_products = $product->getTypeInstance(true)->getUsedProducts(null, $product);
+                $ordered_qty  = 0;
+                $stock_qty    = 0;
+
+                foreach ($sub_products as $sub_product) {
+                    $stock_qty += (int)Mage::getModel('cataloginventory/stock_item')->loadByProduct($sub_product)->getQty();
+
+                    $report = $this->getReportForProduct($sub_product);
+
+                    $ordered_qty += (int)$report->getOrderedQty();
+                }
+
+                $customData['ordered_qty'] = $ordered_qty;
+                $customData['stock_qty']   = $stock_qty;
+            }
+
+            if ($this->isAttributeEnabled($additionalAttributes, 'ordered_qty') == false)
+                unset($customData['ordered_qty']);
+
+            if ($this->isAttributeEnabled($additionalAttributes, 'stock_qty') == false)
+                unset($customData['stock_qty']);
+        }
 
         foreach ($additionalAttributes as $attribute)
         {
