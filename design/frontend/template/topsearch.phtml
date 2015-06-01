@@ -258,31 +258,33 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
 
             for (var i = 0; i < indices.length; i++)
             {
-                var index = algolia_client.initIndex(algoliaSettings.indexName + "_" + indices[i]);
+                if (params[indices[i] + '_hitsPerPage'] > 0)
+                {
+                    var index = algolia_client.initIndex(algoliaSettings.indexName + "_" + indices[i]);
 
-                hogan_objs.push({
-                    source: index.ttAdapter({hitsPerPage: params[indices[i] + '_hitsPerPage']}),
-                    templates: {
-                        header: '<div class="category">' + params['autocomplete_' + indices[i] + '_title'] + '</div>',
-                        suggestion: (function (i) {
-                            return function (hit) {
-                                if (indices[i] == 'products')
-                                {
-                                    if (Array.isArray(hit.categories))
-                                        hit.categories = hit.categories.join(', ');
+                    hogan_objs.push({
+                        source: index.ttAdapter({hitsPerPage: params[indices[i] + '_hitsPerPage']}),
+                        templates: {
+                            header: '<div class="category">' + params['autocomplete_' + indices[i] + '_title'] + '</div>',
+                            suggestion: (function (i) {
+                                return function (hit) {
+                                    if (indices[i] == 'products')
+                                    {
+                                        if (Array.isArray(hit.categories))
+                                            hit.categories = hit.categories.join(', ');
 
-                                    if (Array.isArray(hit._highlightResult.name))
-                                        hit._highlightResult.name = hit._highlightResult.name[0];
+                                        if (Array.isArray(hit._highlightResult.name))
+                                            hit._highlightResult.name = hit._highlightResult.name[0];
 
-                                    if (Array.isArray(hit.price))
-                                        hit.price = hit.price[0];
+                                        if (Array.isArray(hit.price))
+                                            hit.price = hit.price[0];
+                                    }
+                                    return params['autocomplete_' + indices[i] + '_template'].render(hit);
                                 }
-                                return params['autocomplete_' + indices[i] + '_template'].render(hit);
-                            }
-                        })(i)
-                    }
-                });
-
+                            })(i)
+                        }
+                    });
+                }
             }
 
             hogan_objs.push({
@@ -317,7 +319,7 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
             function desactivateAutocomplete()
             {
                 $(algoliaSettings.search_input_selector).each(function (i) {
-                    $(this).typeahead('destroy')
+                    $(this).typeahead('destroy');
                 });
             }
         }
@@ -326,6 +328,10 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
         {
             if ($(algoliaSettings.instant_selector).length !== 1)
                 throw '[Algolia] Invalid instant-search selector: ' + algoliaSettings.instant_selector;
+
+            if ($(algoliaSettings.instant_selector).find(algoliaSettings.search_input_selector).length > 0)
+                throw '[Algolia] You can\'t have a search input matching "' + algoliaSettings.search_input_selector +
+                '" inside you instant selector "' + algoliaSettings.instant_selector + '"';
 
             var old_content         = $(algoliaSettings.instant_selector).html();
 
@@ -336,6 +342,13 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
             var conjunctive_facets  = [];
             var disjunctive_facets  = [];
 
+            /**
+             *  Foreach Type decide if it need to have a conjunctive or dijunctive faceting
+             *
+             *  When you create a custom facet type you need to add it here.
+             *
+             *  Example : 'menu'
+             */
             for (var i = 0; i < algoliaSettings.facets.length; i++)
             {
                 if (algoliaSettings.facets[i].type == "conjunctive")
@@ -373,11 +386,18 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                 $(algoliaSettings.instant_selector).html(old_content);
             }
 
+            /**
+             * The engine object definition is in /skin/frontend/base/default/algoliasearch
+             *
+             * It define a default functions for instant search.
+             *
+             * You should not modify it directly, instead you can create the same function on this file
+             * modify it and change the call from engine.FUNCTION(...) to FUNCTION(...)
+             */
             engine.setHelper(helper);
 
-            /**
-             * Functions
-             */
+
+
 
             function performQueries(push_state)
             {
@@ -388,6 +408,9 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
 
             function searchCallback(content)
             {
+                /**
+                 *  Modify results to be able to print it with Hogan
+                 */
                 for (var i = 0; i < content.hits.length; ++i)
                 {
                     if (Array.isArray(content.hits[i].categories))
@@ -400,6 +423,9 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                         content.hits[i].price = content.hits[i].price[0];
                 }
 
+                /**
+                 * Generate HTML
+                 */
                 var html_content = "";
 
                 html_content += "<div id='algolia_instant_selector'>";
@@ -425,12 +451,11 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                 $(algoliaSettings.instant_selector).html(html_content);
 
                 updateSliderValues();
-            };
+            }
 
             /**
-             * Custom Facets Types
+             * Example of a custom facet type
              */
-
             custom_facets_types["menu"] = function (engine, content, facet) {
 
                 var data = [];
@@ -486,9 +511,8 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
             };
 
             /**
-             * Bindings
+             * Handle click on menu custom facet
              */
-
             $("body").on("click", ".sub_facet.menu", function (e) {
 
                 e.stopImmediatePropagation();
@@ -509,6 +533,9 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                 performQueries(true);
             });
 
+            /**
+             * Handle click on conjunctive and disjunctive facet
+             */
             $("body").on("click", ".sub_facet", function () {
 
                 $(this).find("input[type='checkbox']").each(function (i) {
@@ -520,11 +547,16 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                 performQueries(true);
             });
 
-
+            /**
+             * Handle jquery-ui slider initialisation
+             */
             $("body").on("slide", "", function (event, ui) {
                 updateSlideInfos(ui);
             });
 
+            /**
+             * Handle sort change
+             */
             $("body").on("change", "#index_to_use", function () {
                 engine.helper.setIndex($(this).val());
 
@@ -533,6 +565,9 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                 performQueries(true);
             });
 
+            /**
+             * Handle jquery-ui slide event
+             */
             $("body").on("slidechange", ".algolia-slider-true", function (event, ui) {
 
                 var slide_dom = $(ui.handle).closest(".algolia-slider");
@@ -554,6 +589,9 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                 performQueries(true);
             });
 
+            /**
+             * Handle page change
+             */
             $("body").on("click", ".algolia-pagination a", function (e) {
                 e.preventDefault();
 
@@ -565,11 +603,15 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                 return false;
             });
 
+            /** Handle input clearing **/
             $('body').on('click', '.clear', function () {
                 engine.helper.clearRefinements();
                 $(algoliaSettings.search_input_selector).val('').keyup();
             });
 
+            /**
+             * Handle search
+             */
             $(algoliaSettings.search_input_selector).keyup(function (e) {
                 e.preventDefault();
 
@@ -580,11 +622,13 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
 
                 engine.helper.setQuery($(this).val());
 
+                /** Update all search input to reflect the change **/
                 $(algoliaSettings.search_input_selector).each(function (i) {
                     if ($(this)[0] != $this[0])
                         $(this).val(engine.helper.state.query);
                 });
 
+                /** If escape **/
                 if (e.keyCode === 27) {
 
                     clearTimeout(history_timeout);
@@ -642,6 +686,7 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
              * Initialization
              */
 
+            /** Clean input **/
             $(algoliaSettings.search_input_selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
 
             engine.getRefinementsFromUrl(algoliaSettings.search_input_selector);
