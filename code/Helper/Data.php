@@ -435,11 +435,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     private function getReportForProduct($product)
     {
-        $report = Mage::getResourceModel('reports/product_sold_collection')
+        $report = Mage::getResourceModel('reports/product_collection')
             ->addOrderedQty()
-            ->setStoreId($product->getStoreId())
-            ->addStoreFilter($product->getStoreId())
-            ->addFieldToFilter('entity_id', $product->getId())
+            ->addAttributeToFilter('sku', $product->getSku())
+            ->setOrder('ordered_qty', 'desc')
             ->getFirstItem();
 
         return $report;
@@ -559,10 +558,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $category->getUrlInstance()->setStore($product->getStoreId());
             $path = '';
 
-            foreach ($category->getPathIds() as $treeCategoryId) {
-                if ($path != '') {
+            foreach ($category->getPathIds() as $treeCategoryId)
+            {
+                if ($path != '')
                     $path .= ' /// ';
-                }
 
                 $path .= $this->getCategoryName($treeCategoryId, $product->getStoreId());
             }
@@ -574,41 +573,53 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $customData['categories_without_path'] = $categories;
 
-        if(false === isset($defaultData['thumbnail_url'])) {
-            try {
+        if (false === isset($defaultData['thumbnail_url']))
+        {
+            try
+            {
                 $customData['thumbnail_url'] = $product->getThumbnailUrl();
                 $customData['thumbnail_url'] = str_replace(array('https://', 'http://'
                 ), '//', $customData['thumbnail_url']);
-            } catch (\Exception $e) {}
+            }
+            catch (\Exception $e) {}
         }
 
-        if(false === isset($defaultData['image_url'])) {
-            try {
+        if (false === isset($defaultData['image_url']))
+        {
+            try
+            {
                 $customData['image_url'] = $product->getImageUrl();
                 $customData['image_url'] = str_replace(array('https://', 'http://'), '//', $customData['image_url']);
-            } catch (\Exception $e) {}
+            }
+            catch (\Exception $e) {}
         }
 
         $additionalAttributes = $this->getProductAdditionalAttributes($product->getStoreId());
 
         // skip default calculation if we have provided these attributes via the observer in $defaultData
-        if(false === isset($defaultData['ordered_qty']) && false === isset($defaultData['stock_qty'])) {
-            $report = $this->getReportForProduct($product);
+        if (false === isset($defaultData['ordered_qty']) && false === isset($defaultData['stock_qty']))
+        {
+            $ordered_qty = Mage::getResourceModel('reports/product_collection')
+                ->addOrderedQty()
+                ->addAttributeToFilter('sku', $product->getSku())
+                ->setOrder('ordered_qty', 'desc')
+                ->getFirstItem()
+                ->ordered_qty;
 
-            $customData['ordered_qty'] = (int)$report->getOrderedQty();
-            $customData['stock_qty']   = (int)Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
+            $customData['ordered_qty'] = (int) $ordered_qty;
+            $customData['stock_qty']   = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
 
-            if ($product->getTypeId() == 'configurable') {
+            if ($product->getTypeId() == 'configurable')
+            {
                 $sub_products = $product->getTypeInstance(true)->getUsedProducts(null, $product);
                 $ordered_qty  = 0;
                 $stock_qty    = 0;
 
-                foreach ($sub_products as $sub_product) {
+                foreach ($sub_products as $sub_product)
+                {
                     $stock_qty += (int)Mage::getModel('cataloginventory/stock_item')->loadByProduct($sub_product)->getQty();
 
-                    $report = $this->getReportForProduct($sub_product);
-
-                    $ordered_qty += (int)$report->getOrderedQty();
+                    $ordered_qty += (int) $this->getReportForProduct($sub_product)->ordered_qty;
                 }
 
                 $customData['ordered_qty'] = $ordered_qty;
@@ -629,10 +640,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 : $product->getData($attribute['attribute']);
 
             $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attribute['attribute'], $value, $product->getStoreId(), Mage_Catalog_Model_Product::ENTITY);
+
             if ($value)
-            {
                 $customData[$attribute['attribute']] = $value;
-            }
         }
 
         $customData = array_merge($customData, $defaultData);
@@ -681,8 +691,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'popularity'    => 1,
             'product_count' => $category->getProductCount()
         );
-
-
 
         if ( ! empty($image_url)) {
             $data['image_url'] = $image_url;
