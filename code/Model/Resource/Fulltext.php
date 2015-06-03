@@ -19,7 +19,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
     public function _construct()
     {
         parent::_construct();
-        $this->_engine = new Algolia_Algoliasearch_Model_Resource_Engine();
+
         $this->_helper = Mage::helper('algoliasearch');
     }
 
