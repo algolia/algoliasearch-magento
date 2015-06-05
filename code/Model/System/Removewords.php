@@ -3,7 +3,7 @@
  * Source model for algolia remove words if no result
  */
 
-class Algolia_Algoliasearch_Model_System_Config_Source_Removewords
+class Algolia_Algoliasearch_Model_System_Removewords
 {
     public function toOptionArray()
     {

@@ -239,7 +239,7 @@
                         <remove_words_if_no_result translate="label comment">
                             <label>Remove Words If No Result?</label>
                             <frontend_type>select</frontend_type>
-                            <source_model>algoliasearch/system_config_source_removewords</source_model>
+                            <source_model>algoliasearch/system_removewords</source_model>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>

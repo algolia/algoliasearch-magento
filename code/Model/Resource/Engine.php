@@ -18,11 +18,6 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         $this->config = new Algolia_Algoliasearch_Helper_Config();
     }
 
-    /**
-     * Retrieve allowed visibility values for current engine
-     *
-     * @return array
-     */
     public function getAllowedVisibility()
     {
         return Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds();
