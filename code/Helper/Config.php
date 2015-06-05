@@ -5,7 +5,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_MINIMAL_QUERY_LENGTH             = 'algoliasearch/ui/minimal_query_length';
     const XML_PATH_SEARCH_DELAY                     = 'algoliasearch/ui/search_delay';
 
-    const XML_PATH_IS_ALGOLIA_SEARCH_ENABLED        = 'algoliasearch/credentials/is_enabled';
     const XML_PATH_IS_POPUP_ENABLED                 = 'algoliasearch/credentials/is_popup_enabled';
     const XML_PATH_APPLICATION_ID                   = 'algoliasearch/credentials/application_id';
     const XML_PATH_API_KEY                          = 'algoliasearch/credentials/api_key';
@@ -91,14 +90,9 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfigFlag(self::XML_PATH_SAVE_LAST_QUERY, $storeId);
     }
 
-    public function isEnabled($storeId = NULL)
-    {
-        return (bool) Mage::getStoreConfigFlag(self::XML_PATH_IS_ALGOLIA_SEARCH_ENABLED, $storeId);
-    }
-
     public function isPopupEnabled($storeId = NULL)
     {
-        return ($this->isEnabled($storeId) && Mage::getStoreConfigFlag(self::XML_PATH_IS_POPUP_ENABLED, $storeId));
+        return Mage::getStoreConfigFlag(self::XML_PATH_IS_POPUP_ENABLED, $storeId);
     }
 
     public function replaceCategories($storeId = NULL)
@@ -108,7 +102,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function isInstantEnabled($storeId = NULL)
     {
-        return ($this->isEnabled($storeId) && Mage::getStoreConfigFlag(self::XML_PATH_IS_INSTANT_ENABLED, $storeId));
+        return Mage::getStoreConfigFlag(self::XML_PATH_IS_INSTANT_ENABLED, $storeId);
     }
 
     public function getInstantSelector($storeId = NULL)

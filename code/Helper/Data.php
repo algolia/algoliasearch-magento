@@ -211,11 +211,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->stopEmulation($emulationInfo);
     }
 
-    public function isEnabled($storeId = NULL)
-    {
-        return $this->config->isEnabled($storeId);
-    }
-
     public function rebuildStoreProductIndex($storeId, $productIds, $defaultData = null)
     {
         if (count($productIds) > 1)
