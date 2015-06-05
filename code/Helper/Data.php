@@ -98,9 +98,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         foreach ($store_ids as $store_id)
         {
-            $index = $this->getIndex($this->getIndexName($store_id).'_products');
+            $index_name = $this->product_helper->getIndexName($store_id);
 
-            $index->deleteObjects($ids);
+            $this->algolia_helper->deleteObjects($ids, $index_name);
         }
     }
 
@@ -110,9 +110,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         foreach ($store_ids as $store_id)
         {
-            $index = $this->getIndex($this->getIndexName($store_id).'_categories');
+            $index_name = $this->category_helper->getIndexName($store_id);
 
-            $index->deleteObjects($ids);
+            $this->algolia_helper->deleteObjects($ids, $index_name);
         }
     }
 

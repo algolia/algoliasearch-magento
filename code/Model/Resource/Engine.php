@@ -28,72 +28,43 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds();
     }
 
-    /**
-     * Define if current search engine supports advanced index
-     *
-     * @return bool
-     */
     public function allowAdvancedIndex()
     {
         return FALSE;
     }
 
-    /**
-     * Enqueue removing data from index.
-     * Execute the job only once to avoid overlapping with another job that adds indexes.
-     *
-     * Examples:
-     * (product, null, null) => Clean product index of all stores
-     * (product, 1, null)    => Clean product index of store Id=1
-     * (product, 1, 2)       => Clean index of product Id=2 and its store view Id=1
-     * (product, null, 2)    => Clean index of all store views of product Id=2
-     *
-     * @param string $entity 'product'|'category'
-     * @param int|null $storeId
-     * @param int|array|null $entityId
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
-    public function cleanEntityIndex($entity, $storeId = NULL, $entityId = NULL)
+    public function removeProducts($storeId = null, $product_ids = null)
     {
-        if (is_array($entityId) && count($entityId) > self::ONE_TIME_AMOUNT) {
-            foreach (array_chunk($entityId, self::ONE_TIME_AMOUNT) as $chunk) {
-                $this->_cleanEntityIndex($entity, $storeId, $chunk);
+        if (is_array($product_ids) == false)
+            $product_ids = array($product_ids);
+
+        if (is_array($product_ids) && count($product_ids) > self::ONE_TIME_AMOUNT) {
+            foreach (array_chunk($product_ids, self::ONE_TIME_AMOUNT) as $chunk) {
+                $this->helper->removeProducts($chunk, $storeId);
             }
         } else {
-            $this->_cleanEntityIndex($entity, $storeId, $entityId);
+            $this->helper->removeProducts($product_ids, $storeId);
         }
+
         return $this;
     }
 
-    /**
-     * @param string $entity 'product'|'category'
-     * @param int|null $storeId
-     * @param int|array|null $entityId
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
-    protected function _cleanEntityIndex($entity, $storeId = NULL, $entityId = NULL)
+    public function removeCategories($storeId = null, $category_ids = null)
     {
-        $data = $entityId;
+        if (is_array($category_ids) == false)
+            $category_ids = array($category_ids);
 
-        if (is_array($data) == false)
-            $data = array($data);
-
-        if ($entity == 'product')
-            $this->helper->removeProducts($data, $storeId);
-
-        if ($entity == 'category')
-            $this->helper->removeCategories($data, $storeId);
+        if (is_array($category_ids) && count($category_ids) > self::ONE_TIME_AMOUNT) {
+            foreach (array_chunk($category_ids, self::ONE_TIME_AMOUNT) as $chunk) {
+                $this->helper->removeCategories($chunk, $storeId);
+            }
+        } else {
+            $this->helper->removeCategories($category_ids, $storeId);
+        }
 
         return $this;
     }
 
-    /**
-     * Enqueue indexing for the specified categories
-     *
-     * @param null|int $storeId
-     * @param null|int|array $categoryIds
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
     public function rebuildCategoryIndex($storeId = NULL, $categoryIds = NULL)
     {
         if (is_array($categoryIds) && count($categoryIds) > self::ONE_TIME_AMOUNT) {
@@ -106,11 +77,6 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $this;
     }
 
-    /**
-     * @param null|int $storeId
-     * @param null|int|array $categoryIds
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
     protected function _rebuildCategoryIndex($storeId = NULL, $categoryIds = NULL)
     {
         $data = array(
@@ -121,13 +87,29 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $this;
     }
 
-    /**
-     * Enqueue indexing for the specified products
-     *
-     * @param null|int $storeId
-     * @param null|int|array $productIds
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
+    public function rebuildAll()
+    {
+        $queue = Mage::getSingleton('algoliasearch/queue');
+        $helper = Mage::helper('algoliasearch');
+
+        foreach (Mage::app()->getStores() as $store)
+        {
+            if ($store->getIsActive())
+            {
+                $queue->add('algoliasearch/observer', 'rebuildProductIndex', array('store_id' => $store->getId(), 'product_ids' =>  array()), 3);
+                $queue->add('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $store->getId(), 'category_ids' =>  array()), 3);
+            }
+            else
+            {
+                $helper->deleteStoreIndex($store->getId());
+            }
+        }
+
+        // if debug
+        $queue->run();
+    }
+
+
     public function rebuildProductIndex($storeId = NULL, $productIds = NULL)
     {
         if (is_array($productIds) && count($productIds) > self::ONE_TIME_AMOUNT) {
@@ -140,11 +122,6 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $this;
     }
 
-    /**
-     * @param null|int $storeId
-     * @param null|int|array $productIds
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
     protected function _rebuildProductIndex($storeId = NULL, $productIds = NULL)
     {
         $data = array(
@@ -155,13 +132,6 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $this;
     }
 
-    /**
-     * Prepare index array. Array values will be converted to a string glued by separator.
-     *
-     * @param array $index
-     * @param string $separator
-     * @return string
-     */
     public function prepareEntityIndex($index, $separator = ' ')
     {
         foreach ($index as $key => $value) {
@@ -174,30 +144,8 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $index;
     }
 
-    /**
-     * Custom alias for the original method that checks whether layered navigation is allowed
-     *
-     * @return bool
-     */
-    public function isLayeredNavigationAllowed()
-    {
-        return $this->isLeyeredNavigationAllowed();
-    }
-
-    /**
-     * Define if engine is available
-     *
-     * @return bool
-     */
     public function test()
     {
-        if ( ! $this->helper->isEnabled()) {
-            return parent::test();
-        }
-
-        return
-            $this->config->getApplicationID() &&
-            $this->config->getAPIKey() &&
-            $this->config->getSearchOnlyAPIKey();
+        return true;
     }
 }

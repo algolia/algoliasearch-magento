@@ -38,6 +38,13 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->client->deleteIndex($index_name);
     }
 
+    public function deleteObjects($ids, $index_name)
+    {
+        $index = $this->getIndex($index_name);
+
+        $index->deleteObjects($ids);
+    }
+
     public function moveIndex($index_name_tmp, $index_name)
     {
         $this->client->moveIndex($index_name_tmp, $index_name);

@@ -6,7 +6,7 @@
  * @method Algolia_Algoliasearch_Model_Resource_Fulltext _getResource()
  * @method Algolia_Algoliasearch_Model_Resource_Fulltext getResource()
  */
-class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
+class Algolia_Algoliasearch_Model_Algoliaokok extends Mage_Core_Model_Abstract
 {
     const ENTITY_CATEGORY = 'category';
     const ENTITY_PRODUCT  = 'product';

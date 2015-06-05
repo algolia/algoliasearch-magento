@@ -131,6 +131,9 @@ class Algolia_Algoliasearch_Model_Observer
         return $this;
     }
 
+    /**
+     * Inject jquery before prototype
+     */
     public function prepareLayoutBefore(Varien_Event_Observer $observer)
     {
         /* @var $block Mage_Page_Block_Html_Head */
@@ -147,6 +150,9 @@ class Algolia_Algoliasearch_Model_Observer
         return $this;
     }
 
+    /**
+     * Catch request if it is a category page
+     */
     public function controllerFrontInitBefore(Varien_Event_Observer $observer)
     {
         if ($this->config->replaceCategories() == false)
