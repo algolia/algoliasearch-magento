@@ -38,6 +38,18 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_USE_RESULT_CACHE                 = 'algoliasearch/ui/use_result_cache';
     const XML_PATH_SAVE_LAST_QUERY                  = 'algoliasearch/ui/save_last_query';
 
+    const XML_PATH_MAX_RETRIES                      = 'algoliasearch/queue/retries';
+    const XML_PATH_IS_ACTIVE                        = 'algoliasearch/queue/active';
+
+    public function getQueueMaxRetries($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_MAX_RETRIES, $storeId);
+    }
+
+    public function isQueueActive($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_MAX_RETRIES, $storeId);
+    }
 
     public function getRemoveWordsIfNoResult($storeId = NULL)
     {
