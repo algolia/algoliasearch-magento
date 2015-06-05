@@ -121,7 +121,7 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         if ( ! empty($image_url)) {
             $data['image_url'] = $image_url;
         }
-        foreach ($this->getCategoryAdditionalAttributes($storeId) as $attribute) {
+        foreach ($this->config->getCategoryAdditionalAttributes($storeId) as $attribute) {
             $value = $category->hasData($this->_dataPrefix.$attribute['attribute'])
                 ? $category->getData($this->_dataPrefix.$attribute['attribute'])
                 : $category->getData($attribute['attribute']);

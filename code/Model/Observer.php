@@ -43,7 +43,7 @@ class Algolia_Algoliasearch_Model_Observer
     public function useAlgoliaSearchPopup(Varien_Event_Observer $observer)
     {
         if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled()) {
-            $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
+            $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle'); // Call algoliasearch.xml
         }
         return $this;
     }
@@ -127,7 +127,7 @@ class Algolia_Algoliasearch_Model_Observer
 
     public function rebuildStoreProductIndex($storeId, $productIds = NULL)
     {
-        Mage::getResourceModel('algoliasearch/fulltext')->rebuildIndex($storeId, $productIds);
+        Mage::helper('algoliasearch')->rebuildStoreProductIndex($storeId, $productIds);
         return $this;
     }
 

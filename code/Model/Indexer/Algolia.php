@@ -545,6 +545,25 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
      */
     public function reindexAll()
     {
-        $this->_getIndexer()->rebuildIndex();
+        $queue = Mage::getSingleton('algoliasearch/queue');
+        $helper = Mage::helper('algoliasearch');
+
+        foreach (Mage::app()->getStores() as $store)
+        {
+            if ($store->getIsActive())
+            {
+                $queue->add('algoliasearch/observer', 'rebuildProductIndex', array('store_id' => $store->getId(), 'product_ids' =>  array()), 3);
+                $queue->add('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $store->getId(), 'category_ids' =>  array()), 3);
+            }
+            else
+            {
+                $helper->deleteStoreIndex($store->getId());
+            }
+        }
+
+        // if debug
+        $queue->run();
+
+        return $this;
     }
 }

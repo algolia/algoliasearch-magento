@@ -139,7 +139,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         {
             $storeRootCategoryPath = sprintf('%d/%d', $this->getRootCategoryId(), Mage::app()->getStore($storeId)->getRootCategoryId());
 
-            $indexer = $this->getIndex($this->getIndexName($storeId).'_categories');
+            $index_name = $this->category_helper->getIndexName($storeId);
 
             $categories = Mage::getResourceModel('catalog/category_collection'); /** @var $categories Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
 
@@ -176,18 +176,18 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                     foreach ($collection as $category)
                     {
                         /** @var $category Mage_Catalog_Model_Category */
-                        if ( ! $this->isCategoryActive($category->getId(), $storeId))
+                        if ( ! $this->category_helper->isCategoryActive($category->getId(), $storeId))
                             continue;
 
                         $category->setStoreId($storeId);
 
-                        $category_obj = $this->getCategoryJSON($category);
+                        $category_obj = $this->category_helper->getObject($category);
 
                         if ($category_obj['product_count'] > 0)
                             array_push($indexData, $category_obj);
 
                         if (count($indexData) >= self::BATCH_SIZE) {
-                            $indexer->addObjects($indexData);
+                            $this->algolia_helper->addObjects($indexData, $index_name);
                             $indexData = array();
                         }
                     }
@@ -197,7 +197,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                     $page++;
                 }
                 if (count($indexData) > 0) {
-                    $indexer->addObjects($indexData);
+                    $this->algolia_helper->addObjects($indexData, $index_name);
                 }
                 unset($indexData);
             }
@@ -241,8 +241,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 ->setVisibility(Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds())
                 ->addFinalPrice()
                 ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
-                ->addAttributeToSelect(array_merge(self::$_predefinedProductAttributes, $additionalAttr))
-                ->addAttributeToFilter('entity_id', array('in' => $productIds));
+                ->addAttributeToSelect(array_merge(self::$_predefinedProductAttributes, $additionalAttr));
+
+            if ($productIds && count($productIds) > 0)
+                $products->addAttributeToFilter('entity_id', array('in' => $productIds));
 
             Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before', array('store' => $storeId, 'collection' => $products));
             $size = $products->getSize();

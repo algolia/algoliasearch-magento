@@ -69,26 +69,6 @@ class Algolia_Algoliasearch_Model_Algolia extends Mage_Core_Model_Abstract
     }
 
     /**
-     * Rebuild all index data for products and categories
-     *
-     * @return Algolia_Algoliasearch_Model_Algolia
-     */
-    public function rebuildIndex()
-    {
-        foreach (Mage::app()->getStores() as $store) { /** @var $store Mage_Core_Model_Store */
-            if ($store->getIsActive()) {
-                Mage::helper('algoliasearch')->setIndexSettings($store->getId());
-                $this->rebuildCategoryIndex($store->getId());
-                $this->rebuildProductIndex($store->getId());
-            } else {
-                Mage::helper('algoliasearch')->deleteStoreIndex($store->getId());
-            }
-        }
-        $this->resetSearchResults();
-        return $this;
-    }
-
-    /**
      * Update index settings only (do not reindex)
      *
      * @param array|bool $storeIds
