@@ -12,27 +12,9 @@ class Algolia_Algoliasearch_Model_Observer
         $this->config = new Algolia_Algoliasearch_Helper_Config();
     }
 
-    public function getQueue()
-    {
-        return Mage::getSingleton('algoliasearch/queue');
-    }
-
-    public function getStoreIndex($storeId)
-    {
-        return Mage::helper('algoliasearch')->getStoreIndex($storeId);
-    }
-
-    public function deleteStoreIndex($storeId)
-    {
-        Mage::helper('algoliasearch')->deleteStoreIndex($storeId);
-        return $this;
-    }
-
-    public function getHelper()
-    {
-        return Mage::helper('algoliasearch');
-    }
-
+    /**
+     * On config save
+     */
     public function configSaved(Varien_Event_Observer $observer)
     {
         foreach (Mage::app()->getStores() as $store) /** @var $store Mage_Core_Model_Store */
@@ -40,48 +22,14 @@ class Algolia_Algoliasearch_Model_Observer
                 Mage::helper('algoliasearch')->saveConfigurationToAlgolia($store->getId());
     }
 
+    /**
+     * Call algoliasearch.xml To load js / css / phtml
+     */
     public function useAlgoliaSearchPopup(Varien_Event_Observer $observer)
     {
         if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled()) {
-            $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle'); // Call algoliasearch.xml
+            $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
         }
-        return $this;
-    }
-
-    public function cleanIndex(Varien_Object $event)
-    {
-        $storeId = $event->getStoreId();
-        $entityId = $event->getEntityId();
-        $entity = $event->getEntity();
-
-        if (is_null($storeId) && is_null($entityId)) {
-            foreach (Mage::app()->getStores() as $store) { /** @var $store Mage_Core_Model_Store */
-                if ( ! $store->getIsActive()) { continue; }
-                $this->deleteStoreIndex($store->getId());
-            }
-        } elseif (is_numeric($storeId) && is_null($entityId)) {
-            $this->deleteStoreIndex($storeId);
-        } elseif ( ! empty($entityId)) {
-            $entityIds = (array) $entityId;
-            if (is_numeric($storeId)) {
-                $objectIds = array();
-                foreach ($entityIds as $id) {
-                    $objectIds[] = $entity.'_'.$id;
-                }
-                $this->getHelper()->getStoreIndex($storeId)->deleteObjects($objectIds);
-            } elseif (is_null($storeId)) {
-                foreach (Mage::app()->getStores() as $store) { /** @var $store Mage_Core_Model_Store */
-                    if ( ! $store->getIsActive()) { continue; }
-                    $objectIds = array();
-                    foreach ($entityIds as $id) {
-                        $objectIds[] = $entity.'_'.$id;
-                    }
-                    $this->getHelper()->getStoreIndex($store->getId())->deleteObjects($objectIds);
-                }
-            }
-        }
-        Mage::getSingleton('algoliasearch/algolia')->resetSearchResults();
-
         return $this;
     }
 
@@ -92,19 +40,14 @@ class Algolia_Algoliasearch_Model_Observer
 
         if (is_null($storeId) && ! empty($categoryIds)) {
             foreach (Mage::app()->getStores() as $storeId => $store) {
-                if ( ! $store->getIsActive()) continue;
-                $this->rebuildStoreCategoryIndex($storeId, $categoryIds);
+                if ( ! $store->getIsActive())
+                    continue;
+                Mage::helper('algoliasearch')->rebuildStoreCategoryIndex($storeId, $categoryIds);
             }
         } else {
-            $this->rebuildStoreCategoryIndex($storeId, $categoryIds);
+            Mage::helper('algoliasearch')->rebuildStoreCategoryIndex($storeId, $categoryIds);
         }
 
-        return $this;
-    }
-
-    public function rebuildStoreCategoryIndex($storeId, $categoryIds = NULL)
-    {
-        $this->getHelper()->rebuildStoreCategoryIndex($storeId, $categoryIds);
         return $this;
     }
 
@@ -116,18 +59,12 @@ class Algolia_Algoliasearch_Model_Observer
         if (is_null($storeId) && ! empty($productIds)) {
             foreach (Mage::app()->getStores() as $storeId => $store) {
                 if ( ! $store->getIsActive()) continue;
-                $this->rebuildStoreProductIndex($storeId, $productIds);
+                Mage::helper('algoliasearch')->rebuildStoreProductIndex($storeId, $productIds);
             }
         } else {
-            $this->rebuildStoreProductIndex($storeId, $productIds);
+            Mage::helper('algoliasearch')->rebuildStoreProductIndex($storeId, $productIds);
         }
 
-        return $this;
-    }
-
-    public function rebuildStoreProductIndex($storeId, $productIds = NULL)
-    {
-        Mage::helper('algoliasearch')->rebuildStoreProductIndex($storeId, $productIds);
         return $this;
     }
 
