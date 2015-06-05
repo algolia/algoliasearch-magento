@@ -5,42 +5,29 @@
  */
 class Algolia_Algoliasearch_Model_Observer
 {
-    /**
-     * Retrieve queue model instance
-     *
-     * @return Algolia_Algoliasearch_Model_Queue
-     */
+    private $config;
+
+    public function __construct()
+    {
+        $this->config = new Algolia_Algoliasearch_Helper_Config();
+    }
+
     public function getQueue()
     {
         return Mage::getSingleton('algoliasearch/queue');
     }
 
-    /**
-     * Retrieve store index
-     *
-     * @param mixed $storeId
-     * @return \AlgoliaSearch\Index
-     */
     public function getStoreIndex($storeId)
     {
         return Mage::helper('algoliasearch')->getStoreIndex($storeId);
     }
 
-    /**
-     * Delete store index
-     *
-     * @param mixed $storeId
-     * @return Algolia_Algoliasearch_Model_Observer
-     */
     public function deleteStoreIndex($storeId)
     {
         Mage::helper('algoliasearch')->deleteStoreIndex($storeId);
         return $this;
     }
 
-    /**
-     * @return Algolia_Algoliasearch_Helper_Data
-     */
     public function getHelper()
     {
         return Mage::helper('algoliasearch');
@@ -50,29 +37,17 @@ class Algolia_Algoliasearch_Model_Observer
     {
         foreach (Mage::app()->getStores() as $store) /** @var $store Mage_Core_Model_Store */
             if ($store->getIsActive())
-                Mage::helper('algoliasearch')->setIndexSettings($store->getId());
+                Mage::helper('algoliasearch')->saveConfigurationToAlgolia($store->getId());
     }
 
-    /**
-     * Check whether algolia search popup is allowed
-     *
-     * @param Varien_Event_Observer $observer
-     * @return Algolia_Algoliasearch_Model_Observer
-     */
     public function useAlgoliaSearchPopup(Varien_Event_Observer $observer)
     {
-        if (Mage::helper('algoliasearch')->isPopupEnabled() || Mage::helper('algoliasearch')->isInstantEnabled()) {
+        if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled()) {
             $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
         }
         return $this;
     }
 
-    /**
-     * Delete index for the specified entities
-     *
-     * @param Varien_Object $event
-     * @return Algolia_Algoliasearch_Model_Observer
-     */
     public function cleanIndex(Varien_Object $event)
     {
         $storeId = $event->getStoreId();
@@ -110,12 +85,6 @@ class Algolia_Algoliasearch_Model_Observer
         return $this;
     }
 
-    /**
-     * Rebuild index for the specified categories
-     *
-     * @param Varien_Object $event
-     * @return Algolia_Algoliasearch_Model_Observer
-     */
     public function rebuildCategoryIndex(Varien_Object $event)
     {
         $storeId = $event->getStoreId();
@@ -133,23 +102,12 @@ class Algolia_Algoliasearch_Model_Observer
         return $this;
     }
 
-    /**
-     * @param int $storeId
-     * @param null|int|array $categoryIds
-     * @return Algolia_Algoliasearch_Model_Observer
-     */
     public function rebuildStoreCategoryIndex($storeId, $categoryIds = NULL)
     {
         $this->getHelper()->rebuildStoreCategoryIndex($storeId, $categoryIds);
         return $this;
     }
 
-    /**
-     * Rebuild index for the specified products
-     *
-     * @param Varien_Object $event
-     * @return Algolia_Algoliasearch_Model_Observer
-     */
     public function rebuildProductIndex(Varien_Object $event)
     {
         $storeId = $event->getStoreId();
@@ -167,13 +125,6 @@ class Algolia_Algoliasearch_Model_Observer
         return $this;
     }
 
-    /**
-     * Call default rebuild index data to prepare initial data.
-     *
-     * @param int $storeId
-     * @param null|int|array $productIds
-     * @return Algolia_Algoliasearch_Model_Observer
-     */
     public function rebuildStoreProductIndex($storeId, $productIds = NULL)
     {
         Mage::getResourceModel('algoliasearch/fulltext')->rebuildIndex($storeId, $productIds);
@@ -198,14 +149,13 @@ class Algolia_Algoliasearch_Model_Observer
 
     public function controllerFrontInitBefore(Varien_Event_Observer $observer)
     {
-        if (Mage::helper('algoliasearch')->replaceCategories() == false)
+        if ($this->config->replaceCategories() == false)
             return;
-        if (Mage::helper('algoliasearch')->isInstantEnabled() == false)
+        if ($this->config->isInstantEnabled() == false)
             return;
 
         if (Mage::app()->getRequest()->getControllerName() == 'category' && Mage::app()->getRequest()->getParam('category') == null)
         {
-            //$category = Mage::getModel('catalog/category')->load($categoryId);
             $category = Mage::registry('current_category');
 
             $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());

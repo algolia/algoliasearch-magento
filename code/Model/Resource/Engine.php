@@ -4,27 +4,18 @@
  */
 class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Model_Resource_Fulltext_Engine
 {
-    /**
-     * Amount of entities that is used for one indexing process
-     */
     const ONE_TIME_AMOUNT = 100;
-
-    /**
-     * @var Algolia_Algoliasearch_Helper_Data
-     */
-    private $_helper;
-
-    /**
-     * @var Algolia_Algoliasearch_Model_Queue
-     */
-    private $_queue;
+    private $helper;
+    private $queue;
+    private $config;
 
     public function _construct()
     {
         parent::_construct();
 
-        $this->_helper = Mage::helper('algoliasearch');
-        $this->_queue = Mage::getSingleton('algoliasearch/queue');
+        $this->helper = Mage::helper('algoliasearch');
+        $this->queue = Mage::getSingleton('algoliasearch/queue');
+        $this->config = new Algolia_Algoliasearch_Helper_Config();
     }
 
     /**
@@ -88,10 +79,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             $data = array($data);
 
         if ($entity == 'product')
-            $this->_helper->removeProducts($data, $storeId);
+            $this->helper->removeProducts($data, $storeId);
 
         if ($entity == 'category')
-            $this->_helper->removeCategories($data, $storeId);
+            $this->helper->removeCategories($data, $storeId);
 
         return $this;
     }
@@ -126,7 +117,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             'store_id'     => $storeId,
             'category_ids' => $categoryIds,
         );
-        $this->_queue->add('algoliasearch/observer', 'rebuildCategoryIndex', $data, 3);
+        $this->queue->add('algoliasearch/observer', 'rebuildCategoryIndex', $data, 3);
         return $this;
     }
 
@@ -160,7 +151,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             'store_id'    => $storeId,
             'product_ids' => $productIds,
         );
-        $this->_queue->add('algoliasearch/observer', 'rebuildProductIndex', $data, 3);
+        $this->queue->add('algoliasearch/observer', 'rebuildProductIndex', $data, 3);
         return $this;
     }
 
@@ -200,13 +191,13 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
      */
     public function test()
     {
-        if ( ! $this->_helper->isEnabled()) {
+        if ( ! $this->helper->isEnabled()) {
             return parent::test();
         }
 
         return
-            $this->_helper->getApplicationID() &&
-            $this->_helper->getAPIKey() &&
-            $this->_helper->getSearchOnlyAPIKey();
+            $this->config->getApplicationID() &&
+            $this->config->getAPIKey() &&
+            $this->config->getSearchOnlyAPIKey();
     }
 }

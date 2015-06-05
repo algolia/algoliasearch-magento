@@ -22,7 +22,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
 
             switch($columnId) {
                 case 'attribute': // Populate the attribute column with a list of searchable attributes
-                    $searchableAttributes = Mage::helper('algoliasearch')->getAllCategoryAttributes();
+                    $searchableAttributes = (new Algolia_Algoliasearch_Helper_Entity_Categoryhelper())->getAllAttributes();
 
                     foreach ($searchableAttributes as $key => $label) {
                         $aOptions[$key] = $key ? $key : $label;

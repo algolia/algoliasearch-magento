@@ -7,13 +7,6 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
 {
     protected $selectFields = array();
 
-    /**
-     * Creates and populates a select block to represent each column in the configuration property.
-     *
-     * @param $columnId String The name of the column defined in addColumn
-     * @return Algolia_Algoliasearch_Block_System_Config_Form_Field_Select
-     * @throws Exception
-     */
     protected function getRenderer($columnId) {
         if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId]) {
             $aOptions = array();
@@ -22,7 +15,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
 
             switch($columnId) {
                 case 'attribute': // Populate the attribute column with a list of searchable attributes
-                    $searchableAttributes = Mage::helper('algoliasearch')->getAllProductAttributes();
+                    $searchableAttributes = (new Algolia_Algoliasearch_Helper_Entity_Producthelper())->getAllAttributes();
 
                     foreach ($searchableAttributes as $key => $label) {
                         $aOptions[$key] = $key ? $key : $label;

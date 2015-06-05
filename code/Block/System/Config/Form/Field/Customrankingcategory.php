@@ -19,7 +19,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customrankingcategory
             $aOptions = array();
             switch($columnId) {
                 case 'attribute': // Populate the attribute column with a list of searchable attributes
-                    $searchableAttributes = Mage::helper('algoliasearch')->getCategoryAdditionalAttributes();
+                    $searchableAttributes = (new Algolia_Algoliasearch_Helper_Config())->getCategoryAdditionalAttributes();
 
                     foreach ($searchableAttributes as $attribute) {
                         $aOptions[$attribute['attribute']] = $attribute['attribute'];

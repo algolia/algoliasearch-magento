@@ -22,7 +22,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Mage_Ad
 
             switch($columnId) {
                 case 'attribute': // Populate the attribute column with a list of searchable attributes
-                    $searchableAttributes = Mage::helper('algoliasearch')->getAllProductAttributes();
+                    $searchableAttributes = (new Algolia_Algoliasearch_Helper_Entity_Producthelper())->getAllAttributes();
 
                     foreach ($searchableAttributes as $key => $label) {
                         $aOptions[$key] = $key ? $key : $label;
