@@ -104,7 +104,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport));
         $indexSettings = $transport->getData();
 
-        $mergeSettings = $this->algolia_helper->mergeSettings($this->getIndexName(), $indexSettings);
+        $mergeSettings = $this->algolia_helper->mergeSettings($this->getIndexName($storeId), $indexSettings);
 
         /**
          * Handle Slaves

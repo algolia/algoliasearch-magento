@@ -3,6 +3,7 @@
 abstract class Algolia_Algoliasearch_Helper_Entity_Helper
 {
     protected $config;
+    protected $algolia_helper;
 
     private static $_activeCategories;
     private static $_categoryNames;
@@ -13,6 +14,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
     public function __construct()
     {
         $this->config = new Algolia_Algoliasearch_Helper_Config();
+        $this->algolia_helper = new Algolia_Algoliasearch_Helper_Algoliahelper();
     }
 
     public function getBaseIndexName($storeId = null)

@@ -18,6 +18,22 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         $this->config = new Algolia_Algoliasearch_Helper_Config();
     }
 
+    public function addToQueue($observer, $method, $data, $nb_retry)
+    {
+        $later = true;
+
+        if (isset($data['product_ids']) && is_array($data['product_ids']) && count($data['product_ids']) == 1)
+            $later = false;
+
+        if (isset($data['category_ids']) && is_array($data['category_ids']) && count($data['category_ids']) == 1)
+            $later = false;
+
+        if ($this->config->isQueueActive() && $later)
+            $this->queue->add($observer, $method, $data, $nb_retry);
+        else
+            Mage::getSingleton($observer)->$method(new Varien_Object($data));
+    }
+
     public function getAllowedVisibility()
     {
         return Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds();
@@ -78,7 +94,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             'store_id'     => $storeId,
             'category_ids' => $categoryIds,
         );
-        $this->queue->add('algoliasearch/observer', 'rebuildCategoryIndex', $data, 3);
+        $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', $data, 3);
         return $this;
     }
 
@@ -91,17 +107,14 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         {
             if ($store->getIsActive())
             {
-                $queue->add('algoliasearch/observer', 'rebuildProductIndex', array('store_id' => $store->getId(), 'product_ids' =>  array()), 3);
-                $queue->add('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $store->getId(), 'category_ids' =>  array()), 3);
+                $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', array('store_id' => $store->getId(), 'product_ids' =>  array()), 3);
+                $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $store->getId(), 'category_ids' =>  array()), 3);
             }
             else
             {
                 $helper->deleteStoreIndex($store->getId());
             }
         }
-
-        // if debug
-        $queue->run();
     }
 
 
@@ -123,7 +136,8 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             'store_id'    => $storeId,
             'product_ids' => $productIds,
         );
-        $this->queue->add('algoliasearch/observer', 'rebuildProductIndex', $data, 3);
+
+        $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', $data, 3);
         return $this;
     }
 

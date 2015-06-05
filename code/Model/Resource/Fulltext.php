@@ -33,8 +33,16 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
         return $this;
     }
 
+    /**
+     * Only used when reindexing everything. Otherwise Model/Indexer/Algolia will take care of the rest
+     */
     public function rebuildIndex($storeId = null, $productIds = null)
     {
+
+        /** Avoid Indexing twice */
+        if (is_array($productIds) && $productIds > 0)
+            return $this;
+
         if ($storeId == null)
         {
             foreach (Mage::app()->getStores() as $id => $store)

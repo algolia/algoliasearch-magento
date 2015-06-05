@@ -47,7 +47,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function isQueueActive($storeId = null)
     {
-        return Mage::getStoreConfig(self::XML_PATH_MAX_RETRIES, $storeId);
+        return Mage::getStoreConfigFlag(self::XML_PATH_IS_ACTIVE, $storeId);
     }
 
     public function getRemoveWordsIfNoResult($storeId = NULL)
