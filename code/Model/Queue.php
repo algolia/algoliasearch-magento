@@ -32,9 +32,9 @@ class Algolia_Algoliasearch_Model_Queue
 
     public function runCron()
     {
-        if ( ! $this->config->isQueueActive()) {
+        if ( ! $this->config->isQueueActive())
             return;
-        }
+
         $this->run(300);
     }
 

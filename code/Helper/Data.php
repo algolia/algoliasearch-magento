@@ -175,7 +175,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                     $collection->load();
                     foreach ($collection as $category)
                     {
-                        /** @var $category Mage_Catalog_Model_Category */
+                        /** @var $@ry Mage_Catalog_Model_Category */
                         if ( ! $this->category_helper->isCategoryActive($category->getId(), $storeId))
                             continue;
 
