@@ -101,7 +101,6 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     public function rebuildAll()
     {
         $queue = Mage::getSingleton('algoliasearch/queue');
-        $helper = Mage::helper('algoliasearch');
 
         foreach (Mage::app()->getStores() as $store)
         {
@@ -112,7 +111,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             }
             else
             {
-                $helper->deleteStoreIndex($store->getId());
+                $this->helper->deleteStoreIndices($store->getId());
             }
         }
     }
