@@ -123,7 +123,6 @@
                 <search_only_api_key></search_only_api_key>
                 <api_key></api_key>
                 <index_prefix>magento_</index_prefix>
-                <is_enabled>1</is_enabled>
                 <is_popup_enabled>0</is_popup_enabled>
             </credentials>
             <instant>

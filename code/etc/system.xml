@@ -54,14 +54,6 @@
                             <show_in_store>1</show_in_store>
                             <comment>If configured, all indices created by the extension will be prefixed by this value.</comment>
                         </index_prefix>
-                        <is_enabled translate="label comment">
-                            <label>Enable Catalog Search. &lt;br&gt;(&lt;span style=&quot;color: red; font-size: 20px;&quot;&gt;&amp;#9888;&lt;/span&gt; It requires selecting Algolia engine in Catalog > Catalog Search > Engine.</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>50</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <comment>The flag indicates whether Algolia is enabled for catalog search and background indexing.</comment>
-                        </is_enabled>
                         <is_popup_enabled translate="label comment">
                             <label>Enable Auto-completion Menu</label>
                             <frontend_type>select</frontend_type>
@@ -120,7 +112,6 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>Configure the facets</comment>
-                            <depends><is_enabled>1</is_enabled></depends>
                         </facets>
                         <sorts>
                             <label>Sorts</label>
@@ -131,7 +122,6 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>This will configure a slave for each sort</comment>
-                            <depends><is_enabled>1</is_enabled></depends>
                         </sorts>
                     </fields>
                 </instant>
@@ -152,7 +142,6 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>Configure here the attributes you want to include in your Algolia records. The order of this setting matters as those at the top of the list are considered more important.</comment>
-                            <depends><is_enabled>1</is_enabled></depends>
                         </product_additional_attributes>
                         <custom_ranking_product_attributes translate="label comment">
                             <label>Ranking</label>
