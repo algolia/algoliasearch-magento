@@ -34,6 +34,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             foreach ($productAttributes as $attributeCode)
                 self::$_productAttributes[$attributeCode] = $config->getAttribute('catalog_category', $attributeCode)->getFrontendLabel();
+
+            uksort(self::$_productAttributes, function ($a, $b) {
+                return strcmp($a, $b);
+            });
         }
 
         return self::$_productAttributes;
