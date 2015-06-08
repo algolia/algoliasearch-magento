@@ -15,14 +15,17 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Mage_Ad
      * @throws Exception
      */
     protected function getRenderer($columnId) {
-        if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId]) {
+        if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId])
+        {
+            $product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
+
             $aOptions = array();
 
             $selectField = Mage::app()->getLayout()->createBlock('algoliasearch/system_config_form_field_select')->setIsRenderToJsTemplate(true);
 
             switch($columnId) {
                 case 'attribute': // Populate the attribute column with a list of searchable attributes
-                    $searchableAttributes = (new Algolia_Algoliasearch_Helper_Entity_Producthelper())->getAllAttributes();
+                    $searchableAttributes = $product_helper->getAllAttributes();
 
                     foreach ($searchableAttributes as $key => $label) {
                         $aOptions[$key] = $key ? $key : $label;

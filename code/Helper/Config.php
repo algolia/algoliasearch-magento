@@ -122,10 +122,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getSortingIndices($storeId = NULL)
     {
+        $product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
+
         $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_SORTING_INDICES, $storeId));
 
         foreach ($attrs as &$attr)
-            $attr['index_name'] = (new Algolia_Algoliasearch_Helper_Entity_Producthelper())->getIndexName($storeId).'_'.$attr['attribute'].'_'.$attr['sort'];
+            $attr['index_name'] = $product_helper->getIndexName($storeId).'_'.$attr['attribute'].'_'.$attr['sort'];
 
         if (is_array($attrs))
             return $attrs;
