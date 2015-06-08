@@ -2,6 +2,7 @@
 $config = new Algolia_Algoliasearch_Helper_Config();
 $catalogSearchHelper = $this->helper('catalogsearch'); /** @var $catalogSearchHelper Mage_CatalogSearch_Helper_Data */
 $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHelper Algolia_Algoliasearch_Helper_Data */
+$product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
 ?>
 
 
@@ -227,7 +228,7 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
     algoliaSettings.instant_selector        = '<?php echo $config->getInstantSelector(); ?>';
     algoliaSettings.hits_by_page            = <?php echo (int) $config->getNumberOfProductResults() ?>;
     algoliaSettings.sorting_indices         = <?php echo json_encode(array_values($config->getSortingIndices())); ?>;
-    algoliaSettings.indexName               = '<?php echo (new Algolia_Algoliasearch_Helper_Entity_Producthelper())->getBaseIndexName(); ?>';
+    algoliaSettings.indexName               = '<?php echo $product_helper->getBaseIndexName(); ?>';
     algoliaSettings.search_input_selector   = '#search';
 
     var applicationID           = '<?php echo $config->getApplicationID() ?>';
