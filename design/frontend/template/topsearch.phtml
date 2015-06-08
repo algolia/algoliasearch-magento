@@ -1,4 +1,5 @@
 <?php
+$config = new Algolia_Algoliasearch_Helper_Config();
 $catalogSearchHelper = $this->helper('catalogsearch'); /** @var $catalogSearchHelper Mage_CatalogSearch_Helper_Data */
 $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHelper Algolia_Algoliasearch_Helper_Data */
 ?>
@@ -217,20 +218,20 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
 <script type="text/javascript">
     //<![CDATA[
 
-    var autocompleteEnabled = "<?php echo $algoliaSearchHelper->isPopupEnabled(); ?>" == "1" ? true : false;
-    var instantEnabled      = "<?php echo $algoliaSearchHelper->isInstantEnabled(); ?>" == "1" ? true : false;
+    var autocompleteEnabled = "<?php echo $config->isPopupEnabled(); ?>" == "1" ? true : false;
+    var instantEnabled      = "<?php echo $config->isInstantEnabled(); ?>" == "1" ? true : false;
 
     var algoliaSettings     = {};
 
-    algoliaSettings.facets                  = <?php echo json_encode($algoliaSearchHelper->getFacets()); ?>;
-    algoliaSettings.instant_selector        = '<?php echo $algoliaSearchHelper->getInstantSelector(); ?>';
-    algoliaSettings.hits_by_page            = <?php echo (int) $algoliaSearchHelper->getNumberOfProductResults() ?>;
-    algoliaSettings.sorting_indices         = <?php echo json_encode(array_values($algoliaSearchHelper->getSortingIndices())); ?>;
-    algoliaSettings.indexName               = '<?php echo $algoliaSearchHelper->getIndexName() ?>';
+    algoliaSettings.facets                  = <?php echo json_encode($config->getFacets()); ?>;
+    algoliaSettings.instant_selector        = '<?php echo $config->getInstantSelector(); ?>';
+    algoliaSettings.hits_by_page            = <?php echo (int) $config->getNumberOfProductResults() ?>;
+    algoliaSettings.sorting_indices         = <?php echo json_encode(array_values($config->getSortingIndices())); ?>;
+    algoliaSettings.indexName               = '<?php echo (new Algolia_Algoliasearch_Helper_Entity_Producthelper())->getBaseIndexName(); ?>';
     algoliaSettings.search_input_selector   = '#search';
 
-    var applicationID           = '<?php echo $algoliaSearchHelper->getApplicationID() ?>';
-    var apiKey                  = '<?php echo $algoliaSearchHelper->getSearchOnlyAPIKey() ?>';
+    var applicationID           = '<?php echo $config->getApplicationID() ?>';
+    var apiKey                  = '<?php echo $config->getSearchOnlyAPIKey() ?>';
 
     var algolia_client      = algoliasearch(applicationID, apiKey);
 
@@ -244,9 +245,9 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
             params.autocomplete_categories_template    = Hogan.compile($('#autocomplete_categories_template').html());
             params.autocomplete_pages_template         = Hogan.compile($('#autocomplete_pages_template').html());
 
-            params.products_hitsPerPage                = <?php echo (int) $algoliaSearchHelper->getNumberOfProductSuggestions() ?>;
-            params.categories_hitsPerPage              = <?php echo (int) $algoliaSearchHelper->getNumberOfCategorySuggestions() ?>;
-            params.pages_hitsPerPage                   = <?php echo (int) $algoliaSearchHelper->getNumberOfPageSuggestions() ?>;
+            params.products_hitsPerPage                = <?php echo (int) $config->getNumberOfProductSuggestions() ?>;
+            params.categories_hitsPerPage              = <?php echo (int) $config->getNumberOfCategorySuggestions() ?>;
+            params.pages_hitsPerPage                   = <?php echo (int) $config->getNumberOfPageSuggestions() ?>;
 
             params.autocomplete_products_title          = '<?php echo $this->__('Products'); ?>';
             params.autocomplete_categories_title       = '<?php echo $this->__('Categories') ?>';
@@ -286,6 +287,8 @@ $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHe
                     });
                 }
             }
+
+            console.log(hogan_objs);
 
             hogan_objs.push({
                 source: function () {
