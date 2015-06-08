@@ -10,8 +10,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_API_KEY                          = 'algoliasearch/credentials/api_key';
     const XML_PATH_SEARCH_ONLY_API_KEY              = 'algoliasearch/credentials/search_only_api_key';
     const XML_PATH_INDEX_PREFIX                     = 'algoliasearch/credentials/index_prefix';
+    const XML_PATH_IS_INSTANT_ENABLED               = 'algoliasearch/credentials/is_instant_enabled';
 
-    const XML_PATH_IS_INSTANT_ENABLED               = 'algoliasearch/instant/is_instant_enabled';
     const XML_PATH_REPLACE_CATEGORIES               = 'algoliasearch/instant/replace_categories';
     const XML_PATH_INSTANT_SELECTOR                 = 'algoliasearch/instant/instant_selector';
     const XML_PATH_FACETS                           = 'algoliasearch/instant/facets';

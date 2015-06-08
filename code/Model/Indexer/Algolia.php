@@ -62,17 +62,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
         )
     );
 
-    protected $_relatedConfigSettingsReindex = array(
-        Mage_CatalogSearch_Model_Fulltext::XML_PATH_CATALOG_SEARCH_TYPE,
-        Algolia_Algoliasearch_Helper_Config::XML_PATH_CATEGORY_ATTRIBUTES,
-        Algolia_Algoliasearch_Helper_Config::XML_PATH_INDEX_PREFIX,
-        Algolia_Algoliasearch_Helper_Config::XML_PATH_INDEX_PRODUCT_COUNT
-    );
-
-
-    protected $_relatedConfigSettingsUpdate = array();
-
-
     protected function _getResource()
     {
         return Mage::getResourceSingleton('catalogsearch/indexer_fulltext');
@@ -80,17 +69,13 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
     public function getName()
     {
-        return Mage::helper('algoliasearch')->__('Algolia Search Index');
+        return Mage::helper('algoliasearch')->__('Algolia Search');
     }
 
-    /**
-     * Get Indexer description
-     *
-     * @return string
-     */
     public function getDescription()
     {
-        return Mage::helper('algoliasearch')->__('Rebuild product and category search index (cron jobs must be enabled)');
+        return Mage::helper('algoliasearch')->__('Rebuild product, category and page indices
+        It is recommanded to enable the cron queue if you have a lot of products in System > Configuration > Algolia Search > Queue configuration');
     }
 
     /**
@@ -138,16 +123,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
             $storeGroup = $event->getDataObject();
             if ($storeGroup && $storeGroup->dataHasChangedFor('website_id')) {
                 $result = TRUE;
-            } else {
-                $result = FALSE;
-            }
-        } else if ($entity == Mage_Core_Model_Config_Data::ENTITY) {
-            $data = $event->getDataObject();
-            if ($data
-              && ( in_array($data->getPath(), $this->_relatedConfigSettingsReindex)
-                || in_array($data->getPath(), $this->_relatedConfigSettingsUpdate))
-            ) {
-                $result = $data->isValueChanged();
             } else {
                 $result = FALSE;
             }

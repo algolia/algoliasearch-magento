@@ -124,11 +124,13 @@
                 <api_key></api_key>
                 <index_prefix>magento_</index_prefix>
                 <is_popup_enabled>0</is_popup_enabled>
+                <is_instant_enabled>1</is_instant_enabled>
             </credentials>
             <instant>
-                <is_instant_enabled>1</is_instant_enabled>
                 <replace_categories>1</replace_categories>
                 <instant_selector>.main</instant_selector>
+                <facets>a:2:{s:18:"_1432907948596_596";a:4:{s:9:"attribute";s:10:"categories";s:4:"type";s:11:"disjunctive";s:10:"other_type";s:0:"";s:5:"label";s:10:"Categories";}s:18:"_1432907963376_376";a:4:{s:9:"attribute";s:14:"price_with_tax";s:4:"type";s:6:"slider";s:10:"other_type";s:0:"";s:5:"label";s:5:"Price";}}</facets>
+                <sorts>a:3:{s:18:"_1432908018844_844";a:3:{s:9:"attribute";s:14:"price_with_tax";s:4:"sort";s:3:"asc";s:5:"label";s:12:"Lowest price";}s:18:"_1432908022539_539";a:3:{s:9:"attribute";s:14:"price_with_tax";s:4:"sort";s:4:"desc";s:5:"label";s:13:"Highest price";}s:18:"_1433768597454_454";a:3:{s:9:"attribute";s:10:"created_at";s:4:"sort";s:4:"desc";s:5:"label";s:12:"Newest first";}}</sorts>
             </instant>
             <products>
                 <product_additional_attributes>a:11:{s:18:"_1427959997377_377";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960012597_597";a:4:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960251221_221";a:4:{s:9:"attribute";s:11:"description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961262735_735";a:4:{s:9:"attribute";s:10:"categories";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961263735_735";a:4:{s:9:"attribute";s:10:"meta_title";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961264377_377";a:4:{s:9:"attribute";s:12:"meta_keyword";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961289908_908";a:4:{s:9:"attribute";s:16:"meta_description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961324936_936";a:4:{s:9:"attribute";s:3:"sku";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427962021621_621";a:4:{s:9:"attribute";s:5:"price";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427977839554_554";a:4:{s:9:"attribute";s:9:"stock_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}s:18:"_1428566173508_508";a:4:{s:9:"attribute";s:11:"ordered_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}}</product_additional_attributes>
@@ -143,14 +145,14 @@
                 <remove_words_if_no_result></remove_words_if_no_result>
             </relevance>
             <ui>
+                <number_product_suggestions>3</number_product_suggestions>
                 <number_product_results>9</number_product_results>
                 <number_category_suggestions>5</number_category_suggestions>
-                <number_product_suggestions>3</number_product_suggestions>
                 <number_page_suggestions>3</number_page_suggestions>
                 <save_last_query>0</save_last_query>
             </ui>
             <queue>
-                <active>1</active>
+                <active>0</active>
                 <retries>3</retries>
             </queue>
         </algoliasearch>
