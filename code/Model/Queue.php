@@ -27,7 +27,7 @@ class Algolia_Algoliasearch_Model_Queue
 
     /**
      * Add a job to the queue
-
+     *
      * @param string $class   The Magento singleton identifier
      * @param string $method  The name of the method to be called
      * @param array  $data    The arguments to be passed to the method as a Varien_Object
@@ -40,7 +40,7 @@ class Algolia_Algoliasearch_Model_Queue
             'class' => $class,
             'method' => $method,
             'data' => serialize($data),
-            'max_retries' => max(array(1,(int)($retries ? $retries : Mage::getStoreConfig(self::XML_PATH_MAX_RETRIES)))),
+            'max_retries' => max(array(1, (int)($retries ? $retries : Mage::getStoreConfig(self::XML_PATH_MAX_RETRIES)))),
             'pid' => NULL,
         ));
     }
@@ -50,7 +50,7 @@ class Algolia_Algoliasearch_Model_Queue
      */
     public function runCron()
     {
-        if ( ! Mage::getStoreConfigFlag(self::XML_PATH_IS_ACTIVE)) {
+        if (!Mage::getStoreConfigFlag(self::XML_PATH_IS_ACTIVE)) {
             return;
         }
         $this->run(300);
@@ -68,9 +68,9 @@ class Algolia_Algoliasearch_Model_Queue
         $pids = $this->_db->fetchCol("SELECT pid FROM {$this->_table} WHERE pid IS NOT NULL GROUP BY pid");
         foreach ($pids as $pid) {
             // Old pid is no longer running, release it's reserved tasks
-            if (is_int($pid) && ! file_exists("/proc/{$pid}/status")) {
+            if (is_numeric($pid) && !file_exists("/proc/{$pid}/status")) {
                 Mage::log("A crashed job queue process was detected for pid {$pid}", Zend_Log::NOTICE, self::ERROR_LOG);
-                $this->_db->update($this->_table,array('pid' => new Zend_Db_Expr('NULL')),array('pid = ?' => $pid));
+                $this->_db->update($this->_table, array('pid' => new Zend_Db_Expr('NULL')), array('pid = ?' => $pid));
             }
         }
 
