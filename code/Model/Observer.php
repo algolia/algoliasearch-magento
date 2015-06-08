@@ -6,10 +6,12 @@
 class Algolia_Algoliasearch_Model_Observer
 {
     private $config;
+    private $product_helper;
 
     public function __construct()
     {
         $this->config = new Algolia_Algoliasearch_Helper_Config();
+        $this->product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
     }
 
     /**
@@ -110,10 +112,10 @@ class Algolia_Algoliasearch_Model_Observer
                     $path .= ' /// ';
                 }
 
-                $path .= Mage::helper('algoliasearch')->getCategoryName($treeCategoryId, Mage::app()->getStore()->getStoreId());
+                $path .= $this->product_helper->getCategoryName($treeCategoryId, Mage::app()->getStore()->getStoreId());
             }
 
-            $indexName = Mage::helper('algoliasearch')->getIndexName(Mage::app()->getStore()->getStoreId()).'_products';
+            $indexName = $this->product_helper->getIndexName(Mage::app()->getStore()->getStoreId());
 
             $url = Mage::app()->getRequest()->getOriginalPathInfo().'?category=1#q=&page=0&refinements=%5B%7B%22categories%22%3A%22'.$path.'%22%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
 
