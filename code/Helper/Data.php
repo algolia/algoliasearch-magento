@@ -236,7 +236,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $products
                 ->setStoreId($storeId)
                 ->addStoreFilter($storeId)
-                ->setVisibility(Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds())
+                ->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
                 ->addFinalPrice()
                 ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
                 ->addAttributeToSelect(array_merge(self::$_predefinedProductAttributes, $additionalAttr));

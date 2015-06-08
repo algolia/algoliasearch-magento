@@ -44,7 +44,7 @@ class Algolia_Algoliasearch_Model_Queue
         $pids = $this->db->fetchCol("SELECT pid FROM {$this->table} WHERE pid IS NOT NULL GROUP BY pid");
         foreach ($pids as $pid) {
             // Old pid is no longer running, release it's reserved tasks
-            if (is_int($pid) && ! file_exists("/proc/{$pid}/status")) {
+            if (is_numeric($pid) && ! file_exists("/proc/{$pid}/status")) {
                 Mage::log("A crashed job queue process was detected for pid {$pid}", Zend_Log::NOTICE, self::ERROR_LOG);
                 $this->db->update($this->table,array('pid' => new Zend_Db_Expr('NULL')),array('pid = ?' => $pid));
             }
