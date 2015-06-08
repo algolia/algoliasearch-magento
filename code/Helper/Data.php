@@ -1,10 +1,13 @@
 <?php
 
-require_once 'AlgoliaSearch/Version.php';
-require_once 'AlgoliaSearch/AlgoliaException.php';
-require_once 'AlgoliaSearch/ClientContext.php';
-require_once 'AlgoliaSearch/Client.php';
-require_once 'AlgoliaSearch/Index.php';
+if (class_exists('AlgoliaSearch\Client', false) == false)
+{
+    require_once 'AlgoliaSearch/Version.php';
+    require_once 'AlgoliaSearch/AlgoliaException.php';
+    require_once 'AlgoliaSearch/ClientContext.php';
+    require_once 'AlgoliaSearch/Client.php';
+    require_once 'AlgoliaSearch/Index.php';
+}
 
 class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 {
