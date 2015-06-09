@@ -9,6 +9,7 @@
             <show_in_default>1</show_in_default>
             <show_in_website>1</show_in_website>
             <show_in_store>1</show_in_store>
+            <expanded>1</expanded>
             <groups>
                 <credentials translate="label">
                     <label>Credentials &amp; Setup</label>
@@ -83,6 +84,7 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
                     <fields>
                         <replace_categories translate="label comment">
                             <label>Replace categories page</label>
@@ -132,6 +134,7 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
                     <fields>
                         <product_additional_attributes translate="label comment">
                             <label>Product Attributes &lt;br&gt;(&lt;span style=&quot;color: red; font-size: 20px;&quot;&gt;&amp;#9888;&lt;/span&gt; Retrievable&lt;br&gt;need to be set to &lt;br&gt;"Yes" in order &lt;br&gt;to be displayed)</label>
@@ -172,6 +175,7 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
                     <fields>
                         <category_additional_attributes2 translate="label comment">
                             <label>Category Attributes</label>
@@ -219,7 +223,7 @@
                 <relevance translate="label">
                     <label>Query Expansion Settings</label>
                     <frontend_type>text</frontend_type>
-                    <expanded>0</expanded>
+                    <expanded>1</expanded>
                     <sort_order>50</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
@@ -243,12 +247,12 @@
                 </relevance>
                 <ui translate="label">
                     <label>UI/UX</label>
-                    <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
                     <sort_order>60</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
                     <fields>
                         <number_product_suggestions translate="label comment">
                             <label>Number of product suggestions</label>
@@ -304,7 +308,7 @@
                 </ui>
                 <queue translate="label">
                     <label>Queue Configuration</label>
-                    <expanded>0</expanded>
+                    <expanded>1</expanded>
                     <frontend_type>text</frontend_type>
                     <sort_order>70</sort_order>
                     <show_in_default>1</show_in_default>
