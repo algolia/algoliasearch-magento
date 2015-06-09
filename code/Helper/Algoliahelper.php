@@ -17,7 +17,8 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
     {
         $config = new Algolia_Algoliasearch_Helper_Config();
 
-        $this->client = new \AlgoliaSearch\Client($config->getApplicationID(), $config->getAPIKey());
+        if ($config->getApplicationID() && $config->getAPIKey())
+            $this->client = new \AlgoliaSearch\Client($config->getApplicationID(), $config->getAPIKey());
     }
 
     public function getIndex($name)
