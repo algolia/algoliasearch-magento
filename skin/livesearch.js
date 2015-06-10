@@ -212,56 +212,6 @@ $algoliaJQuery(document).ready(function($) {
 
 
         /**
-         * Rendering Html Function
-         */
-        this.getHtmlForPagination = function (paginationTemplate, content, pages, facets) {
-            var pagination_html = paginationTemplate.render({
-                pages: pages,
-                facets_count: facets.length,
-                prev_page: (content.page > 0 ? content.page : false),
-                next_page: (content.page + 1 < content.nbPages ? content.page + 2 : false)
-            });
-
-            return pagination_html;
-        };
-
-        this.getHtmlForResults = function (resultsTemplate, content, facets) {
-
-            var results_html = resultsTemplate.render({
-                facets_count: facets.length,
-                getDate: this.getDate,
-                relevance_index_name: algoliaSettings.indexName + '_products',
-                sorting_indices: algoliaSettings.sorting_indices,
-                sortSelected: this.sortSelected,
-                hits: content.hits,
-                nbHits: content.nbHits,
-                nbHits_zero: (content.nbHits === 0),
-                nbHits_one: (content.nbHits === 1),
-                nbHits_many: (content.nbHits > 1),
-                query: this.helper.state.query,
-                processingTimeMS: content.processingTimeMS,
-                currency: currency
-            });
-
-            return results_html;
-        };
-
-        this.getHtmlForFacets = function (facetsTemplate, facets) {
-
-            var facets_html = facetsTemplate.render({
-                facets: facets,
-                count: facets.length,
-                getDate: this.getDate,
-                relevance_index_name: algoliaSettings.indexName + '_products',
-                sorting_indices: algoliaSettings.sorting_indices,
-                sortSelected: this.sortSelected,
-                currency: currency
-            });
-
-            return facets_html;
-        };
-
-        /**
          * Helper methods
          */
         this.sortSelected = function () {
