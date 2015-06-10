@@ -239,7 +239,8 @@ $algoliaJQuery(document).ready(function($) {
                 nbHits_one: (content.nbHits === 1),
                 nbHits_many: (content.nbHits > 1),
                 query: this.helper.state.query,
-                processingTimeMS: content.processingTimeMS
+                processingTimeMS: content.processingTimeMS,
+                currency: currency
             });
 
             return results_html;
@@ -253,7 +254,8 @@ $algoliaJQuery(document).ready(function($) {
                 getDate: this.getDate,
                 relevance_index_name: algoliaSettings.indexName + '_products',
                 sorting_indices: algoliaSettings.sorting_indices,
-                sortSelected: this.sortSelected
+                sortSelected: this.sortSelected,
+                currency: currency
             });
 
             return facets_html;

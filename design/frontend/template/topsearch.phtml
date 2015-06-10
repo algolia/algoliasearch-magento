@@ -235,6 +235,7 @@ $product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
     var apiKey                  = '<?php echo $config->getSearchOnlyAPIKey() ?>';
 
     var algolia_client      = algoliasearch(applicationID, apiKey);
+    var currency            = '<?php echo $config->getCurrency(); ?>';
 
     $algoliaJQuery(document).ready(function($) {
 

@@ -208,4 +208,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
         return array();
     }
+
+    public function getCurrency($storeId = NULL)
+    {
+        $currencySymbol = Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol();
+
+        return $currencySymbol;
+    }
 }
