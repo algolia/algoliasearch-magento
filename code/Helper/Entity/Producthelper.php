@@ -141,6 +141,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     public function getObject(Mage_Catalog_Model_Product $product, $defaultData = array())
     {
+
         $transport      = new Varien_Object($defaultData);
 
         Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'custom_data' => $transport));
@@ -171,18 +172,27 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $categories[] = $categoryName;
 
             $category->getUrlInstance()->setStore($product->getStoreId());
-            $path = '';
+            $path = array();
 
             foreach ($category->getPathIds() as $treeCategoryId)
             {
-                if ($path != '')
-                    $path .= ' /// ';
-
-                $path .= $this->getCategoryName($treeCategoryId, $product->getStoreId());
+                $name = $this->getCategoryName($treeCategoryId, $product->getStoreId());
+                if ($name)
+                    $path[] = $name;
             }
 
             $categories_with_path[] = $path;
         }
+
+        foreach ($categories_with_path as $result)
+        {
+            for ($i = count($result) - 1; $i > 0; $i--)
+            {
+                $categories_with_path[] = array_slice($result, 0, $i);
+            }
+        }
+
+        $categories_with_path = array_intersect_key($categories_with_path, array_unique(array_map('serialize', $categories_with_path)));
 
         $customData['categories'] = $categories_with_path;
 
