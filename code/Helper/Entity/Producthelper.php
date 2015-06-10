@@ -20,7 +20,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $allAttributes = $config->getEntityAttributeCodes('catalog_product');
 
-            $productAttributes = array_merge(array('name', 'path', 'categories', 'description', 'ordered_qty', 'stock_qty', 'price_with_tax'), $allAttributes);
+            $productAttributes = array_merge(array('name', 'path', 'categories', 'description', 'ordered_qty', 'stock_qty', 'price_with_tax', 'rating_summary'), $allAttributes);
 
             $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
@@ -246,6 +246,16 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             if ($this->isAttributeEnabled($additionalAttributes, 'stock_qty') == false)
                 unset($customData['stock_qty']);
+        }
+
+        if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary'))
+        {
+            $summaryData = Mage::getModel('review/review_summary')
+                ->setStoreId($product->getStoreId())
+                ->load($product->getId());
+
+            if ($summaryData['rating_summary'])
+                $customData['rating_summary'] = $summaryData['rating_summary'];
         }
 
         foreach ($additionalAttributes as $attribute)
