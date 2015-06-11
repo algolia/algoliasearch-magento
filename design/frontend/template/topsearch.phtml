@@ -154,7 +154,12 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         </div>
                         <div class="price">
                             {{#price_with_tax}}{{price_with_tax_formated}}{{/price_with_tax}}
-                            {{^price_with_tax}}-{{/price_with_tax}}
+                            {{^price_with_tax}}
+                            {{#min_with_tax_formated}}
+                            {{min_with_tax_formated}} - {{max_with_tax_formated}}
+                            {{/min_with_tax_formated}}
+                            {{^min_with_tax_formated}}-{{/min_with_tax_formated}}
+                            {{/price_with_tax}}
                         </div>
                         <div class="result-description text-ellipsis">
                             {{{ _highlightResult.description.value }}}

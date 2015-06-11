@@ -255,9 +255,46 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $additionalAttributes = $this->config->getProductAdditionalAttributes($product->getStoreId());
 
+        $sub_products = null;
+
+        if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped')
+        {
+            if ($product->getTypeId() == 'grouped')
+                $sub_products = $product->getTypeInstance(true)->getAssociatedProducts($product);
+
+            if ($product->getTypeId() == 'configurable')
+                $sub_products = $product->getTypeInstance(true)->getUsedProducts(null, $product);
+
+            $min = PHP_INT_MAX;
+            $max = 0;
+
+            $min_with_tax = PHP_INT_MAX;
+            $max_with_tax = 0;
+
+            foreach ($sub_products as $sub_product)
+            {
+                $sub_product = Mage::getModel('catalog/product')->load($sub_product->getId());
+
+                $price = $sub_product->getPrice();
+                $price_with_tax = Mage::helper('tax')->getPrice($sub_product, $price, true, null, null, null, null, false);
+
+                $min = min($min, $price);
+                $max = max($max, $price);
+
+                $min_with_tax = min($min_with_tax, $price_with_tax);
+                $max_with_tax = max($max_with_tax, $price_with_tax);
+            }
+
+            $customData['min_formated'] = Mage::helper('core')->formatPrice($min, false);
+            $customData['max_formated'] = Mage::helper('core')->formatPrice($max, false);
+            $customData['min_with_tax_formated'] = Mage::helper('core')->formatPrice($min_with_tax, false);
+            $customData['max_with_tax_formated'] = Mage::helper('core')->formatPrice($max_with_tax, false);
+        }
+
         // skip default calculation if we have provided these attributes via the observer in $defaultData
         if (false === isset($defaultData['ordered_qty']) && false === isset($defaultData['stock_qty']))
         {
+
             $ordered_qty = Mage::getResourceModel('reports/product_collection')
                 ->addOrderedQty()
                 ->addAttributeToFilter('sku', $product->getSku())
@@ -268,9 +305,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData['ordered_qty'] = (int) $ordered_qty;
             $customData['stock_qty']   = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
 
-            if ($product->getTypeId() == 'configurable')
+            if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped')
             {
-                $sub_products = $product->getTypeInstance(true)->getUsedProducts(null, $product);
                 $ordered_qty  = 0;
                 $stock_qty    = 0;
 
