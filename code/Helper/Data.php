@@ -11,13 +11,9 @@ if (class_exists('AlgoliaSearch\Client', false) == false)
 
 class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    const BATCH_SIZE           = 100;
     const COLLECTION_PAGE_SIZE = 100;
 
     private static $_rootCategoryId = -1;
-
-
-    static private $_predefinedProductAttributes = array('name', 'url_key', 'description', 'image', 'thumbnail');
 
     private $algolia_helper;
 
@@ -167,7 +163,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $size = $categories->getSize();
             if ($size > 0) {
                 $indexData = array();
-                $pageSize = self::COLLECTION_PAGE_SIZE;
+                $pageSize = $this->config->getNumberOfProductByPage();
                 $pages = ceil($size / $pageSize);
                 $categories->clear();
                 $page = 1;
@@ -189,7 +185,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                         if ($category_obj['product_count'] > 0)
                             array_push($indexData, $category_obj);
 
-                        if (count($indexData) >= self::BATCH_SIZE) {
+                        if (count($indexData) >= $this->config->getNumberOfProductByPage()) {
                             $this->algolia_helper->addObjects($indexData, $index_name);
                             $indexData = array();
                         }
@@ -214,6 +210,42 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->stopEmulation($emulationInfo);
     }
 
+    public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize)
+    {
+        set_time_limit(0);
+
+        $collection = clone $collectionDefault;
+        $collection->setCurPage($page)->setPageSize($pageSize);
+        $collection->load();
+        $collection->addCategoryIds();
+        $collection->addUrlRewrite();
+
+        $index_name = $this->product_helper->getIndexName($storeId);
+
+        $indexData = array();
+
+        /** @var $product Mage_Catalog_Model_Product */
+        foreach ($collection as $product)
+        {
+            $product->setStoreId($storeId);
+
+            $default = isset($defaultData[$product->getId()]) ? (array) $defaultData[$product->getId()] : array();
+
+            $json = $this->product_helper->getObject($product, $default);
+
+            array_push($indexData, $json);
+        }
+
+        if (count($indexData) > 0)
+            $this->algolia_helper->addObjects($indexData, $index_name);
+
+        unset($indexData);
+
+        $collection->walk('clearInstance');
+        $collection->clear();
+        unset($collection);
+    }
+
     public function rebuildStoreProductIndex($storeId, $productIds, $defaultData = null)
     {
         if (count($productIds) > 1)
@@ -223,74 +255,22 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         try
         {
-            $index_name = $this->product_helper->getIndexName($storeId);
+            $collection = $this->product_helper->getProductCollectionQuery($storeId, $productIds);
 
-            /** @var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
-            $products = Mage::getResourceModel('catalog/product_collection');
-
-            $additionalAttr = $this->config->getProductAdditionalAttributes($storeId);
-
-            foreach ($additionalAttr as &$attr)
-                $attr = $attr['attribute'];
-
-            $products
-                ->setStoreId($storeId)
-                ->addStoreFilter($storeId)
-                ->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
-                ->addFinalPrice()
-                ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
-                ->addAttributeToSelect(array_merge(self::$_predefinedProductAttributes, $additionalAttr));
-
-            if ($productIds && count($productIds) > 0)
-                $products->addAttributeToFilter('entity_id', array('in' => $productIds));
-
-            Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before', array('store' => $storeId, 'collection' => $products));
-            $size = $products->getSize();
+            $size = $collection->getSize();
 
             if ($size > 0)
             {
-                $indexData = array();
-                $pageSize = self::COLLECTION_PAGE_SIZE;
-                $pages = ceil($size / $pageSize);
-                $products->clear();
+                $pages = ceil($size / $this->config->getNumberOfProductByPage());
+                $collection->clear();
                 $page = 1;
 
                 while ($page <= $pages)
                 {
-                    $collection = clone $products;
-                    $collection->setCurPage($page)->setPageSize($pageSize);
-                    $collection->load();
-                    $collection->addCategoryIds();
-                    $collection->addUrlRewrite();
+                    $this->rebuildStoreProductIndexPage($storeId, $collection, $page, $this->config->getNumberOfProductByPage());
 
-                    /** @var $product Mage_Catalog_Model_Product */
-                    foreach ($collection as $product)
-                    {
-                        $product->setStoreId($storeId);
-
-                        $default = isset($defaultData[$product->getId()]) ? (array) $defaultData[$product->getId()] : array();
-
-                        $json = $this->product_helper->getObject($product, $default);
-
-                        array_push($indexData, $json);
-
-                        if (count($indexData) >= self::BATCH_SIZE)
-                        {
-                            $this->algolia_helper->addObjects($indexData, $index_name);
-                            $indexData = array();
-                        }
-                    }
-
-                    $collection->walk('clearInstance');
-                    $collection->clear();
-                    unset($collection);
                     $page++;
                 }
-
-                if (count($indexData) > 0)
-                    $this->algolia_helper->addObjects($indexData, $index_name);
-
-                unset($indexData);
             }
         }
         catch (Exception $e)

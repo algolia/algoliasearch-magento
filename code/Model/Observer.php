@@ -58,13 +58,21 @@ class Algolia_Algoliasearch_Model_Observer
         $storeId = $event->getStoreId();
         $productIds = $event->getProductIds();
 
-        if (is_null($storeId) && ! empty($productIds)) {
-            foreach (Mage::app()->getStores() as $storeId => $store) {
+        $page = $event->getPage();
+        $pageSize = $event->getPageSize();
+
+        if (is_null($storeId) && ! empty($productIds))
+        {
+            foreach (Mage::app()->getStores() as $storeId => $store)
                 if ( ! $store->getIsActive()) continue;
+                    Mage::helper('algoliasearch')->rebuildStoreProductIndex($storeId, $productIds);
+        }
+        else
+        {
+            if (! empty($page) && ! empty($pageSize))
+                Mage::helper('algoliasearch')->rebuildStoreProductIndexPage($storeId, $this->product_helper->getProductCollectionQuery($storeId, $productIds), $page, $pageSize);
+            else
                 Mage::helper('algoliasearch')->rebuildStoreProductIndex($storeId, $productIds);
-            }
-        } else {
-            Mage::helper('algoliasearch')->rebuildStoreProductIndex($storeId, $productIds);
         }
 
         return $this;

@@ -4,6 +4,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 {
     private static $_productAttributes;
 
+    private static $_predefinedProductAttributes = array('name', 'url_key', 'description', 'image', 'thumbnail');
+
     protected function getIndexNameSuffix()
     {
         return '_products';
@@ -61,6 +63,32 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             ->getFirstItem();
 
         return $report;
+    }
+
+    public function getProductCollectionQuery($storeId, $productIds = null)
+    {
+        /** @var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
+        $products = Mage::getResourceModel('catalog/product_collection');
+
+        $products = $products->setStoreId($storeId)
+                        ->addStoreFilter($storeId)
+                        ->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
+                        ->addFinalPrice()
+                        ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
+
+        $additionalAttr = $this->config->getProductAdditionalAttributes($storeId);
+
+        foreach ($additionalAttr as &$attr)
+            $attr = $attr['attribute'];
+
+        $products = $products->addAttributeToSelect(array_merge(self::$_predefinedProductAttributes, $additionalAttr));
+
+        if ($productIds && count($productIds) > 0)
+            $products->addAttributeToFilter('entity_id', array('in' => $productIds));
+
+        Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before', array('store' => $storeId, 'collection' => $products));
+
+        return $products;
     }
 
     public function getIndexSettings($storeId)
@@ -193,6 +221,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         $categories_with_path = array_intersect_key($categories_with_path, array_unique(array_map('serialize', $categories_with_path)));
+
+        foreach ($categories_with_path as &$category)
+            $category = implode(' /// ',$category);
 
         $customData['categories'] = $categories_with_path;
 
