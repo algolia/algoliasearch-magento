@@ -47,7 +47,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         {{/thumbnail_url}}
         {{#price_with_tax}}
         <div class="algoliasearch-autocomplete-price">
-            {{currency}}{{price_with_tax}}
+            {{price_with_tax_formated}}
         </div>
         {{/price_with_tax}}
         <div class="info">
@@ -153,7 +153,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             </div>
                         </div>
                         <div class="price">
-                            {{#price_with_tax}}{{currency}}{{price_with_tax}}{{/price_with_tax}}
+                            {{#price_with_tax}}{{price_with_tax_formated}}{{/price_with_tax}}
                             {{^price_with_tax}}-{{/price_with_tax}}
                         </div>
                         <div class="result-description text-ellipsis">
@@ -289,7 +289,6 @@ if ($config->isInstantEnabled() && $isSearchPage) {
     var apiKey                  = '<?php echo $config->getSearchOnlyAPIKey() ?>';
 
     var algolia_client      = algoliasearch(applicationID, apiKey);
-    var currency            = '<?php echo $config->getCurrency(); ?>';
 
     /**
      *  Foreach Type decide if it need to have a conjunctive or dijunctive faceting
@@ -624,7 +623,6 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 nbHits_many: (content.nbHits > 1),
                 query: helper.state.query,
                 processingTimeMS: content.processingTimeMS,
-                currency: currency
             });
 
             return results_html;
@@ -639,7 +637,6 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 relevance_index_name: algoliaSettings.indexName + '_products',
                 sorting_indices: algoliaSettings.sorting_indices,
                 sortSelected: sortSelected,
-                currency: currency
             });
 
             return facets_html;
@@ -698,7 +695,6 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                                         if (Array.isArray(hit.price))
                                             hit.price = hit.price[0];
 
-                                        hit.currency = currency;
                                     } else if (indices[i] == 'categories') {
                                         hit.displayKey = hit.path;
                                     }

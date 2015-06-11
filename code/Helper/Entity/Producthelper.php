@@ -187,6 +187,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             'description'       => $product->getDescription()
         );
 
+        $customData['price_formated']           = Mage::helper('core')->formatPrice($customData['price'], false);
+        $customData['price_with_tax_formated']  = Mage::helper('core')->formatPrice($customData['price_with_tax'], false);
+
         $categories             = array();
         $categories_with_path   = array();
 
