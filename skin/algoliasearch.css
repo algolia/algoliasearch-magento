@@ -109,14 +109,16 @@
     color: #666;
 }
 
-.tt-dropdown-menu .footer {
+.tt-dropdown-menu .footer_algolia {
     background-color: #F5F5F5;
     text-align: right;
     padding: 5px;
     font-size: 0.8em;
+    border-left: 1px solid #DDD;
+    border-right: 1px solid #DDD;
 }
 
-.tt-dropdown-menu .footer img {
+.tt-dropdown-menu .footer_algolia img {
     height: 1.5em;
     display: inline;
     vertical-align: bottom;
@@ -175,9 +177,9 @@
     border: solid 1px #DDD;
 }
 
-#algolia_instant_selector .hits .infos .clear:hover
+#algolia_instant_selector .hits .infos .clear-button
 {
-    background-color: #DDD;
+    cursor: pointer;
 }
 
 /**
@@ -294,7 +296,7 @@
 
 #algolia_instant_selector em
 {
-    background-color: #ffffe0;
+    background-color: #c1d8e6;
     font-style: normal;
 }
 
@@ -333,6 +335,7 @@
 
 #algolia_instant_selector .result .ratings .rating-box {
     margin: 0 auto;
+    float: inherit;
 }
 
 #algolia_instant_selector .result .result-description

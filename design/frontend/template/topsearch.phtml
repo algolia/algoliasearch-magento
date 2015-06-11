@@ -6,8 +6,8 @@ $product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
 $isSearchPage = Mage::app()->getRequest()->getParam('instant') != null || Mage::app()->getRequest()->getParam('category') != null;
 
 if ($config->isInstantEnabled() && $isSearchPage) {
-  // hide the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS
-  echo '<style>' . $config->getInstantSelector() . '{ display: none; }</style>';
+    // hide the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS
+    echo '<style>' . $config->getInstantSelector() . '{ display: none; }</style>';
 }
 ?>
 
@@ -45,11 +45,11 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         {{#thumbnail_url}}
         <div class="thumb"><img src="{{thumbnail_url}}" /></div>
         {{/thumbnail_url}}
-        {{#price}}
+        {{#price_with_tax}}
         <div class="algoliasearch-autocomplete-price">
-          {{currency}}{{price_with_tax}}
+            {{currency}}{{price_with_tax}}
         </div>
-        {{/price}}
+        {{/price_with_tax}}
         <div class="info">
             {{{_highlightResult.name.value}}}
 
@@ -148,14 +148,14 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             <a href="{{permalink}}">{{{ _highlightResult.name.value }}}</a>
                         </h3>
                         <div class="ratings">
-                <div class="rating-box">
-                    <div class="rating" style="width:{{rating_summary}}%"></div>
+                            <div class="rating-box">
+                                <div class="rating" style="width:{{rating_summary}}%"></div>
                             </div>
-            </div>
-            <div class="price">
-                 {{#price_with_tag}}{{currency}}{{price_with_tax}}{{/price_with_tag}}
-                 {{^price_with_tag}}-{{/price_with_tag}}
-            </div>
+                        </div>
+                        <div class="price">
+                            {{#price_with_tax}}{{currency}}{{price_with_tax}}{{/price_with_tax}}
+                            {{^price_with_tax}}-{{/price_with_tax}}
+                        </div>
                         <div class="result-description text-ellipsis">
                             {{{ _highlightResult.description.value }}}
                         </div>
@@ -190,7 +190,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 <div data-attribute="{{attribute}}" data-name="{{nameattr}}" data-type="menu" class="{{#checked}}checked {{/checked}}sub_facet menu">
                     <input style="display: none;" data-attribute="{{attribute}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
                     {{name}}
-            {{#print_count}}<span class="count">{{count}}</span>{{/print_count}}
+                    {{#print_count}}<span class="count">{{count}}</span>{{/print_count}}
                 </div>
                 {{/type.menu}}
 
@@ -198,7 +198,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 <div data-name="{{attribute}}" data-type="conjunctive" class="{{#checked}}checked {{/checked}}sub_facet conjunctive">
                     <input style="display: none;" data-attribute="{{attribute}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
                     {{name}}
-            {{#count}}<span class="count">{{count}}</span>{{/count}}
+                    {{#count}}<span class="count">{{count}}</span>{{/count}}
                 </div>
                 {{/type.conjunctive}}
 
@@ -215,7 +215,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 <div data-name="{{attribute}}" data-type="disjunctive" class="{{#checked}}checked {{/checked}}sub_facet disjunctive">
                     <input data-attribute="{{attribute}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
                     {{name}}
-            {{#count}}<span class="count">{{count}}</span>{{/count}}
+                    {{#count}}<span class="count">{{count}}</span>{{/count}}
                 </div>
                 {{/type.disjunctive}}
 
@@ -241,7 +241,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 {{#pages}}
                 <a href="#" data-page="{{number}}">
                     <li class="{{#current}}active{{/current}}{{#disabled}}disabled{{/disabled}}">
-                    {{ number }}
+                        {{ number }}
                     </li>
                 </a>
                 {{/pages}}
@@ -269,10 +269,10 @@ if ($config->isInstantEnabled() && $isSearchPage) {
     //<![CDATA[
 
     /*****************
-    **
-    ** INITIALIZATION
-    **
-    *****************/
+     **
+     ** INITIALIZATION
+     **
+     *****************/
 
     var autocompleteEnabled = "<?php echo $config->isPopupEnabled(); ?>" == "1" ? true : false;
     var instantEnabled      = "<?php echo $config->isInstantEnabled(); ?>" == "1" ? true : false;
@@ -312,73 +312,344 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         if (algoliaSettings.facets[i].type == "menu")
             disjunctive_facets.push(algoliaSettings.facets[i].attribute);
     }
-    var helper = algoliasearchHelper(algolia_client, algoliaSettings.indexName + '_products', {
+
+    helper = algoliasearchHelper(algolia_client, algoliaSettings.indexName + '_products', {
         facets: conjunctive_facets,
         disjunctiveFacets: disjunctive_facets,
         hitsPerPage: algoliaSettings.hits_by_page
     });
 
-    /*****************
-    **
-    ** RENDERING HELPERS
-    **
-    *****************/
-
-    function getHtmlForPagination(paginationTemplate, content, pages, facets) {
-        var pagination_html = paginationTemplate.render({
-            pages: pages,
-            facets_count: facets.length,
-            prev_page: (content.page > 0 ? content.page : false),
-            next_page: (content.page + 1 < content.nbPages ? content.page + 2 : false)
-        });
-
-        return pagination_html;
-    }
-
-   function getHtmlForResults(resultsTemplate, content, facets) {
-
-        var results_html = resultsTemplate.render({
-            facets_count: facets.length,
-            getDate: engine.getDate,
-            relevance_index_name: algoliaSettings.indexName + '_products',
-            sorting_indices: algoliaSettings.sorting_indices,
-            sortSelected: engine.sortSelected,
-            hits: content.hits,
-            nbHits: content.nbHits,
-            nbHits_zero: (content.nbHits === 0),
-            nbHits_one: (content.nbHits === 1),
-            nbHits_many: (content.nbHits > 1),
-            query: helper.state.query,
-            processingTimeMS: content.processingTimeMS,
-            currency: currency
-        });
-
-        return results_html;
-    }
-
-    function getHtmlForFacets(facetsTemplate, facets) {
-
-        var facets_html = facetsTemplate.render({
-            facets: facets,
-            count: facets.length,
-            getDate: engine.getDate,
-            relevance_index_name: algoliaSettings.indexName + '_products',
-            sorting_indices: algoliaSettings.sorting_indices,
-            sortSelected: engine.sortSelected,
-            currency: currency
-        });
-
-        return facets_html;
-    }
+    helper.setQuery('');
 
 
     $algoliaJQuery(document).ready(function($) {
 
+        /**
+         *  Helper functions
+         */
+        var history_timeout;
+        var custom_facets_types = [];
+
+        custom_facets_types["slider"] = function (helper, content, facet) {
+            if (content.getFacetByName(facet.attribute) != undefined)
+            {
+                var min = content.getFacetByName(facet.attribute).stats.min;
+                var max = content.getFacetByName(facet.attribute).stats.max;
+
+                var current_min = helper.state.getNumericRefinement(facet.attribute, ">=");
+                var current_max = helper.state.getNumericRefinement(facet.attribute, "<=");
+
+                if (current_min == undefined)
+                    current_min = min;
+
+                if (current_max == undefined)
+                    current_max = max;
+
+                var params = {
+                    type: {},
+                    current_min: Math.floor(current_min),
+                    current_max: Math.ceil(current_max),
+                    count: min == max ? 0 : 1,
+                    min: Math.floor(min),
+                    max: Math.ceil(max)
+                };
+
+                params.type[facet.type] = true;
+
+                return [params];
+            }
+
+            return [];
+        };
+
+        var updateUrl = function (push_state) {
+
+            var refinements = [];
+
+            /** Get refinements for conjunctive facets **/
+            for (var refine in helper.state.facetsRefinements)
+            {
+                if (helper.state.facetsRefinements[refine])
+                {
+                    var r = {};
+
+                    r[refine] = helper.state.facetsRefinements[refine];
+
+                    refinements.push(r);
+                }
+            }
+
+            /** Get refinements for disjunctive facets **/
+            for (var refine in helper.state.disjunctiveFacetsRefinements)
+            {
+                for (var i = 0; i < helper.state.disjunctiveFacetsRefinements[refine].length; i++)
+                {
+                    var r = {};
+
+                    r[refine] = helper.state.disjunctiveFacetsRefinements[refine][i];
+
+                    refinements.push(r);
+                }
+            }
+
+            var url = '#q=' + encodeURIComponent(helper.state.query) +
+                '&page=' + helper.getCurrentPage() +
+                '&refinements=' + encodeURIComponent(JSON.stringify(refinements)) +
+                '&numerics_refinements=' + encodeURIComponent(JSON.stringify(helper.state.numericRefinements)) +
+                '&index_name=' + encodeURIComponent(JSON.stringify(helper.getIndex()));
+
+            /** If push_state is false wait for one second to push the state in history **/
+            if (push_state)
+                history.pushState(url, null, url);
+            else
+            {
+                clearTimeout(history_timeout);
+                history_timeout = setTimeout(function () {
+                    history.pushState(url, null, url);
+                }, 1000);
+            }
+        };
+
+        var getRefinementsFromUrl = function() {
+
+            if (location.hash && location.hash.indexOf('#q=') === 0)
+            {
+                var params                          = location.hash.substring(3);
+                var pageParamOffset                 = params.indexOf('&page=');
+                var refinementsParamOffset          = params.indexOf('&refinements=');
+                var numericsRefinementsParamOffset  = params.indexOf('&numerics_refinements=');
+                var indexNameOffset                 = params.indexOf('&index_name=');
+
+                var q                               = decodeURIComponent(params.substring(0, pageParamOffset));
+                var page                            = parseInt(params.substring(pageParamOffset + '&page='.length, refinementsParamOffset));
+                var refinements                     = JSON.parse(decodeURIComponent(params.substring(refinementsParamOffset + '&refinements='.length, numericsRefinementsParamOffset)));
+                var numericsRefinements             = JSON.parse(decodeURIComponent(params.substring(numericsRefinementsParamOffset + '&numerics_refinements='.length, indexNameOffset)));
+                var indexName                       = JSON.parse(decodeURIComponent(params.substring(indexNameOffset + '&index_name='.length)));
+
+                helper.setQuery(q);
+
+                helper.clearRefinements();
+
+                /** Set refinements from url data **/
+                for (var i = 0; i < refinements.length; ++i) {
+                    for (var refine in refinements[i]) {
+                        helper.toggleRefine(refine, refinements[i][refine]);
+                    }
+                }
+
+                for (var key in numericsRefinements)
+                    for (var operator in numericsRefinements[key])
+                        helper.addNumericRefinement(key, operator, numericsRefinements[key][operator]);
+
+                helper.setCurrentPage(page);
+                helper.setIndex(indexName);
+
+                $(algoliaSettings.search_input_selector);
+                $(algoliaSettings.search_input_selector).val(helper.state.query);
+
+                helper.search();
+
+            }
+        };
+
+        var getFacets = function (content) {
+
+            var facets = [];
+
+            for (var i = 0; i < algoliaSettings.facets.length; i++)
+            {
+                var sub_facets = [];
+
+                if (custom_facets_types[algoliaSettings.facets[i].type] != undefined)
+                {
+                    try
+                    {
+                        var params = custom_facets_types[algoliaSettings.facets[i].type](helper, content, algoliaSettings.facets[i]);
+
+                        if (params)
+                            for (var k = 0; k < params.length; k++)
+                                sub_facets.push(params[k]);
+                    }
+                    catch(error)
+                    {
+                        throw("Bad facet function for '" + algoliaSettings.facets[i].type + "'");
+                    }
+                }
+                else
+                {
+                    var content_facet = content.getFacetByName(algoliaSettings.facets[i].attribute);
+
+                    if (content_facet == undefined)
+                        continue;
+
+                    for (var key in content_facet.data)
+                    {
+                        var checked = helper.isRefined(algoliaSettings.facets[i].attribute, key);
+
+                        var nameattr = window.facetsLabels && window.facetsLabels[key] != undefined ? window.facetsLabels[key] : key;
+                        var explode = nameattr.split(' /// ');
+                        var name = explode[explode.length - 1];
+
+                        var params = {
+                            type: {},
+                            checked: checked,
+                            nameattr: nameattr,
+                            name: name,
+                            count: content_facet.data[key]
+                        };
+
+                        params.type[algoliaSettings.facets[i].type] = true;
+
+                        sub_facets.push(params);
+                    }
+                }
+                facets.push({count: sub_facets.length, attribute: algoliaSettings.facets[i].attribute, facet_categorie_name: algoliaSettings.facets[i].label, sub_facets: sub_facets });
+            }
+
+            return facets;
+        };
+
+        var getPages = function (content) {
+            var pages = [];
+            if (content.page > 5)
+            {
+                pages.push({ current: false, number: 1 });
+                pages.push({ current: false, number: '...', disabled: true });
+            }
+
+            for (var p = content.page - 5; p < content.page + 5; ++p)
+            {
+                if (p < 0 || p >= content.nbPages)
+                    continue;
+
+                pages.push({ current: content.page == p, number: (p + 1) });
+            }
+            if (content.page + 5 < content.nbPages)
+            {
+                pages.push({ current: false, number: '...', disabled: true });
+                pages.push({ current: false, number: content.nbPages });
+            }
+
+            return pages;
+        };
+
+        var sortSelected = function () {
+            return function (val) {
+                var template = Hogan.compile(val);
+
+                var renderer = function(context) {
+                    return function(text) {
+                        return template.c.compile(text, template.options).render(context);
+                    };
+                };
+
+                var render = renderer(this);
+
+                var index_name = render(val);
+
+                if (index_name == helper.getIndex())
+                    return "selected";
+                return "";
+            }
+        };
+
+        var gotoPage = function(page) {
+            helper.setCurrentPage(+page - 1);
+        };
+
+        var getDate = function () {
+            return function (val) {
+                var template = Hogan.compile(val);
+
+                var renderer = function(context) {
+                    return function(text) {
+                        return template.c.compile(text, template.options).render(context);
+                    };
+                };
+
+                var render = renderer(this);
+
+                var timestamp = render(val);
+
+
+                var date = new Date(timestamp * 1000);
+
+                var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+                var day = date.getDate();
+
+                if (day == 1)
+                    day += "st";
+                else if (day == 2)
+                    day += "nd";
+                else if (day == 3)
+                    day += "rd";
+                else
+                    day += "th";
+
+                return days[date.getDay()] + ", " + months[date.getMonth()] + " " + day + ", " + date.getFullYear();
+            }
+        };
+
         /*****************
-        **
-        ** AUTOCOMPLETION MENU
-        **
-        *****************/
+         **
+         ** RENDERING HELPERS
+         **
+         *****************/
+
+        function getHtmlForPagination(paginationTemplate, content, pages, facets) {
+            var pagination_html = paginationTemplate.render({
+                pages: pages,
+                facets_count: facets.length,
+                prev_page: (content.page > 0 ? content.page : false),
+                next_page: (content.page + 1 < content.nbPages ? content.page + 2 : false)
+            });
+
+            return pagination_html;
+        }
+
+        function getHtmlForResults(resultsTemplate, content, facets) {
+
+            var results_html = resultsTemplate.render({
+                facets_count: facets.length,
+                getDate: getDate,
+                relevance_index_name: algoliaSettings.indexName + '_products',
+                sorting_indices: algoliaSettings.sorting_indices,
+                sortSelected: sortSelected,
+                hits: content.hits,
+                nbHits: content.nbHits,
+                nbHits_zero: (content.nbHits === 0),
+                nbHits_one: (content.nbHits === 1),
+                nbHits_many: (content.nbHits > 1),
+                query: helper.state.query,
+                processingTimeMS: content.processingTimeMS,
+                currency: currency
+            });
+
+            return results_html;
+        }
+
+        function getHtmlForFacets(facetsTemplate, facets) {
+
+            var facets_html = facetsTemplate.render({
+                facets: facets,
+                count: facets.length,
+                getDate: getDate,
+                relevance_index_name: algoliaSettings.indexName + '_products',
+                sorting_indices: algoliaSettings.sorting_indices,
+                sortSelected: sortSelected,
+                currency: currency
+            });
+
+            return facets_html;
+        }
+
+        /*****************
+         **
+         ** AUTOCOMPLETION MENU
+         **
+         *****************/
 
         if (autocompleteEnabled)
         {
@@ -443,12 +714,12 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             // comment the following lines to remove the Algolia branding
             hogan_objs.push({
                 source: function findMatches(q, cb) {
-                   return cb(["algolia-branding"]);
+                    return cb(["algolia-branding"]);
                 },
                 displayKey: 'title',
                 templates: {
                     suggestion: function (hit) {
-                        return '<div class="footer"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
+                        return '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
                     }
                 }
             });
@@ -477,10 +748,10 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         }
 
         /*****************
-        **
-        ** INSTANT RESULTS PAGE SEARCH
-        **
-        *****************/
+         **
+         ** INSTANT RESULTS PAGE SEARCH
+         **
+         *****************/
 
         if (instantEnabled)
         {
@@ -513,22 +784,11 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 $(algoliaSettings.instant_selector).html(old_content);
             }
 
-            /**
-             * The engine object definition is in /skin/frontend/base/default/algoliasearch
-             *
-             * It define a default functions for instant search.
-             *
-             * You should not modify it directly, instead you can create the same function on this file
-             * modify it and change the call from engine.FUNCTION(...) to FUNCTION(...)
-             */
-            engine.setHelper(helper);
-
-
             function performQueries(push_state)
             {
-                engine.helper.search(engine.helper.state.query, searchCallback);
+                helper.search(helper.state.query, searchCallback);
 
-                engine.updateUrl(push_state);
+                updateUrl(push_state);
             }
 
             function searchCallback(content)
@@ -560,8 +820,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                 if (content.hits.length > 0)
                 {
-                    facets = engine.getFacets(content);
-                    pages = engine.getPages(content);
+                    facets = getFacets(content);
+                    pages = getPages(content);
 
                     html_content += getHtmlForFacets(facetsTemplate, facets);
                 }
@@ -581,7 +841,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             /**
              * Example of a custom facet type
              */
-            custom_facets_types["menu"] = function (engine, content, facet) {
+            custom_facets_types["menu"] = function (helper, content, facet) {
 
                 var data = [];
 
@@ -595,7 +855,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                 for (var key in content_facet.data)
                 {
-                    var checked = engine.helper.isRefined(facet.attribute, key);
+                    var checked = helper.isRefined(facet.attribute, key);
 
                     all_unchecked = all_unchecked && !checked;
 
@@ -643,16 +903,16 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 e.stopImmediatePropagation();
 
                 if ($(this).attr("data-name") == "all")
-                    engine.helper.state.clearRefinements($(this).attr("data-attribute"));
+                    helper.state.clearRefinements($(this).attr("data-attribute"));
 
                 $(this).find("input[type='checkbox']").each(function (i) {
                     $(this).prop("checked", !$(this).prop("checked"));
 
-                    if (false == engine.helper.isRefined($(this).attr("data-attribute"), $(this).attr("data-name")))
-                        engine.helper.state.clearRefinements($(this).attr("data-attribute"));
+                    if (false == helper.isRefined($(this).attr("data-attribute"), $(this).attr("data-name")))
+                        helper.state.clearRefinements($(this).attr("data-attribute"));
 
                     if ($(this).attr("data-name") != "all")
-                        engine.helper.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
+                        helper.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
                 });
 
                 performQueries(true);
@@ -666,7 +926,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 $(this).find("input[type='checkbox']").each(function (i) {
                     $(this).prop("checked", !$(this).prop("checked"));
 
-                    engine.helper.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
+                    helper.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
                 });
 
                 performQueries(true);
@@ -683,9 +943,9 @@ if ($config->isInstantEnabled() && $isSearchPage) {
              * Handle sort change
              */
             $("body").on("change", "#index_to_use", function () {
-                engine.helper.setIndex($(this).val());
+                helper.setIndex($(this).val());
 
-                engine.helper.setCurrentPage(0);
+                helper.setCurrentPage(0);
 
                 performQueries(true);
             });
@@ -700,15 +960,15 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 var max = slide_dom.slider("values")[1];
 
                 if (parseInt(slide_dom.slider("values")[0]) >= parseInt(slide_dom.attr("data-min")))
-                    engine.helper.addNumericRefinement(slide_dom.attr("data-attribute"), ">=", min);
+                    helper.addNumericRefinement(slide_dom.attr("data-attribute"), ">=", min);
                 if (parseInt(slide_dom.slider("values")[1]) <= parseInt(slide_dom.attr("data-max")))
-                    engine.helper.addNumericRefinement(slide_dom.attr("data-attribute"), "<=", max);
+                    helper.addNumericRefinement(slide_dom.attr("data-attribute"), "<=", max);
 
                 if (parseInt(min) == parseInt(slide_dom.attr("data-min")))
-                    engine.helper.removeNumericRefinement(slide_dom.attr("data-attribute"), ">=");
+                    helper.removeNumericRefinement(slide_dom.attr("data-attribute"), ">=");
 
                 if (parseInt(max) == parseInt(slide_dom.attr("data-max")))
-                    engine.helper.removeNumericRefinement(slide_dom.attr("data-attribute"), "<=");
+                    helper.removeNumericRefinement(slide_dom.attr("data-attribute"), "<=");
 
                 updateSlideInfos(ui);
                 performQueries(true);
@@ -720,7 +980,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             $("body").on("click", ".algolia-pagination a", function (e) {
                 e.preventDefault();
 
-                engine.gotoPage($(this).attr("data-page"));
+                gotoPage($(this).attr("data-page"));
                 performQueries(true);
 
                 $("body").scrollTop(0);
@@ -731,7 +991,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             /** Handle input clearing **/
             $('body').on('click', '.clear-button', function () {
                 $(algoliaSettings.search_input_selector).val('');
-                engine.helper.clearRefinements().setQuery('').search();
+                helper.clearRefinements().setQuery('').search();
             });
 
             /**
@@ -745,12 +1005,12 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                 var $this = $(this);
 
-                engine.helper.setQuery($(this).val());
+                helper.setQuery($(this).val());
 
                 /** Update all search input to reflect the change **/
                 $(algoliaSettings.search_input_selector).each(function (i) {
                     if ($(this)[0] != $this[0])
-                        $(this).val(engine.helper.state.query);
+                        $(this).val(helper.state.query);
                 });
 
                 /** If escape **/
@@ -767,7 +1027,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                 /* Uncomment to clear refinements on keyup */
 
-                //engine.helper.clearRefinements();
+                //helper.clearRefinements();
 
 
                 performQueries(false);
@@ -781,8 +1041,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     var min = $(this).attr("data-min");
                     var max = $(this).attr("data-max");
 
-                    var new_min = engine.helper.state.getNumericRefinement($(this).attr("data-attribute"), ">=");
-                    var new_max = engine.helper.state.getNumericRefinement($(this).attr("data-attribute"), "<=");
+                    var new_min = helper.state.getNumericRefinement($(this).attr("data-attribute"), ">=");
+                    var new_max = helper.state.getNumericRefinement($(this).attr("data-attribute"), "<=");
 
                     if (new_min != undefined)
                         min = new_min;
@@ -814,10 +1074,10 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             /** Clean input **/
             $(algoliaSettings.search_input_selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
 
-            engine.getRefinementsFromUrl(algoliaSettings.search_input_selector);
+            getRefinementsFromUrl(algoliaSettings.search_input_selector);
 
             window.addEventListener("popstate", function(e) {
-                engine.getRefinementsFromUrl(algoliaSettings.search_input_selector);
+                getRefinementsFromUrl(algoliaSettings.search_input_selector);
             });
 
 
