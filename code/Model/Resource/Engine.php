@@ -130,9 +130,9 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     private function _rebuildCategoryIndex($storeId = null, $categoryIds = null)
     {
-        if ($productIds == null || count($productIds) == 0)
+        if ($categoryIds == null || count($categoryIds) == 0)
         {
-            $size       = $this->category_helper->getCategoryCollectionQuery($storeId, $productIds)->getSize();
+            $size       = $this->category_helper->getCategoryCollectionQuery($storeId, $categoryIds)->getSize();
             $by_page    = $this->config->getNumberOfElementByPage();
             $nb_page    = ceil($size / $by_page);
 

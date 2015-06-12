@@ -25,12 +25,14 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
     /** @var Algolia_Algoliasearch_Model_Resource_Engine */
     private $engine;
+    private $config;
 
     public function __construct()
     {
         parent::__construct();
 
         $this->engine = new Algolia_Algoliasearch_Model_Resource_Engine();
+        $this->config = new Algolia_Algoliasearch_Helper_Config();
     }
 
     protected $_matchedEntities = array(
@@ -277,7 +279,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                         }
                     }
                     if ( ! $rebuildIndex) {
-                        foreach (Mage::helper('algoliasearch')->getCategoryAdditionalAttributes($category->getStoreId()) as $attribute) {
+                        foreach ($this->config->getCategoryAdditionalAttributes($category->getStoreId()) as $attribute) {
                             if ($category->dataHasChangedFor($attribute['attribute'])) {
                                 $rebuildIndex = TRUE;
                                 break;
@@ -444,6 +446,16 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
             $this->engine
                 ->rebuildProductIndex(null, $productIds);
+
+            /*
+            * Change indexer status as need to reindex related categories to update product count.
+            * It's low priority so no need to automatically reindex all related categories after deleting each product.
+            * Do not reindex all if affected categories are given or product count is not indexed.
+            */
+            if ( ! isset($data['catalogsearch_update_category_id'])) {
+                $process = $event->getProcess();
+                $process->changeStatus(Mage_Index_Model_Process::STATUS_REQUIRE_REINDEX);
+            }
         }
 
         /*
