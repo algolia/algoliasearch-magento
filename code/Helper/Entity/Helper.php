@@ -214,4 +214,20 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
         return $categoryName;
     }
 
+    public static function getStores($store_id)
+    {
+        $store_ids = array();
+
+        if ($store_id == null)
+        {
+            foreach (Mage::app()->getStores() as $store)
+                if ($store->getIsActive())
+                    $store_ids[] = $store->getId();
+        }
+        else
+            $store_ids = array($store_id);
+
+        return $store_ids;
+    }
+
 }
