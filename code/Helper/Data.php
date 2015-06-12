@@ -13,8 +13,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 {
     const COLLECTION_PAGE_SIZE = 100;
 
-    private static $_rootCategoryId = -1;
-
     private $algolia_helper;
 
     private $page_helper;
@@ -75,25 +73,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $data;
     }
 
-    private function getStores($store_id)
-    {
-        $store_ids = array();
-
-        if ($store_id == null)
-        {
-            foreach (Mage::app()->getStores() as $store)
-                if ($store->getIsActive())
-                    $store_ids[] = $store->getId();
-        }
-        else
-            $store_ids = array($store_id);
-
-        return $store_ids;
-    }
-
     public function removeProducts($ids, $store_id = null)
     {
-        $store_ids = $this->getStores($store_id);
+        $store_ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($store_id);
 
         foreach ($store_ids as $store_id)
         {
@@ -105,7 +87,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function removeCategories($ids, $store_id = null)
     {
-        $store_ids = $this->getStores($store_id);
+        $store_ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($store_id);
 
         foreach ($store_ids as $store_id)
         {
@@ -136,68 +118,23 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         try
         {
-            $storeRootCategoryPath = sprintf('%d/%d', $this->getRootCategoryId(), Mage::app()->getStore($storeId)->getRootCategoryId());
+            $collection = $this->category_helper->getCategoryCollectionQuery($storeId, $categoryIds);
 
-            $index_name = $this->category_helper->getIndexName($storeId);
+            $size = $collection->getSize();
 
-            $categories = Mage::getResourceModel('catalog/category_collection'); /** @var $categories Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
-
-            $unserializedCategorysAttrs = $this->config->getCategoryAdditionalAttributes($storeId);
-
-            $additionalAttr = array();
-
-            foreach ($unserializedCategorysAttrs as $attr)
-                $additionalAttr[] = $attr['attribute'];
-
-            $categories
-                ->addPathFilter($storeRootCategoryPath)
-                ->addNameToResult()
-                ->addUrlRewriteToResult()
-                ->addIsActiveFilter()
-                ->setStoreId($storeId)
-                ->addAttributeToSelect(array_merge(array('name'), $additionalAttr))
-                ->addFieldToFilter('level', array('gt' => 1));
-            if ($categoryIds) {
-                $categories->addFieldToFilter('entity_id', array('in' => $categoryIds));
-            }
-            $size = $categories->getSize();
-            if ($size > 0) {
-                $indexData = array();
-                $pageSize = $this->config->getNumberOfProductByPage();
-                $pages = ceil($size / $pageSize);
-                $categories->clear();
+            if ($size > 0)
+            {
+                $pages = ceil($size / $this->config->getNumberOfElementByPage());
+                $collection->clear();
                 $page = 1;
+
                 while ($page <= $pages)
                 {
-                    $collection = clone $categories;
-                    $collection->setCurPage($page)->setPageSize($pageSize);
-                    $collection->load();
-                    foreach ($collection as $category)
-                    {
-                        /** @var $@ry Mage_Catalog_Model_Category */
-                        if ( ! $this->category_helper->isCategoryActive($category->getId(), $storeId))
-                            continue;
+                    $this->rebuildStoreCategoryIndexPage($storeId, $collection, $page, $this->config->getNumberOfElementByPage());
 
-                        $category->setStoreId($storeId);
-
-                        $category_obj = $this->category_helper->getObject($category);
-
-                        if ($category_obj['product_count'] > 0)
-                            array_push($indexData, $category_obj);
-
-                        if (count($indexData) >= $this->config->getNumberOfProductByPage()) {
-                            $this->algolia_helper->addObjects($indexData, $index_name);
-                            $indexData = array();
-                        }
-                    }
-                    $collection->walk('clearInstance');
-                    $collection->clear();
-                    unset($collection);
                     $page++;
                 }
-                if (count($indexData) > 0) {
-                    $this->algolia_helper->addObjects($indexData, $index_name);
-                }
+
                 unset($indexData);
             }
         }
@@ -208,6 +145,75 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         $this->stopEmulation($emulationInfo);
+    }
+
+    public function rebuildStoreProductIndex($storeId, $productIds)
+    {
+        $emulationInfo = $this->startEmulation($storeId);
+
+        try
+        {
+            $collection = $this->product_helper->getProductCollectionQuery($storeId, $productIds);
+
+            $size = $collection->getSize();
+
+            if ($size > 0)
+            {
+                $pages = ceil($size / $this->config->getNumberOfElementByPage());
+                $collection->clear();
+                $page = 1;
+
+                while ($page <= $pages)
+                {
+                    $this->rebuildStoreProductIndexPage($storeId, $collection, $page, $this->config->getNumberOfElementByPage());
+
+                    $page++;
+                }
+            }
+        }
+        catch (Exception $e)
+        {
+            $this->stopEmulation($emulationInfo);
+            throw $e;
+        }
+
+        $this->stopEmulation($emulationInfo);
+    }
+
+
+    public function rebuildStoreCategoryIndexPage($storeId, $collectionDefault, $page, $pageSize)
+    {
+        $collection = clone $collectionDefault;
+        $collection->setCurPage($page)->setPageSize($pageSize);
+        $collection->load();
+
+        $index_name = $this->category_helper->getIndexName($storeId);
+
+        $indexData = array();
+
+        /** @var $category Mage_Catalog_Model_Category */
+        foreach ($collection as $category)
+        {
+            if ( ! $this->category_helper->isCategoryActive($category->getId(), $storeId))
+                continue;
+
+            $category->setStoreId($storeId);
+
+            $category_obj = $this->category_helper->getObject($category);
+
+            if ($category_obj['product_count'] > 0)
+                array_push($indexData, $category_obj);
+        }
+
+        if (count($indexData) > 0)
+            $this->algolia_helper->addObjects($indexData, $index_name);
+
+        unset($indexData);
+
+        $collection->walk('clearInstance');
+        $collection->clear();
+
+        unset($collection);
     }
 
     public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize)
@@ -229,9 +235,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         {
             $product->setStoreId($storeId);
 
-            $default = isset($defaultData[$product->getId()]) ? (array) $defaultData[$product->getId()] : array();
-
-            $json = $this->product_helper->getObject($product, $default);
+            $json = $this->product_helper->getObject($product);
 
             array_push($indexData, $json);
         }
@@ -243,43 +247,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $collection->walk('clearInstance');
         $collection->clear();
+
         unset($collection);
-    }
-
-    public function rebuildStoreProductIndex($storeId, $productIds, $defaultData = null)
-    {
-        if (count($productIds) > 1)
-            $this->rebuiltStorePageIndex($storeId);
-
-        $emulationInfo = $this->startEmulation($storeId);
-
-        try
-        {
-            $collection = $this->product_helper->getProductCollectionQuery($storeId, $productIds);
-
-            $size = $collection->getSize();
-
-            if ($size > 0)
-            {
-                $pages = ceil($size / $this->config->getNumberOfProductByPage());
-                $collection->clear();
-                $page = 1;
-
-                while ($page <= $pages)
-                {
-                    $this->rebuildStoreProductIndexPage($storeId, $collection, $page, $this->config->getNumberOfProductByPage());
-
-                    $page++;
-                }
-            }
-        }
-        catch (Exception $e)
-        {
-            $this->stopEmulation($emulationInfo);
-            throw $e;
-        }
-
-        $this->stopEmulation($emulationInfo);
     }
 
     public function startEmulation($storeId)
@@ -300,21 +269,5 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::app()->setCurrentStore($info->getInitialStoreId());
         Mage::app()->getStore($info->getEmulatedStoreId())->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $info->getUseProductFlat());
         Mage::app()->getStore($info->getEmulatedStoreId())->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $info->getUseCategoryFlat());
-    }
-
-    /***********/
-    /* Proxies */
-    /***********/
-
-    public function getRootCategoryId()
-    {
-        if (-1 === self::$_rootCategoryId) {
-            $collection = Mage::getResourceModel('catalog/category_collection');
-            $collection->addFieldToFilter('parent_id', 0);
-            $collection->getSelect()->limit(1);
-            $rootCategory = $collection->getFirstItem();
-            self::$_rootCategoryId = $rootCategory->getId();
-        }
-        return self::$_rootCategoryId;
     }
 }

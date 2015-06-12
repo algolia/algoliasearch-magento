@@ -441,6 +441,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                     }
                 }
             }
+
             $this->engine
                 ->rebuildProductIndex(null, $productIds);
         }

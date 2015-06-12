@@ -333,7 +333,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>Number of retries before giving up on unexpected errors.</comment>
                         </retries>
-                        <number_of_product_by_page translate="label comment">
+                        <number_of_element_by_page translate="label comment">
                             <label>Max number of products by indexing job</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
@@ -342,7 +342,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>The max number of products by indexing job. Default value is 100.</comment>
-                        </number_of_product_by_page>
+                        </number_of_element_by_page>
                         <number_of_job_to_run translate="label comment">
                             <label>Number of jobs to run each time the cron is run</label>
                             <frontend_type>text</frontend_type>

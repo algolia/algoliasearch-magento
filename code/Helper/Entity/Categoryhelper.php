@@ -3,6 +3,7 @@
 class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algoliasearch_Helper_Entity_Helper
 {
     private static $_categoryAttributes;
+    private static $_rootCategoryId = -1;
 
     protected function getIndexNameSuffix()
     {
@@ -50,6 +51,36 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         $this->algolia_helper->mergeSettings($this->getIndexName($storeId), $indexSettings);
 
         return $indexSettings;
+    }
+
+    public function getCategoryCollectionQuery($storeId, $categoryIds = null)
+    {
+        $storeRootCategoryPath = sprintf('%d/%d', $this->getRootCategoryId(), Mage::app()->getStore($storeId)->getRootCategoryId());
+
+        $index_name = $this->getIndexName($storeId);
+
+        $categories = Mage::getResourceModel('catalog/category_collection'); /** @var $categories Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
+
+        $unserializedCategorysAttrs = $this->config->getCategoryAdditionalAttributes($storeId);
+
+        $additionalAttr = array();
+
+        foreach ($unserializedCategorysAttrs as $attr)
+            $additionalAttr[] = $attr['attribute'];
+
+        $categories
+            ->addPathFilter($storeRootCategoryPath)
+            ->addNameToResult()
+            ->addUrlRewriteToResult()
+            ->addIsActiveFilter()
+            ->setStoreId($storeId)
+            ->addAttributeToSelect(array_merge(array('name'), $additionalAttr))
+            ->addFieldToFilter('level', array('gt' => 1));
+
+        if ($categoryIds)
+            $categories->addFieldToFilter('entity_id', array('in' => $categoryIds));
+
+        return $categories;
     }
 
     public function getAllAttributes()
@@ -141,5 +172,17 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
             $data0 = $this->try_cast($data0);
 
         return $data;
+    }
+
+    public function getRootCategoryId()
+    {
+        if (-1 === self::$_rootCategoryId) {
+            $collection = Mage::getResourceModel('catalog/category_collection');
+            $collection->addFieldToFilter('parent_id', 0);
+            $collection->getSelect()->limit(1);
+            $rootCategory = $collection->getFirstItem();
+            self::$_rootCategoryId = $rootCategory->getId();
+        }
+        return self::$_rootCategoryId;
     }
 }

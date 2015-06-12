@@ -39,7 +39,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const XML_PATH_MAX_RETRIES                      = 'algoliasearch/queue/retries';
     const XML_PATH_IS_ACTIVE                        = 'algoliasearch/queue/active';
-    const XML_PATH_NUMBER_OF_PRODUCT_BY_PAGE        = 'algoliasearch/queue/number_of_product_by_page';
+    const XML_PATH_NUMBER_OF_ELEMENT_BY_PAGE        = 'algoliasearch/queue/number_of_element_by_page';
     const XML_PATH_NUMBER_OF_JOB_TO_RUN             = 'algoliasearch/queue/number_of_job_to_run';
 
     public function getQueueMaxRetries($storeId = null)
@@ -47,9 +47,9 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfig(self::XML_PATH_MAX_RETRIES, $storeId);
     }
 
-    public function getNumberOfProductByPage($storeId = null)
+    public function getNumberOfElementByPage($storeId = null)
     {
-        return Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PRODUCT_BY_PAGE, $storeId);
+        return Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_ELEMENT_BY_PAGE, $storeId);
     }
 
     public function getNumberOfJobToRun($storeId = null)

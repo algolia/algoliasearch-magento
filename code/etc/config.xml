@@ -154,7 +154,7 @@
             <queue>
                 <active>0</active>
                 <retries>3</retries>
-                <number_of_product_by_page>100</number_of_product_by_page>
+                <number_of_element_by_page>100</number_of_element_by_page>
                 <number_of_job_to_run>300</number_of_job_to_run>
             </queue>
         </algoliasearch>
