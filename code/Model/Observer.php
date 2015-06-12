@@ -43,7 +43,7 @@ class Algolia_Algoliasearch_Model_Observer
     {
         $storeId = $event->getStoreId();
 
-        $this->helper->deleteStoreIndices($store->getId());
+        $this->helper->deleteStoreIndices($storeId);
     }
 
     public function removeProducts(Varien_Object $event)
