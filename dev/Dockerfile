@@ -24,12 +24,18 @@ RUN service mysql start && (echo "CREATE DATABASE magento" | mysql -u root --pas
 
 RUN service mysql start && MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PASSWORD=P4ssw0rd MYSQL_DATABASE=magento MAGENTO_LOCALE=en_GB MAGENTO_TIMEZONE=Europe/Paris MAGENTO_DEFAULT_CURRENCY=USD MAGENTO_URL=http://192.168.59.103 MAGENTO_ADMIN_FIRSTNAME=Admin MAGENTO_ADMIN_LASTNAME=MyStore MAGENTO_ADMIN_EMAIL=amdin@mymagentostore.com MAGENTO_ADMIN_USERNAME=admin MAGENTO_ADMIN_PASSWORD=magentorocks1 /usr/local/bin/install-magento && service mysql stop
 
-RUN apt-get install -y vim emacs-nox git-core
+RUN apt-get install -y vim emacs-nox git-core wget
 RUN cd /tmp && curl -s -L -O https://raw.github.com/colinmollenhour/modman/master/modman-installer && chmod +x modman-installer && ./modman-installer
 
 RUN cd /var/www/htdocs && /root/bin/modman init && /root/bin/modman clone https://github.com/algolia/algoliasearch-magento && rm -rf .modman/algoliasearch-magento
 
-RUN apt-get install -y libapache2-mod-php5 phpmyadmin
+RUN service mysql start && n98-magerun cache:disable && service mysql stop
+RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs config:set dev/template/allow_symlink "1" >/dev/null 2>&1  && service mysql stop
+
+#RUN apt-get install -y libapache2-mod-php5 phpmyadmin
+
+COPY ./bin/start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
 EXPOSE 80
-CMD service mysql start && cd /var/www/htdocs && /root/bin/modman repair algoliasearch-magento && /usr/sbin/apache2 -DFOREGROUND
+CMD start.sh
