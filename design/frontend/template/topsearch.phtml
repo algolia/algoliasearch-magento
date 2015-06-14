@@ -23,11 +23,6 @@ if ($config->isInstantEnabled() && $isSearchPage) {
     <div class="form-search">
         <label for="search"><?php echo $this->__('Search:') ?></label>
         <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" value="<?php echo $catalogSearchHelper->getEscapedQueryText() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Search for products or categories" />
-        <div id="search_autocomplete" class="algoliasearch-autocomplete">
-            <div class="result-set" id="search_autocomplete_categories"></div>
-            <div class="result-set" id="search_autocomplete_products"></div>
-            <div class="result-set" id="search_autocomplete_pages"></div>
-        </div>
     </div>
 </form>
 
