@@ -115,3 +115,5 @@ $ ./dev/restart.sh -a YourApplicationID \
                -p YourIndexPrefix \
                -b http://YourBaseURL/
 ```
+
+Administration login is `admin` with password `magentorocks1`.
