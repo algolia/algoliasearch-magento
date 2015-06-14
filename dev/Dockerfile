@@ -17,7 +17,7 @@ RUN cd /tmp && curl -O http://www.magentocommerce.com/downloads/assets/1.9.1.0/m
 COPY ./bin/install-magento /usr/local/bin/install-magento
 RUN chmod +x /usr/local/bin/install-magento
 ## sample dataset import
-RUN cd /tmp && curl -O http://www.magentocommerce.com/downloads/assets/1.9.0.0/magento-sample-data-1.9.0.0.tar.gz && tar xvf magento-sample-data-1.9.0.0.tar.gz
+RUN cd /tmp && curl -O http://demos.algolia.com/magento-sample-data-1.9.0.0.tar.gz && tar xvf magento-sample-data-1.9.0.0.tar.gz
 RUN cd /var/www/htdocs/media && cp -R /tmp/magento-sample-data-1.9.0.0/media/* . && chmod -R 777 /var/www/htdocs/media
 RUN cd /var/www/htdocs/skin && cp -R /tmp/magento-sample-data-1.9.0.0/skin/* .
 RUN chown -R www-data:www-data /var/www/htdocs
