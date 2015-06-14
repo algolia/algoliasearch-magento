@@ -13,7 +13,7 @@ RUN apt-get install -y vim emacs-nox git-core wget
 
 # magento 1.9.1
 ## download & install script
-RUN cd /tmp && curl -O http://www.magentocommerce.com/downloads/assets/1.9.1.0/magento-1.9.1.0.tar.gz && tar xvf magento-1.9.1.0.tar.gz && mv magento/* magento/.htaccess /var/www/htdocs
+RUN cd /tmp && curl -O http://demos.algolia.com/magento-1.9.1.1.tar.gz && tar xvf magento-1.9.1.0.tar.gz && mv magento/* magento/.htaccess /var/www/htdocs
 COPY ./bin/install-magento /usr/local/bin/install-magento
 RUN chmod +x /usr/local/bin/install-magento
 ## sample dataset import
