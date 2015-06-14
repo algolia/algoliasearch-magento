@@ -142,7 +142,7 @@
                 <custom_ranking_category_attributes>a:1:{s:18:"_1427961035192_192";a:2:{s:9:"attribute";s:13:"product_count";s:5:"order";s:4:"desc";}}</custom_ranking_category_attributes>
             </categories>
             <relevance>
-                <remove_words_if_no_result></remove_words_if_no_result>
+                <remove_words_if_no_result>None</remove_words_if_no_result>
             </relevance>
             <ui>
                 <number_product_suggestions>3</number_product_suggestions>
