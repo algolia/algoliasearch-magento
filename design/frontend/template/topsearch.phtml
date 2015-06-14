@@ -269,60 +269,53 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 <script type="text/javascript">
     //<![CDATA[
 
-    /*****************
-     **
-     ** INITIALIZATION
-     **
-     *****************/
-
-    var autocompleteEnabled = "<?php echo $config->isPopupEnabled(); ?>" == "1" ? true : false;
-    var instantEnabled      = "<?php echo $config->isInstantEnabled(); ?>" == "1" ? true : false;
-
-    var algoliaSettings     = {};
-    algoliaSettings.facets                  = <?php echo json_encode($config->getFacets()); ?>;
-    algoliaSettings.instant_selector        = '<?php echo $config->getInstantSelector(); ?>';
-    algoliaSettings.hits_by_page            = <?php echo (int) $config->getNumberOfProductResults() ?>;
-    algoliaSettings.sorting_indices         = <?php echo json_encode(array_values($config->getSortingIndices())); ?>;
-    algoliaSettings.indexName               = '<?php echo $product_helper->getBaseIndexName(); ?>';
-    algoliaSettings.search_input_selector   = '#search';
-
-    var applicationID           = '<?php echo $config->getApplicationID() ?>';
-    var apiKey                  = '<?php echo $config->getSearchOnlyAPIKey() ?>';
-
-    var algolia_client      = algoliasearch(applicationID, apiKey);
-
-    /**
-     *  Foreach Type decide if it need to have a conjunctive or dijunctive faceting
-     *  When you create a custom facet type you need to add it here.
-     *  Example : 'menu'
-     */
-    var conjunctive_facets  = [];
-    var disjunctive_facets  = [];
-    for (var i = 0; i < algoliaSettings.facets.length; i++)
-    {
-        if (algoliaSettings.facets[i].type == "conjunctive")
-            conjunctive_facets.push(algoliaSettings.facets[i].attribute);
-
-        if (algoliaSettings.facets[i].type == "disjunctive")
-            disjunctive_facets.push(algoliaSettings.facets[i].attribute);
-
-        if (algoliaSettings.facets[i].type == "slider")
-            disjunctive_facets.push(algoliaSettings.facets[i].attribute);
-
-        if (algoliaSettings.facets[i].type == "menu")
-            disjunctive_facets.push(algoliaSettings.facets[i].attribute);
-    }
-
-    helper = algoliasearchHelper(algolia_client, algoliaSettings.indexName + '_products', {
-        facets: conjunctive_facets,
-        disjunctiveFacets: disjunctive_facets,
-        hitsPerPage: algoliaSettings.hits_by_page
-    });
-
-    helper.setQuery('');
-
-
     $algoliaJQuery(document).ready(function($) {
+        /*****************
+         **
+         ** INITIALIZATION
+         **
+         *****************/
+
+        var autocompleteEnabled = "<?php echo $config->isPopupEnabled(); ?>" == "1" ? true : false;
+        var instantEnabled      = "<?php echo $config->isInstantEnabled(); ?>" == "1" ? true : false;
+
+        var algoliaSettings     = {};
+        algoliaSettings.facets                  = <?php echo json_encode($config->getFacets()); ?>;
+        algoliaSettings.instant_selector        = '<?php echo $config->getInstantSelector(); ?>';
+        algoliaSettings.hits_by_page            = <?php echo (int) $config->getNumberOfProductResults() ?>;
+        algoliaSettings.sorting_indices         = <?php echo json_encode(array_values($config->getSortingIndices())); ?>;
+        algoliaSettings.indexName               = '<?php echo $product_helper->getBaseIndexName(); ?>';
+        algoliaSettings.search_input_selector   = '#search';
+
+        var algolia_client = algoliasearch('<?php echo $config->getApplicationID() ?>', '<?php echo $config->getSearchOnlyAPIKey() ?>');
+
+        /**
+         *  Foreach Type decide if it need to have a conjunctive or dijunctive faceting
+         *  When you create a custom facet type you need to add it here.
+         *  Example : 'menu'
+         */
+        var conjunctive_facets  = [];
+        var disjunctive_facets  = [];
+        for (var i = 0; i < algoliaSettings.facets.length; i++)
+        {
+            if (algoliaSettings.facets[i].type == "conjunctive")
+                conjunctive_facets.push(algoliaSettings.facets[i].attribute);
+
+            if (algoliaSettings.facets[i].type == "disjunctive")
+                disjunctive_facets.push(algoliaSettings.facets[i].attribute);
+
+            if (algoliaSettings.facets[i].type == "slider")
+                disjunctive_facets.push(algoliaSettings.facets[i].attribute);
+
+            if (algoliaSettings.facets[i].type == "menu")
+                disjunctive_facets.push(algoliaSettings.facets[i].attribute);
+        }
+        var helper = algoliasearchHelper(algolia_client, algoliaSettings.indexName + '_products', {
+            facets: conjunctive_facets,
+            disjunctiveFacets: disjunctive_facets,
+            hitsPerPage: algoliaSettings.hits_by_page
+        });
+        helper.setQuery('');
 
         /**
          *  Helper functions
