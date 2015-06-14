@@ -19,4 +19,3 @@ wget http://localhost/index.php/admin && echo "wget"
 
 # reindex whole index
 n98-magerun --root-dir=/var/www/htdocs index:reindex algolia_search_indexer
-

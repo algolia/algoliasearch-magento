@@ -94,10 +94,13 @@ echo "       INDEX_PREFIX: $INDEX_PREFIX"
 echo "           BASE_URL: $BASE_URL"
 echo ""
 
-docker run -p 80:80 -v "`pwd`/..":/var/www/htdocs/.modman/algoliasearch-magento \
+docker run -p 80:80 \
+  -v "`pwd`/..":/var/www/htdocs/.modman/algoliasearch-magento \
   -e APPLICATION_ID=$APPLICATION_ID \
   -e SEARCH_ONLY_API_KEY=$SEARCH_ONLY_API_KEY \
   -e API_KEY=$API_KEY \
   -e INDEX_PREFIX=$INDEX_PREFIX \
   -e BASE_URL=$BASE_URL \
-  --name algoliasearch-magento -d -t algolia/algoliasearch-magento
+  -d \
+  --name algoliasearch-magento \
+  -t algolia/algoliasearch-magento
