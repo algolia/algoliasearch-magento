@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 PROG="$0"
 APPLICATION_ID=
