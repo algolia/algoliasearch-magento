@@ -84,7 +84,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortorderproduc
             'renderer'=> $this->getRenderer('retrievable'),
         ));
         $this->addColumn('order', array(
-            'label' => Mage::helper('adminhtml')->__('Ordered / Unordered'),
+            'label' => Mage::helper('adminhtml')->__('Ordered'),
             'renderer'=> $this->getRenderer('order'),
         ));
         $this->_addAfter = false;

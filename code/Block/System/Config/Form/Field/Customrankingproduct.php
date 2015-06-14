@@ -55,7 +55,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customrankingproduct 
             'renderer'=> $this->getRenderer('attribute'),
         ));
         $this->addColumn('order', array(
-            'label' => Mage::helper('adminhtml')->__('Ordered / Unordered'),
+            'label' => Mage::helper('adminhtml')->__('Ordered'),
             'renderer'=> $this->getRenderer('order'),
         ));
         $this->_addAfter = false;

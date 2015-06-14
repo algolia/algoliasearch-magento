@@ -47,7 +47,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Custompages extends M
             'renderer'=> $this->getRenderer('pages'),
         ));
         $this->_addAfter = false;
-        $this->_addButtonLabel = Mage::helper('adminhtml')->__('Add Ranking Criterion');
+        $this->_addButtonLabel = Mage::helper('adminhtml')->__('Add Excluded Page');
         parent::__construct();
     }
 
