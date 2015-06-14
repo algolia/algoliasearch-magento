@@ -18,9 +18,9 @@ See features and benefits of [Algolia Search Extension for Magento](https://www.
 Installation
 --------------
 
-### Using the packaged Community Extension
+### Using Magento-Connect
 
-To setup this module using the packaged Community Extension, download the last version from our [releases](https://github.com/algolia/algoliasearch-magento/tree/master/releases) directory and upload it on your Magento instance.
+To setup this module using the packaged Community Extension, download the last version from [the magento-connect store](http://www.magentocommerce.com/magento-connect/algolia-search-extension.html).
 
 ### Using Modman
 
@@ -101,7 +101,17 @@ Once configured, do not forget to trigger the re-indexing in **System > Index Ma
 Instant-search
 ---------------
 
-If you want to build an instant-search based result page refreshing the whole page (results, pagination & navigation filters) “as you type” you can follow this [tutorial](http://www.algolia.com/doc/tutorials/instant-search).
+FIXME
 
-![Instant search](doc/instant-search.gif)
 
+Development
+------------
+The easiest way to setup your development environment is to use [Docker](https://www.docker.com/). Just run the following script to setup a runnin Magento 1.9 instance with some sample data & the Algolia Search extension installed:
+
+```sh
+$ ./dev/restart.sh -a YourApplicationID \
+               -k YourAdminAPIKey \
+               -s YourSearchOnlyAPIKey \
+               -p YourIndexPrefix \
+               -b http://YourBaseURL/
+```
