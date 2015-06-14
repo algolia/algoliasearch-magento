@@ -8,7 +8,7 @@ INDEX_PREFIX=magento_
 BASE_URL=http://mymagentostore.com/
 
 cd `dirname "$0"`
-docker build -t algolia/algoliasearch-magento .
+docker build -t algolia/algoliasearch-magento . || exit 1
 echo "=============================================================="
 echo "||        DOCKER IMAGE SUCCESSFULLY REBUILT                 ||"
 echo "=============================================================="
