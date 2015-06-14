@@ -18,6 +18,7 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
                     <fields>
                         <application_id translate="label">
                             <label>Application ID</label>
@@ -63,22 +64,30 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The flag indicates whether the search-as-you-type auto-completion menu is enabled. It requires your theme to expose a "top.search" template.</comment>
+                            <comment>
+                                <![CDATA[
+                                The flag indicates whether the search-as-you-type auto-completion menu is enabled. It requires your theme to expose a <code>top.search</code> template.
+                                ]]>
+                            </comment>
                         </is_popup_enabled>
                         <is_instant_enabled translate="label comment">
-                            <label>Enable Instant Search</label>
+                            <label>Enable Instant Search Results Page</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>70</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The flag indicates whether the search-as-you-type instant search is enabled. It requires your theme to expose a "top.search" template.</comment>
+                            <comment>
+                                <![CDATA[
+                                The flag indicates whether the search-as-you-type search results page is enabled. It requires your theme to expose a <code>top.search</code> template.
+                                ]]>
+                            </comment>
                         </is_instant_enabled>
                     </fields>
                 </credentials>
                 <instant>
-                    <label>Instant Search Configuration</label>
+                    <label>Instant Search Results Page Configuration</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>21</sort_order>
                     <show_in_default>1</show_in_default>
@@ -86,24 +95,14 @@
                     <show_in_store>1</show_in_store>
                     <expanded>1</expanded>
                     <fields>
-                        <replace_categories translate="label comment">
-                            <label>Replace categories page</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>15</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The flag indicates whether categories page will be replaced by the algolia extension template.</comment>
-                        </replace_categories>
                         <instant_selector translate="label comment">
-                            <label>Instant Search Selector</label>
+                            <label>DOM Selector</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The jquery selector to put the instant result in</comment>
+                            <comment>The DOM selector used to inject the results using JavaScript.</comment>
                         </instant_selector>
                         <facets>
                             <label>Facets</label>
@@ -113,7 +112,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure the facets</comment>
+                            <comment>Configure here the facets you want to display on your search results page sidebar.</comment>
                         </facets>
                         <sorts>
                             <label>Sorts</label>
@@ -123,8 +122,18 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>This will configure a slave for each sort</comment>
+                            <comment>Configure here the different sort orders you want to enable.</comment>
                         </sorts>
+                        <replace_categories translate="label comment">
+                            <label>Replace categories page</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Configure here whether the category pages are replaced by the instant-search results page.</comment>
+                        </replace_categories>
                     </fields>
                 </instant>
                 <products translate="label">
@@ -137,14 +146,19 @@
                     <expanded>1</expanded>
                     <fields>
                         <product_additional_attributes translate="label comment">
-                            <label>Product Attributes &lt;br&gt;(&lt;span style=&quot;color: red; font-size: 20px;&quot;&gt;&amp;#9888;&lt;/span&gt; Retrievable&lt;br&gt;need to be set to &lt;br&gt;"Yes" in order &lt;br&gt;to be displayed)</label>
+                            <label>Attributes</label>
                             <frontend_model>algoliasearch/system_config_form_field_customsortorderproduct</frontend_model>
                             <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the attributes you want to include in your Algolia records. The order of this setting matters as those at the top of the list are considered more important.</comment>
+                            <comment>
+                                <![CDATA[
+                                Configure here the attributes you want to include in your Algolia records. The order of this setting matters as those at the top of the list are considered more important.<br />
+                                <span style="color: #D83900">&#9888;</span> <code>Retrievable</code> need to be set to <code>Yes</code> in order to be displayed.
+                                ]]>
+                            </comment>
                         </product_additional_attributes>
                         <custom_ranking_product_attributes translate="label comment">
                             <label>Ranking</label>
@@ -154,18 +168,13 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the attributes used to reflect the popularity of your product (number of orders, number of likes, number of views, ...).</comment>
+                            <comment>
+                                <![CDATA[
+                                Configure here the attributes used to reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
+                                <span style="color: #D83900">&#9888;</span> All attributes used here must be included in the Attributes configuration.
+                                ]]>
+                            </comment>
                         </custom_ranking_product_attributes>
-                        <results_limit translate="label comment">
-                            <label>Results Limit</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>100</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The maximum number of results to return for searches. Maximum is 1000.</comment>
-                        </results_limit>
                     </fields>
                 </products>
                 <categories translate="label">
@@ -178,7 +187,7 @@
                     <expanded>1</expanded>
                     <fields>
                         <category_additional_attributes2 translate="label comment">
-                            <label>Category Attributes</label>
+                            <label>Attributes</label>
                             <frontend_model>algoliasearch/system_config_form_field_customsortordercategory</frontend_model>
                             <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
                             <sort_order>10</sort_order>
@@ -195,7 +204,12 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the attributes used to reflect the popularity of your product (number of orders, number of likes, number of views, ...).</comment>
+                            <comment>
+                                <![CDATA[
+                                Configure here the attributes used to reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
+                                <span style="color: #D83900">&#9888;</span> All attributes used here must be included in the Attributes configuration.
+                                ]]>
+                            </comment>
                         </custom_ranking_category_attributes>
                     </fields>
                 </categories>
@@ -216,7 +230,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the pages you want to exclude from indexation</comment>
+                            <comment>Configure here the pages you don't want to search in.</comment>
                         </excluded_pages>
                     </fields>
                 </pages>
@@ -265,14 +279,14 @@
                             <comment>The number of product suggestions the auto-completion menu is displaying. Default value is 3.</comment>
                         </number_product_suggestions>
                         <number_product_results translate="label comment">
-                            <label>Number of product results (Only when instant search is enable)</label>
+                            <label>Number of products per page</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of product suggestions the auto-completion menu is displaying. Default value is 9.</comment>
+                            <comment>The number of product displayed on the search results page. Default value is 9.</comment>
                         </number_product_results>
                         <number_category_suggestions translate="label comment">
                             <label>Number of category suggestions</label>
@@ -302,7 +316,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>If enabled, the search query will be saved in a cookie when navigating to a search result page (it will not be saved if page is refreshed or other page is loaded).</comment>
+                            <comment>If enabled, the search query will be saved in a cookie when navigating to a search result page.</comment>
                         </save_last_query>
                     </fields>
                 </ui>
@@ -323,6 +337,13 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                If enabled, all indexing operations (add, remove & update operations) will be done asynchronously using the CRON mechanism.<br />
+                                <span style="color: #D83900">&#9888;</span> Enabling the configuration is recommended in production or if your store has a lot of products.
+                                ]]>
+
+                            </comment>
                         </active>
                         <retries translate="label comment">
                             <label>Max Retries</label>
@@ -332,6 +353,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>Number of retries before giving up on unexpected errors.</comment>
+                            <depends><active>1</active></depends>
                         </retries>
                         <number_of_element_by_page translate="label comment">
                             <label>Max number of products by indexing job</label>
@@ -342,6 +364,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>The max number of products by indexing job. Default value is 100.</comment>
+                            <depends><active>1</active></depends>
                         </number_of_element_by_page>
                         <number_of_job_to_run translate="label comment">
                             <label>Number of jobs to run each time the cron is run</label>
@@ -352,6 +375,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>Number of jobs to run each time the cron is run. Default value is 300.</comment>
+                            <depends><active>1</active></depends>
                         </number_of_job_to_run>
                     </fields>
                 </queue>
