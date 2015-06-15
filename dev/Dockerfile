@@ -9,11 +9,12 @@ RUN apt-get update
 RUN apt-get install -y mysql-client-5.5 mysql-server
 RUN apt-get install -y libxml2-dev
 RUN docker-php-ext-install soap
+RUN docker-php-ext-install mysqli
 RUN apt-get install -y vim emacs-nox git-core wget
 
 # magento 1.9.1
 ## download & install script
-RUN cd /tmp && curl -O http://demos.algolia.com/magento-1.9.1.1.tar.gz && tar xvf magento-1.9.1.0.tar.gz && mv magento/* magento/.htaccess /var/www/htdocs
+RUN cd /tmp && curl -O http://demos.algolia.com/magento-1.9.1.1.tar.gz && tar xvf magento-1.9.1.1.tar.gz && mv magento/* magento/.htaccess /var/www/htdocs
 COPY ./bin/install-magento /usr/local/bin/install-magento
 RUN chmod +x /usr/local/bin/install-magento
 ## sample dataset import
@@ -32,6 +33,11 @@ RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs config:set dev
 # algoliasearch-magento setup
 RUN cd /tmp && curl -s -L -O https://raw.github.com/colinmollenhour/modman/master/modman-installer && chmod +x modman-installer && ./modman-installer
 RUN cd /var/www/htdocs && /root/bin/modman init && /root/bin/modman clone https://github.com/algolia/algoliasearch-magento && rm -rf .modman/algoliasearch-magento
+
+RUN apt-get -y install php5-mysql
+COPY bin/php.ini /usr/local/etc/php/php.ini
+RUN cd /tmp && curl -O https://phpmyadmin-downloads-532693.c.cdn77.org/phpMyAdmin/4.4.9/phpMyAdmin-4.4.9-english.tar.gz && tar xvf phpMyAdmin-4.4.9-english.tar.gz && mv phpMyAdmin-4.4.9-english /var/www/htdocs/phpmyadmin
+COPY bin/config.inc.php /var/www/htdocs/phpmyadmin/
 
 # start script
 COPY ./bin/start.sh /usr/local/bin/start.sh
