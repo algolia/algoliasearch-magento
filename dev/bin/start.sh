@@ -15,7 +15,7 @@ n98-magerun --root-dir=/var/www/htdocs config:set web/unsecure/base_url $BASE_UR
 n98-magerun --root-dir=/var/www/htdocs config:set web/secure/base_url $BASE_URL
 
 # GET / to initialize the algolia_search_indexer (other way to do it?)
-wget http://localhost/index.php/admin && echo "wget"
+n98-magerun dev:class:lookup model algoliasearch/indexer_algolia
 
 # reindex whole index
 n98-magerun --root-dir=/var/www/htdocs index:reindex algolia_search_indexer
