@@ -33,8 +33,7 @@
 **
 ******************/
 
-.twitter-typeahead
-{
+.twitter-typeahead {
     width: 100%;
 }
 
@@ -56,8 +55,7 @@
     padding: 5px;
 }
 
-.tt-dropdown-menu .tt-suggestion:not(:last-child) .algoliasearch-autocomplete-hit
-{
+.tt-dropdown-menu .tt-suggestion:not(:last-child) .algoliasearch-autocomplete-hit {
     border-bottom: solid 1px #DDD;
 }
 
@@ -129,56 +127,44 @@
  * Instant Search
  */
 
-#algolia_instant_selector
-{
+#algolia_instant_selector {
     margin: 10px;
 }
 
-#algolia_instant_selector:after
-{
+#algolia_instant_selector:after {
     content: ' ';
     clear: both;
     display: block;
 }
 
-#algolia_instant_selector .category
-{
-
+#algolia_instant_selector .category {
 }
 
-#algolia_instant_selector .result-wrapper
-{
+#algolia_instant_selector .result-wrapper {
     float: left;
     width: 33.33%;
 }
 
-#algolia_instant_selector .title
-{
-
+#algolia_instant_selector .title {
 }
 
-#algolia_instant_selector .title img
-{
+#algolia_instant_selector .title img {
     width: 200px;
 }
 
-#algolia_instant_selector .hits.with_facets
-{
+#algolia_instant_selector .hits.with_facets {
     float: left;
     width: 80%;
 }
 
-#algolia_instant_selector .hits .infos
-{
-    margin: 0 10px;
-    padding: 5px;
-    background-color: #F5F5F5;
+#algolia_instant_selector .hits .infos {
+    margin: 0 10px 20px;
+    padding: 6px 10px;
     text-align: center;
-    border: solid 1px #DDD;
+    border-bottom: solid 1px #CCCCCC;
 }
 
-#algolia_instant_selector .hits .infos .clear-button
-{
+#algolia_instant_selector .hits .infos .clear-button {
     cursor: pointer;
 }
 
@@ -186,91 +172,82 @@
  * Facets
  */
 
-#algolia_instant_selector .infos .algolia-logo
-{
+#algolia_instant_selector .infos .algolia-logo {
     font-size: 10px;
 }
 
-#algolia_instant_selector .facets.with_facets
-{
+#algolia_instant_selector .facets.with_facets {
     float: left;
     width: 20%;
 }
 
-#algolia_instant_selector .facet
-{
+#algolia_instant_selector .facet {
     background-color: white;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
-#algolia_instant_selector .facet:not(:first-child)
-{
+#algolia_instant_selector .facet:not(:first-child) {
     margin-top: 10px;
 }
 
-#algolia_instant_selector .facet .name
-{
-    padding: 5px;
-    background-color: #F5F5F5;
-    border: 1px solid #DDD;
+#algolia_instant_selector .facet .name {
+    padding: 5px 0;
+    color: #54A5CD;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #CCC;
+    border-left: none;
+    border-right: none;
     text-transform: uppercase;
 }
 
-#algolia_instant_selector .facet .sub_facet
-{
-    padding: 10px 10px 3px 10px;
+#algolia_instant_selector .facet .sub_facet {
+    padding: 8px 10px;
     cursor: pointer;
 }
 
-#algolia_instant_selector .facet .sub_facet.checked
-{
+#algolia_instant_selector .facet .sub_facet.checked {
     font-weight: bold;
-    border-left: 4px solid #DDD;
+    border-left: 4px solid #54A5CD;
 }
 
-#algolia_instant_selector .facet .conjunctive .count, #algolia_instant_selector .facet .disjunctive .count
-{
+#algolia_instant_selector .facet .conjunctive .count,
+#algolia_instant_selector .facet .disjunctive .count {
     float: right;
     color: #666;
 }
 
 
-#algolia_instant_selector .facet .sub_facet:not(:last-child)
-{
+#algolia_instant_selector .facet .sub_facet:not(:last-child) {
     border-bottom: 1px dotted #F5F5F5;
 }
 
-#algolia_instant_selector .algolia-slider
-{
+#algolia_instant_selector .algolia-slider {
     margin: 15px;
 }
 
-#algolia_instant_selector .algolia-slider-info
-{
+#algolia_instant_selector .algolia-slider-info {
     margin: 10px 5px;
 }
 
-#algolia_instant_selector .pagination-wrapper
-{
+#algolia_instant_selector .pagination-wrapper {
     width: 100%;
 }
 
-#algolia_instant_selector .pagination-wrapper.with_facets
-{
+#algolia_instant_selector .pagination-wrapper.with_facets {
     width: 80%;
     margin-left: 20%;
 }
 
-#algolia_instant_selector .algolia-pagination
-{
+#algolia_instant_selector .algolia-pagination {
     display: inline-block;
     background-color: transparent;
     border: none;
     box-shadow: none;
 }
 
-#algolia_instant_selector .algolia-pagination li
-{
+#algolia_instant_selector .algolia-pagination li {
     float: left;
     display: inline;
     border: solid 1px #DDD;
@@ -280,46 +257,41 @@
     background-color: white;
 }
 
-#algolia_instant_selector .algolia-pagination li.active
-{
+#algolia_instant_selector .algolia-pagination li.active {
     background-color: #F5F5F5;
 }
 
-#algolia_instant_selector .algolia-pagination li.disabled
-{
+#algolia_instant_selector .algolia-pagination li.disabled {
     display: none;
 }
 
-#algolia_instant_selector .text-center
-{
+#algolia_instant_selector .text-center {
     text-align: center;
 }
 
-#algolia_instant_selector em
-{
+#algolia_instant_selector em {
     background-color: #c1d8e6;
     font-style: normal;
 }
 
-#algolia_instant_selector h1
-{
+#algolia_instant_selector h1 {
     margin: 0;
 }
 
-#algolia_instant_selector .result
-{
-    border: solid 1px #dddddd;
+#algolia_instant_selector .result {
+    border: solid 1px #EDEDED;
     background-color: white;
-    margin: 20px 10px;
+    margin: 0 10px 20px;
+}
+#algolia_instant_selector .result:hover {
+    border-color: #54A5CD;
 }
 
-#algolia_instant_selector .result .result-sub-content
-{
+#algolia_instant_selector .result .result-sub-content {
     padding: 10px;
 }
 
-#algolia_instant_selector .result .result-thumbnail
-{
+#algolia_instant_selector .result .result-thumbnail {
     text-align: center;
     padding: 10px;
 }
@@ -337,35 +309,36 @@
 }
 
 #algolia_instant_selector .result .ratings .rating-box {
-    margin: 0 auto;
+    margin: 0 auto 10px;
     float: inherit;
 }
 
-#algolia_instant_selector .result .result-description
-{
+#algolia_instant_selector .result .result-description {
 }
 
-#algolia_instant_selector .result .price
-{
+#algolia_instant_selector .result .price {
     text-align: center;
-    font-size: 2em;
-    color: #666;
+    font-size: 1.2em;
+    color: #54A5CD;
 }
 
-#algolia_instant_selector .result .result-title
-{
+#algolia_instant_selector .result .result-title {
+    font-size: 14px;
     text-align: center;
 }
 
-#algolia_instant_selector .result .result-title a, #algolia_instant_selector .result .result-title a:hover {
-    color: black;
+#algolia_instant_selector .result .result-title a {
+    color: #636363;
+}
+#algolia_instant_selector .result .result-title a:hover {
+    color: #54A5CD;
+    text-decoration: none;
 }
 
 #algolia_instant_selector .ui-widget-header {
     background-color: #bcbcbc;
 }
 
-#algolia_instant_selector .result-thumbnail img
-{
+#algolia_instant_selector .result-thumbnail img {
     width: 100%;
 }
