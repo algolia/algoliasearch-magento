@@ -2,9 +2,9 @@
 
 class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algoliasearch_Helper_Entity_Helper
 {
-    private static $_productAttributes;
+    protected static $_productAttributes;
 
-    private static $_predefinedProductAttributes = array('name', 'url_key', 'description', 'image', 'thumbnail');
+    protected static $_predefinedProductAttributes = array('name', 'url_key', 'description', 'image', 'thumbnail');
 
     protected function getIndexNameSuffix()
     {
@@ -45,7 +45,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return self::$_productAttributes;
     }
 
-    private function isAttributeEnabled($additionalAttributes, $attr_name)
+    protected function isAttributeEnabled($additionalAttributes, $attr_name)
     {
         foreach ($additionalAttributes as $attr)
             if ($attr['attribute'] == $attr_name)
@@ -54,7 +54,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return false;
     }
 
-    private function getReportForProduct($product)
+    protected function getReportForProduct($product)
     {
         $report = Mage::getResourceModel('reports/product_collection')
             ->addOrderedQty()

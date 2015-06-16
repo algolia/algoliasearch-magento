@@ -11,7 +11,7 @@ if (class_exists('AlgoliaSearch\Client', false) == false)
 
 class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstract
 {
-    private $client;
+    protected $client;
 
     public function __construct()
     {
