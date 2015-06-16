@@ -2,6 +2,9 @@
 
 ### 1.2.0
 
+### Unreleased 
+- update helper version to 2.1.0
+- default facet ordering to checked + count
 - Add an instant search implementation
 - Clean the config layout
 - Rewrite the indexing flow
