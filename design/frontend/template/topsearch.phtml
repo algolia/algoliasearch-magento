@@ -495,10 +495,17 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                         sub_facets.push(params);
                     }
-                    sub_facets.sort(function sortByCheckedThenCount(f1, f2){
-                      if( f1.checked != f2.checked ) return f1.checked ? -1 : 1;
-                      return f2.count - f1.count;
+
+                    sub_facets.sort(function sortByCheckedThenCount(f1, f2) {
+                      if (f1.checked !== f2.checked)
+                          return f1.checked ? -1 : 1;
+
+                      if (f2.count !== f1.count)
+                          return f2.count - f1.count;
+
+                      return f1.name.localeCompare(f2.name);
                     });
+
                 }
                 facets.push({count: sub_facets.length, attribute: algoliaSettings.facets[i].attribute, facet_categorie_name: algoliaSettings.facets[i].label, sub_facets: sub_facets });
             }
