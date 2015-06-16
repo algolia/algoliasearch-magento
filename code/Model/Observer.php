@@ -5,9 +5,9 @@
  */
 class Algolia_Algoliasearch_Model_Observer
 {
-    private $config;
-    private $product_helper;
-    private $helper;
+    protected $config;
+    protected $product_helper;
+    protected $helper;
 
     public function __construct()
     {
