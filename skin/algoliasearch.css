@@ -21,9 +21,9 @@
 }
 
 .text-ellipsis {
+    max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
-    max-width: 100%;
     text-overflow: ellipsis;
 }
 
@@ -38,29 +38,26 @@
 }
 
 .tt-dropdown-menu {
-    background: white;
     position: absolute;
-    left: 0px;
-    right: 0px;
     top: 0px;
     width: 100%;
+    padding: 3px 2px 2px;
     z-index: 1000 !important;
     border: 1px solid #BBB;
     border-top: none;
-    padding: 3px 2px 2px;
+    background: white;
 }
 
 .tt-dropdown-menu .category {
-    text-align: left;
+    padding: 8px 0;
     border: 1px solid #ccc;
     border-left: none;
     border-right: none;
-    padding: 8px 0;
+    color: #54A5CD;
+    text-align: left;
     text-align: center;
-    color: #666;
     font-size: 0.9em;
     text-transform: uppercase;
-    color: #54A5CD;
 }
 
 .tt-dropdown-menu .tt-suggestion:not(:last-child) .algoliasearch-autocomplete-hit {
@@ -69,11 +66,11 @@
 
 .tt-dropdown-menu .algoliasearch-autocomplete-hit {
     display: block;
-    text-decoration: none;
-    clear: both;
-    text-align: left;
     padding: 10px 10px;
+    clear: both;
     color: #000;
+    text-align: left;
+    text-decoration: none;
 }
 
 .tt-dropdown-menu .tt-cursor {
@@ -85,12 +82,10 @@
     font-style: normal;
 }
 
-
-
 .tt-dropdown-menu .algoliasearch-autocomplete-price {
     float: right;
-    color: #54A5CD;
     font-size: 1.1em;
+    color: #54A5CD;
 }
 
 .tt-dropdown-menu .algoliasearch-autocomplete-hit .thumb {
@@ -111,14 +106,14 @@
 }
 
 .tt-dropdown-menu .footer_algolia {
+    padding: 6px 6px 4px;
     background-color: #F5F5F5;
     text-align: right;
-    padding: 6px 6px 4px;
 }
 
 .tt-dropdown-menu .footer_algolia img {
-    height: 1.5em;
     display: inline;
+    height: 1.5em;
     vertical-align: bottom;
 }
 
@@ -152,7 +147,7 @@
 }
 
 #algolia_instant_selector:after {
-    content: ' ';
+    content: "";
     clear: both;
     display: block;
 }
@@ -180,9 +175,9 @@
 #algolia_instant_selector .hits .infos {
     margin: 0 10px 20px;
     padding: 6px 10px;
-    text-align: center;
-    color: #aaa;
     border-bottom: solid 1px #CCCCCC;
+    color: #aaa;
+    text-align: center;
 }
 #algolia_instant_selector .hits .infos strong {
     color: #555;
@@ -206,8 +201,8 @@
 }
 
 #algolia_instant_selector .facet {
-    background-color: white;
     margin-bottom: 30px;
+    background-color: white;
 }
 
 #algolia_instant_selector .facet:not(:first-child) {
@@ -216,11 +211,11 @@
 
 #algolia_instant_selector .facet .name {
     padding: 6px 0;
-    color: #54A5CD;
-    text-align: center;
     border: 1px solid #CCC;
     border-left: none;
     border-right: none;
+    color: #54A5CD;
+    text-align: center;
     text-transform: uppercase;
 }
 
@@ -272,16 +267,16 @@
 #algolia_instant_selector .algolia-pagination li {
     float: left;
     display: inline;
-    border: solid 1px #eee;
     padding: 0px 10px;
     margin: 0 5px;
     line-height: 25px;
+    border: solid 1px #eee;
     background-color: white;
 }
 
 #algolia_instant_selector .algolia-pagination li.active {
-    background-color: white;
     border: solid 1px #54A5CD;
+    background-color: white;
 }
 
 #algolia_instant_selector .algolia-pagination li.disabled {
@@ -303,9 +298,9 @@
 
 #algolia_instant_selector .result {
     display: block;
+    margin: 0 10px 20px;
     border: solid 1px #EDEDED;
     background-color: white;
-    margin: 0 10px 20px;
 }
 
 #algolia_instant_selector .result:hover {
@@ -318,8 +313,8 @@
 }
 
 #algolia_instant_selector .result .result-thumbnail {
-    text-align: center;
     padding: 10px;
+    text-align: center;
 }
 
 #algolia_instant_selector .result .result-thumbnail img {
