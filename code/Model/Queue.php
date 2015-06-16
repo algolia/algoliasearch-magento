@@ -46,7 +46,10 @@ class Algolia_Algoliasearch_Model_Queue
             // Old pid is no longer running, release it's reserved tasks
             if (is_numeric($pid) && ! file_exists("/proc/{$pid}/status")) {
                 Mage::log("A crashed job queue process was detected for pid {$pid}", Zend_Log::NOTICE, self::ERROR_LOG);
-                $this->db->update($this->table,array('pid' => new Zend_Db_Expr('NULL')),array('pid = ?' => $pid));
+
+                $expr = array('pid' => new Zend_Db_Expr('NULL'), 'retries' => new Zend_Db_Expr('retries + 1'));
+                $binding = array('pid = ?' => $pid);
+                $this->db->update($this->table, $expr, $binding);
             }
         }
 
@@ -83,7 +86,6 @@ class Algolia_Algoliasearch_Model_Queue
                     $e->getTraceAsString();
                 $bind = array(
                     'pid' => new Zend_Db_Expr('NULL'),
-                    'retries' => new Zend_Db_Expr('retries + 1'),
                     'error_log' => new Zend_Db_Expr('SUBSTR(CONCAT(error_log,'.$this->db->quote($error).',"\n\n"),1,20000)')
                 );
                 $this->db->update($this->table, $bind, $where);
