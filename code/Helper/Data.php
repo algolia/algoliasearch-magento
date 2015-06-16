@@ -36,46 +36,46 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_USE_RESULT_CACHE                 = 'algoliasearch/ui/use_result_cache';
     const XML_PATH_SAVE_LAST_QUERY                  = 'algoliasearch/ui/save_last_query';
 
-    private static $_categoryNames;
-    private static $_activeCategories;
-    private static $_rootCategoryId = -1;
-    private static $_categoryAttributes;
-    private static $_productAttributes;
+    protected static $_categoryNames;
+    protected static $_activeCategories;
+    protected static $_rootCategoryId = -1;
+    protected static $_categoryAttributes;
+    protected static $_productAttributes;
 
     /**
      * Predefined Magento product attributes that are used to prepare data for indexing
      *
      * @var array
      */
-    static private $_predefinedProductAttributes = array('name', 'url_key', 'description', 'image', 'thumbnail');
+    static protected $_predefinedProductAttributes = array('name', 'url_key', 'description', 'image', 'thumbnail');
 
     /**
      * Predefined product attributes that will be retrieved from the index
      *
      * @var array
      */
-    static private $_predefinedProductAttributesToRetrieve = array('name', 'url', 'thumbnail_url', 'categories');
+    static protected $_predefinedProductAttributesToRetrieve = array('name', 'url', 'thumbnail_url', 'categories');
 
     /**
      * Predefined category attributes that will be retrieved from the index
      *
      * @var array
      */
-    static private $_predefinedCategoryAttributesToRetrieve = array('name', 'url', 'image_url');
+    static protected $_predefinedCategoryAttributesToRetrieve = array('name', 'url', 'image_url');
 
     /**
      * Predefined special attributes
      *
      * @var array
      */
-    static private $_predefinedSpecialAttributes = array('_tags');
+    static protected $_predefinedSpecialAttributes = array('_tags');
 
     /**
      * Data prefix to retrieve Algolia search specific data for the entity.
      *
      * @var string
      */
-    private $_dataPrefix = 'algolia_';
+    protected $_dataPrefix = 'algolia_';
 
     public function __construct()
     {
@@ -235,7 +235,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $indexSettings;
     }
 
-    private function getClient()
+    protected function getClient()
     {
         return new \AlgoliaSearch\Client($this->getApplicationID(), $this->getAPIKey());
     }
@@ -366,7 +366,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      * @return string
      */
 
-    private function try_cast($value)
+    protected function try_cast($value)
     {
         if (is_numeric($value) && floatval($value) == floatval(intval($value)))
             return intval($value);
@@ -377,7 +377,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $value;
     }
 
-    private function getReportForProduct($product)
+    protected function getReportForProduct($product)
     {
         $report = Mage::getResourceModel('reports/product_sold_collection')
             ->addOrderedQty()
@@ -389,7 +389,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $report;
     }
 
-    private function castProductObject(&$productData)
+    protected function castProductObject(&$productData)
     {
         foreach ($productData as $key => &$data)
         {
@@ -411,7 +411,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
-    private function isAttributeEnabled($additionalAttributes, $attr_name)
+    protected function isAttributeEnabled($additionalAttributes, $attr_name)
     {
         foreach ($additionalAttributes as $attr)
             if ($attr['attribute'] == $attr_name)
@@ -628,7 +628,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $data;
     }
 
-    private function strip($s)
+    protected function strip($s)
     {
         $s = trim(preg_replace('/\s+/', ' ', $s));
         $s = preg_replace('/&nbsp;/', ' ', $s);

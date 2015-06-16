@@ -12,12 +12,12 @@ class Algolia_Algoliasearch_Model_Queue
     /**
      * @var string
      */
-    private $_table;
+    protected $_table;
 
     /**
      * @var Varien_Db_Adapter_Pdo_Mysql
      */
-    private $_db;
+    protected $_db;
 
     public function __construct()
     {
