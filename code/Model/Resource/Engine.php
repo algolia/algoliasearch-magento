@@ -91,6 +91,8 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function rebuildAll()
     {
+        Mage::getSingleton('algoliasearch/observer')->saveSettings();
+
         foreach (Mage::app()->getStores() as $store)
         {
             if ($store->getIsActive())
@@ -179,6 +181,11 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             }
         }
         return $index;
+    }
+
+    public function saveSettings()
+    {
+        Mage::getSingleton('algoliasearch/observer')->saveSettings();
     }
 
     public function test()

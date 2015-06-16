@@ -23,6 +23,11 @@ class Algolia_Algoliasearch_Model_Observer
      */
     public function configSaved(Varien_Event_Observer $observer)
     {
+        $this->saveSettings();
+    }
+
+    public function saveSettings()
+    {
         foreach (Mage::app()->getStores() as $store) /** @var $store Mage_Core_Model_Store */
             if ($store->getIsActive())
                 $this->helper->saveConfigurationToAlgolia($store->getId());
