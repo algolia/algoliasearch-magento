@@ -14,7 +14,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 <!--
 //================================
 //
-// Search bar
+// Search box
 //
 //================================
 -->
@@ -24,12 +24,17 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         <label for="search"><?php echo $this->__('Search:') ?></label>
         <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" value="<?php echo $catalogSearchHelper->getEscapedQueryText() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Search for products or categories" />
     </div>
+    <g class="iconic-magnifying-glass-md iconic-container iconic-md" data-width="32" data-height="32" display="none" transform="scale(4)">
+    <path fill="#fff" stroke="#000" stroke-width="3" class="iconic-magnifying-glass-handle iconic-magnifying-glass-handle-connector iconic-property-stroke" d="M19.5 19.582l9.438 9.438"></path>
+    <circle stroke="#000" stroke-width="3" cx="12" cy="12" r="10.5" class="iconic-magnifying-glass-rim iconic-property-stroke" fill="none"></circle>
+    <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z" class="iconic-magnifying-glass-handle iconic-property-fill"></path>
+  </g>
 </form>
 
 <!--
 //================================
 //
-// Auto-completion menu
+// Multi-category Autocomplete
 //
 //================================
 -->
