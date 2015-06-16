@@ -5,10 +5,10 @@ class Algolia_Algoliasearch_Model_Queue
     const SUCCESS_LOG = 'algoliasearch_queue_log.txt';
     const ERROR_LOG   = 'algoliasearch_queue_errors.log';
 
-    private $table;
-    private $db;
+    protected $table;
+    protected $db;
 
-    private $config;
+    protected $config;
 
     public function __construct()
     {

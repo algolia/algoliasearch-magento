@@ -2,8 +2,8 @@
 
 class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algoliasearch_Helper_Entity_Helper
 {
-    private static $_categoryAttributes;
-    private static $_rootCategoryId = -1;
+    protected static $_categoryAttributes;
+    protected static $_rootCategoryId = -1;
 
     protected function getIndexNameSuffix()
     {

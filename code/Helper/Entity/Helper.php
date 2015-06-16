@@ -5,8 +5,8 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
     protected $config;
     protected $algolia_helper;
 
-    private static $_activeCategories;
-    private static $_categoryNames;
+    protected static $_activeCategories;
+    protected static $_categoryNames;
     protected $_dataPrefix = 'algolia_';
 
     abstract protected function getIndexNameSuffix();
