@@ -49,10 +49,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         if (is_array($product_ids) && count($product_ids) > $by_page)
         {
             foreach (array_chunk($product_ids, $by_page) as $chunk)
-                $this->addToQueue('algoliasearch/observer', 'removeProducts', array('store_id' => $store->getId(), 'product_ids' => $chunk), 3);
+                $this->addToQueue('algoliasearch/observer', 'removeProducts', array('store_id' => $storeId, 'product_ids' => $chunk), 3);
         }
         else
-            $this->addToQueue('algoliasearch/observer', 'removeProducts', array('store_id' => $store->getId(), 'product_ids' => $product_ids), 3);
+            $this->addToQueue('algoliasearch/observer', 'removeProducts', array('store_id' => $storeId, 'product_ids' => $product_ids), 3);
 
         return $this;
     }
@@ -67,10 +67,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         if (is_array($category_ids) && count($category_ids) > $by_page)
         {
             foreach (array_chunk($category_ids, $by_page) as $chunk)
-                $this->addToQueue('algoliasearch/observer', 'removeCategories', array('store_id' => $store->getId(), 'category_ids' => $chunk), 3);
+                $this->addToQueue('algoliasearch/observer', 'removeCategories', array('store_id' => $storeId, 'category_ids' => $chunk), 3);
         }
         else
-            $this->addToQueue('algoliasearch/observer', 'removeCategories', array('store_id' => $store->getId(), 'category_ids' => $category_ids), 3);
+            $this->addToQueue('algoliasearch/observer', 'removeCategories', array('store_id' => $storeId, 'category_ids' => $category_ids), 3);
 
         return $this;
     }
