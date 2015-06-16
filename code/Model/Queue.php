@@ -70,7 +70,14 @@ class Algolia_Algoliasearch_Model_Queue
             // Old pid is no longer running, release it's reserved tasks
             if (is_numeric($pid) && !file_exists("/proc/{$pid}/status")) {
                 Mage::log("A crashed job queue process was detected for pid {$pid}", Zend_Log::NOTICE, self::ERROR_LOG);
-                $this->_db->update($this->_table, array('pid' => new Zend_Db_Expr('NULL')), array('pid = ?' => $pid));
+                $this->_db->update(
+                    $this->_table,
+                    array(
+                        'pid' => new Zend_Db_Expr('NULL'),
+                        'retries' => new Zend_Db_Expr('retries + 1')
+                    ),
+                    array('pid = ?' => $pid)
+                );
             }
         }
 
@@ -80,7 +87,7 @@ class Algolia_Algoliasearch_Model_Queue
         $batchSize = $this->_db->query("UPDATE {$this->_db->quoteIdentifier($this->_table,true)} SET pid = {$pid} WHERE pid IS NULL ORDER BY job_id $limit")->rowCount();
 
         // Run all reserved jobs
-        $result = $this->_db->query($this->_db->select()->from($this->_table, '*')->where('pid = ?',$pid)->order(array('job_id')));
+        $result = $this->_db->query($this->_db->select()->from($this->_table, '*')->where('pid = ?', $pid)->order(array('job_id')));
         while ($row = $result->fetch()) {
             $where = $this->_db->quoteInto('job_id = ?', $row['job_id']);
             $data = (substr($row['data'],0,1) == '{') ? json_decode($row['data'], TRUE) : $data = unserialize($row['data']);
@@ -99,7 +106,7 @@ class Algolia_Algoliasearch_Model_Queue
                 $model->$method(new Varien_Object($data));
                 $this->_db->delete($this->_table, $where);
                 Mage::log("{$row['pid']}: Mage::getSingleton({$row['class']})->{$row['method']}(".json_encode($data).")", Zend_Log::INFO, self::SUCCESS_LOG);
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 // Increment retries and log error information
                 $error =
                     date('c')." ERROR: ".get_class($e).": '{$e->getMessage()}' in {$e->getFile()}:{$e->getLine()}\n".
@@ -107,7 +114,6 @@ class Algolia_Algoliasearch_Model_Queue
                     $e->getTraceAsString();
                 $bind = array(
                     'pid' => new Zend_Db_Expr('NULL'),
-                    'retries' => new Zend_Db_Expr('retries + 1'),
                     'error_log' => new Zend_Db_Expr('SUBSTR(CONCAT(error_log,'.$this->_db->quote($error).',"\n\n"),1,20000)')
                 );
                 $this->_db->update($this->_table, $bind, $where);
