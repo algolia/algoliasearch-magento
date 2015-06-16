@@ -2,6 +2,7 @@
 
 ### Unreleased 
 - update helper version to 2.1.0
+- default facet ordering to checked + count
 
 ### 2.0.0
 
