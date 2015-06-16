@@ -1,9 +1,10 @@
 ## Change Log
 
-### 2.0.0
+### 1.2.0
 
 - Add an instant search implementation
-- clean the config layout
+- Clean the config layout
+- Rewrite the indexing flow
 
 ### 1.1.4
 - Fix call to undefined method isIndexProductCount

@@ -23,7 +23,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function __construct()
     {
-        \AlgoliaSearch\Version::$custom_value = " Magento (1.1.4)";
+        \AlgoliaSearch\Version::$custom_value = " Magento (1.2.0)";
 
         $this->algolia_helper   = new Algolia_Algoliasearch_Helper_Algoliahelper();
 

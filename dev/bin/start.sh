@@ -14,7 +14,7 @@ n98-magerun --root-dir=/var/www/htdocs config:set algoliasearch/credentials/inde
 n98-magerun --root-dir=/var/www/htdocs config:set web/unsecure/base_url $BASE_URL
 n98-magerun --root-dir=/var/www/htdocs config:set web/secure/base_url $BASE_URL
 
-# GET / to initialize the algolia_search_indexer (other way to do it?)
+# GET / to initialize the algolia_search_indexer
 n98-magerun dev:class:lookup model algoliasearch/indexer_algolia
 
 # reindex whole index
