@@ -29,6 +29,8 @@ RUN service mysql start && MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PASSWORD=P
 RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs cache:flush && n98-magerun --root-dir=/var/www/htdocs cache:disable && service mysql stop
 ## allow symlinks
 RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs config:set dev/template/allow_symlink "1" >/dev/null 2>&1  && service mysql stop
+## disable admin popup
+RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs admin:notifications >/dev/null 2>&1  && service mysql stop
 
 # algoliasearch-magento setup
 RUN cd /tmp && curl -s -L -O https://raw.github.com/colinmollenhour/modman/master/modman-installer && chmod +x modman-installer && ./modman-installer
