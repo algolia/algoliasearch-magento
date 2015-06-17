@@ -24,7 +24,7 @@ To setup this module using the packaged Community Extension, download the last v
 
 ##### 404 issue when accessing to System > Configuration > Algolia Search
 
-You can follow this [http://www.fanplayr.com/1415/magento-404-error-page-not-found-in-configuration/](http://www.fanplayr.com/1415/magento-404-error-page-not-found-in-configuration/)
+If you encounter this issue you can follow this [http://www.fanplayr.com/1415/magento-404-error-page-not-found-in-configuration/](http://www.fanplayr.com/1415/magento-404-error-page-not-found-in-configuration/)
 
 Features
 --------
@@ -65,7 +65,7 @@ To process this jobs you will need to add a cron job like this :
 
 #### Cron disabled (for small instance only)
 
-Every indexing job (global reindexing, update of products, deletion of products, update of categories, ...) will happen synchronously. 
+Every indexing job (global reindexing, update of products, deletion of products, update of categories, ...) will happen synchronously. **Be careful this can cause php timeout**.
 
 ### Catalog search Index
 
