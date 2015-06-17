@@ -11,9 +11,9 @@ class Algolia_Algoliasearch_Model_Observer
 
     public function __construct()
     {
-        $this->config           = new Algolia_Algoliasearch_Helper_Config();
-        $this->product_helper   = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
-        $this->category_helper  = new Algolia_Algoliasearch_Helper_Entity_Categoryhelper();
+        $this->config           = Mage::helper('algoliasearch/config');
+        $this->product_helper   = Mage::helper('algoliasearch/entity_producthelper');
+        $this->category_helper  = Mage::helper('algoliasearch/entity_categoryhelper');
 
         $this->helper           = Mage::helper('algoliasearch');
     }
