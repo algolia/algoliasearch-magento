@@ -81,7 +81,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         foreach ($additionalAttr as &$attr)
             $attr = $attr['attribute'];
 
-        $products = $products->addAttributeToSelect(array_merge(self::$_predefinedProductAttributes, $additionalAttr));
+        $products = $products->addAttributeToSelect(array_merge(static::$_predefinedProductAttributes, $additionalAttr));
 
         if ($productIds && count($productIds) > 0)
             $products->addAttributeToFilter('entity_id', array('in' => $productIds));
