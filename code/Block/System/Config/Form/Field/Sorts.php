@@ -3,7 +3,7 @@
 /**
  * Algolia custom sort order field
  */
-class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercategory extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
+class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
 {
     protected $selectFields = array();
 
@@ -14,11 +14,10 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
      * @return Algolia_Algoliasearch_Block_System_Config_Form_Field_Select
      * @throws Exception
      */
-    protected function getRenderer($columnId)
-    {
+    protected function getRenderer($columnId) {
         if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId])
         {
-            $category_helper = new Algolia_Algoliasearch_Helper_Entity_Categoryhelper();
+            $product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
 
             $aOptions = array();
 
@@ -26,35 +25,18 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
 
             switch($columnId) {
                 case 'attribute': // Populate the attribute column with a list of searchable attributes
-                    $searchableAttributes = $category_helper->getAllAttributes();
+                    $searchableAttributes = $product_helper->getAllAttributes();
 
                     foreach ($searchableAttributes as $key => $label) {
                         $aOptions[$key] = $key ? $key : $label;
                     }
 
                     $selectField->setExtraParams('style="width:160px;"');
-
                     break;
-                case 'searchable':
+                case 'sort':
                     $aOptions = array(
-                        '1' => 'Yes',
-                        '0' => 'No',
-                    );
-
-                    $selectField->setExtraParams('style="width:100px;"');
-                    break;
-                case 'retrievable':
-                    $aOptions = array(
-                        '1' => 'Yes',
-                        '0' => 'No',
-                    );
-
-                    $selectField->setExtraParams('style="width:100px;"');
-                    break;
-                case 'order':
-                    $aOptions = array(
-                        'ordered' => 'Ordered',
-                        'unordered' => 'Unordered',
+                        'asc'   => 'Ascending',
+                        'desc'  => 'Descending',
                     );
 
                     $selectField->setExtraParams('style="width:100px;"');
@@ -66,7 +48,6 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
             $selectField->setOptions($aOptions);
             $this->selectFields[$columnId] = $selectField;
         }
-
         return $this->selectFields[$columnId];
     }
 
@@ -76,18 +57,17 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
             'label' => Mage::helper('adminhtml')->__('Attribute'),
             'renderer'=> $this->getRenderer('attribute'),
         ));
-        $this->addColumn('searchable', array(
-            'label' => Mage::helper('adminhtml')->__('Searchable'),
-            'renderer'=> $this->getRenderer('searchable'),
+
+        $this->addColumn('sort', array(
+            'label' => Mage::helper('adminhtml')->__('Sort'),
+            'renderer'=> $this->getRenderer('sort'),
         ));
-        $this->addColumn('retrievable', array(
-            'label' => Mage::helper('adminhtml')->__('Retrievable'),
-            'renderer'=> $this->getRenderer('retrievable'),
+
+        $this->addColumn('label', array(
+            'label' => Mage::helper('adminhtml')->__('Label'),
+            'style' => 'width: 200px;'
         ));
-        $this->addColumn('order', array(
-            'label' => Mage::helper('adminhtml')->__('Ordered'),
-            'renderer'=> $this->getRenderer('order'),
-        ));
+
         $this->_addAfter = false;
         $this->_addButtonLabel = Mage::helper('adminhtml')->__('Add Attribute');
         parent::__construct();
@@ -100,19 +80,10 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
                 $row->getAttribute()),
             'selected="selected"'
         );
+
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('searchable')->calcOptionHash(
-                $row->getSearchable()),
-            'selected="selected"'
-        );
-        $row->setData(
-            'option_extra_attr_' . $this->getRenderer('searchable')->calcOptionHash(
-                $row->getRetrievable()),
-            'selected="selected"'
-        );
-        $row->setData(
-            'option_extra_attr_' . $this->getRenderer('order')->calcOptionHash(
-                $row->getOrder()),
+            'option_extra_attr_' . $this->getRenderer('sort')->calcOptionHash(
+                $row->getSort()),
             'selected="selected"'
         );
     }

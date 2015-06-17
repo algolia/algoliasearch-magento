@@ -4,109 +4,83 @@
  */
 class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Model_Resource_Fulltext_Engine
 {
-    /**
-     * Amount of entities that is used for one indexing process
-     */
     const ONE_TIME_AMOUNT = 100;
-
-    /**
-     * @var Algolia_Algoliasearch_Helper_Data
-     */
-    private $_helper;
-
-    /**
-     * @var Algolia_Algoliasearch_Model_Queue
-     */
-    private $_queue;
+    private $helper;
+    private $queue;
+    private $config;
+    private $product_helper;
+    private $category_helper;
 
     public function _construct()
     {
         parent::_construct();
 
-        $this->_helper = Mage::helper('algoliasearch');
-        $this->_queue = Mage::getSingleton('algoliasearch/queue');
+        $this->queue = Mage::getSingleton('algoliasearch/queue');
+        $this->config = new Algolia_Algoliasearch_Helper_Config();
+        $this->product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
+        $this->category_helper = new Algolia_Algoliasearch_Helper_Entity_Categoryhelper();
     }
 
-    /**
-     * Retrieve allowed visibility values for current engine
-     *
-     * @return array
-     */
+    public function addToQueue($observer, $method, $data, $nb_retry)
+    {
+        if ($this->config->isQueueActive())
+            $this->queue->add($observer, $method, $data, $nb_retry);
+        else
+            Mage::getSingleton($observer)->$method(new Varien_Object($data));
+    }
+
     public function getAllowedVisibility()
     {
         return Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds();
     }
 
-    /**
-     * Define if current search engine supports advanced index
-     *
-     * @return bool
-     */
     public function allowAdvancedIndex()
     {
         return FALSE;
     }
 
-    /**
-     * Enqueue removing data from index.
-     * Execute the job only once to avoid overlapping with another job that adds indexes.
-     *
-     * Examples:
-     * (product, null, null) => Clean product index of all stores
-     * (product, 1, null)    => Clean product index of store Id=1
-     * (product, 1, 2)       => Clean index of product Id=2 and its store view Id=1
-     * (product, null, 2)    => Clean index of all store views of product Id=2
-     *
-     * @param string $entity 'product'|'category'
-     * @param int|null $storeId
-     * @param int|array|null $entityId
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
-    public function cleanEntityIndex($entity, $storeId = NULL, $entityId = NULL)
+    public function removeProducts($storeId = null, $product_ids = null)
     {
-        if (is_array($entityId) && count($entityId) > self::ONE_TIME_AMOUNT) {
-            foreach (array_chunk($entityId, self::ONE_TIME_AMOUNT) as $chunk) {
-                $this->_cleanEntityIndex($entity, $storeId, $chunk);
-            }
-        } else {
-            $this->_cleanEntityIndex($entity, $storeId, $entityId);
+        if (is_array($product_ids) == false)
+            $product_ids = array($product_ids);
+
+        $by_page = $this->config->getNumberOfElementByPage();
+
+        if (is_array($product_ids) && count($product_ids) > $by_page)
+        {
+            foreach (array_chunk($product_ids, $by_page) as $chunk)
+                $this->addToQueue('algoliasearch/observer', 'removeProducts', array('store_id' => $storeId, 'product_ids' => $chunk), 3);
         }
-        return $this;
-    }
-
-    /**
-     * @param string $entity 'product'|'category'
-     * @param int|null $storeId
-     * @param int|array|null $entityId
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
-    protected function _cleanEntityIndex($entity, $storeId = NULL, $entityId = NULL)
-    {
-        $data = $entityId;
-
-        if (is_array($data) == false)
-            $data = array($data);
-
-        if ($entity == 'product')
-            $this->_helper->removeProducts($data, $storeId);
-
-        if ($entity == 'category')
-            $this->_helper->removeCategories($data, $storeId);
+        else
+            $this->addToQueue('algoliasearch/observer', 'removeProducts', array('store_id' => $storeId, 'product_ids' => $product_ids), 3);
 
         return $this;
     }
 
-    /**
-     * Enqueue indexing for the specified categories
-     *
-     * @param null|int $storeId
-     * @param null|int|array $categoryIds
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
-    public function rebuildCategoryIndex($storeId = NULL, $categoryIds = NULL)
+    public function removeCategories($storeId = null, $category_ids = null)
     {
-        if (is_array($categoryIds) && count($categoryIds) > self::ONE_TIME_AMOUNT) {
-            foreach (array_chunk($categoryIds, self::ONE_TIME_AMOUNT) as $chunk) {
+        if (is_array($category_ids) == false)
+            $category_ids = array($category_ids);
+
+        $by_page = $this->config->getNumberOfElementByPage();
+
+        if (is_array($category_ids) && count($category_ids) > $by_page)
+        {
+            foreach (array_chunk($category_ids, $by_page) as $chunk)
+                $this->addToQueue('algoliasearch/observer', 'removeCategories', array('store_id' => $storeId, 'category_ids' => $chunk), 3);
+        }
+        else
+            $this->addToQueue('algoliasearch/observer', 'removeCategories', array('store_id' => $storeId, 'category_ids' => $category_ids), 3);
+
+        return $this;
+    }
+
+    public function rebuildCategoryIndex($storeId = null, $categoryIds = null)
+    {
+        $by_page = $this->config->getNumberOfElementByPage();
+
+        if (is_array($categoryIds) && count($categoryIds) > $by_page) {
+            foreach (array_chunk($categoryIds, $by_page) as $chunk) {
                 $this->_rebuildCategoryIndex($storeId, $chunk);
             }
         } else {
@@ -115,62 +89,88 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $this;
     }
 
-    /**
-     * @param null|int $storeId
-     * @param null|int|array $categoryIds
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
-    protected function _rebuildCategoryIndex($storeId = NULL, $categoryIds = NULL)
+    public function rebuildAll()
     {
-        $data = array(
-            'store_id'     => $storeId,
-            'category_ids' => $categoryIds,
-        );
-        $this->_queue->add('algoliasearch/observer', 'rebuildCategoryIndex', $data, 3);
-        return $this;
-    }
+        Mage::getSingleton('algoliasearch/observer')->saveSettings();
 
-    /**
-     * Enqueue indexing for the specified products
-     *
-     * @param null|int $storeId
-     * @param null|int|array $productIds
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
-    public function rebuildProductIndex($storeId = NULL, $productIds = NULL)
-    {
-        if (is_array($productIds) && count($productIds) > self::ONE_TIME_AMOUNT) {
-            foreach (array_chunk($productIds, self::ONE_TIME_AMOUNT) as $chunk) {
-                $this->_rebuildProductIndex($storeId, $chunk);
+        foreach (Mage::app()->getStores() as $store)
+        {
+            if ($store->getIsActive())
+            {
+                $this->_rebuildProductIndex($store->getId(), array());
+
+                $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $store->getId(), 'category_ids' =>  array()), 3);
+
+                $this->addToQueue('algoliasearch/observer', 'rebuildPageIndex', array('store_id' => $store->getId()), 3);
             }
-        } else {
-            $this->_rebuildProductIndex($storeId, $productIds);
+            else
+            {
+                $this->addToQueue('algoliasearch/observer', 'deleteStoreIndices', array('store_id' => $store->getId()), 3);
+            }
         }
-        return $this;
     }
 
-    /**
-     * @param null|int $storeId
-     * @param null|int|array $productIds
-     * @return Algolia_Algoliasearch_Model_Resource_Engine
-     */
-    protected function _rebuildProductIndex($storeId = NULL, $productIds = NULL)
+    public function rebuildProductIndex($storeId = null, $productIds = null)
     {
-        $data = array(
-            'store_id'    => $storeId,
-            'product_ids' => $productIds,
-        );
-        $this->_queue->add('algoliasearch/observer', 'rebuildProductIndex', $data, 3);
+        $ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
+
+        foreach ($ids as $id)
+        {
+            $by_page = $this->config->getNumberOfElementByPage();
+
+            if (is_array($productIds) && count($productIds) > $by_page)
+            {
+                foreach (array_chunk($productIds, $by_page) as $chunk)
+                    $this->_rebuildProductIndex($id, $chunk);
+            }
+            else
+                $this->_rebuildProductIndex($id, $productIds);
+        }
+
         return $this;
     }
 
-    /**
-     * Prepare index array. Array values will be converted to a string glued by separator.
-     *
-     * @param array $index
-     * @param string $separator
-     * @return string
-     */
+    private function _rebuildCategoryIndex($storeId = null, $categoryIds = null)
+    {
+        if ($categoryIds == null || count($categoryIds) == 0)
+        {
+            $size       = $this->category_helper->getCategoryCollectionQuery($storeId, $categoryIds)->getSize();
+            $by_page    = $this->config->getNumberOfElementByPage();
+            $nb_page    = ceil($size / $by_page);
+
+            for ($i = 1; $i <= $nb_page; $i++)
+            {
+                $data = array('store_id' => $storeId, 'category_ids' => $categoryIds, 'page_size' => $by_page, 'page' => $i);
+                $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', $data, 3);
+            }
+        }
+        else
+            $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $storeId, 'category_ids' => $categoryIds), 3);
+
+
+        return $this;
+    }
+
+    private function _rebuildProductIndex($storeId, $productIds = null)
+    {
+        if ($productIds == null || count($productIds) == 0)
+        {
+            $size       = $this->product_helper->getProductCollectionQuery($storeId, $productIds)->getSize();
+            $by_page    = $this->config->getNumberOfElementByPage();
+            $nb_page    = ceil($size / $by_page);
+
+            for ($i = 1; $i <= $nb_page; $i++)
+            {
+                $data = array('store_id' => $storeId, 'product_ids' =>  $productIds, 'page_size' => $by_page, 'page' => $i);
+                $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', $data, 3);
+            }
+        }
+        else
+            $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', array('store_id' => $storeId, 'product_ids' =>  $productIds), 3);
+
+        return $this;
+    }
+
     public function prepareEntityIndex($index, $separator = ' ')
     {
         foreach ($index as $key => $value) {
@@ -183,30 +183,13 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $index;
     }
 
-    /**
-     * Custom alias for the original method that checks whether layered navigation is allowed
-     *
-     * @return bool
-     */
-    public function isLayeredNavigationAllowed()
+    public function saveSettings()
     {
-        return $this->isLeyeredNavigationAllowed();
+        Mage::getSingleton('algoliasearch/observer')->saveSettings();
     }
 
-    /**
-     * Define if engine is available
-     *
-     * @return bool
-     */
     public function test()
     {
-        if ( ! $this->_helper->isEnabled()) {
-            return parent::test();
-        }
-
-        return
-            $this->_helper->getApplicationID() &&
-            $this->_helper->getAPIKey() &&
-            $this->_helper->getSearchOnlyAPIKey();
+        return true;
     }
 }

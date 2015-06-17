@@ -1,0 +1,1 @@
+$algoliaJQuery = $.noConflict();

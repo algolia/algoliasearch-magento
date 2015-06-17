@@ -14,12 +14,17 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customrankingproduct 
      * @return Algolia_Algoliasearch_Block_System_Config_Form_Field_Select
      * @throws Exception
      */
-    protected function getRenderer($columnId) {
-        if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId]) {
+    protected function getRenderer($columnId)
+    {
+        if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId])
+        {
+            $config = new Algolia_Algoliasearch_Helper_Config();
+
             $aOptions = array();
+
             switch($columnId) {
                 case 'attribute': // Populate the attribute column with a list of searchable attributes
-                    $searchableAttributes = Mage::helper('algoliasearch')->getProductAdditionalAttributes();
+                    $searchableAttributes = $config->getProductAdditionalAttributes();
 
                     foreach ($searchableAttributes as $attribute)
                         $aOptions[$attribute['attribute']] = $attribute['attribute'];
@@ -50,7 +55,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customrankingproduct 
             'renderer'=> $this->getRenderer('attribute'),
         ));
         $this->addColumn('order', array(
-            'label' => Mage::helper('adminhtml')->__('Ordered / Unordered'),
+            'label' => Mage::helper('adminhtml')->__('Ordered'),
             'renderer'=> $this->getRenderer('order'),
         ));
         $this->_addAfter = false;
