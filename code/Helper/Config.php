@@ -32,6 +32,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS    = 'algoliasearch/ui/number_product_suggestions';
     const XML_PATH_NUMBER_OF_PRODUCT_RESULTS        = 'algoliasearch/ui/number_product_results';
     const XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS   = 'algoliasearch/ui/number_category_suggestions';
+    const XML_PATH_MAX_VALUES_PER_FACET             = 'algoliasearch/ui/max_values_per_facet';
     const XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS       = 'algoliasearch/ui/number_page_suggestions';
 
     const XML_PATH_USE_RESULT_CACHE                 = 'algoliasearch/ui/use_result_cache';
@@ -41,6 +42,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IS_ACTIVE                        = 'algoliasearch/queue/active';
     const XML_PATH_NUMBER_OF_ELEMENT_BY_PAGE        = 'algoliasearch/queue/number_of_element_by_page';
     const XML_PATH_NUMBER_OF_JOB_TO_RUN             = 'algoliasearch/queue/number_of_job_to_run';
+
+    public function getMaxValuesPerFacet($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_MAX_VALUES_PER_FACET, $storeId);
+    }
 
     public function getQueueMaxRetries($storeId = null)
     {
