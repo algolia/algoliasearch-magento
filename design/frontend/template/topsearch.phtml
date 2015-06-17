@@ -1,8 +1,8 @@
 <?php
-$config = new Algolia_Algoliasearch_Helper_Config();
+$config = Mage::helper('algoliasearch/config');
 $catalogSearchHelper = $this->helper('catalogsearch'); /** @var $catalogSearchHelper Mage_CatalogSearch_Helper_Data */
 $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHelper Algolia_Algoliasearch_Helper_Data */
-$product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
+$product_helper = Mage::helper('algoliasearch/entity_producthelper');
 $isSearchPage = Mage::app()->getRequest()->getParam('instant') != null || Mage::app()->getRequest()->getParam('category') != null;
 
 if ($config->isInstantEnabled() && $isSearchPage) {
