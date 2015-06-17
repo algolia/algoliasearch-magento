@@ -15,6 +15,17 @@ See features and benefits of [Algolia Search Extension for Magento](https://www.
 ![Magento 1.9](https://img.shields.io/badge/magento-1.9-blue.svg)
 ![PHP >= 5.3](https://img.shields.io/badge/php-%3E=5.3-green.svg)
 
+Demo
+--------------
+
+You can checkout our live demo.
+
+* [Autocomplete page](https://magento.algolia.com)
+
+* [Instant search page](https://magento.algolia.com/catalogsearch/result/?q=madison&instant=1#q=ma&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22magento_default_products%22)
+
+
+
 Installation
 --------------
 
