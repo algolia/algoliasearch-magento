@@ -131,7 +131,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             'attributesForFaceting'     => $attributesForFaceting,
             'maxValuesPerFacet'         => (int) $this->config->getMaxValuesPerFacet($storeId)
         );
-        
+
         // Additional index settings from event observer
         $transport = new Varien_Object($indexSettings);
         Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport));

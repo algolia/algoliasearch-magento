@@ -83,6 +83,15 @@ To setup this module, you'll need an Algolia account. Just sign up [here](http:/
 
 Once the extension is installed, a new **Algolia Search** menu will appear in your **System > Configuration** menu.
 
+### Instant Search Results Page Configuration
+
+This section of the configuration allows you to configure what you want in your instant search result page.
+
+You first need to choose a jQuery dom selector. The results will replace the content of this selector and put results and facets inside.
+
+You can choose which attributes to facet on, and which attributes to sort on.
+
+You can also choose to replace the default magento category page with a result page with the selected category value checked in the facet bloc. This require to have **BOTH instant search enable and categories as a facet**
 
 ### Products Configuration
 
