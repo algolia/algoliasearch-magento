@@ -43,6 +43,11 @@ COPY bin/config.inc.php /var/www/htdocs/phpmyadmin/
 COPY ./bin/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
+#path admin template to have credentials filled && auto login
+RUN sed -i 's/name="login\[username\]" value=""/name="login[username]" value="admin"/g' /var/www/htdocs/app/design/adminhtml/default/default/template/login.phtml && \
+	sed -i 's/name="login\[password\]" class="required-entry input-text" value=""/name="login[password]" class="required-entry input-text" value="magentorocks1"/g' /var/www/htdocs/app/design/adminhtml/default/default/template/login.phtml && \
+	sed -i 's/<\/script>/Event.observe(window, "load", function() {$("loginForm").submit();});<\/script>/g' /var/www/htdocs/app/design/adminhtml/default/default/template/login.phtml
+
 # GO
 EXPOSE 80
 CMD start.sh
