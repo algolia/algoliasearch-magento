@@ -776,22 +776,6 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             var facetsTemplate      = Hogan.compile($('#instant-facets-template').html());
             var paginationTemplate  = Hogan.compile($('#instant-pagination-template').html());
 
-            function activateInstant()
-            {
-                helper.on('result', searchCallback);
-            }
-
-            activateInstant();
-
-            function desactivateInstant()
-            {
-                helper.removeAllListeners();
-
-                location.replace('#');
-
-                $(algoliaSettings.instant_selector).html(old_content);
-            }
-
             function performQueries(push_state)
             {
                 helper.search();
@@ -844,6 +828,22 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 $(algoliaSettings.instant_selector).html(html_content).show();
 
                 updateSliderValues();
+            }
+
+            function activateInstant()
+            {
+                helper.on('result', searchCallback);
+            }
+
+            activateInstant();
+
+            function desactivateInstant()
+            {
+                helper.removeAllListeners();
+
+                location.replace('#');
+
+                $(algoliaSettings.instant_selector).html(old_content);
             }
 
             /**
