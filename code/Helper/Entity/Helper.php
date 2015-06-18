@@ -13,8 +13,8 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
 
     public function __construct()
     {
-        $this->config           = new Algolia_Algoliasearch_Helper_Config();
-        $this->algolia_helper   = new Algolia_Algoliasearch_Helper_Algoliahelper();
+        $this->config           = Mage::helper('algoliasearch/config');
+        $this->algolia_helper   = Mage::helper('algoliasearch/algoliahelper');
     }
 
     public function getBaseIndexName($storeId = null)
