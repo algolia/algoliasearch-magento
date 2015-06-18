@@ -1,5 +1,9 @@
 ## Change Log
 
+### 1.2.1
+- Fix a JavaScript bug on Firefox
+- Fix a JSON encoding issue with categories
+
 ### 1.2.0
 - NEW: Add an instant search implementation
 - NEW: Administration configuration layout cleanup & improvements
