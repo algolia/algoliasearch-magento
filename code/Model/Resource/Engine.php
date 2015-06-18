@@ -16,9 +16,9 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         parent::_construct();
 
         $this->queue = Mage::getSingleton('algoliasearch/queue');
-        $this->config = new Algolia_Algoliasearch_Helper_Config();
-        $this->product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
-        $this->category_helper = new Algolia_Algoliasearch_Helper_Entity_Categoryhelper();
+        $this->config = Mage::helper('algoliasearch/config');
+        $this->product_helper = Mage::helper('algoliasearch/entity_producthelper');
+        $this->category_helper = Mage::helper('algoliasearch/entity_categoryhelper');
     }
 
     public function addToQueue($observer, $method, $data, $nb_retry)

@@ -7,11 +7,11 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext_Collection extends Mage_Cata
      */
     public function addSearchFilter($query)
     {
-        $config = new Algolia_Algoliasearch_Helper_Config();
+        $config = Mage::helper('algoliasearch/config');
 
         if ($config->isInstantEnabled() && Mage::app()->getRequest()->getParam('instant') == null)
         {
-            $product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
+            $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
             $url = Mage::getBaseUrl().'catalogsearch/result/?q='.$query.'&instant=1#q='.$query.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
 

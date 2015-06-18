@@ -15,7 +15,7 @@ class Algolia_Algoliasearch_Model_Queue
         $this->table = Mage::getSingleton('core/resource')->getTableName('algoliasearch/queue');
         $this->db = Mage::getSingleton('core/resource')->getConnection('core_write');
 
-        $this->config = new Algolia_Algoliasearch_Helper_Config();
+        $this->config = Mage::helper('algoliasearch/config');
     }
 
     public function add($class, $method, $data, $retries = NULL)

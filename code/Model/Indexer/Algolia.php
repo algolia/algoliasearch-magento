@@ -32,7 +32,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
         parent::__construct();
 
         $this->engine = new Algolia_Algoliasearch_Model_Resource_Engine();
-        $this->config = new Algolia_Algoliasearch_Helper_Config();
+        $this->config = Mage::helper('algoliasearch/config');
     }
 
     protected $_matchedEntities = array(

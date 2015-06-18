@@ -13,25 +13,25 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 {
     const COLLECTION_PAGE_SIZE = 100;
 
-    private $algolia_helper;
+    protected $algolia_helper;
 
-    private $page_helper;
-    private $category_helper;
-    private $product_helper;
+    protected $page_helper;
+    protected $category_helper;
+    protected $product_helper;
 
-    private $config;
+    protected $config;
 
     public function __construct()
     {
         \AlgoliaSearch\Version::$custom_value = " Magento (1.2.0)";
 
-        $this->algolia_helper   = new Algolia_Algoliasearch_Helper_Algoliahelper();
+        $this->algolia_helper   = Mage::helper('algoliasearch/algoliahelper');
 
-        $this->page_helper      = new Algolia_Algoliasearch_Helper_Entity_Pagehelper();
-        $this->category_helper  = new Algolia_Algoliasearch_Helper_Entity_Categoryhelper();
-        $this->product_helper   = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
+        $this->page_helper      = Mage::helper('algoliasearch/entity_pagehelper');
+        $this->category_helper  = Mage::helper('algoliasearch/entity_categoryhelper');
+        $this->product_helper   = Mage::helper('algoliasearch/entity_producthelper');
 
-        $this->config           = new Algolia_Algoliasearch_Helper_Config();
+        $this->config           = Mage::helper('algoliasearch/config');
     }
 
     public function deleteStoreIndices($storeId = null)

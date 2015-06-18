@@ -15,7 +15,7 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
 
     public function __construct()
     {
-        $config = new Algolia_Algoliasearch_Helper_Config();
+        $config = Mage::helper('algoliasearch/config');
 
         if ($config->getApplicationID() && $config->getAPIKey())
             $this->client = new \AlgoliaSearch\Client($config->getApplicationID(), $config->getAPIKey());

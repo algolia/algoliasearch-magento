@@ -140,7 +140,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getSortingIndices($storeId = NULL)
     {
-        $product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
+        $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
         $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_SORTING_INDICES, $storeId));
 
