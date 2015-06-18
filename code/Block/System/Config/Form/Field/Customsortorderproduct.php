@@ -18,7 +18,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortorderproduc
     {
         if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId])
         {
-            $product_helper = new Algolia_Algoliasearch_Helper_Entity_Producthelper();
+            $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
             $aOptions = array();
 

@@ -18,7 +18,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customrankingcategory
     {
         if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId])
         {
-            $config = new Algolia_Algoliasearch_Helper_Config();
+            $config = Mage::helper('algoliasearch/config');
 
             $aOptions = array();
 
