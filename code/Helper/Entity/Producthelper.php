@@ -231,7 +231,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         foreach ($categories_with_path as &$category)
             $category = implode(' /// ',$category);
 
-        $customData['categories'] = $categories_with_path;
+        $customData['categories'] = array_values($categories_with_path);
 
         $customData['categories_without_path'] = $categories;
 
