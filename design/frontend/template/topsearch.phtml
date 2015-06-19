@@ -55,11 +55,11 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         <div class="info">
             {{{_highlightResult.name.value}}}
 
-            {{#categories}}
+            {{#categories_without_path}}
             <div class="algoliasearch-autocomplete-category">
-                in {{categories}}
+                in {{categories_without_path}}
             </div>
-            {{/categories}}
+            {{/categories_without_path}}
         </div>
         <div class="clearfix"></div>
     </a>
@@ -656,7 +656,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 nbHits_one: (content.nbHits === 1),
                 nbHits_many: (content.nbHits > 1),
                 query: helper.state.query,
-                processingTimeMS: content.processingTimeMS,
+                processingTimeMS: content.processingTimeMS
             });
 
             return results_html;
@@ -670,7 +670,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 getDate: getDate,
                 relevance_index_name: algoliaConfig.indexName + '_products',
                 sorting_indices: algoliaConfig.sortingIndices,
-                sortSelected: sortSelected,
+                sortSelected: sortSelected
             });
 
             return facets_html;
@@ -706,9 +706,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                                 return function (hit) {
                                     if (type == 'products')
                                     {
-                                        if (Array.isArray(hit.categories))
-                                            hit.categories = hit.categories.join(', ');
-                                        hit.categories = hit.categories && hit.categories.replace(/\/\/\//g, ' / ');
+                                        if (Array.isArray(hit.categories_without_path))
+                                            hit.categories_without_path = hit.categories_without_path.join(', ');
 
                                         if (Array.isArray(hit._highlightResult.name)) {
                                             hit._highlightResult.name = hit._highlightResult.name[0];
