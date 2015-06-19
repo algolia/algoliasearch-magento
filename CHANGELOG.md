@@ -1,13 +1,14 @@
 ## Change Log
 
-### 1.2.0
+### 1.2.1
+- Fix a JavaScript bug on Firefox
+- Fix a JSON encoding issue with categories
 
-### Unreleased 
-- update helper version to 2.1.0
-- default facet ordering to checked + count
-- Add an instant search implementation
-- Clean the config layout
-- Rewrite the indexing flow
+### 1.2.0
+- NEW: Add an instant search implementation
+- NEW: Administration configuration layout cleanup & improvements
+- UPDATED: Rewrite the indexing flow
+- UPDATED: Here and there bug fixes
 
 ### 1.1.4
 - Fix call to undefined method isIndexProductCount
@@ -21,8 +22,7 @@
 - Add support of pages
 - Add a setting on save of config
 
-### 1.1.1 
-
+### 1.1.1
 - Add price with tax to product records
 - Add a retrievable column to config
 
