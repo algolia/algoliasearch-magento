@@ -276,25 +276,47 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 <script type="text/javascript">
     //<![CDATA[
 
-    $algoliaJQuery(document).ready(function($) {
+    algoliaBundle.$(function($) {
+        var algoliaConfig = {
+            instant: {
+                enabled: <?php echo $config->isInstantEnabled() ? "true" : "false"; ?>,
+                selector: '<?php echo $config->getInstantSelector(); ?>'
+            },
+            autocomplete: {
+                enabled: <?php echo $config->isAutoCompleteEnabled() ? "true" : "false"; ?>,
+                selector: '#search',
+                hitsPerPage: {
+                    products: <?php echo (int) $config->getNumberOfProductSuggestions() ?>,
+                    categories: <?php echo (int) $config->getNumberOfCategorySuggestions() ?>,
+                    pages: <?php echo (int) $config->getNumberOfPageSuggestions() ?>
+                },
+                templates: {
+                    products: algoliaBundle.Hogan.compile($('#autocomplete_products_template').html()),
+                    categories: algoliaBundle.Hogan.compile($('#autocomplete_categories_template').html()),
+                    pages: algoliaBundle.Hogan.compile($('#autocomplete_pages_template').html())
+                },
+                titles: {
+                    products: '<?php echo $this->__('Products'); ?>',
+                    categories: '<?php echo $this->__('Categories') ?>',
+                    pages: '<?php echo $this->__('Pages') ?>'
+                }
+            },
+            applicationId: '<?php echo $config->getApplicationID() ?>',
+            indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
+            apiKey: '<?php echo $config->getSearchOnlyAPIKey() ?>',
+            facets: <?php echo json_encode($config->getFacets()); ?>,
+            hitsPerPage: <?php echo (int) $config->getNumberOfProductResults() ?>,
+            sortingIndices: <?php echo json_encode(array_values($config->getSortingIndices())); ?>,
+            isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>
+        };
+
         /*****************
          **
          ** INITIALIZATION
          **
          *****************/
 
-        var autocompleteEnabled = "<?php echo $config->isPopupEnabled(); ?>" == "1" ? true : false;
-        var instantEnabled      = "<?php echo $config->isInstantEnabled(); ?>" == "1" ? true : false;
-
-        var algoliaSettings     = {};
-        algoliaSettings.facets                  = <?php echo json_encode($config->getFacets()); ?>;
-        algoliaSettings.instant_selector        = '<?php echo $config->getInstantSelector(); ?>';
-        algoliaSettings.hits_by_page            = <?php echo (int) $config->getNumberOfProductResults() ?>;
-        algoliaSettings.sorting_indices         = <?php echo json_encode(array_values($config->getSortingIndices())); ?>;
-        algoliaSettings.indexName               = '<?php echo $product_helper->getBaseIndexName(); ?>';
-        algoliaSettings.search_input_selector   = '#search';
-
-        var algolia_client = algoliasearch('<?php echo $config->getApplicationID() ?>', '<?php echo $config->getSearchOnlyAPIKey() ?>');
+        var algolia_client = algoliaBundle.algoliasearch(algoliaConfig.applicationId, algoliaConfig.apiKey);
 
         /**
          *  Foreach Type decide if it need to have a conjunctive or dijunctive faceting
@@ -303,24 +325,24 @@ if ($config->isInstantEnabled() && $isSearchPage) {
          */
         var conjunctive_facets  = [];
         var disjunctive_facets  = [];
-        for (var i = 0; i < algoliaSettings.facets.length; i++)
+        for (var i = 0; i < algoliaConfig.facets.length; i++)
         {
-            if (algoliaSettings.facets[i].type == "conjunctive")
-                conjunctive_facets.push(algoliaSettings.facets[i].attribute);
+            if (algoliaConfig.facets[i].type == "conjunctive")
+                conjunctive_facets.push(algoliaConfig.facets[i].attribute);
 
-            if (algoliaSettings.facets[i].type == "disjunctive")
-                disjunctive_facets.push(algoliaSettings.facets[i].attribute);
+            if (algoliaConfig.facets[i].type == "disjunctive")
+                disjunctive_facets.push(algoliaConfig.facets[i].attribute);
 
-            if (algoliaSettings.facets[i].type == "slider")
-                disjunctive_facets.push(algoliaSettings.facets[i].attribute);
+            if (algoliaConfig.facets[i].type == "slider")
+                disjunctive_facets.push(algoliaConfig.facets[i].attribute);
 
-            if (algoliaSettings.facets[i].type == "menu")
-                disjunctive_facets.push(algoliaSettings.facets[i].attribute);
+            if (algoliaConfig.facets[i].type == "menu")
+                disjunctive_facets.push(algoliaConfig.facets[i].attribute);
         }
-        var helper = algoliasearchHelper(algolia_client, algoliaSettings.indexName + '_products', {
+        var helper = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products', {
             facets: conjunctive_facets,
             disjunctiveFacets: disjunctive_facets,
-            hitsPerPage: algoliaSettings.hits_by_page
+            hitsPerPage: algoliaConfig.hitsPerPage
         });
         helper.setQuery('');
 
@@ -444,8 +466,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 helper.setCurrentPage(page);
                 helper.setIndex(indexName);
 
-                $(algoliaSettings.search_input_selector);
-                $(algoliaSettings.search_input_selector).val(helper.state.query);
+                $(algoliaConfig.autocomplete.selector);
+                $(algoliaConfig.autocomplete.selector).val(helper.state.query);
 
                 helper.search();
 
@@ -456,15 +478,15 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
             var facets = [];
 
-            for (var i = 0; i < algoliaSettings.facets.length; i++)
+            for (var i = 0; i < algoliaConfig.facets.length; i++)
             {
                 var sub_facets = [];
 
-                if (custom_facets_types[algoliaSettings.facets[i].type] != undefined)
+                if (custom_facets_types[algoliaConfig.facets[i].type] != undefined)
                 {
                     try
                     {
-                        var params = custom_facets_types[algoliaSettings.facets[i].type](helper, content, algoliaSettings.facets[i]);
+                        var params = custom_facets_types[algoliaConfig.facets[i].type](helper, content, algoliaConfig.facets[i]);
 
                         if (params)
                             for (var k = 0; k < params.length; k++)
@@ -472,19 +494,19 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     }
                     catch(error)
                     {
-                        throw("Bad facet function for '" + algoliaSettings.facets[i].type + "'");
+                        throw("Bad facet function for '" + algoliaConfig.facets[i].type + "'");
                     }
                 }
                 else
                 {
-                    var content_facet = content.getFacetByName(algoliaSettings.facets[i].attribute);
+                    var content_facet = content.getFacetByName(algoliaConfig.facets[i].attribute);
 
                     if (content_facet == undefined)
                         continue;
 
                     for (var key in content_facet.data)
                     {
-                        var checked = helper.isRefined(algoliaSettings.facets[i].attribute, key);
+                        var checked = helper.isRefined(algoliaConfig.facets[i].attribute, key);
 
                         var nameattr = window.facetsLabels && window.facetsLabels[key] != undefined ? window.facetsLabels[key] : key;
                         var explode = nameattr.split(' /// ');
@@ -498,7 +520,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             count: content_facet.data[key]
                         };
 
-                        params.type[algoliaSettings.facets[i].type] = true;
+                        params.type[algoliaConfig.facets[i].type] = true;
 
                         sub_facets.push(params);
                     }
@@ -514,7 +536,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     });
 
                 }
-                facets.push({count: sub_facets.length, attribute: algoliaSettings.facets[i].attribute, facet_categorie_name: algoliaSettings.facets[i].label, sub_facets: sub_facets });
+                facets.push({count: sub_facets.length, attribute: algoliaConfig.facets[i].attribute, facet_categorie_name: algoliaConfig.facets[i].label, sub_facets: sub_facets });
             }
 
             return facets;
@@ -546,7 +568,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
         var sortSelected = function () {
             return function (val) {
-                var template = Hogan.compile(val);
+                var template = algoliaBundle.Hogan.compile(val);
 
                 var renderer = function(context) {
                     return function(text) {
@@ -570,7 +592,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
         var getDate = function () {
             return function (val) {
-                var template = Hogan.compile(val);
+                var template = algoliaBundle.Hogan.compile(val);
 
                 var renderer = function(context) {
                     return function(text) {
@@ -625,8 +647,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             var results_html = resultsTemplate.render({
                 facets_count: facets.length,
                 getDate: getDate,
-                relevance_index_name: algoliaSettings.indexName + '_products',
-                sorting_indices: algoliaSettings.sorting_indices,
+                relevance_index_name: algoliaConfig.indexName + '_products',
+                sorting_indices: algoliaConfig.sortingIndices,
                 sortSelected: sortSelected,
                 hits: content.hits,
                 nbHits: content.nbHits,
@@ -646,8 +668,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 facets: facets,
                 count: facets.length,
                 getDate: getDate,
-                relevance_index_name: algoliaSettings.indexName + '_products',
-                sorting_indices: algoliaSettings.sorting_indices,
+                relevance_index_name: algoliaConfig.indexName + '_products',
+                sorting_indices: algoliaConfig.sortingIndices,
                 sortSelected: sortSelected,
             });
 
@@ -660,21 +682,9 @@ if ($config->isInstantEnabled() && $isSearchPage) {
          **
          *****************/
 
-        if (autocompleteEnabled)
+        if (algoliaConfig.autocomplete.enabled)
         {
             var params = {};
-
-            params.autocomplete_products_template      = Hogan.compile($('#autocomplete_products_template').html());
-            params.autocomplete_categories_template    = Hogan.compile($('#autocomplete_categories_template').html());
-            params.autocomplete_pages_template         = Hogan.compile($('#autocomplete_pages_template').html());
-
-            params.products_hitsPerPage                = <?php echo (int) $config->getNumberOfProductSuggestions() ?>;
-            params.categories_hitsPerPage              = <?php echo (int) $config->getNumberOfCategorySuggestions() ?>;
-            params.pages_hitsPerPage                   = <?php echo (int) $config->getNumberOfPageSuggestions() ?>;
-
-            params.autocomplete_products_title         = '<?php echo $this->__('Products'); ?>';
-            params.autocomplete_categories_title       = '<?php echo $this->__('Categories') ?>';
-            params.autocomplete_pages_title            = '<?php echo $this->__('Pages') ?>';
 
             var hogan_objs = [];
 
@@ -682,18 +692,19 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
             for (var i = 0; i < indices.length; i++)
             {
-                if (params[indices[i] + '_hitsPerPage'] > 0)
+                var type = indices[i];
+                if (algoliaConfig.autocomplete.hitsPerPage[type] > 0)
                 {
-                    var index = algolia_client.initIndex(algoliaSettings.indexName + "_" + indices[i]);
+                    var index = algolia_client.initIndex(algoliaConfig.indexName + "_" + type);
 
                     hogan_objs.push({
-                        source: index.ttAdapter({hitsPerPage: params[indices[i] + '_hitsPerPage']}),
+                        source: index.ttAdapter({hitsPerPage: algoliaConfig.autocomplete.hitsPerPage[type]}),
                         displayKey: 'displayKey',
                         templates: {
-                            header: '<div class="category">' + params['autocomplete_' + indices[i] + '_title'] + '</div>',
+                            header: '<div class="category">' + algoliaConfig.autocomplete.titles[type] + '</div>',
                             suggestion: (function (i) {
                                 return function (hit) {
-                                    if (indices[i] == 'products')
+                                    if (type == 'products')
                                     {
                                         if (Array.isArray(hit.categories))
                                             hit.categories = hit.categories.join(', ');
@@ -707,11 +718,11 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                                         if (Array.isArray(hit.price))
                                             hit.price = hit.price[0];
 
-                                    } else if (indices[i] == 'categories') {
+                                    } else if (type == 'categories') {
                                         hit.displayKey = hit.path;
                                     }
                                     hit.displayKey = hit.displayKey || hit.name;
-                                    return params['autocomplete_' + indices[i] + '_template'].render(hit);
+                                    return algoliaConfig.autocomplete.templates[type].render(hit);
                                 }
                             })(i)
                         }
@@ -734,7 +745,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
             function activateAutocomplete()
             {
-                $(algoliaSettings.search_input_selector).each(function (i) {
+                $(algoliaConfig.autocomplete.selector).each(function (i) {
                     $(this).typeahead({hint: false}, hogan_objs);
 
                     $(this).on('typeahead:selected', function (e, item) {
@@ -749,7 +760,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
             function desactivateAutocomplete()
             {
-                $(algoliaSettings.search_input_selector).each(function (i) {
+                $(algoliaConfig.autocomplete.selector).each(function (i) {
                     $(this).typeahead('destroy');
                 });
             }
@@ -761,20 +772,20 @@ if ($config->isInstantEnabled() && $isSearchPage) {
          **
          *****************/
 
-        if (instantEnabled)
+        if (algoliaConfig.instant.enabled)
         {
-            if ($(algoliaSettings.instant_selector).length !== 1)
-                throw '[Algolia] Invalid instant-search selector: ' + algoliaSettings.instant_selector;
+            if ($(algoliaConfig.instant.selector).length !== 1)
+                throw '[Algolia] Invalid instant-search selector: ' + algoliaConfig.instant.selector;
 
-            if ($(algoliaSettings.instant_selector).find(algoliaSettings.search_input_selector).length > 0)
-                throw '[Algolia] You can\'t have a search input matching "' + algoliaSettings.search_input_selector +
-                '" inside you instant selector "' + algoliaSettings.instant_selector + '"';
+            if ($(algoliaConfig.instant.selector).find(algoliaConfig.autocomplete.selector).length > 0)
+                throw '[Algolia] You can\'t have a search input matching "' + algoliaConfig.autocomplete.selector +
+                '" inside you instant selector "' + algoliaConfig.instant.selector + '"';
 
-            var old_content         = $(algoliaSettings.instant_selector).html();
+            var old_content         = $(algoliaConfig.instant.selector).html();
 
-            var resultsTemplate     = Hogan.compile($('#instant-content-template').html());
-            var facetsTemplate      = Hogan.compile($('#instant-facets-template').html());
-            var paginationTemplate  = Hogan.compile($('#instant-pagination-template').html());
+            var resultsTemplate     = algoliaBundle.Hogan.compile($('#instant-content-template').html());
+            var facetsTemplate      = algoliaBundle.Hogan.compile($('#instant-facets-template').html());
+            var paginationTemplate  = algoliaBundle.Hogan.compile($('#instant-pagination-template').html());
 
             function performQueries(push_state)
             {
@@ -825,7 +836,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                 html_content += "</div>";
 
-                $(algoliaSettings.instant_selector).html(html_content).show();
+                $(algoliaConfig.instant.selector).html(html_content).show();
 
                 updateSliderValues();
             }
@@ -843,7 +854,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                 location.replace('#');
 
-                $(algoliaSettings.instant_selector).html(old_content);
+                $(algoliaConfig.instant.selector).html(old_content);
             }
 
             /**
@@ -998,17 +1009,17 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
             /** Handle input clearing **/
             $('body').on('click', '.clear-button', function () {
-                $(algoliaSettings.search_input_selector).val('');
+                $(algoliaConfig.autocomplete.selector).val('');
                 helper.clearRefinements().setQuery('').search();
             });
 
             /**
              * Handle search
              */
-            $(algoliaSettings.search_input_selector).keyup(function (e) {
+            $(algoliaConfig.autocomplete.selector).keyup(function (e) {
                 e.preventDefault();
 
-                if (instantEnabled === false)
+                if (algoliaConfig.instant.enabled === false)
                     return;
 
                 var $this = $(this);
@@ -1016,7 +1027,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 helper.setQuery($(this).val());
 
                 /** Update all search input to reflect the change **/
-                $(algoliaSettings.search_input_selector).each(function (i) {
+                $(algoliaConfig.autocomplete.selector).each(function (i) {
                     if ($(this)[0] != $this[0])
                         $(this).val(helper.state.query);
                 });
@@ -1028,7 +1039,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                     location.replace('#');
 
-                    $(algoliaSettings.instant_selector).html(old_content);
+                    $(algoliaConfig.instant.selector).html(old_content);
 
                     return;
                 }
@@ -1080,27 +1091,27 @@ if ($config->isInstantEnabled() && $isSearchPage) {
              */
 
             /** Clean input **/
-            $(algoliaSettings.search_input_selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
+            $(algoliaConfig.autocomplete.selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
 
-            getRefinementsFromUrl(algoliaSettings.search_input_selector);
+            getRefinementsFromUrl(algoliaConfig.autocomplete.selector);
 
             window.addEventListener("popstate", function(e) {
-                getRefinementsFromUrl(algoliaSettings.search_input_selector);
+                getRefinementsFromUrl(algoliaConfig.autocomplete.selector);
             });
 
 
-            if (autocompleteEnabled && instantEnabled)
+            if (algoliaConfig.autocomplete.enabled && algoliaConfig.instant.enabled)
             {
                 if (!<?php echo $isSearchPage ? "true" : "false"; ?>)
                 {
                     desactivateInstant();
-                    instantEnabled = false;
+                    algoliaConfig.instant.enabled = false;
                 }
                 else
                 {
-                    autocompleteEnabled = false;
+                    algoliaConfig.autocomplete.enabled = false;
                     desactivateAutocomplete();
-                    $(algoliaSettings.search_input_selector+':first').focus();
+                    $(algoliaConfig.autocomplete.selector+':first').focus();
                 }
             }
         }

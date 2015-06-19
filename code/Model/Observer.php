@@ -134,25 +134,6 @@ class Algolia_Algoliasearch_Model_Observer
     }
 
     /**
-     * Inject jquery before prototype
-     */
-    public function prepareLayoutBefore(Varien_Event_Observer $observer)
-    {
-        /* @var $block Mage_Page_Block_Html_Head */
-        $block = $observer->getEvent()->getBlock();
-
-        if ("head" == $block->getNameInLayout() && Mage::getDesign()->getArea() != 'adminhtml') {
-            $block->addJs('../skin/frontend/base/default/algoliasearch/jquery.min.js');
-            $block->addJs('../skin/frontend/base/default/algoliasearch/jquery-ui.js');
-            $block->addJs('../skin/frontend/base/default/algoliasearch/typeahead.min.js');
-            $block->addJs('../skin/frontend/base/default/algoliasearch/jquery.noconflict.js');
-            $block->addCss('algoliasearch/jquery-ui.min.css');
-        }
-
-        return $this;
-    }
-
-    /**
      * Catch request if it is a category page
      */
     public function controllerFrontInitBefore(Varien_Event_Observer $observer)
