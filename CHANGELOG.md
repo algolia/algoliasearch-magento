@@ -1,5 +1,10 @@
 ## Change Log
 
+### 1.2.2
+- Package & isolate all JS code + dependencies
+- Default slider style improvements
+- Display the category leaves only in the auto-completion menu
+
 ### 1.2.1
 - Fix a JavaScript bug on Firefox
 - Fix a JSON encoding issue with categories
