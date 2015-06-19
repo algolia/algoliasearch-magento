@@ -118,6 +118,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfigFlag(self::XML_PATH_REPLACE_CATEGORIES, $storeId);
     }
 
+    public function isAutoCompleteEnabled($storeId = NULL)
+    {
+        return Mage::getStoreConfigFlag(self::XML_PATH_IS_POPUP_ENABLED, $storeId);
+    }
+
     public function isInstantEnabled($storeId = NULL)
     {
         return Mage::getStoreConfigFlag(self::XML_PATH_IS_INSTANT_ENABLED, $storeId);
