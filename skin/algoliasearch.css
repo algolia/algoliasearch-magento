@@ -256,6 +256,11 @@
 
 #algolia_instant_selector .algolia-slider {
     margin: 15px;
+    background: #c1d8e6;
+}
+
+#algolia_instant_selector .algolia-slider .ui-slider-range {
+  background: #54A5CD;
 }
 
 #algolia_instant_selector .algolia-slider-info {
