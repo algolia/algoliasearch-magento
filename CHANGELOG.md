@@ -1,5 +1,9 @@
 ## Change Log
 
+### 1.2.3
+- add option to disable branding
+- fix issue with autocomplete templating
+
 ### 1.2.2
 - Package & isolate all JS code + dependencies
 - Default slider style improvements
