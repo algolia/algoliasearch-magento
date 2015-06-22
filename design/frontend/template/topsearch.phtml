@@ -692,19 +692,18 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
             for (var i = 0; i < indices.length; i++)
             {
-                var type = indices[i];
-                if (algoliaConfig.autocomplete.hitsPerPage[type] > 0)
+                if (algoliaConfig.autocomplete.hitsPerPage[indices[i]] > 0)
                 {
-                    var index = algolia_client.initIndex(algoliaConfig.indexName + "_" + type);
+                    var index = algolia_client.initIndex(algoliaConfig.indexName + "_" + indices[i]);
 
                     hogan_objs.push({
-                        source: index.ttAdapter({hitsPerPage: algoliaConfig.autocomplete.hitsPerPage[type]}),
+                        source: index.ttAdapter({hitsPerPage: algoliaConfig.autocomplete.hitsPerPage[indices[i]]}),
                         displayKey: 'displayKey',
                         templates: {
-                            header: '<div class="category">' + algoliaConfig.autocomplete.titles[type] + '</div>',
+                            header: '<div class="category">' + algoliaConfig.autocomplete.titles[indices[i]] + '</div>',
                             suggestion: (function (i) {
                                 return function (hit) {
-                                    if (type == 'products')
+                                    if (indices[i] == 'products')
                                     {
                                         if (Array.isArray(hit.categories_without_path))
                                             hit.categories_without_path = hit.categories_without_path.join(', ');
@@ -717,11 +716,18 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                                         if (Array.isArray(hit.price))
                                             hit.price = hit.price[0];
 
-                                    } else if (type == 'categories') {
-                                        hit.displayKey = hit.path;
                                     }
+                                    else
+                                    {
+                                        if (indices[i] == 'categories')
+                                        {
+                                            hit.displayKey = hit.path;
+                                        }
+                                    }
+
                                     hit.displayKey = hit.displayKey || hit.name;
-                                    return algoliaConfig.autocomplete.templates[type].render(hit);
+
+                                    return algoliaConfig.autocomplete.templates[indices[i]].render(hit);
                                 }
                             })(i)
                         }
