@@ -74,6 +74,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         ->addStoreFilter($storeId)
                         ->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
                         ->addFinalPrice()
+                        ->addAttributeToSelect('special_from_date')
+                        ->addAttributeToSelect('special_to_date')
                         ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
 
         $additionalAttr = $this->config->getProductAdditionalAttributes($storeId);
@@ -81,10 +83,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         foreach ($additionalAttr as &$attr)
             $attr = $attr['attribute'];
 
-        $products = $products->addAttributeToSelect(array_merge(static::$_predefinedProductAttributes, $additionalAttr));
+        $products = $products->addAttributeToSelect(array_values(array_merge(static::$_predefinedProductAttributes, $additionalAttr)));
 
         if ($productIds && count($productIds) > 0)
-            $products->addAttributeToFilter('entity_id', array('in' => $productIds));
+            $products = $products->addAttributeToFilter('entity_id', array('in' => $productIds));
 
         Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before', array('store' => $storeId, 'collection' => $products));
 
@@ -170,7 +172,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     public function getObject(Mage_Catalog_Model_Product $product)
     {
-
         $defaultData    = array();
 
         $transport      = new Varien_Object($defaultData);
@@ -189,6 +190,20 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             'url'               => $product->getProductUrl(),
             'description'       => $product->getDescription()
         );
+
+        $special_price = $product->getFinalPrice();
+
+        if ($special_price != $customData['price'])
+        {
+            $customData['special_price_from_date']          = strtotime($product->getSpecialFromDate());
+            $customData['special_price_to_date']            = strtotime($product->getSpecialToDate());
+
+            $customData['special_price']                    = $special_price;
+            $customData['special_price_with_tax']           = Mage::helper('tax')->getPrice($product, $special_price, true, null, null, null, null, false);
+
+            $customData['special_price_formated']           = Mage::helper('core')->formatPrice($customData['special_price'], false);
+            $customData['special_price_with_tax_formated']  = Mage::helper('core')->formatPrice($customData['special_price_with_tax'], false);
+        }
 
         $customData['price_formated']           = Mage::helper('core')->formatPrice($customData['price'], false);
         $customData['price_with_tax_formated']  = Mage::helper('core')->formatPrice($customData['price_with_tax'], false);
@@ -231,7 +246,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         foreach ($categories_with_path as &$category)
             $category = implode(' /// ',$category);
 
-        $customData['categories'] = $categories_with_path;
+        $customData['categories'] = array_values($categories_with_path);
 
         $customData['categories_without_path'] = $categories;
 
@@ -292,6 +307,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData['max_formated'] = Mage::helper('core')->formatPrice($max, false);
             $customData['min_with_tax_formated'] = Mage::helper('core')->formatPrice($min_with_tax, false);
             $customData['max_with_tax_formated'] = Mage::helper('core')->formatPrice($max_with_tax, false);
+
         }
 
         // skip default calculation if we have provided these attributes via the observer in $defaultData

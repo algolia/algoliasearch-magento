@@ -1,5 +1,18 @@
 ## Change Log
 
+### 1.2.3
+- add option to disable branding
+- fix issue with autocomplete templating
+
+### 1.2.2
+- Package & isolate all JS code + dependencies
+- Default slider style improvements
+- Display the category leaves only in the auto-completion menu
+
+### 1.2.1
+- Fix a JavaScript bug on Firefox
+- Fix a JSON encoding issue with categories
+
 ### 1.2.0
 - NEW: Add an instant search implementation
 - NEW: Administration configuration layout cleanup & improvements
