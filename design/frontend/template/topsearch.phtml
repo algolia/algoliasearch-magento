@@ -22,7 +22,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 <form id="search_mini_form" action="<?php echo $catalogSearchHelper->getResultUrl() ?>" method="get">
     <div id="algolia-searchbox">
         <label for="search"><?php echo $this->__('Search:') ?></label>
-        <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" value="<?php echo $catalogSearchHelper->getEscapedQueryText() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Search for products or categories" />
+        <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Search for products or categories" />
         <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128" >
           <g transform="scale(4)">
             <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
@@ -111,9 +111,46 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 //================================
 -->
 
+
+
+<!-- Wrapping template -->
+<script type="text/template" id="instant_wrapper_template">
+
+    <div id="algolia_instant_selector">
+
+        <div id="algolia-left-container">
+            <div id="instant-search-facets-container"></div>
+        </div>
+
+        <div id="algolia-right-container">
+
+            <div id="instant-search-bar-container">
+                <div id="instant-search-box">
+                    <label for="instant-search-bar">
+                        Search :
+                    </label>
+
+                    <input value="<?php echo $catalogSearchHelper->getEscapedQueryText() ?>" placeholder="Search for products" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128">
+                        <g transform="scale(4)">
+                            <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
+                            <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
+                            <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z"></path>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <div id="instant-search-results-container"></div>
+            <div id="instant-search-pagination-container"></div>
+        </div>
+    </div>
+</script>
+
 <!-- Product hit template  -->
 <script type="text/template" id="instant-content-template">
-    <div class="hits{{#facets_count}} with_facets{{/facets_count}}">
+    <div class="hits">
         {{#hits.length}}
         <div class="infos">
             <div class="pull-left">
@@ -184,7 +221,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
 <!-- Facet template -->
 <script type="text/template" id="instant-facets-template">
-    <div class="facets{{#count}} with_facets{{/count}}">
+    <div class="facets">
         {{#facets}}
         {{#count}}
         <div class="facet">
@@ -237,7 +274,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
 <!-- Pagination template -->
 <script type="text/template" id="instant-pagination-template">
-    <div class="pagination-wrapper{{#facets_count}} with_facets{{/facets_count}}">
+    <div class="pagination-wrapper">
         <div class="text-center">
             <ul class="algolia-pagination">
                 <a href="#" data-page="{{prev_page}}">
@@ -467,8 +504,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 helper.setCurrentPage(page);
                 helper.setIndex(indexName);
 
-                $(algoliaConfig.autocomplete.selector);
-                $(algoliaConfig.autocomplete.selector).val(helper.state.query);
+                $('#instant-search-bar').focus().val('');
+                $('#instant-search-bar').val(helper.state.query);
 
                 helper.search();
 
@@ -791,6 +828,10 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
             var old_content         = $(algoliaConfig.instant.selector).html();
 
+            var wrapperTemplate     = algoliaBundle.Hogan.compile($('#instant_wrapper_template').html());
+
+            $(algoliaConfig.instant.selector).html(wrapperTemplate.render()).show();
+
             var resultsTemplate     = algoliaBundle.Hogan.compile($('#instant-content-template').html());
             var facetsTemplate      = algoliaBundle.Hogan.compile($('#instant-facets-template').html());
             var paginationTemplate  = algoliaBundle.Hogan.compile($('#instant-pagination-template').html());
@@ -822,9 +863,14 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 /**
                  * Generate HTML
                  */
-                var html_content = "";
 
-                html_content += "<div id='algolia_instant_selector'>";
+                var instant_search_facets_container = $('#instant-search-facets-container');
+                var instant_search_results_container = $('#instant-search-results-container');
+                var instant_search_pagination_container = $('#instant-search-pagination-container');
+
+                instant_search_facets_container.html('');
+                instant_search_results_container.html('');
+                instant_search_pagination_container.html('');
 
                 var facets = [];
                 var pages = [];
@@ -834,17 +880,22 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     facets = getFacets(content);
                     pages = getPages(content);
 
-                    html_content += getHtmlForFacets(facetsTemplate, facets);
+                    instant_search_facets_container.html(getHtmlForFacets(facetsTemplate, facets));
                 }
 
-                html_content += getHtmlForResults(resultsTemplate, content, facets);
+                instant_search_results_container.html(getHtmlForResults(resultsTemplate, content, facets));
 
                 if (content.hits.length > 0)
-                    html_content += getHtmlForPagination(paginationTemplate, content, pages, facets);
+                    instant_search_pagination_container.html(getHtmlForPagination(paginationTemplate, content, pages, facets));
 
-                html_content += "</div>";
 
-                $(algoliaConfig.instant.selector).html(html_content).show();
+                if (facets.length > 0)
+                    $('#algolia-left-container, #algolia-right-container').addClass('with_facets');
+                else
+                    $('#algolia-left-container, #algolia-right-container').removeClass('with_facets');
+
+
+                //$(algoliaConfig.instant.selector).show();
 
                 updateSliderValues();
             }
@@ -1018,14 +1069,14 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
             /** Handle input clearing **/
             $('body').on('click', '.clear-button', function () {
-                $(algoliaConfig.autocomplete.selector).val('');
+                $('#instant-search-bar').val('');
                 helper.clearRefinements().setQuery('').search();
             });
 
             /**
              * Handle search
              */
-            $(algoliaConfig.autocomplete.selector).keyup(function (e) {
+            $('#instant-search-bar').keyup(function (e) {
                 e.preventDefault();
 
                 if (algoliaConfig.instant.enabled === false)
@@ -1034,12 +1085,6 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 var $this = $(this);
 
                 helper.setQuery($(this).val());
-
-                /** Update all search input to reflect the change **/
-                $(algoliaConfig.autocomplete.selector).each(function (i) {
-                    if ($(this)[0] != $this[0])
-                        $(this).val(helper.state.query);
-                });
 
                 /** If escape **/
                 if (e.keyCode === 27) {
@@ -1102,10 +1147,10 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             /** Clean input **/
             $(algoliaConfig.autocomplete.selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
 
-            getRefinementsFromUrl(algoliaConfig.autocomplete.selector);
+            getRefinementsFromUrl();
 
             window.addEventListener("popstate", function(e) {
-                getRefinementsFromUrl(algoliaConfig.autocomplete.selector);
+                getRefinementsFromUrl();
             });
 
 
@@ -1115,12 +1160,6 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 {
                     desactivateInstant();
                     algoliaConfig.instant.enabled = false;
-                }
-                else
-                {
-                    algoliaConfig.autocomplete.enabled = false;
-                    desactivateAutocomplete();
-                    $(algoliaConfig.autocomplete.selector+':first').focus();
                 }
             }
         }
