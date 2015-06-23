@@ -49,7 +49,14 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         {{/thumbnail_url}}
         {{#price_with_tax}}
         <div class="algoliasearch-autocomplete-price">
+            {{#special_price_with_tax}}
+            <div class="after_special">
+                {{special_price_with_tax_formated}}
+            </div>
+            {{/special_price_with_tax}}
+            <div {{#special_price_with_tax}}class="before_special"{{/special_price_with_tax}}>
             {{price_with_tax_formated}}
+            </div>
         </div>
         {{/price_with_tax}}
         <div class="info">
@@ -193,13 +200,33 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             </div>
                         </div>
                         <div class="price">
-                            {{#price_with_tax}}{{price_with_tax_formated}}{{/price_with_tax}}
-                            {{^price_with_tax}}
-                            {{#min_with_tax_formated}}
-                            {{min_with_tax_formated}} - {{max_with_tax_formated}}
-                            {{/min_with_tax_formated}}
-                            {{^min_with_tax_formated}}-{{/min_with_tax_formated}}
-                            {{/price_with_tax}}
+                            <div class="algoliasearch-autocomplete-price">
+                                <div>
+                                    {{#special_price_with_tax}}
+                                    <span class="after_special">
+                                        {{special_price_with_tax_formated}}
+                                    </span>
+                                    {{/special_price_with_tax}}
+                                    
+                                    {{#special_price_with_tax}}
+                                    <span class="before_special">
+                                    {{/special_price_with_tax}}
+
+                                    {{#price_with_tax}}{{price_with_tax_formated}}{{/price_with_tax}}
+                                    {{^price_with_tax}}
+                                    {{#min_with_tax_formated}}
+                                    {{min_with_tax_formated}} - {{max_with_tax_formated}}
+                                    {{/min_with_tax_formated}}
+                                    {{^min_with_tax_formated}}-{{/min_with_tax_formated}}
+                                    {{/price_with_tax}}
+
+                                    {{#special_price_with_tax}}
+                                    </span>
+                                    {{/special_price_with_tax}}
+
+
+                                </div>
+                            </div>
                         </div>
                         <div class="result-description text-ellipsis">
                             {{{ _highlightResult.description.value }}}
@@ -743,6 +770,19 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                                 return function (hit) {
                                     if (indices[i] == 'products')
                                     {
+                                        var time = Math.floor(Date.now() / 1000);
+
+                                        if ((hit.special_price_from_date != undefined && hit.special_price_from_date > time) ||
+                                            (hit.special_price_to_date != undefined && hit.special_price_to_date < time))
+                                        {
+                                            delete hit.special_price_from_date;
+                                            delete hit.special_price_to_date;
+                                            delete hit.special_price;
+                                            delete hit.special_price_with_tax;
+                                            delete hit.special_price_formated;
+                                            delete hit.special_price_with_tax_formated;
+                                        }
+
                                         if (Array.isArray(hit.categories_without_path))
                                             hit.categories_without_path = hit.categories_without_path.join(', ');
 
@@ -858,6 +898,19 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                     if (Array.isArray(content.hits[i].price))
                         content.hits[i].price = content.hits[i].price[0];
+
+                    var time = Math.floor(Date.now() / 1000);
+
+                    if ((content.hits[i].special_price_from_date != undefined && content.hits[i].special_price_from_date > time) ||
+                        (content.hits[i].special_price_to_date != undefined && content.hits[i].special_price_to_date < time))
+                    {
+                        delete content.hits[i].special_price_from_date;
+                        delete content.hits[i].special_price_to_date;
+                        delete content.hits[i].special_price;
+                        delete content.hits[i].special_price_with_tax;
+                        delete content.hits[i].special_price_formated;
+                        delete content.hits[i].special_price_with_tax_formated;
+                    }
                 }
 
                 /**
@@ -1069,8 +1122,10 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
             /** Handle input clearing **/
             $('body').on('click', '.clear-button', function () {
-                $('#instant-search-bar').val('');
-                helper.clearRefinements().setQuery('').search();
+                $('#instant-search-bar').val('').focus();
+                helper.clearRefinements().setQuery('');
+
+                performQueries(true);
             });
 
             /**

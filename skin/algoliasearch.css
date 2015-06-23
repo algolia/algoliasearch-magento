@@ -47,6 +47,13 @@
 **
 ******************/
 
+.tt-dropdown-menu .before_special
+{
+    color: #aaaaaa;
+    text-decoration: line-through;
+    font-size: 12px;
+}
+
 .twitter-typeahead {
     width: 100%;
 }
@@ -408,4 +415,11 @@
     right: 59px;
     fill: #54A5CD;
     stroke: #54A5CD;
+}
+
+#algolia_instant_selector .before_special
+{
+    color: #aaaaaa;
+    text-decoration: line-through;
+    font-size: 12px;
 }
