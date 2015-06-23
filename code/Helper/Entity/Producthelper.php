@@ -172,7 +172,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     public function getObject(Mage_Catalog_Model_Product $product)
     {
-
         $defaultData    = array();
 
         $transport      = new Varien_Object($defaultData);

@@ -35,11 +35,17 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_MAX_VALUES_PER_FACET             = 'algoliasearch/ui/max_values_per_facet';
     const XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS       = 'algoliasearch/ui/number_page_suggestions';
     const XML_PATH_REMOVE_BRANDING                  = 'algoliasearch/ui/remove_branding';
+    const XML_ADD_TO_CART_ENABLE                    = 'algoliasearch/ui/add_to_cart_enable';
 
     const XML_PATH_MAX_RETRIES                      = 'algoliasearch/queue/retries';
     const XML_PATH_IS_ACTIVE                        = 'algoliasearch/queue/active';
     const XML_PATH_NUMBER_OF_ELEMENT_BY_PAGE        = 'algoliasearch/queue/number_of_element_by_page';
     const XML_PATH_NUMBER_OF_JOB_TO_RUN             = 'algoliasearch/queue/number_of_job_to_run';
+
+    public function isAddToCartEnable($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::XML_ADD_TO_CART_ENABLE, $storeId);
+    }
 
     public function isRemoveBranding($storeId = null)
     {

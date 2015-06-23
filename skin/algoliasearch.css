@@ -87,7 +87,7 @@
 
 .tt-dropdown-menu .algoliasearch-autocomplete-hit {
     display: block;
-    padding: 10px 10px;
+    padding: 5px 10px;
     clear: both;
     color: #000;
     text-align: left;
@@ -156,7 +156,7 @@
 #algolia-searchbox #search:focus{
     outline: 0;
     box-shadow: none;
-    border:; solid 1px #54A5CD;
+    border: solid 1px #54A5CD;
 }
 
 /**
@@ -422,4 +422,28 @@
     color: #aaaaaa;
     text-decoration: line-through;
     font-size: 12px;
+}
+
+#algolia_instant_selector button:hover {
+    background: #2E8AB8 none repeat scroll 0% 0%;
+    cursor: pointer;
+}
+
+#algolia_instant_selector button {
+    background: #39C none repeat scroll 0% 0%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    padding: 7px 15px;
+    border: 0px none;
+    color: #FFF;
+    font-size: 13px;
+    font-weight: normal;
+    font-family: "Raleway","Helvetica Neue",Verdana,Arial,sans-serif;
+    line-height: 19px;
+    text-align: center;
+    text-transform: uppercase;
+    vertical-align: middle;
+    white-space: nowrap;
 }

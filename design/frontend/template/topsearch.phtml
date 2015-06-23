@@ -4,6 +4,7 @@ $catalogSearchHelper = $this->helper('catalogsearch'); /** @var $catalogSearchHe
 $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHelper Algolia_Algoliasearch_Helper_Data */
 $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 $isSearchPage = Mage::app()->getRequest()->getParam('instant') != null || Mage::app()->getRequest()->getParam('category') != null;
+$formKey = Mage::getSingleton('core/session')->getFormKey();
 
 if ($config->isInstantEnabled() && $isSearchPage) {
     // hide the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS
@@ -19,10 +20,28 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 //================================
 -->
 
+<?php
+
+$types = array();
+
+if ($config->getNumberOfProductSuggestions() > 0)
+    $types[] = $this->__('products');
+
+if ($config->getNumberOfCategorySuggestions() > 0)
+    $types[] = $this->__('categories');
+
+if ($config->getNumberOfPageSuggestions() > 0)
+    $types[] = $this->__('pages');
+
+$placeholder = 'Search for ' . implode(', ', array_slice($types, 0, count($types) - 1)) . ' or ' . $types[count($types) - 1];
+$class = $isSearchPage ? 'search-page' : '';
+
+?>
+
 <form id="search_mini_form" action="<?php echo $catalogSearchHelper->getResultUrl() ?>" method="get">
-    <div id="algolia-searchbox">
+    <div id="algolia-searchbox" class="<?php echo $class; ?>">
         <label for="search"><?php echo $this->__('Search:') ?></label>
-        <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Search for products or categories" />
+        <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="<?php echo $placeholder; ?>" />
         <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128" >
           <g transform="scale(4)">
             <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
@@ -207,7 +226,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                                         {{special_price_with_tax_formated}}
                                     </span>
                                     {{/special_price_with_tax}}
-                                    
+
                                     {{#special_price_with_tax}}
                                     <span class="before_special">
                                     {{/special_price_with_tax}}
@@ -231,6 +250,16 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         <div class="result-description text-ellipsis">
                             {{{ _highlightResult.description.value }}}
                         </div>
+
+                        {{#isAddToCartEnabled}}
+                        <form action="/checkout/cart/add/product/{{objectID}}" method="post">
+                            <input type="hidden" name="form_key" value="<?php echo $formKey; ?>" />
+
+                            <input type="hidden" name="qty" value="1">
+
+                            <button type="submit">Add to Cart</button>
+                        </form>
+                        {{/isAddToCartEnabled}}
                     </div>
                 </div>
                 <div class="clearfix"></div>
@@ -344,7 +373,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         var algoliaConfig = {
             instant: {
                 enabled: <?php echo $config->isInstantEnabled() ? "true" : "false"; ?>,
-                selector: '<?php echo $config->getInstantSelector(); ?>'
+                selector: '<?php echo $config->getInstantSelector(); ?>',
+                isAddToCartEnabled: <?php echo $config->isAddToCartEnable() ? "true" : "false"; ?>
             },
             autocomplete: {
                 enabled: <?php echo $config->isAutoCompleteEnabled() ? "true" : "false"; ?>,
@@ -721,7 +751,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 nbHits_one: (content.nbHits === 1),
                 nbHits_many: (content.nbHits > 1),
                 query: helper.state.query,
-                processingTimeMS: content.processingTimeMS
+                processingTimeMS: content.processingTimeMS,
+                isAddToCartEnabled: algoliaConfig.instant.isAddToCartEnabled
             });
 
             return results_html;
@@ -1215,6 +1246,26 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 {
                     desactivateInstant();
                     algoliaConfig.instant.enabled = false;
+                }
+                else
+                {
+                    onfocus_css = {
+                        'opacity': '1',
+                        'fill': '#54A5CD',
+                        'stroke': '#54A5CD'
+                    };
+
+                    onblur_css = {
+                        'opacity': '0.4',
+                        'fill': '#AAA',
+                        'stroke': '#AAA'
+                    };
+
+                    $('#search').focus(function () {
+                        $(this).parent().next().css(onfocus_css);
+                    }).blur(function () {
+                        $(this).parent().next().css(onblur_css);
+                    }).parent().next().css(onblur_css);
                 }
             }
         }
