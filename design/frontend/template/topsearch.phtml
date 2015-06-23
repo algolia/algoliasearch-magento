@@ -860,7 +860,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             {
                 helper.removeAllListeners();
 
-                location.replace('#');
+                if (location.hash && location.hash.length > 1)
+                    location.replace('#');
 
                 $(algoliaConfig.instant.selector).html(old_content);
             }
