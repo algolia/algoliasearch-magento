@@ -995,6 +995,7 @@ $class = $isSearchPage ? 'search-page' : '';
             {
                 helper.removeAllListeners();
 
+                /** Avoid the hash when it is not a search page **/
                 if (location.hash && location.hash.length > 1)
                     location.replace('#');
 
