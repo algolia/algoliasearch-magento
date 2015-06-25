@@ -849,7 +849,6 @@ $class = $isSearchPage ? 'search-page' : '';
                                             var nameattr = explode[0];
 
                                             categories[nameattr] = 1;
-
                                         }
 
                                         for (var key in categories)
@@ -861,10 +860,18 @@ $class = $isSearchPage ? 'search-page' : '';
                                         }
                                     }
                                     else
-                                        hits.push(content.hits[0]);
+                                    {
+                                        var obj = $.extend(true, {}, content.hits[0]);
+                                        obj.url = '<?php echo Mage::getBaseUrl(); ?>catalogsearch/result/?q=' + obj.query;
+                                        hits.push(obj);
+                                    }
 
                                     for (var k = 1; k < content.hits.length; k++)
-                                        hits.push(content.hits[k]);
+                                    {
+                                        var obj = $.extend(true, {}, content.hits[k]);
+                                        obj.url = '<?php echo Mage::getBaseUrl(); ?>catalogsearch/result/?q=' + obj.query;
+                                        hits.push(obj);
+                                    }
 
 
                                     for (var k = 0; k < hits.length; k++)
