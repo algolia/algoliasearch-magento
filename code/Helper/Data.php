@@ -23,22 +23,32 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function __construct()
     {
-        \AlgoliaSearch\Version::$custom_value = " Magento (1.2.3)";
+        \AlgoliaSearch\Version::$custom_value = " Magento (1.3.0)";
 
-        $this->algolia_helper   = Mage::helper('algoliasearch/algoliahelper');
+        $this->algolia_helper       = Mage::helper('algoliasearch/algoliahelper');
 
-        $this->page_helper      = Mage::helper('algoliasearch/entity_pagehelper');
-        $this->category_helper  = Mage::helper('algoliasearch/entity_categoryhelper');
-        $this->product_helper   = Mage::helper('algoliasearch/entity_producthelper');
+        $this->page_helper          = Mage::helper('algoliasearch/entity_pagehelper');
+        $this->category_helper      = Mage::helper('algoliasearch/entity_categoryhelper');
+        $this->product_helper       = Mage::helper('algoliasearch/entity_producthelper');
+        $this->suggestion_helper    = Mage::helper('algoliasearch/entity_suggestionhelper');
 
-        $this->config           = Mage::helper('algoliasearch/config');
+        $this->config               = Mage::helper('algoliasearch/config');
     }
 
-    public function deleteStoreIndices($storeId = null)
+    public function deleteProductsAndCategoriesStoreIndices($storeId = null)
     {
         $this->algolia_helper->deleteIndex($this->product_helper->getIndexName($storeId));
         $this->algolia_helper->deleteIndex($this->category_helper->getIndexName($storeId));
+    }
+
+    public function deletePagesStoreIndices($storeId = null)
+    {
         $this->algolia_helper->deleteIndex($this->page_helper->getIndexName($storeId));
+    }
+
+    public function deleteSuggestionsStoreIndices($storeId = null)
+    {
+        $this->algolia_helper->deleteIndex($this->suggestion_helper->getIndexName($storeId));
     }
 
     public function saveConfigurationToAlgolia($storeId = null)
@@ -46,6 +56,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->algolia_helper->setSettings($this->product_helper->getIndexName($storeId), $this->product_helper->getIndexSettings($storeId));
         $this->algolia_helper->setSettings($this->category_helper->getIndexName($storeId), $this->category_helper->getIndexSettings($storeId));
         $this->algolia_helper->setSettings($this->page_helper->getIndexName($storeId), $this->page_helper->getIndexSettings($storeId));
+        $this->algolia_helper->setSettings($this->suggestion_helper->getIndexName($storeId), $this->suggestion_helper->getIndexSettings($storeId));
     }
 
     public function getSearchResult($query, $storeId)
@@ -97,8 +108,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
-
-    public function rebuiltStorePageIndex($storeId)
+    public function rebuildStorePageIndex($storeId)
     {
         $index_name = $this->page_helper->getIndexName($storeId);
 
@@ -147,6 +157,29 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->stopEmulation($emulationInfo);
     }
 
+    public function rebuildStoreSuggestionIndex($storeId)
+    {
+        $collection = $this->suggestion_helper->getSuggestionCollectionQuery($storeId);
+
+        $size = $collection->getSize();
+
+        if ($size > 0)
+        {
+            $pages = ceil($size / $this->config->getNumberOfElementByPage());
+            $collection->clear();
+            $page = 1;
+
+            while ($page <= $pages)
+            {
+                $this->rebuildStoreSuggestionIndexPage($storeId, $collection, $page, $this->config->getNumberOfElementByPage());
+
+                $page++;
+            }
+
+            unset($indexData);
+        }
+    }
+
     public function rebuildStoreProductIndex($storeId, $productIds)
     {
         $emulationInfo = $this->startEmulation($storeId);
@@ -180,6 +213,40 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->stopEmulation($emulationInfo);
     }
 
+    public function rebuildStoreSuggestionIndexPage($storeId, $collectionDefault, $page, $pageSize)
+    {
+        $collection = clone $collectionDefault;
+        $collection->setCurPage($page)->setPageSize($pageSize);
+        $collection->load();
+
+        $index_name = $this->suggestion_helper->getIndexName($storeId);
+
+        $indexData = array();
+
+        /** @var $suggestion Mage_Catalog_Model_Category */
+        foreach ($collection as $suggestion)
+        {
+            $suggestion->setStoreId($storeId);
+
+            if ($suggestion->getData('is_active') == 0)
+                continue;
+
+            $suggestion_obj = $this->suggestion_helper->getObject($suggestion);
+
+            if ($suggestion_obj['popularity'] >= $this->config->getMinPopularity() || $suggestion_obj['number_of_results'] >= $this->config->getMinNumberOfResults())
+                array_push($indexData, $suggestion_obj);
+        }
+
+        if (count($indexData) > 0)
+            $this->algolia_helper->addObjects($indexData, $index_name);
+
+        unset($indexData);
+
+        $collection->walk('clearInstance');
+        $collection->clear();
+
+        unset($collection);
+    }
 
     public function rebuildStoreCategoryIndexPage($storeId, $collectionDefault, $page, $pageSize)
     {

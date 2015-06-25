@@ -33,6 +33,10 @@
   height: 0;
 }
 
+.text-muted {
+    color: #666;
+}
+
 /******************
 **
 ** Auto-completion menu
@@ -44,6 +48,9 @@
   color: #aaaaaa;
   text-decoration: line-through;
   font-size: 12px;
+}
+#algolia-autocomplete-tt .tt-dropdown-menu .info-without-thumb .category-tag {
+    color: #b34c24;
 }
 
 #algolia-autocomplete-tt.twitter-typeahead {
@@ -87,7 +94,7 @@
 }
 
 #algolia-autocomplete-tt .tt-dropdown-menu .tt-cursor {
-  background-color: #FAFAFA;
+    background-color: #CFEAFA;
 }
 
 #algolia-autocomplete-tt .tt-dropdown-menu .algoliasearch-autocomplete-hit em {
@@ -116,6 +123,10 @@
 #algolia-autocomplete-tt .tt-dropdown-menu .algoliasearch-autocomplete-hit .info .algoliasearch-autocomplete-category {
   font-size: 0.8em;
   color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
 }
 
 #algolia-autocomplete-tt .tt-dropdown-menu .footer_algolia {
@@ -181,17 +192,19 @@
 }
 
 #instant-search-bar-container {
-  width: 100%;
+    width: 100%;
+    position: relative;
 }
 
-#algolia_instant_selector #algolia-right-container.with_facets {
-  float: left;
-  width: 80%;
+#algolia_instant_selector.with-facets #algolia-right-container {
+    float: left;
+    width: 80%;
 }
 
-#algolia_instant_selector #algolia-left-container.with_facets {
-  float: left;
-  width: 20%;
+#algolia_instant_selector.with-facets #algolia-left-container {
+    float: left;
+    width: 20%;
+    min-height: 1px;
 }
 
 #algolia_instant_selector .hits .infos {
@@ -205,8 +218,17 @@
   color: #555;
 }
 
-#algolia_instant_selector .hits .infos .clear-button {
-  cursor: pointer;
+#algolia_instant_selector .hits .no-results {
+    margin: 40px 0;
+    color: #aaa;
+    text-align: center;
+}
+#algolia_instant_selector .hits .no-results strong {
+    color: #555;
+}
+
+#algolia_instant_selector .hits .no-results .clear-button {
+    cursor: pointer;
 }
 
 /**
@@ -215,6 +237,10 @@
 
 #algolia_instant_selector .infos .algolia-logo {
   font-size: 10px;
+}
+
+#algolia_instant_selector .facets {
+  padding-top: 50px;
 }
 
 #algolia_instant_selector .facet {
@@ -228,9 +254,7 @@
 
 #algolia_instant_selector .facet .name {
   padding: 6px 0;
-  border: 1px solid #CCC;
-  border-left: none;
-  border-right: none;
+  border-bottom: 1px solid #CCC;
   color: #54A5CD;
   text-align: center;
   text-transform: uppercase;
@@ -259,7 +283,7 @@
 
 #algolia_instant_selector .algolia-slider {
   margin: 15px;
-  background: #c1d8e6;
+  background: #CFEAFA;
 }
 
 #algolia_instant_selector .algolia-slider .ui-slider-range {
@@ -305,7 +329,7 @@
 }
 
 #algolia_instant_selector em {
-  background-color: #c1d8e6;
+  background-color: #CFEAFA;
   font-style: normal;
 }
 
@@ -393,8 +417,9 @@
 }
 
 #algolia_instant_selector #instant-search-bar:focus {
-  outline: 0px none;
-  box-shadow: none;
+    outline: 0;
+    box-shadow: none;
+    border: solid 1px #54A5CD;
 }
 
 #algolia_instant_selector #instant-search-box label {
@@ -403,8 +428,8 @@
 
 #algolia_instant_selector #instant-search-box svg.magnifying-glass {
   position: absolute;
-  top: 47px;
-  right: 59px;
+  top: 8px;
+  right: 16px;
   fill: #54A5CD;
   stroke: #54A5CD;
 }

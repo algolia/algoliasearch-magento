@@ -7,7 +7,7 @@ This extension replaces the default search of Magento with a typo-tolerant, fast
 
 See features and benefits of [Algolia Search Extension for Magento](https://www.algolia.com/with/magento).
 
-![Latest version](https://img.shields.io/badge/latest-1.2.2-green.svg)
+![Latest version](https://img.shields.io/badge/latest-1.3.0-green.svg)
 ![Magento 1.6.2](https://img.shields.io/badge/magento-1.6.2-blue.svg)
 ![Magento 1.7.1](https://img.shields.io/badge/magento-1.7.1-blue.svg)
 ![Magento 1.8.1](https://img.shields.io/badge/magento-1.8.1-blue.svg)
@@ -29,10 +29,12 @@ Installation
 To setup this module, you'll need an Algolia account. Just sign up [here](http://www.algolia.com/users/sign_up) to create an account and retrieve your credentials.
 
   1. Create an [Algolia Account](https://www.algolia.com/users/sign_up).
-  2. Download the packaged Community Extension download from [the magento-connect store](http://www.magentocommerce.com/magento-connect/algolia-search-extension.html)
+  2. Download the packaged Community Extension from [the magento-connect store](http://www.magentocommerce.com/magento-connect/algolia-search-extension.html)
   3. Install it on your Magento instance.
   4. Configure your credentials from the **System** > **Configuration** > **Catalog** > **Algolia Search** administration panel.
-  5. Force the re-indexing of all your products, categories & pages with the **System > Index Management > Algolia Search** index.
+  5. Force the re-indexing of all your products, categories with the **System > Index Management > Algolia Search** index.
+  6. Force the re-indexing of all your pages with the **System > Index Management > Algolia Search Pages** index.
+  7. Force the re-indexing of all your suggestions with the **System > Index Management > Algolia Search Suggestions** index.
 
 **Note:** If you experience a 404 issue while accessing the *Algolia Search* administration panel, can follow this [procedure](http://www.fanplayr.com/1415/magento-404-error-page-not-found-in-configuration/).
 
@@ -56,7 +58,15 @@ If you choose to use the instant search, when you search for something fulltext 
 Indexing
 ---------------
 
-#### Initial import
+### Indexers
+
+- **Algolia Search**: Index every products and categories and **is also responsible for updating records** when you update/delete products and categories.
+
+- **Algolia Search Pages**: Index every pages **but do not handle automatic updates**. You need to do it manually from time to time.
+
+- **Algolia Search Suggestions**: Index every suggestions **but do not handle automatic updates**. You need to do it manually from time to time.
+
+### Initial import
 
 Once configured, do not forget to trigger the re-indexing in **System > Index Management > Algolia Search**:
 

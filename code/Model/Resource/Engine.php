@@ -10,6 +10,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     private $config;
     private $product_helper;
     private $category_helper;
+    private $suggestion_helper;
 
     public function _construct()
     {
@@ -19,6 +20,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         $this->config = Mage::helper('algoliasearch/config');
         $this->product_helper = Mage::helper('algoliasearch/entity_producthelper');
         $this->category_helper = Mage::helper('algoliasearch/entity_categoryhelper');
+        $this->suggestion_helper = Mage::helper('algoliasearch/entity_suggestionhelper');
     }
 
     public function addToQueue($observer, $method, $data, $nb_retry)
@@ -49,10 +51,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         if (is_array($product_ids) && count($product_ids) > $by_page)
         {
             foreach (array_chunk($product_ids, $by_page) as $chunk)
-                $this->addToQueue('algoliasearch/observer', 'removeProducts', array('store_id' => $storeId, 'product_ids' => $chunk), 3);
+                $this->addToQueue('algoliasearch/observer', 'removeProducts', array('store_id' => $storeId, 'product_ids' => $chunk), $this->config->getQueueMaxRetries());
         }
         else
-            $this->addToQueue('algoliasearch/observer', 'removeProducts', array('store_id' => $storeId, 'product_ids' => $product_ids), 3);
+            $this->addToQueue('algoliasearch/observer', 'removeProducts', array('store_id' => $storeId, 'product_ids' => $product_ids), $this->config->getQueueMaxRetries());
 
         return $this;
     }
@@ -67,10 +69,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         if (is_array($category_ids) && count($category_ids) > $by_page)
         {
             foreach (array_chunk($category_ids, $by_page) as $chunk)
-                $this->addToQueue('algoliasearch/observer', 'removeCategories', array('store_id' => $storeId, 'category_ids' => $chunk), 3);
+                $this->addToQueue('algoliasearch/observer', 'removeCategories', array('store_id' => $storeId, 'category_ids' => $chunk), $this->config->getQueueMaxRetries());
         }
         else
-            $this->addToQueue('algoliasearch/observer', 'removeCategories', array('store_id' => $storeId, 'category_ids' => $category_ids), 3);
+            $this->addToQueue('algoliasearch/observer', 'removeCategories', array('store_id' => $storeId, 'category_ids' => $category_ids), $this->config->getQueueMaxRetries());
 
         return $this;
     }
@@ -89,7 +91,33 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $this;
     }
 
-    public function rebuildAll()
+    public function rebuildPages()
+    {
+        foreach (Mage::app()->getStores() as $store)
+        {
+            $this->addToQueue('algoliasearch/observer', 'rebuildPageIndex', array('store_id' => $store->getId()), $this->config->getQueueMaxRetries());
+        }
+    }
+
+    public function rebuildSuggestions()
+    {
+        foreach (Mage::app()->getStores() as $store)
+        {
+            $size       = $this->suggestion_helper->getSuggestionCollectionQuery($store->getId())->getSize();
+            $by_page    = $this->config->getNumberOfElementByPage();
+            $nb_page    = ceil($size / $by_page);
+
+            for ($i = 1; $i <= $nb_page; $i++)
+            {
+                $data = array('store_id' => $store->getId(), 'page_size' => $by_page, 'page' => $i);
+                $this->addToQueue('algoliasearch/observer', 'rebuildSuggestionIndex', $data, $this->config->getQueueMaxRetries());
+            }
+        }
+
+        return $this;
+    }
+
+    public function rebuildProductsAndCategories()
     {
         Mage::getSingleton('algoliasearch/observer')->saveSettings();
 
@@ -99,13 +127,11 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             {
                 $this->_rebuildProductIndex($store->getId(), array());
 
-                $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $store->getId(), 'category_ids' =>  array()), 3);
-
-                $this->addToQueue('algoliasearch/observer', 'rebuildPageIndex', array('store_id' => $store->getId()), 3);
+                $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $store->getId(), 'category_ids' =>  array()), $this->config->getQueueMaxRetries());
             }
             else
             {
-                $this->addToQueue('algoliasearch/observer', 'deleteStoreIndices', array('store_id' => $store->getId()), 3);
+                $this->addToQueue('algoliasearch/observer', 'deleteProductAndCategoriesStoreIndices', array('store_id' => $store->getId()), $this->config->getQueueMaxRetries());
             }
         }
     }
@@ -141,11 +167,11 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             for ($i = 1; $i <= $nb_page; $i++)
             {
                 $data = array('store_id' => $storeId, 'category_ids' => $categoryIds, 'page_size' => $by_page, 'page' => $i);
-                $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', $data, 3);
+                $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', $data, $this->config->getQueueMaxRetries());
             }
         }
         else
-            $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $storeId, 'category_ids' => $categoryIds), 3);
+            $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $storeId, 'category_ids' => $categoryIds), $this->config->getQueueMaxRetries());
 
 
         return $this;
@@ -162,11 +188,11 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             for ($i = 1; $i <= $nb_page; $i++)
             {
                 $data = array('store_id' => $storeId, 'product_ids' =>  $productIds, 'page_size' => $by_page, 'page' => $i);
-                $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', $data, 3);
+                $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', $data, $this->config->getQueueMaxRetries());
             }
         }
         else
-            $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', array('store_id' => $storeId, 'product_ids' =>  $productIds), 3);
+            $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', array('store_id' => $storeId, 'product_ids' =>  $productIds), $this->config->getQueueMaxRetries());
 
         return $this;
     }
