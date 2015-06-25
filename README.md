@@ -21,7 +21,9 @@ You can check out our live demo:
 
 * [Autocomplete page](https://magento.algolia.com)
 
-* [Instant search results page](https://magento.algolia.com/catalogsearch/result/?q=madison&instant=1#q=ma&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22magento_default_products%22)
+* [Instant search results page](https://magento.algolia.com/catalogsearch/result/?q=mad&instant=1#q=ma&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22magento_default_products%22)
+
+![demo](doc/algolia-search-experience.gif)
 
 Installation
 --------------
