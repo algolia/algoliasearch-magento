@@ -4,6 +4,7 @@
 
 - NEW: Redesign the UX if both the autocompletion menu and the instant results page are enabled
 - NEW: Add the indexing of suggestions + implement an Amazon-like suggestions engine
+- NEW: Handling of special price
 - UPDATED: Indexing of pages is now in a separate indexer
 - UPDATED: Clean the underlying JS code
 
