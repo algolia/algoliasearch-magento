@@ -10,7 +10,11 @@ RUN apt-get install -y mysql-client-5.5 mysql-server
 RUN apt-get install -y libxml2-dev
 RUN docker-php-ext-install soap
 RUN docker-php-ext-install mysqli
-RUN apt-get install -y vim emacs-nox git-core wget
+RUN apt-get install -y vim emacs-nox git-core wget zsh
+
+RUN chsh -s /bin/zsh
+RUN sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true
+COPY bin/.zshrc /root/.zshrc
 
 RUN apt-get -y install php5-mysql
 COPY bin/php.ini /usr/local/etc/php/php.ini
