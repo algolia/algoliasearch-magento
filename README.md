@@ -152,7 +152,7 @@ Edit ```/design/frontend/base/default/template/algoliasearch/topsearch.phtml```.
 
 Edit ```/skin/frontend/base/default/algoliasearch/algoliasearch.css```.
 
-Development
+Contribute to the Extension
 ------------
 
 ### 1. Docker (recommended)
