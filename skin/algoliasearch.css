@@ -53,6 +53,10 @@
     text-decoration: line-through;
     font-size: 12px;
 }
+.tt-dropdown-menu .info-without-thumb .category-tag
+{
+    color: #ffb54d;
+}
 
 .twitter-typeahead {
     width: 100%;
@@ -124,6 +128,10 @@
 .tt-dropdown-menu .algoliasearch-autocomplete-hit .info .algoliasearch-autocomplete-category {
     font-size: 0.8em;
     color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
+    text-overflow: ellipsis;
 }
 
 .tt-dropdown-menu .footer_algolia {

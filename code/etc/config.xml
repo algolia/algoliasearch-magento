@@ -72,14 +72,6 @@
                     </algolia_search>
                 </observers>
             </admin_system_config_changed_section_algoliasearch>
-            <core_block_abstract_prepare_layout_before>
-                <observers>
-                    <algolia_search>
-                        <class>algoliasearch/observer</class>
-                        <method>prepareLayoutBefore</method>
-                    </algolia_search>
-                </observers>
-            </core_block_abstract_prepare_layout_before>
             <controller_action_layout_generate_blocks_before>
                 <observers>
                     <algolia_search>
@@ -101,6 +93,12 @@
                 <algolia_search_indexer>
                     <model>algoliasearch/indexer_algolia</model>
                 </algolia_search_indexer>
+                <algolia_search_indexer_pages>
+                    <model>algoliasearch/indexer_algoliapages</model>
+                </algolia_search_indexer_pages>
+                <search_indexer_suggest>
+                    <model>algoliasearch/indexer_algoliasuggestions</model>
+                </search_indexer_suggest>
             </indexer>
         </index>
     </global>
@@ -141,6 +139,11 @@
                 <category_additional_attributes2>a:7:{s:18:"_1427960339954_954";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960354437_437";a:4:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961004989_989";a:4:{s:9:"attribute";s:11:"description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961205511_511";a:4:{s:9:"attribute";s:10:"meta_title";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961216134_134";a:4:{s:9:"attribute";s:13:"meta_keywords";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961216916_916";a:4:{s:9:"attribute";s:16:"meta_description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427977778338_338";a:4:{s:9:"attribute";s:13:"product_count";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}}</category_additional_attributes2>
                 <custom_ranking_category_attributes>a:1:{s:18:"_1427961035192_192";a:2:{s:9:"attribute";s:13:"product_count";s:5:"order";s:4:"desc";}}</custom_ranking_category_attributes>
             </categories>
+            <suggestions>
+                <number_query_suggestions>0</number_query_suggestions>
+                <min_popularity>4</min_popularity>
+                <min_number_of_results>2</min_number_of_results>
+            </suggestions>
             <relevance>
                 <remove_words_if_no_result>None</remove_words_if_no_result>
             </relevance>
