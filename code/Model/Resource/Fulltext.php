@@ -60,11 +60,6 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
         return $this;
     }
 
-    public function getSearchableAttributes($backendType = NULL)
-    {
-        return $this->_getSearchableAttributes($backendType);
-    }
-
     public function getAttributeValue($attributeCode, $value, $storeId, $entity = 'catalog_category')
     {
         return $value;

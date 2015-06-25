@@ -10,7 +10,11 @@ RUN apt-get install -y mysql-client-5.5 mysql-server
 RUN apt-get install -y libxml2-dev
 RUN docker-php-ext-install soap
 RUN docker-php-ext-install mysqli
-RUN apt-get install -y vim emacs-nox git-core wget
+RUN apt-get install -y vim emacs-nox git-core wget zsh
+
+RUN chsh -s /bin/zsh
+RUN sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true
+COPY bin/.zshrc /root/.zshrc
 
 RUN apt-get -y install php5-mysql
 COPY bin/php.ini /usr/local/etc/php/php.ini
@@ -48,7 +52,8 @@ RUN chmod +x /usr/local/bin/start.sh
 #path admin template to have credentials filled && auto login
 RUN sed -i 's/name="login\[username\]" value=""/name="login[username]" value="admin"/g' /var/www/htdocs/app/design/adminhtml/default/default/template/login.phtml && \
 	sed -i 's/name="login\[password\]" class="required-entry input-text" value=""/name="login[password]" class="required-entry input-text" value="magentorocks1"/g' /var/www/htdocs/app/design/adminhtml/default/default/template/login.phtml && \
-	sed -i 's/<\/script>/Event.observe(window, "load", function() {$("loginForm").submit();});<\/script>/g' /var/www/htdocs/app/design/adminhtml/default/default/template/login.phtml
+	sed -i 's/<\/script>/Event.observe(window, "load", function() {$("loginForm").submit();});<\/script>/g' /var/www/htdocs/app/design/adminhtml/default/default/template/login.phtml && \
+	sed -i "s/#ini_set('display_errors', 1);/ini_set('display_errors', 1);error_reporting(E_ALL);Mage::setIsDeveloperMode(true);/g" /var/www/htdocs/index.php
 
 # GO
 EXPOSE 80

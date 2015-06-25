@@ -11,11 +11,12 @@ class Algolia_Algoliasearch_Model_Observer
 
     public function __construct()
     {
-        $this->config           = Mage::helper('algoliasearch/config');
-        $this->product_helper   = Mage::helper('algoliasearch/entity_producthelper');
-        $this->category_helper  = Mage::helper('algoliasearch/entity_categoryhelper');
+        $this->config               = Mage::helper('algoliasearch/config');
+        $this->product_helper       = Mage::helper('algoliasearch/entity_producthelper');
+        $this->category_helper      = Mage::helper('algoliasearch/entity_categoryhelper');
+        $this->suggestion_helper    = Mage::helper('algoliasearch/entity_suggestionhelper');
 
-        $this->helper           = Mage::helper('algoliasearch');
+        $this->helper               = Mage::helper('algoliasearch');
     }
 
     /**
@@ -44,11 +45,25 @@ class Algolia_Algoliasearch_Model_Observer
         return $this;
     }
 
-    public function deleteStoreIndices(Varien_Object $event)
+    public function deleteProductsAndCategoriesStoreIndices(Varien_Object $event)
     {
         $storeId = $event->getStoreId();
 
-        $this->helper->deleteStoreIndices($storeId);
+        $this->helper->deleteProductsAndCategoriesStoreIndices($storeId);
+    }
+
+    public function deletePagesStoreIndices(Varien_Object $event)
+    {
+        $storeId = $event->getStoreId();
+
+        $this->helper->deletePagesStoreIndices($storeId);
+    }
+
+    public function deleteSuggestionsStoreIndices(Varien_Object $event)
+    {
+        $storeId = $event->getStoreId();
+
+        $this->helper->deleteSuggestionsStoreIndices($storeId);
     }
 
     public function removeProducts(Varien_Object $event)
@@ -71,7 +86,35 @@ class Algolia_Algoliasearch_Model_Observer
     {
         $storeId = $event->getStoreId();
 
-        $this->helper->rebuiltStorePageIndex($storeId);
+        $this->helper->rebuildStorePageIndex($storeId);
+    }
+
+    public function rebuildSuggestionIndex(Varien_Object $event)
+    {
+        $storeId = $event->getStoreId();
+
+        $page = $event->getPage();
+        $pageSize = $event->getPageSize();
+
+        if (is_null($storeId) && ! empty($categoryIds))
+        {
+            foreach (Mage::app()->getStores() as $storeId => $store)
+            {
+                if ( ! $store->getIsActive())
+                    continue;
+
+                $this->helper->rebuildStoreSuggestionIndex($storeId, $categoryIds);
+            }
+        }
+        else
+        {
+            if (! empty($page) && ! empty($pageSize))
+                $this->helper->rebuildStoreSuggestionIndexPage($storeId, $this->suggestion_helper->getSuggestionCollectionQuery($storeId), $page, $pageSize);
+            else
+                $this->helper->rebuildStoreSuggestionIndex($storeId);
+        }
+
+        return $this;
     }
 
     public function rebuildCategoryIndex(Varien_Object $event)

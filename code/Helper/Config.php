@@ -27,6 +27,10 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const XML_PATH_EXCLUDED_PAGES                   = 'algoliasearch/pages/excluded_pages';
 
+    const XML_PATH_NUMBER_QUERY_SUGGESTIONS         = 'algoliasearch/suggestions/number_query_suggestions';
+    const XML_PATH_MIN_POPULARITY                   = 'algoliasearch/suggestions/min_popularity';
+    const XML_PATH_MIN_NUMBER_OF_RESULTS            = 'algoliasearch/suggestions/min_number_of_results';
+
     const XML_PATH_REMOVE_IF_NO_RESULT              = 'algoliasearch/relevance/remove_words_if_no_result';
 
     const XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS    = 'algoliasearch/ui/number_product_suggestions';
@@ -41,6 +45,21 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IS_ACTIVE                        = 'algoliasearch/queue/active';
     const XML_PATH_NUMBER_OF_ELEMENT_BY_PAGE        = 'algoliasearch/queue/number_of_element_by_page';
     const XML_PATH_NUMBER_OF_JOB_TO_RUN             = 'algoliasearch/queue/number_of_job_to_run';
+
+    public function getNumberOfQuerySuggestions($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_NUMBER_QUERY_SUGGESTIONS, $storeId);
+    }
+
+    public function getMinPopularity($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_MIN_POPULARITY, $storeId);
+    }
+
+    public function getMinNumberOfResults($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_MIN_NUMBER_OF_RESULTS, $storeId);
+    }
 
     public function isAddToCartEnable($storeId = null)
     {
