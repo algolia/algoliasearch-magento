@@ -27,7 +27,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const XML_PATH_EXCLUDED_PAGES                   = 'algoliasearch/pages/excluded_pages';
 
-    const XML_PATH_NUMBER_QUERY_SUGGESTIONS         = 'algoliasearch/suggestions/number_query_suggestions';
     const XML_PATH_MIN_POPULARITY                   = 'algoliasearch/suggestions/min_popularity';
     const XML_PATH_MIN_NUMBER_OF_RESULTS            = 'algoliasearch/suggestions/min_number_of_results';
 
@@ -36,8 +35,9 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS    = 'algoliasearch/ui/number_product_suggestions';
     const XML_PATH_NUMBER_OF_PRODUCT_RESULTS        = 'algoliasearch/ui/number_product_results';
     const XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS   = 'algoliasearch/ui/number_category_suggestions';
-    const XML_PATH_MAX_VALUES_PER_FACET             = 'algoliasearch/ui/max_values_per_facet';
     const XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS       = 'algoliasearch/ui/number_page_suggestions';
+    const XML_PATH_NUMBER_QUERY_SUGGESTIONS         = 'algoliasearch/ui/number_query_suggestions';
+    const XML_PATH_MAX_VALUES_PER_FACET             = 'algoliasearch/ui/max_values_per_facet';
     const XML_PATH_REMOVE_BRANDING                  = 'algoliasearch/ui/remove_branding';
     const XML_ADD_TO_CART_ENABLE                    = 'algoliasearch/ui/add_to_cart_enable';
 
