@@ -2,6 +2,7 @@
 <layout>
     <algolia_search_handle>
         <reference name="head">
+            <action method="addCss"><stylesheet>algoliasearch/bundle.css</stylesheet></action>
             <action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>
             <action method="addJs"><script>algoliasearch/bundle.min.js</script></action>
         </reference>

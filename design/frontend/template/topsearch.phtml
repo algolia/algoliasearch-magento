@@ -974,7 +974,10 @@ $class = $isSearchPage ? 'search-page' : '';
             }
 
             $(algoliaConfig.autocomplete.selector).each(function (i) {
-                $(this).typeahead({hint: false}, hogan_objs);
+                var tt = $(this)
+                    .typeahead({hint: false}, hogan_objs)
+                    .parent()
+                    .attr('id', 'algolia-autocomplete-tt');
 
                 $(this).on('typeahead:selected', function (e, item) {
                     autocomplete = false;
