@@ -32,7 +32,9 @@ To setup this module, you'll need an Algolia account. Just sign up [here](http:/
   2. Download the packaged Community Extension from [the magento-connect store](http://www.magentocommerce.com/magento-connect/algolia-search-extension.html)
   3. Install it on your Magento instance.
   4. Configure your credentials from the **System** > **Configuration** > **Catalog** > **Algolia Search** administration panel.
-  5. Force the re-indexing of all your products, categories & pages with the **System > Index Management > Algolia Search** index.
+  5. Force the re-indexing of all your products, categories with the **System > Index Management > Algolia Search** index.
+  6. Force the re-indexing of all your pages with the **System > Index Management > Algolia Search Pages** index.
+  7. Force the re-indexing of all your suggestions with the **System > Index Management > Algolia Search Suggestions** index.
 
 **Note:** If you experience a 404 issue while accessing the *Algolia Search* administration panel, can follow this [procedure](http://www.fanplayr.com/1415/magento-404-error-page-not-found-in-configuration/).
 
@@ -55,6 +57,15 @@ If you choose to use the instant search, when you search for something fulltext 
 
 Indexing
 ---------------
+
+#### Indexers
+
+- Algolia Search: It indexes every products and categories and **is also responsible for updating records** when you update/delete products and categories.
+
+- Algolia Search Pages: It indexes every pages **but do not handle automatic updates**. You need to do it manually from time to time
+
+- Algolia Search Suggestions: It indexes every suggestions **but do not handle automatic updates**. You need to do it manually from time to time
+
 
 #### Initial import
 

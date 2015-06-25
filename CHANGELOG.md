@@ -1,5 +1,13 @@
 ## Change Log
 
+### 1.3.0
+
+- Rethink UI/UX when both autocomplete and instant are enabled
+- Clean Indexing flow
+- Indexing of pages is now in a separate Indexer
+- Add Indexing of suggestions + implement a amazon like UX for suggestion
+- Clean js code of the algolia implementation
+
 ### 1.2.3
 - add option to disable branding
 - fix issue with autocomplete templating
