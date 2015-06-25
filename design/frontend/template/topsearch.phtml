@@ -948,8 +948,6 @@ $class = $isSearchPage ? 'search-page' : '';
                                         hit.displayKey = hit.path;
                                     }
 
-                                    hit.query = helper.state.query;
-
                                     hit.displayKey = hit.displayKey || hit.name;
 
                                     return algoliaConfig.autocomplete.templates[indices[i]].render(hit);
