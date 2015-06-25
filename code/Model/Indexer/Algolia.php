@@ -57,7 +57,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
     public function getDescription()
     {
-        return Mage::helper('algoliasearch')->__('Rebuild product, category and page indices.
+        return Mage::helper('algoliasearch')->__('Rebuild product, category indices.
         Please enable the queueing system to do it asynchronously (CRON) if you have a lot of products in System > Configuration > Algolia Search > Queue configuration');
     }
 
