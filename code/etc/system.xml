@@ -2,7 +2,23 @@
 <config>
     <sections>
         <algoliasearch translate="label" module="algoliasearch">
-            <label>Algolia Search</label>
+            <label>
+                <![CDATA[
+                Algolia Search
+                <style>
+                    .algoliasearch-admin-menu span {
+                        padding-left: 38px !important;
+                        background: url("/skin/frontend/base/default/algoliasearch/algolia-admin-menu.png") 20px 4px no-repeat !important;
+                        border-bottom: 1px dotted #636363;
+                    }
+                    .algoliasearch-admin-menu.active span {
+                        background: white url("/skin/frontend/base/default/algoliasearch/algolia-admin-menu.png") 20px 4px no-repeat !important;
+                        border-bottom: none;
+                    }
+                </style>
+                ]]>
+            </label>
+            <class>algoliasearch-admin-menu</class>
             <tab>catalog</tab>
             <frontend_type>text</frontend_type>
             <sort_order>52</sort_order>
