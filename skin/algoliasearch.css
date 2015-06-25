@@ -99,7 +99,7 @@
 }
 
 .tt-dropdown-menu .tt-cursor {
-    background-color: #FAFAFA;
+    background-color: #c1d8e6;
 }
 
 .tt-dropdown-menu .algoliasearch-autocomplete-hit em {
@@ -233,6 +233,10 @@
     font-size: 10px;
 }
 
+#algolia_instant_selector .facets {
+  padding-top: 50px;
+}
+
 #algolia_instant_selector .facet {
     margin-bottom: 30px;
     background-color: white;
@@ -244,9 +248,7 @@
 
 #algolia_instant_selector .facet .name {
     padding: 6px 0;
-    border: 1px solid #CCC;
-    border-left: none;
-    border-right: none;
+    border-bottom: 1px solid #CCC;
     color: #54A5CD;
     text-align: center;
     text-transform: uppercase;
