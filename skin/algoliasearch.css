@@ -55,7 +55,8 @@
 }
 .tt-dropdown-menu .info-without-thumb .category-tag
 {
-    color: #ffb54d;
+    font-weight: 600;
+    color: black;
 }
 
 .twitter-typeahead {
