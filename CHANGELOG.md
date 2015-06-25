@@ -2,24 +2,23 @@
 
 ### 1.3.0
 
-- Rethink UI/UX when both autocomplete and instant are enabled
-- Clean Indexing flow
-- Indexing of pages is now in a separate Indexer
-- Add Indexing of suggestions + implement a amazon like UX for suggestion
-- Clean js code of the algolia implementation
+- NEW: Redesign the UX if both the autocompletion menu and the instant results page are enabled
+- NEW: Add the indexing of suggestions + implement an Amazon-like suggestions engine
+- UPDATED: Indexing of pages is now in a separate indexer
+- UPDATED: Clean the underlying JS code
 
 ### 1.2.3
-- add option to disable branding
-- fix issue with autocomplete templating
+- NEW: add option to disable branding
+- UPDATED: fix issue with autocomplete templating
 
 ### 1.2.2
-- Package & isolate all JS code + dependencies
-- Default slider style improvements
-- Display the category leaves only in the auto-completion menu
+- NEW: Package & isolate all JS code + dependencies
+- UPDATED: Default slider style improvements
+- UPDATED: Display the category leaves only in the auto-completion menu
 
 ### 1.2.1
-- Fix a JavaScript bug on Firefox
-- Fix a JSON encoding issue with categories
+- UPDATED: Fix a JavaScript bug on Firefox
+- UPDATED: Fix a JSON encoding issue with categories
 
 ### 1.2.0
 - NEW: Add an instant search implementation
