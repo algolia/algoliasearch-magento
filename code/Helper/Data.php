@@ -233,7 +233,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $suggestion_obj = $this->suggestion_helper->getObject($suggestion);
 
-            if ($suggestion_obj['popularity'] >= $this->config->getMinPopularity() || $suggestion_obj['number_of_results'] >= $this->config->getMinNumberOfResults())
+            if ($suggestion_obj['popularity'] >= $this->config->getMinPopularity() && $suggestion_obj['number_of_results'] >= $this->config->getMinNumberOfResults())
                 array_push($indexData, $suggestion_obj);
         }
 
