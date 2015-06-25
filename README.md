@@ -58,16 +58,15 @@ If you choose to use the instant search, when you search for something fulltext 
 Indexing
 ---------------
 
-#### Indexers
+### Indexers
 
-- Algolia Search: It indexes every products and categories and **is also responsible for updating records** when you update/delete products and categories.
+- **Algolia Search**: Index every products and categories and **is also responsible for updating records** when you update/delete products and categories.
 
-- Algolia Search Pages: It indexes every pages **but do not handle automatic updates**. You need to do it manually from time to time
+- **Algolia Search Pages**: Index every pages **but do not handle automatic updates**. You need to do it manually from time to time.
 
-- Algolia Search Suggestions: It indexes every suggestions **but do not handle automatic updates**. You need to do it manually from time to time
+- **Algolia Search Suggestions**: Index every suggestions **but do not handle automatic updates**. You need to do it manually from time to time.
 
-
-#### Initial import
+### Initial import
 
 Once configured, do not forget to trigger the re-indexing in **System > Index Management > Algolia Search**:
 
