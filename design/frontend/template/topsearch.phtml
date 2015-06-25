@@ -585,6 +585,11 @@ $class = $isSearchPage ? 'search-page' : '';
                 helper.search();
 
             }
+            else
+            {
+                helper.setQuery('');
+                helper.search();
+            }
         };
 
         var getFacets = function (content) {
