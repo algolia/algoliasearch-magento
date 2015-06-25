@@ -579,17 +579,9 @@ $class = $isSearchPage ? 'search-page' : '';
                     for (var operator in numericsRefinements[key])
                         helper.addNumericRefinement(key, operator, numericsRefinements[key][operator]);
 
-                helper.setCurrentPage(page);
-                helper.setIndex(indexName);
-
-                helper.search();
-
+                helper.setCurrentPage(page).setIndex(indexName);
             }
-            else
-            {
-                helper.setQuery('');
-                helper.search();
-            }
+            helper.search();
         };
 
         var getFacets = function (content) {
