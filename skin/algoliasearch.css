@@ -34,11 +34,14 @@
     text-overflow: ellipsis;
 }
 
-#search::-ms-clear
-{
+#search::-ms-clear {
     display: none;
     width: 0;
     height: 0;
+}
+
+.text-muted {
+    color: #666;
 }
 
 /******************
@@ -47,16 +50,13 @@
 **
 ******************/
 
-.tt-dropdown-menu .before_special
-{
+.tt-dropdown-menu .before_special {
     color: #aaaaaa;
     text-decoration: line-through;
     font-size: 12px;
 }
-.tt-dropdown-menu .info-without-thumb .category-tag
-{
-    font-weight: 600;
-    color: black;
+.tt-dropdown-menu .info-without-thumb .category-tag {
+    color: #b34c24;
 }
 
 .twitter-typeahead {
