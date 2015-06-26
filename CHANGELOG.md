@@ -2,7 +2,8 @@
 
 ### 1.3.1
 
-- UPDATED: Add out of stock records
+- NEW: Add out of stock records
+- Fix issue with reloading
 
 ### 1.3.0
 
