@@ -579,7 +579,7 @@ $class = $isSearchPage ? 'search-page' : '';
                     for (var operator in numericsRefinements[key])
                         helper.addNumericRefinement(key, operator, numericsRefinements[key][operator]);
 
-                helper.setCurrentPage(page).setIndex(indexName);
+                helper.setIndex(indexName).setCurrentPage(page);
             }
             helper.search();
         };
@@ -1006,8 +1006,6 @@ $class = $isSearchPage ? 'search-page' : '';
                 throw '[Algolia] You can\'t have a search input matching "' + algoliaConfig.autocomplete.selector +
                 '" inside you instant selector "' + algoliaConfig.instant.selector + '"';
 
-            var old_content         = $(algoliaConfig.instant.selector).html();
-
             var wrapperTemplate     = algoliaBundle.Hogan.compile($('#instant_wrapper_template').html());
 
             var initialized         = false;
@@ -1264,15 +1262,11 @@ $class = $isSearchPage ? 'search-page' : '';
             $('body').on('keyup', '#instant-search-bar', function (e) {
                 e.preventDefault();
 
-                if (algoliaConfig.instant.enabled === false)
-                    return;
-
                 helper.setQuery($(this).val());
 
                 /* Uncomment to clear refinements on keyup */
 
                 //helper.clearRefinements();
-
 
                 performQueries(false);
 
