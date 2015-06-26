@@ -1267,8 +1267,6 @@ $class = $isSearchPage ? 'search-page' : '';
                 if (algoliaConfig.instant.enabled === false)
                     return;
 
-                var $this = $(this);
-
                 helper.setQuery($(this).val());
 
                 /* Uncomment to clear refinements on keyup */
