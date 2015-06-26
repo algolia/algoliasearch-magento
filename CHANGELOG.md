@@ -1,5 +1,9 @@
 ## Change Log
 
+### 1.3.1
+
+- UPDATED: Add out of stock records
+
 ### 1.3.0
 
 - NEW: Redesign the UX if both the autocompletion menu and the instant results page are enabled
