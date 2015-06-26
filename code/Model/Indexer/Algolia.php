@@ -93,7 +93,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
     {
         switch ($event->getType()) {
             case Mage_Index_Model_Event::TYPE_SAVE:
-
                 /** @var $product Mage_Catalog_Model_Product */
                 $product = $event->getDataObject();
                 $delete = FALSE;

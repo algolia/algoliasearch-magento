@@ -310,6 +310,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         }
 
+        if (false === isset($defaultData['in_stock']))
+        {
+            $stockItem = $product->getStockItem();
+
+            $customData['in_stock'] = (int) $stockItem->getIsInStock();
+        }
+
         // skip default calculation if we have provided these attributes via the observer in $defaultData
         if (false === isset($defaultData['ordered_qty']) && false === isset($defaultData['stock_qty']))
         {
