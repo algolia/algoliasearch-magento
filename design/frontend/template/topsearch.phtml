@@ -1271,18 +1271,6 @@ $class = $isSearchPage ? 'search-page' : '';
 
                 helper.setQuery($(this).val());
 
-                /** If escape **/
-                if (e.keyCode === 27) {
-
-                    clearTimeout(history_timeout);
-
-                    location.replace('#');
-
-                    $(algoliaConfig.instant.selector).html(old_content);
-
-                    return;
-                }
-
                 /* Uncomment to clear refinements on keyup */
 
                 //helper.clearRefinements();
