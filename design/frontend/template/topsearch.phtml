@@ -568,10 +568,13 @@ $class = $isSearchPage ? 'search-page' : '';
 
                 helper.clearRefinements();
 
+
                 /** Set refinements from url data **/
                 for (var i = 0; i < refinements.length; ++i) {
                     for (var refine in refinements[i]) {
-                        helper.toggleRefine(refine, refinements[i][refine]);
+                        for (var j = 0; j < refinements[i][refine].length; j++) {
+                            helper.toggleRefine(refine, refinements[i][refine][j]);
+                        }
                     }
                 }
 
@@ -580,6 +583,7 @@ $class = $isSearchPage ? 'search-page' : '';
                         helper.addNumericRefinement(key, operator, numericsRefinements[key][operator]);
 
                 helper.setIndex(indexName).setCurrentPage(page);
+
             }
             helper.search();
         };
