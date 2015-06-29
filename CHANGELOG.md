@@ -1,5 +1,9 @@
 ## Change Log
 
+### 1.3.4
+
+- Fix url redirection
+
 ### 1.3.3
 
 - Fix some attributes retrival
