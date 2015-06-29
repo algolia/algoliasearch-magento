@@ -1,5 +1,9 @@
 ## Change Log
 
+### 1.3.3
+
+- Fix some attributes retrival
+
 ### 1.3.2
 
 - NEW: Add out of stock records
