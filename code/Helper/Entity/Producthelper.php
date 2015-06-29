@@ -366,11 +366,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         foreach ($additionalAttributes as $attribute)
         {
-            $value = $product->hasData($this->_dataPrefix . $attribute['attribute'])
-                ? $product->getData($this->_dataPrefix . $attribute['attribute'])
-                : $product->getData($attribute['attribute']);
+            $value = $product->getData($attribute['attribute']);
 
-            $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attribute['attribute'], $value, $product->getStoreId(), Mage_Catalog_Model_Product::ENTITY);
+            $attribute_ressource = $product->getResource()->getAttribute($attribute['attribute']);
+
+            if ($attribute_ressource)
+            {
+                $value = $attribute_ressource->getFrontend()->getValue($product);
+            }
 
             if ($value)
                 $customData[$attribute['attribute']] = $value;

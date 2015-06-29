@@ -152,12 +152,17 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         if ( ! empty($image_url)) {
             $data['image_url'] = $image_url;
         }
-        foreach ($this->config->getCategoryAdditionalAttributes($storeId) as $attribute) {
-            $value = $category->hasData($this->_dataPrefix.$attribute['attribute'])
-                ? $category->getData($this->_dataPrefix.$attribute['attribute'])
-                : $category->getData($attribute['attribute']);
 
-            $value = Mage::getResourceSingleton('algoliasearch/fulltext')->getAttributeValue($attribute['attribute'], $value, $storeId, Mage_Catalog_Model_Category::ENTITY);
+        foreach ($this->config->getCategoryAdditionalAttributes($storeId) as $attribute)
+        {
+            $value = $category->getData($attribute['attribute']);
+
+            $attribute_ressource = $category->getResource()->getAttribute($attribute['attribute']);
+
+            if ($attribute_ressource)
+            {
+                $value = $attribute_ressource->getFrontend()->getValue($category);
+            }
 
             if (isset($data[$attribute['attribute']]))
                 $value = $data[$attribute['attribute']];
