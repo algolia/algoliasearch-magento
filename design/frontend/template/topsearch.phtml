@@ -568,6 +568,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
                 helper.clearRefinements();
 
+                console.log(refinements);
 
                 /** Set refinements from url data **/
                 for (var i = 0; i < refinements.length; ++i) {
@@ -856,7 +857,7 @@ $class = $isSearchPage ? 'search-page' : '';
                                         {
                                             var obj = $.extend(true, {}, content.hits[0]);
                                             obj.category = key;
-                                            obj.url = '<?php echo Mage::getBaseUrl(); ?>?category=1#q=' + obj.query + '&page=0&refinements=%5B%7B%22categories%22%3A%22' + obj.category + '%22%7D%5D&numerics_refinements=%7B%7D&index_name=%22<?php echo $product_helper->getBaseIndexName(); ?>_products%22';
+                                            obj.url = '<?php echo Mage::getBaseUrl(); ?>?category=1#q=' + obj.query + '&page=0&refinements=%5B%7B%22categories%22%3A%5B%22' + obj.category + '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22<?php echo $product_helper->getBaseIndexName(); ?>_products%22';
                                             hits.push(obj);
                                         }
                                     }
