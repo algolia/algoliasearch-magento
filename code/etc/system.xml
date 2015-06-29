@@ -43,17 +43,8 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Your Application ID</comment>
+                            <comment>Your Application ID, which can be found in the Credentials section of your Algolia account.</comment>
                         </application_id>
-                        <search_only_api_key translate="label">
-                            <label>Search-only (public) API key</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>A search-only API key (will be included in the public JavaScript code)</comment>
-                        </search_only_api_key>
                         <api_key translate="label">
                             <label>Admin API key</label>
                             <frontend_type>password</frontend_type>
@@ -63,6 +54,15 @@
                             <show_in_store>1</show_in_store>
                             <comment>Your administration API key (kept private)</comment>
                         </api_key>
+                        <search_only_api_key translate="label">
+                            <label>Search-only (public) API key</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>A search-only API key (will be included in the public JavaScript code)</comment>
+                        </search_only_api_key>
                         <index_prefix translate="label">
                             <label>Index Name Prefix</label>
                             <frontend_type>text</frontend_type>
@@ -70,7 +70,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>If configured, all indices created by the extension will be prefixed by this value.</comment>
+                            <comment>If configured, all indices created by the Algolia search extension will be prefixed by this value.</comment>
                         </index_prefix>
                         <is_popup_enabled translate="label comment">
                             <label>Enable Auto-completion Menu</label>
@@ -82,7 +82,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                The flag indicates whether the search-as-you-type auto-completion menu is enabled. It requires your theme to expose a <code>top.search</code> template.
+                                If set to Yes, the seach box will display a search-as-you-type drop-down menu. It requires your theme to expose a <code>top.search</code> template.
                                 ]]>
                             </comment>
                         </is_popup_enabled>
@@ -96,7 +96,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                The flag indicates whether the search-as-you-type search results page is enabled. It requires your theme to expose a <code>top.search</code> template.
+                                If set to Yes, the products inside the results pages will be searchable with the as-you-type display of the refined results. It requires your theme to expose a <code>top.search</code> template.
                                 ]]>
                             </comment>
                         </is_instant_enabled>
@@ -128,7 +128,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the facets you want to display on your search results page sidebar.</comment>
+                            <comment>Configure here the filtering options you want to display on your search results page sidebar. Choose Disjunctive to allow the selection of different value of a facet (e.g., hotels with 4 OR 5 stars). Choose Conjunctive to allow the selection of only one value of a facet (e.g., only "Size M"). (</comment>
                         </facets>
                         <sorts>
                             <label>Sorts</label>
@@ -138,7 +138,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the different sort orders you want to enable.</comment>
+                            <comment>Configure here the different sorting options you want to offer.</comment>
                         </sorts>
                         <replace_categories translate="label comment">
                             <label>Replace categories page</label>
@@ -148,12 +148,12 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here whether the category pages are replaced by the instant-search results page.</comment>
+                            <comment>Choose here if you want the default category pages to be replaced by the instant-search results page when a category is selected either in the menu of categories or in the drop-down menu.</comment>
                         </replace_categories>
                     </fields>
                 </instant>
                 <products translate="label">
-                    <label>Products Configuration</label>
+                    <label>Product Search Configuration</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>30</sort_order>
                     <show_in_default>1</show_in_default>
@@ -171,7 +171,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the attributes you want to include in your Algolia records. The order of this setting matters as those at the top of the list are considered more important.<br />
+                                Choose here the attributes your users can search in and the ones you want to display in the search results. The order of these attributes matters: the higher in the list, the more important to rank the results. A match of a query in the first attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matched word(s) inside the attribute to matter. A match at the beginning of an attribute will be considered more important: "iPhone 5s" will be ranked before "case for iPhone" for the query "iPhone".<br />
                                 <span style="color: #D83900">&#9888;</span> <code>Retrievable</code> need to be set to <code>Yes</code> in order to be displayed.
                                 ]]>
                             </comment>
@@ -186,7 +186,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the attributes used to reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
+                                Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
                                 <span style="color: #D83900">&#9888;</span> All attributes used here must be included in the Attributes configuration.
                                 ]]>
                             </comment>
@@ -194,7 +194,7 @@
                     </fields>
                 </products>
                 <categories translate="label">
-                    <label>Categories Configuration</label>
+                    <label>Category Search Configuration</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>40</sort_order>
                     <show_in_default>1</show_in_default>
@@ -210,7 +210,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the attributes you want to include in your Algolia records. The order of this setting matters as those at the top of the list are considered more important.</comment>
+                            <comment>Configure here the attributes your users can search in. The order of these attributes matters: the higher in the list, the more important to rank the results.</comment>
                         </category_additional_attributes2>
                         <custom_ranking_category_attributes translate="label comment">
                             <label>Ranking</label>
@@ -222,7 +222,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the attributes used to reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
+                                Configure here the attributes that reflect the popularity of your categories (number of products, number total sales of the category, ...).<br />
                                 <span style="color: #D83900">&#9888;</span> All attributes used here must be included in the Attributes configuration.
                                 ]]>
                             </comment>
@@ -230,7 +230,7 @@
                     </fields>
                 </categories>
                 <pages>
-                    <label>Pages Configuration</label>
+                    <label>Page Search Configuration</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>45</sort_order>
                     <show_in_default>1</show_in_default>
@@ -251,7 +251,7 @@
                     </fields>
                 </pages>
                 <suggestions>
-                    <label>Suggestions Configuration</label>
+                    <label>Query Suggestions Configuration</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>46</sort_order>
                     <show_in_default>1</show_in_default>
@@ -267,7 +267,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The min popularity a query suggestion need to have to be indexed. Default value is 4.</comment>
+                            <comment>The min popularity a query suggestion needs in order to be indexed. Default value is 4.</comment>
                         </min_popularity>
                         <min_number_of_results translate="label comment">
                             <label>Min number of products</label>
@@ -277,7 +277,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The min number of results a query suggestion to have to be indexed. Default value is 2.</comment>
+                            <comment>The min number of results a query suggestion needs to return to be indexed. Default value is 2.</comment>
                         </min_number_of_results>
                     </fields>
                 </suggestions>
@@ -298,11 +298,12 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment><![CDATA[Optional property to avoid having an empty result page.<br/>
-                             LastWords: when a query does not return any result, the last word will be added as optionalWords (the process is repeated with the n-1 word, n-2 word, ... until there is results). This option is particularly useful on e-commerce websites<br/>
-                             LastWords: when a query does not return any result, the first word will be added as optionalWords (the process is repeated with the second word, third word, ... until there is results). This option is useful on address search<br/>
-                             allOptional: when a query does not return any result, all words will be optional<br/>
-                             None: No specific processing is done when a query does not return any result<br/>]]></comment>
+                            <comment><![CDATA[Optional property to avoid empty result pages.<br/>
+                             By default, Algolia performs "AND" queries, which can lead to no results pages when queries are too long or too detailed. To avoid this, you can select among the following options:<br/>
+                             LastWords: when a query does not return any result, the last word will be considered as optional and the query will be automatically performed again (the process is repeated with the n-1 word, n-2 word, ... until there is results).<br/>
+                             FirstWords: when a query does not return any result, the first word will be considered as optional and the query will be automatically performed again (the process is repeated with the second word, third word, ... until there is results).<br/>
+                             allOptional: when a query does not return any result, all words will be optional.<br/>
+                             None: No specific processing is done when a query does not return any result. <br/>]]></comment>
                         </remove_words_if_no_result>
                     </fields>
                 </relevance>
@@ -323,7 +324,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of product suggestions the auto-completion menu is displaying. Default value is 3.</comment>
+                            <comment>The number of product results displayed in the drop-down menu. Default value is 3.</comment>
                         </number_product_suggestions>
                         <number_product_results translate="label comment">
                             <label>Number of products per page</label>
@@ -333,7 +334,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of product displayed on the search results page. Default value is 9.</comment>
+                            <comment>The number of products displayed on the search results page. Default value is 9.</comment>
                         </number_product_results>
                         <number_category_suggestions translate="label comment">
                             <label>Number of category suggestions</label>
@@ -343,7 +344,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of category suggestions the auto-completion menu is displaying. Default value is 5.</comment>
+                            <comment>The number of category results displayed in the drop-down menu. Default value is 5.</comment>
                         </number_category_suggestions>
                         <number_page_suggestions translate="label comment">
                             <label>Number of page suggestions</label>
@@ -353,7 +354,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of page suggestions the auto-completion menu is displaying. Default value is 3.</comment>
+                            <comment>The number of page suggestions displayed in the drop-down menu. Default value is 3.</comment>
                         </number_page_suggestions>
                         <number_query_suggestions translate="label comment">
                             <label>Number of query suggestions</label>
@@ -363,7 +364,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of query suggestions the auto-completion menu is displaying. Default value is 0.</comment>
+                            <comment>The number of query suggestions displayed in the drop-down menu. Default value is 0.</comment>
                         </number_query_suggestions>
                         <max_values_per_facet translate="label comment">
                             <label>Number of values per facet</label>
@@ -383,7 +384,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here whether the algolia logo is added to the autocomplete template.</comment>
+                            <comment>Choose here if the algolia logo is added to the drop-down template.</comment>
                         </remove_branding>
                         <add_to_cart_enable translate="label comment">
                             <label>Add to Cart</label>
@@ -393,7 +394,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here whether there is an add to cart button in the template.</comment>
+                            <comment>Choose here if you want to add an "add to cart" button in the template.</comment>
                         </add_to_cart_enable>
                     </fields>
                 </ui>
@@ -417,7 +418,7 @@
                             <comment>
                                 <![CDATA[
                                 If enabled, all indexing operations (add, remove & update operations) will be done asynchronously using the CRON mechanism.<br />
-                                <span style="color: #D83900">&#9888;</span> Enabling the configuration is recommended in production or if your store has a lot of products.
+                                <span style="color: #D83900">&#9888;</span> Enabling this option is recommended in production or if your store has a lot of products.
                                 ]]>
 
                             </comment>
