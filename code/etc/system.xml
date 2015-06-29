@@ -82,7 +82,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If set to Yes, the seach box will display a search-as-you-type drop down menu. It requires your theme to expose a <code>top.search</code> template.
+                                If set to Yes, the seach box will display a search-as-you-type drop-down menu. It requires your theme to expose a <code>top.search</code> template.
                                 ]]>
                             </comment>
                         </is_popup_enabled>
@@ -96,7 +96,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If set to Yes, the results page will be searchable with the as-you-type display of the refined results. It requires your theme to expose a <code>top.search</code> template.
+                                If set to Yes, the products inside the results pages will be searchable with the as-you-type display of the refined results. It requires your theme to expose a <code>top.search</code> template.
                                 ]]>
                             </comment>
                         </is_instant_enabled>
@@ -128,7 +128,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the filtering options you want to display on your search results page sidebar. Choose Disjunctive to allow the selections of different value of your facet (e.g., hotels with 4 OR 5 stars). Choose Conjunctive to allow the selection only one value of your facet (e.g., only "Size M"). (</comment>
+                            <comment>Configure here the filtering options you want to display on your search results page sidebar. Choose Disjunctive to allow the selection of different value of a facet (e.g., hotels with 4 OR 5 stars). Choose Conjunctive to allow the selection of only one value of a facet (e.g., only "Size M"). (</comment>
                         </facets>
                         <sorts>
                             <label>Sorts</label>
@@ -148,7 +148,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here whether the category pages are replaced by the instant-search results page.</comment>
+                            <comment>Choose here if you want the default category pages to be replaced by the instant-search results page when a category is selected either in the menu of categories or in the drop-down menu.</comment>
                         </replace_categories>
                     </fields>
                 </instant>
@@ -171,7 +171,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the attributes your users can search in and the ones you want to display in the search results. The order of these attributes matters: the higher in the list, the more important to rank the results. A match of a query in the first attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matched word(s) inside the attribute to matter. A match at the beginning of the attribute will be considered more important: "iPhone 5s" will be ranked before "case for iPhone" for the query "iPhone".<br />
+                                Choose here the attributes your users can search in and the ones you want to display in the search results. The order of these attributes matters: the higher in the list, the more important to rank the results. A match of a query in the first attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matched word(s) inside the attribute to matter. A match at the beginning of an attribute will be considered more important: "iPhone 5s" will be ranked before "case for iPhone" for the query "iPhone".<br />
                                 <span style="color: #D83900">&#9888;</span> <code>Retrievable</code> need to be set to <code>Yes</code> in order to be displayed.
                                 ]]>
                             </comment>
@@ -394,7 +394,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Choose here if you want to add an add to cart button in the template.</comment>
+                            <comment>Choose here if you want to add an "add to cart" button in the template.</comment>
                         </add_to_cart_enable>
                     </fields>
                 </ui>
