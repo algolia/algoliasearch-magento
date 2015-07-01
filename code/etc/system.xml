@@ -324,7 +324,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of product results displayed in the drop-down menu. Default value is 3.</comment>
+                            <comment>The number of product results displayed in the drop-down menu. Default value is 3. Set the value to 0 if you do not want to display the products section in the menu.</comment>
                         </number_product_suggestions>
                         <number_product_results translate="label comment">
                             <label>Number of products per page</label>
@@ -344,7 +344,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of category results displayed in the drop-down menu. Default value is 5.</comment>
+                            <comment>The number of category results displayed in the drop-down menu. Default value is 5. Set the value to 0 if you do not want to display the categories section in the menu.</comment>
                         </number_category_suggestions>
                         <number_page_suggestions translate="label comment">
                             <label>Number of page suggestions</label>
@@ -354,7 +354,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of page suggestions displayed in the drop-down menu. Default value is 3.</comment>
+                            <comment>The number of page suggestions displayed in the drop-down menu. Default value is 3. Set the value to 0 if you do not want to display the pages section in the menu.</comment>
                         </number_page_suggestions>
                         <number_query_suggestions translate="label comment">
                             <label>Number of query suggestions</label>
