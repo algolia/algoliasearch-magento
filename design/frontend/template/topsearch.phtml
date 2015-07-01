@@ -34,7 +34,15 @@ if ($config->getNumberOfCategorySuggestions() > 0)
 if ($config->getNumberOfPageSuggestions() > 0)
     $types[] = $this->__('pages');
 
-$placeholder = 'Search for ' . implode(', ', array_slice($types, 0, count($types) - 1)) . ' or ' . $types[count($types) - 1];
+$or = count($types) > 1 ? ' or ' : '';
+
+$placeholder = 'Search';
+
+if (count($types) > 0)
+{
+    $placeholder = 'Search for ' . implode(', ', array_slice($types, 0, count($types) - 1)) . $or . $types[count($types) - 1];
+}
+
 $class = $isSearchPage ? 'search-page' : '';
 
 ?>
