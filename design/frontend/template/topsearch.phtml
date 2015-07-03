@@ -275,6 +275,7 @@ $class = $isSearchPage ? 'search-page' : '';
                         </div>
 
                         {{#isAddToCartEnabled}}
+                        {{#in_stock}}
                         <form action="/checkout/cart/add/product/{{objectID}}" method="post">
                             <input type="hidden" name="form_key" value="<?php echo $formKey; ?>" />
 
@@ -282,6 +283,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
                             <button type="submit">Add to Cart</button>
                         </form>
+                        {{/in_stock}}
                         {{/isAddToCartEnabled}}
                     </div>
                 </div>
