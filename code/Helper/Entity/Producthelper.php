@@ -370,13 +370,22 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $attribute_ressource = $product->getResource()->getAttribute($attribute['attribute']);
 
+
+
             if ($attribute_ressource)
             {
-                $value = $attribute_ressource->getFrontend()->getValue($product);
+                $value_text = $product->getAttributeText($attribute['attribute']);
+
+                if ($value_text)
+                    $value = $value_text;
+                else
+                    $value = $attribute_ressource->getFrontend()->getValue($product);
             }
 
             if ($value)
+            {
                 $customData[$attribute['attribute']] = $value;
+            }
         }
 
         $customData = array_merge($customData, $defaultData);
