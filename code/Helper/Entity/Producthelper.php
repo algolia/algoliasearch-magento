@@ -369,26 +369,67 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         foreach ($additionalAttributes as $attribute)
         {
-            $value = $product->getData($attribute['attribute']);
-
-            if ($value === null)
+            if (isset($customData[$attribute['attribute']]))
                 continue;
+
+            $value = $product->getData($attribute['attribute']);
 
             $attribute_ressource = $product->getResource()->getAttribute($attribute['attribute']);
 
             if ($attribute_ressource)
             {
-                $value_text = $product->getAttributeText($attribute['attribute']);
+                if ($value === null)
+                {
+                    /** Get values as array in children */
+                    if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped')
+                    {
+                        $values = array();
 
-                if ($value_text)
-                    $value = $value_text;
+                        foreach ($sub_products as $sub_product)
+                        {
+                            $sub_product = Mage::getModel('catalog/product')->load($sub_product->getId());
+
+                            $value = $sub_product->getData($attribute['attribute']);
+
+                            if ($value)
+                            {
+                                $applyTo = $attribute_ressource->getApplyTo();
+
+                                if ($product->getTypeId() == 'configurable' && in_array('configurable', $applyTo))
+                                    break;
+
+                                if ($product->getTypeId() == 'grouped' && in_array('grouped', $applyTo))
+                                    break;
+
+                                $value_text = $sub_product->getAttributeText($attribute['attribute']);
+
+                                if ($value_text)
+                                    $values[] = $value_text;
+                                else
+                                    $values[] = $attribute_ressource->getFrontend()->getValue($sub_product);
+                            }
+                        }
+
+                        if (count($values) > 0)
+                        {
+                            $customData[$attribute['attribute']] = $values;
+                        }
+                    }
+                }
                 else
-                    $value = $attribute_ressource->getFrontend()->getValue($product);
-            }
+                {
+                    $value_text = $product->getAttributeText($attribute['attribute']);
 
-            if ($value)
-            {
-                $customData[$attribute['attribute']] = $value;
+                    if ($value_text)
+                        $value = $value_text;
+                    else
+                        $value = $attribute_ressource->getFrontend()->getValue($product);
+
+                    if ($value)
+                    {
+                        $customData[$attribute['attribute']] = $value;
+                    }
+                }
             }
         }
 
