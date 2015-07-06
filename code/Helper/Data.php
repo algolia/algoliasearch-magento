@@ -228,9 +228,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         {
             $suggestion->setStoreId($storeId);
 
-            if ($suggestion->getData('is_active') == 0)
-                continue;
-
             $suggestion_obj = $this->suggestion_helper->getObject($suggestion);
 
             if ($suggestion_obj['popularity'] >= $this->config->getMinPopularity() && $suggestion_obj['number_of_results'] >= $this->config->getMinNumberOfResults())
