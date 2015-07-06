@@ -78,6 +78,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         ->addAttributeToSelect('special_to_date')
                         ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
 
+
+
+
         $additionalAttr = $this->config->getProductAdditionalAttributes($storeId);
 
         foreach ($additionalAttr as &$attr)
@@ -368,9 +371,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         {
             $value = $product->getData($attribute['attribute']);
 
+            if ($value === null)
+                continue;
+
             $attribute_ressource = $product->getResource()->getAttribute($attribute['attribute']);
-
-
 
             if ($attribute_ressource)
             {
