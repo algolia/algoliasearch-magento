@@ -24,9 +24,9 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customrankingproduct 
 
             switch($columnId) {
                 case 'attribute': // Populate the attribute column with a list of searchable attributes
-                    $searchableAttributes = $config->getProductAdditionalAttributes();
+                    $attributes = $config->getProductAdditionalAttributes();
 
-                    foreach ($searchableAttributes as $attribute)
+                    foreach ($attributes as $attribute)
                         $aOptions[$attribute['attribute']] = $attribute['attribute'];
 
                     break;
