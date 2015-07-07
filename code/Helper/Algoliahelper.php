@@ -15,6 +15,11 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
 
     public function __construct()
     {
+        $this->resetCredentialsFromConfig();
+    }
+
+    public function resetCredentialsFromConfig()
+    {
         $config = Mage::helper('algoliasearch/config');
 
         if ($config->getApplicationID() && $config->getAPIKey())

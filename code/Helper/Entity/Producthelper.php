@@ -393,14 +393,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                             if ($value)
                             {
-                                $applyTo = $attribute_ressource->getApplyTo();
-
-                                if ($product->getTypeId() == 'configurable' && in_array('configurable', $applyTo))
-                                    break;
-
-                                if ($product->getTypeId() == 'grouped' && in_array('grouped', $applyTo))
-                                    break;
-
                                 $value_text = $sub_product->getAttributeText($attribute['attribute']);
 
                                 if ($value_text)
