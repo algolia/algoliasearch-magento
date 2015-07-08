@@ -246,7 +246,12 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the pages you don't want to search in.</comment>
+                            <comment>
+                                <![CDATA[
+                                Configure here the pages you don't want to search in.<br /n>
+                                <span style="color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search Pages index whenever you modify this setting.
+                                ]]>
+                            </comment>
                         </excluded_pages>
                     </fields>
                 </pages>
