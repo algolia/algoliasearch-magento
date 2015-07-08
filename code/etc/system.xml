@@ -169,7 +169,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the filtering options you want to display on your search results page sidebar. Choose Disjunctive to allow the selection of different value of a facet (e.g., hotels with 4 OR 5 stars). Choose Conjunctive to allow the selection of only one value of a facet (e.g., only "Size M"). (</comment>
+                            <comment>Configure here the filtering options you want to display on your search results page sidebar. Choose Disjunctive to allow the selection of different value of a facet (e.g., hotels with 4 OR 5 stars). Choose Conjunctive to allow the selection of only one value of a facet (e.g., only "Size M").</comment>
                         </facets>
                         <sorts>
                             <label>Sorts</label>
