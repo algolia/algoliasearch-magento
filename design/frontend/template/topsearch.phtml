@@ -173,6 +173,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
         <div id="algolia-right-container">
 
+            {{#second_bar}}
             <div id="instant-search-bar-container">
                 <div id="instant-search-box">
                     <label for="instant-search-bar">
@@ -190,6 +191,7 @@ $class = $isSearchPage ? 'search-page' : '';
                     </svg>
                 </div>
             </div>
+            {{/second_bar}}
 
             <div id="instant-search-results-container"></div>
             <div id="instant-search-pagination-container"></div>
@@ -1012,7 +1014,7 @@ $class = $isSearchPage ? 'search-page' : '';
          **
          *****************/
 
-        if (algoliaConfig.instant.enabled && <?php echo $isSearchPage ? "true" : "false"; ?>)
+        if (algoliaConfig.instant.enabled && (<?php echo $isSearchPage ? "true" : "false"; ?> || ! algoliaConfig.autocomplete.enabled))
         {
             if ($(algoliaConfig.instant.selector).length !== 1)
                 throw '[Algolia] Invalid instant-search selector: ' + algoliaConfig.instant.selector;
@@ -1020,6 +1022,8 @@ $class = $isSearchPage ? 'search-page' : '';
             if ($(algoliaConfig.instant.selector).find(algoliaConfig.autocomplete.selector).length > 0)
                 throw '[Algolia] You can\'t have a search input matching "' + algoliaConfig.autocomplete.selector +
                 '" inside you instant selector "' + algoliaConfig.instant.selector + '"';
+
+            var instant_selector = ! algoliaConfig.autocomplete.enabled ? "#search" : "#instant-search-bar";
 
             var wrapperTemplate     = algoliaBundle.Hogan.compile($('#instant_wrapper_template').html());
 
@@ -1041,7 +1045,7 @@ $class = $isSearchPage ? 'search-page' : '';
             {
                 if (initialized === false)
                 {
-                    $(algoliaConfig.instant.selector).html(wrapperTemplate.render()).show();
+                    $(algoliaConfig.instant.selector).html(wrapperTemplate.render({ second_bar: algoliaConfig.autocomplete.enabled })).show();
                     initialized = true;
                 }
                 /**
@@ -1102,7 +1106,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
                 updateSliderValues();
 
-                var instant_search_bar = $('#instant-search-bar');
+                var instant_search_bar = $(instant_selector);
 
                 if (instant_search_bar.is(":focus") === false)
                 {
@@ -1265,7 +1269,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
             /** Handle input clearing **/
             $('body').on('click', '.clear-button', function () {
-                $('#instant-search-bar').val('').focus();
+                $(instant_selector).val('').focus();
                 helper.clearRefinements().setQuery('');
 
                 performQueries(true);
@@ -1274,7 +1278,8 @@ $class = $isSearchPage ? 'search-page' : '';
             /**
              * Handle search
              */
-            $('body').on('keyup', '#instant-search-bar', function (e) {
+
+            $('body').on('keyup', instant_selector, function (e) {
                 e.preventDefault();
 
                 helper.setQuery($(this).val());
@@ -1327,7 +1332,9 @@ $class = $isSearchPage ? 'search-page' : '';
             /** Clean input **/
             $(algoliaConfig.autocomplete.selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
 
-            getRefinementsFromUrl();
+            if (<?php echo $isSearchPage ? "true" : "false"; ?> || location.hash.length > 1) {
+                getRefinementsFromUrl();
+            }
 
             window.addEventListener("popstate", function(e) {
                 getRefinementsFromUrl();
