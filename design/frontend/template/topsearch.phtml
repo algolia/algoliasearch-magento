@@ -51,7 +51,7 @@ $class = $isSearchPage ? 'search-page' : '';
     <div id="algolia-searchbox" class="<?php echo $class; ?>">
         <label for="search"><?php echo $this->__('Search:') ?></label>
         <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="<?php echo $placeholder; ?>" />
-        <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128" >
+        <svg id="algolia-glass" xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128" >
           <g transform="scale(4)">
             <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
             <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
@@ -1005,6 +1005,10 @@ $class = $isSearchPage ? 'search-page' : '';
                     instant = false;
                     window.location.href = item.url;
                 });
+            });
+
+            $("#algolia-glass").click(function () {
+                $(this).closest('form').submit();
             });
         }
 
