@@ -287,9 +287,9 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The min number of results a query needs to return to be suggested. Default value is 2.</comment>
                             <comment>
                                 <![CDATA[
+                                The min number of results a query needs to return to be suggested. Default value is 2. <br /n>
                                 <span style="color: #D83900">&#9888;</span> Updating your suggested queries requires that you reindex your Algolia Search Suggestions index.
                                 ]]>
                             </comment>
