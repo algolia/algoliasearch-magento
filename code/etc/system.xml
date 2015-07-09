@@ -33,14 +33,14 @@
                     <sort_order>10</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <comment>
-                        <![CDATA[
-                                <a href="https://www.algolia.com/users/sign_up">sign up</a>
-                        ]]>
-                    </comment>    
+                    <show_in_store>1</show_in_store>   
                     <expanded>1</expanded>
                     <fields>
+                        <label>
+                        <![CDATA[
+                        Watch the <a href="https://youtu.be/dTTUOZpIdXg?t=212">tutorial</a>
+                        ]]>
+                        </label>l
                         <application_id translate="label">
                             <label>Application ID</label>
                             <frontend_type>text</frontend_type>
