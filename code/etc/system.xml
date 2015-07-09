@@ -35,15 +35,15 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>  
                     <expanded>1</expanded>
+                    <comment>
+                     <![CDATA[
+                     <font size="11"> 
+                        <b> Watch the <a href="https://youtu.be/dTTUOZpIdXg?t=212">TUTORIAL</a>
+                        </b>
+                    </font>
+                     ]]>
+                    </comment>
                     <fields>
-                        <application_id translate="label">
-                            <label> Test our Video </label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>80</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </application_id>
                         <application_id translate="label">
                             <label>Application ID</label>
                             <frontend_type>text</frontend_type>
