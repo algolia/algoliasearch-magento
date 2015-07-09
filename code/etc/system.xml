@@ -44,7 +44,7 @@
                         <application_id translate="label">
                             <label>
                                 <![CDATA[
-                                <a href="https://www.algolia.com/users/sign_up">sign up</a>
+                                Test video link <a href="https://youtu.be/dTTUOZpIdXg?t=212">Video</a>
                                 ]]>
                             </label>
                             <frontend_type>text</frontend_type>
