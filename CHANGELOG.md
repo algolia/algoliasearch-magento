@@ -1,5 +1,12 @@
 ## Change Log
 
+### 1.3.5
+
+- Review admin panel
+- Handle click on the glass
+- Fix Instant search alone
+- Handle grouped/configurable attributes
+
 ### 1.3.4
 
 - Fix url redirection
