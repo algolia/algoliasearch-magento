@@ -121,8 +121,8 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Choose here the attributes your users can search in and the ones you want to display in the search results. The order of these attributes matters: the higher in the list, the more important to rank the results. A match of a query in the first attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matched word(s) inside the attribute to matter. A match at the beginning of an attribute will be considered more important: "iPhone 5s" will be ranked before "case for iPhone" for the query "iPhone".<br />
-                                <span style="color: #D83900">&#9888;</span> <code>Retrievable</code> need to be set to <code>Yes</code> in order to be displayed.
+                                Choose here the product attributes your users can search on, the ones you want to use as filters and sorts options and the ones required to display the search results. The order of the searchable attributes matters: a query matching the first searchable attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matching word(s) inside the attribute to matter. A match at the beginning of an attribute will be considered more important: for the query "iPhone", "iPhone 5s" will be ranked before "case for iPhone".<br />
+                                <span style="color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
                                 ]]>
                             </comment>
                         </product_additional_attributes>
@@ -137,7 +137,7 @@
                             <comment>
                                 <![CDATA[
                                 Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
-                                <span style="color: #D83900">&#9888;</span> All attributes used here must be included in the Attributes configuration.
+                                <span style="color: #D83900">&#9888;</span> All attributes used here must be have been initially included in the Attributes configuration panel.
                                 ]]>
                             </comment>
                         </custom_ranking_product_attributes>
@@ -169,7 +169,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the filtering options you want to display on your search results page sidebar. Choose Disjunctive to allow the selection of different value of a facet (e.g., hotels with 4 OR 5 stars). Choose Conjunctive to allow the selection of only one value of a facet (e.g., only "Size M").</comment>
+                            <comment>Configure here the filtering options you want to display on your search results page. Choose Disjunctive to allow the selection of different values of a facet (e.g. hotels with 4 OR 5 stars). Choose Conjunctive to allow the selection of only one value of a facet (e.g. only "Size M").</comment>
                         </facets>
                         <sorts>
                             <label>Sorts</label>
@@ -210,7 +210,11 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the attributes your users can search in. The order of these attributes matters: the higher in the list, the more important to rank the results.</comment>
+                            <comment>
+                                <![CDATA[
+                                Configure here the category attributes your users can search on. The order of these attributes matters: the higher in the list, the more important to rank the results.<br />
+                                <span style="color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
+                                ]]>
                         </category_additional_attributes2>
                         <custom_ranking_category_attributes translate="label comment">
                             <label>Ranking</label>
@@ -222,7 +226,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the attributes that reflect the popularity of your categories (number of products, number total sales of the category, ...).<br />
+                                Choose here the attributes that reflect the popularity of your categories (number of products, total number of sales of the category,etc.).<br />
                                 <span style="color: #D83900">&#9888;</span> All attributes used here must be have been included before in the Attributes chart.
                                 ]]>
                             </comment>
@@ -283,6 +287,11 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>The min number of results a query needs to return to be suggested. Default value is 2.</comment>
+                            <comment>
+                                <![CDATA[
+                                <span style="color: #D83900">&#9888;</span> Updating your suggested queries requires that you reindex your Algolia Search Suggestions index.
+                                ]]>
+                            </comment>
                         </min_number_of_results>
                     </fields>
                 </suggestions>
