@@ -37,7 +37,7 @@
                     <expanded>1</expanded>
                     <comment>
                      <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/dTTUOZpIdXg?t=212"><font color="#cc000">TUTORIAL</font></a><br /n> 
+                     <font size="2"> Watch the <a href="https://youtu.be/dTTUOZpIdXg?t=212"><font color="#0066cc">Tutorial</font></a><br /n> 
                     </font>
                      ]]>
                     </comment>
@@ -118,7 +118,7 @@
                     <expanded>1</expanded>
                     <comment>
                      <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/dTTUOZpIdXg?t=398"><font color="#cc000">TUTORIAL</font></a><br /n> 
+                     <font size="2"> Watch the <a href="https://youtu.be/dTTUOZpIdXg?t=398"><font color="#0066cc">Tutorial</font></a><br /n> 
                     </font>
                      ]]>
                     </comment>
@@ -165,7 +165,7 @@
                     <expanded>1</expanded>
                     <comment>
                      <![CDATA[
-                     <font size="2"> Watch the <a https://youtu.be/dTTUOZpIdXg?t=665"><font color="#cc000">TUTORIAL</font></a><br /n> 
+                     <font size="2"> Watch the <a href="https://youtu.be/dTTUOZpIdXg?t=212"><font color="#0066cc">Tutorial</font></a><br /n> 
                     </font>
                      ]]>
                     </comment>
@@ -219,6 +219,12 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <expanded>1</expanded>
+                    <comment>
+                     <![CDATA[
+                     <font size="2"> Watch the <a https://youtu.be/dTTUOZpIdXg?t=665"><font color="#0066cc">Tutorial</font></a><br /n> 
+                    </font>
+                     ]]>
+                    </comment>
                     <fields>
                         <category_additional_attributes2 translate="label comment">
                             <label>Attributes</label>
@@ -260,6 +266,12 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <expanded>1</expanded>
+                    <comment>
+                     <![CDATA[
+                     <font size="2"> Watch the <a href="https://youtu.be/dTTUOZpIdXg?t=212"><font color="#0066cc">Tutorial</font></a><br /n> 
+                    </font>
+                     ]]>
+                    </comment>
                     <fields>
                         <excluded_pages translate="label comment">
                             <label>Excluded Pages</label>
@@ -286,6 +298,12 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <expanded>1</expanded>
+                    <comment>
+                     <![CDATA[
+                     <font size="2"> Watch the <a href="https://youtu.be/dTTUOZpIdXg?t=212"><font color="#0066cc">Tutorial</font></a><br /n> 
+                    </font>
+                     ]]>
+                    </comment>
                     <fields>
                         <min_popularity translate="label comment">
                             <label>Min popularity</label>
@@ -350,7 +368,7 @@
                     <expanded>1</expanded>
                     <comment>
                      <![CDATA[
-                     <font size="2"> Watch the <a https://youtu.be/dTTUOZpIdXg?t=772"><font color="#cc000">TUTORIAL</font></a><br /n> 
+                     <font size="2"> Watch the <a https://youtu.be/dTTUOZpIdXg?t=772"><font color="#0066cc">Tutorial</font></a><br /n> 
                     </font>
                      ]]>
                     </comment>
