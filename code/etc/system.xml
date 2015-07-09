@@ -215,7 +215,7 @@
                                 Configure here the category attributes your users can search on. The order of these attributes matters: the higher in the list, the more important to rank the results.<br />
                                 <span style="color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
                                 ]]>
-                            <comment>
+                            </comment>
                         </category_additional_attributes2>
                         <custom_ranking_category_attributes translate="label comment">
                             <label>Ranking</label>
