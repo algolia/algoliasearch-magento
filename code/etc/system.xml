@@ -37,11 +37,7 @@
                     <expanded>1</expanded>
                     <fields>
                         <application_id translate="label">
-                            <label> Test our Video
-                                <![CDATA[
-                                Test video link <a href="https://youtu.be/dTTUOZpIdXg?t=212">Video</a>
-                                ]]>
-                            </label>
+                            <label> Test our Video </label>
                             <frontend_type>text</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
