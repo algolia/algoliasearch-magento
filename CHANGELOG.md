@@ -2,18 +2,18 @@
 
 ### 1.3.5
 
-- Review admin panel
-- Handle click on the glass
-- Fix Instant search alone
-- Handle grouped/configurable attributes
+- UPDATED: Administration panel review
+- UPDATED: Handling of the click on the magnifying glass
+- UPDATD: Fixed instant search page if auto-completion menu is disabled
+- NEW: Grouped/configurable attributes handling
 
 ### 1.3.4
 
-- Fix url redirection
+- UPDATED: Fixed URL redirection
 
 ### 1.3.3
 
-- Fix some attributes retrival
+- UPDATED: Fixed some attributes retrieval
 
 ### 1.3.2
 
