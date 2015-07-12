@@ -30,7 +30,7 @@ Installation
 
 To setup this module, you'll need an Algolia account. Just sign up [here](http://www.algolia.com/users/sign_up) to create an account and retrieve your credentials.
 
-  1. Create an [Algolia Account](https://www.algolia.com/users/sign_up).
+  1. Create an [Algolia Account](https://www.algolia.com/users/sign_up?hi=magento).
   2. Download the packaged Community Extension from [the magento-connect store](http://www.magentocommerce.com/magento-connect/algolia-search-extension.html)
   3. Install it on your Magento instance.
   4. Configure your credentials from the **System** > **Configuration** > **Catalog** > **Algolia Search** administration panel.
