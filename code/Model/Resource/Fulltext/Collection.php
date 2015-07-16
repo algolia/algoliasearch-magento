@@ -13,7 +13,12 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext_Collection extends Mage_Cata
         {
             $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
-            $url = Mage::getBaseUrl().'catalogsearch/result/?q='.$query.'&instant=1#q='.$query.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
+            $base_url = Mage::getBaseUrl();
+
+            if ($base_url[strlen($base_url) - 1] == '/')
+                $base_url = substr($base_url, 0, strlen($base_url) - 1);
+
+            $url = $base_url.'/catalogsearch/result/?q='.$query.'&instant=1#q='.$query.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
 
             header('Location: '.$url);
 

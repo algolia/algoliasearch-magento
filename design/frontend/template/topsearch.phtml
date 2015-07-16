@@ -988,7 +988,7 @@ $class = $isSearchPage ? 'search-page' : '';
                     displayKey: 'title',
                     templates: {
                         suggestion: function (hit) {
-                            return '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
+                            return '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
                         }
                     }
                 });

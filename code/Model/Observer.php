@@ -204,7 +204,12 @@ class Algolia_Algoliasearch_Model_Observer
 
             $indexName = $this->product_helper->getIndexName(Mage::app()->getStore()->getStoreId());
 
-            $url = Mage::app()->getRequest()->getOriginalPathInfo().'?category=1#q=&page=0&refinements=%5B%7B%22categories%22%3A%5B%22'.$path.'%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
+            $base_url = Mage::getBaseUrl();
+
+            if ($base_url[strlen($base_url) - 1] == '/')
+                $base_url = substr($base_url, 0, strlen($base_url) - 1);
+
+            $url = $base_url.Mage::app()->getRequest()->getOriginalPathInfo().'?category=1#q=&page=0&refinements=%5B%7B%22categories%22%3A%5B%22'.$path.'%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
 
             header('Location: '.$url);
 
