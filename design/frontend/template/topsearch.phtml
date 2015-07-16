@@ -532,14 +532,11 @@ $class = $isSearchPage ? 'search-page' : '';
             /** Get refinements for disjunctive facets **/
             for (var refine in helper.state.disjunctiveFacetsRefinements)
             {
-                for (var i = 0; i < helper.state.disjunctiveFacetsRefinements[refine].length; i++)
-                {
-                    var r = {};
+                var r = {};
 
-                    r[refine] = helper.state.disjunctiveFacetsRefinements[refine][i];
+                r[refine] = helper.state.disjunctiveFacetsRefinements[refine];
 
-                    refinements.push(r);
-                }
+                refinements.push(r);
             }
 
             var url = '#q=' + encodeURIComponent(helper.state.query) +
