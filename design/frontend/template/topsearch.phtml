@@ -6,6 +6,10 @@ $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 $isSearchPage = Mage::app()->getRequest()->getParam('instant') != null || Mage::app()->getRequest()->getParam('category') != null;
 $formKey = Mage::getSingleton('core/session')->getFormKey();
 
+$base_url = Mage::getBaseUrl();
+
+if ($base_url[strlen($base_url) - 1] == '/')
+    $base_url = substr($base_url, 0, strlen($base_url) - 1);
 
 if ($config->isInstantEnabled() && $isSearchPage) {
     // hide the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS
@@ -278,7 +282,8 @@ $class = $isSearchPage ? 'search-page' : '';
 
                         {{#isAddToCartEnabled}}
                         {{#in_stock}}
-                        <form action="/checkout/cart/add/product/{{objectID}}" method="post">
+
+                        <form action="<?php echo $base_url; ?>/checkout/cart/add/product/{{objectID}}" method="post">
                             <input type="hidden" name="form_key" value="<?php echo $formKey; ?>" />
 
                             <input type="hidden" name="qty" value="1">
@@ -851,7 +856,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
                                         var obj = $.extend(true, {}, content.hits[0]);
                                         obj.category = '<?php echo $this->__('All departments') ?>';
-                                        obj.url = '<?php echo Mage::getBaseUrl(); ?>catalogsearch/result/?q=' + obj.query;
+                                        obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
                                         hits.push(obj);
 
                                         for (var key in content2.facets.categories) {
@@ -866,21 +871,21 @@ $class = $isSearchPage ? 'search-page' : '';
                                         {
                                             var obj = $.extend(true, {}, content.hits[0]);
                                             obj.category = key;
-                                            obj.url = '<?php echo Mage::getBaseUrl(); ?>?category=1#q=' + obj.query + '&page=0&refinements=%5B%7B%22categories%22%3A%5B%22' + obj.category + '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22<?php echo $product_helper->getBaseIndexName(); ?>_products%22';
+                                            obj.url = '<?php echo $base_url; ?>?category=1#q=' + obj.query + '&page=0&refinements=%5B%7B%22categories%22%3A%5B%22' + obj.category + '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22<?php echo $product_helper->getBaseIndexName(); ?>_products%22';
                                             hits.push(obj);
                                         }
                                     }
                                     else
                                     {
                                         var obj = $.extend(true, {}, content.hits[0]);
-                                        obj.url = '<?php echo Mage::getBaseUrl(); ?>catalogsearch/result/?q=' + obj.query;
+                                        obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
                                         hits.push(obj);
                                     }
 
                                     for (var k = 1; k < content.hits.length; k++)
                                     {
                                         var obj = $.extend(true, {}, content.hits[k]);
-                                        obj.url = '<?php echo Mage::getBaseUrl(); ?>catalogsearch/result/?q=' + obj.query;
+                                        obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
                                         hits.push(obj);
                                     }
 
@@ -985,7 +990,7 @@ $class = $isSearchPage ? 'search-page' : '';
                     displayKey: 'title',
                     templates: {
                         suggestion: function (hit) {
-                            return '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
+                            return '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo $base_url; ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
                         }
                     }
                 });
