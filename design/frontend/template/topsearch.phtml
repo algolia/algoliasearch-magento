@@ -320,7 +320,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 {{#sub_facets}}
 
                 {{#type.menu}}
-                <div data-attribute="{{attribute}}" data-name="{{nameattr}}" data-type="menu" class="{{#checked}}checked {{/checked}}sub_facet menu">
+                <div data-attribute="{{attribute}}" data-name="{{nameattr}}" data-type="menu" class="{{#checked}}checked {{/checked}}sub_facet menu {{#empty}}empty{{/empty}}">
                     <input style="display: none;" data-attribute="{{attribute}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
                     {{name}}
                     {{#print_count}}<span class="count">{{count}}</span>{{/print_count}}
@@ -328,7 +328,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 {{/type.menu}}
 
                 {{#type.conjunctive}}
-                <div data-name="{{attribute}}" data-type="conjunctive" class="{{#checked}}checked {{/checked}}sub_facet conjunctive">
+                <div data-name="{{attribute}}" data-type="conjunctive" class="{{#checked}}checked {{/checked}}sub_facet conjunctive {{#empty}}empty{{/empty}}">
                     <input style="display: none;" data-attribute="{{attribute}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
                     {{name}}
                     {{#count}}<span class="count">{{count}}</span>{{/count}}
@@ -345,7 +345,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 {{/type.slider}}
 
                 {{#type.disjunctive}}
-                <div data-name="{{attribute}}" data-type="disjunctive" class="{{#checked}}checked {{/checked}}sub_facet disjunctive">
+                <div data-name="{{attribute}}" data-type="disjunctive" class="{{#checked}}checked {{/checked}}sub_facet disjunctive {{#empty}}empty{{/empty}}">
                     <input data-attribute="{{attribute}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
                     {{name}}
                     {{#count}}<span class="count">{{count}}</span>{{/count}}
@@ -453,8 +453,9 @@ $class = $isSearchPage ? 'search-page' : '';
          *  When you create a custom facet type you need to add it here.
          *  Example : 'menu'
          */
-        var conjunctive_facets  = [];
-        var disjunctive_facets  = [];
+        var conjunctive_facets          = [];
+        var disjunctive_facets          = [];
+        var disjunctive_facets_empty    = [];
 
         for (var i = 0; i < algoliaConfig.facets.length; i++)
         {
@@ -462,13 +463,19 @@ $class = $isSearchPage ? 'search-page' : '';
                 conjunctive_facets.push(algoliaConfig.facets[i].attribute);
 
             if (algoliaConfig.facets[i].type == "disjunctive")
+            {
                 disjunctive_facets.push(algoliaConfig.facets[i].attribute);
+                disjunctive_facets_empty.push(algoliaConfig.facets[i].attribute);
+            }
 
             if (algoliaConfig.facets[i].type == "slider")
                 disjunctive_facets.push(algoliaConfig.facets[i].attribute);
 
             if (algoliaConfig.facets[i].type == "menu")
+            {
                 disjunctive_facets.push(algoliaConfig.facets[i].attribute);
+                disjunctive_facets_empty.push(algoliaConfig.facets[i].attribute);
+            }
         }
 
         var helper = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products', {
@@ -478,6 +485,14 @@ $class = $isSearchPage ? 'search-page' : '';
         });
 
         helper.setQuery('');
+
+        var helper_empty = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products', {
+            facets: conjunctive_facets,
+            disjunctiveFacets: disjunctive_facets_empty,
+            hitsPerPage: algoliaConfig.hitsPerPage
+        });
+
+        helper_empty.setQuery('');
 
         /**
          *  Helper functions
@@ -792,7 +807,7 @@ $class = $isSearchPage ? 'search-page' : '';
             return results_html;
         }
 
-        function getHtmlForFacets(facetsTemplate, facets) {
+        function getHtmlForFacets(facetsTemplate, facets, empty) {
 
             var facets_html = facetsTemplate.render({
                 facets: facets,
@@ -800,7 +815,8 @@ $class = $isSearchPage ? 'search-page' : '';
                 getDate: getDate,
                 relevance_index_name: algoliaConfig.indexName + '_products',
                 sorting_indices: algoliaConfig.sortingIndices,
-                sortSelected: sortSelected
+                sortSelected: sortSelected,
+                empty: empty
             });
 
             return facets_html;
@@ -1047,6 +1063,17 @@ $class = $isSearchPage ? 'search-page' : '';
                 updateUrl(push_state);
             }
 
+            function searchCallbackEmpty(content)
+            {
+                var instant_search_facets_container = $('#instant-search-facets-container');
+
+                var facets = [];
+
+                facets = getFacets(content);
+
+                instant_search_facets_container.html(getHtmlForFacets(facetsTemplate, facets, true));
+            }
+
             function searchCallback(content)
             {
                 if (initialized === false)
@@ -1089,9 +1116,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 var instant_search_facets_container = $('#instant-search-facets-container');
                 var instant_search_results_container = $('#instant-search-results-container');
                 var instant_search_pagination_container = $('#instant-search-pagination-container');
-
-                instant_search_facets_container.html('');
-                instant_search_results_container.html('');
+                
                 instant_search_pagination_container.html('');
 
                 var facets = [];
@@ -1102,7 +1127,11 @@ $class = $isSearchPage ? 'search-page' : '';
                     facets = getFacets(content);
                     pages = getPages(content);
 
-                    instant_search_facets_container.html(getHtmlForFacets(facetsTemplate, facets));
+                    instant_search_facets_container.html(getHtmlForFacets(facetsTemplate, facets, false));
+                }
+                else
+                {
+                    helper_empty.search();
                 }
 
                 instant_search_results_container.html(getHtmlForResults(resultsTemplate, content, facets));
@@ -1122,6 +1151,7 @@ $class = $isSearchPage ? 'search-page' : '';
             }
 
             helper.on('result', searchCallback);
+            helper_empty.on('result', searchCallbackEmpty);
 
             /**
              * Example of a custom facet type
@@ -1187,6 +1217,10 @@ $class = $isSearchPage ? 'search-page' : '';
 
                 e.stopImmediatePropagation();
 
+                if ($(this).hasClass("empty")) {
+                    helper.setQuery("");
+                }
+
                 if ($(this).attr("data-name") == "all")
                     helper.state.clearRefinements($(this).attr("data-attribute"));
 
@@ -1207,6 +1241,10 @@ $class = $isSearchPage ? 'search-page' : '';
              * Handle click on conjunctive and disjunctive facet
              */
             $("body").on("click", ".sub_facet", function () {
+
+                if ($(this).hasClass("empty")) {
+                    helper.setQuery("");
+                }
 
                 $(this).find("input[type='checkbox']").each(function (i) {
                     $(this).prop("checked", !$(this).prop("checked"));
