@@ -17,9 +17,8 @@ $category = Mage::registry('current_category');
 
 $hash_path = null;
 
-if($config->isInstantEnabled() && $config->replaceCategories() && $category)
+if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->getRequest()->getControllerName() == 'category' && $category)
 {
-
     $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
 
     $path = '';
