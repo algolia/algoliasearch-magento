@@ -8,47 +8,54 @@ $formKey = Mage::getSingleton('core/session')->getFormKey();
 $base_url = Mage::getBaseUrl();
 
 $isSearchPage = false;;
+$hash_path = null;
 
 /**
  * Handle category replacement
  */
-
-$category = Mage::registry('current_category');
-
-$hash_path = null;
-
-if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->getRequest()->getControllerName() == 'category' && $category)
+if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->getRequest()->getControllerName() == 'category')
 {
-    $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
+    $category = Mage::registry('current_category');
 
-    $path = '';
+    if ($category)
+    {
+        $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
 
-    foreach ($category->getPathIds() as $treeCategoryId) {
-        if ($path != '') {
-            $path .= ' /// ';
+        $path = '';
+
+        foreach ($category->getPathIds() as $treeCategoryId) {
+            if ($path != '') {
+                $path .= ' /// ';
+            }
+
+            $path .= $product_helper->getCategoryName($treeCategoryId, Mage::app()->getStore()->getStoreId());
         }
 
-        $path .= $product_helper->getCategoryName($treeCategoryId, Mage::app()->getStore()->getStoreId());
+        $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId());
+        $category_url = $category->getUrl($category);
+        $hash_path = '#q=&page=0&refinements=%5B%7B%22categories%22%3A%5B%22'.$path.'%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
+
+        $isSearchPage = true;
     }
-
-    $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId());
-    $category_url = $category->getUrl($category);
-    $hash_path = '#q=&page=0&refinements=%5B%7B%22categories%22%3A%5B%22'.$path.'%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
-
-    $isSearchPage = true;
 }
 
-$pageIdentifier = Mage::app()->getFrontController()->getAction()->getFullActionName();
-
-if ($config->isInstantEnabled() && $pageIdentifier === 'catalogsearch_result_index')
+/**
+ * Handle search
+ */
+if ($config->isInstantEnabled())
 {
-    $query = Mage::app()->getRequest()->getParam('q');
+    $pageIdentifier = Mage::app()->getFrontController()->getAction()->getFullActionName();
 
-    $product_helper = Mage::helper('algoliasearch/entity_producthelper');
+    if ($pageIdentifier === 'catalogsearch_result_index')
+    {
+        $query = Mage::app()->getRequest()->getParam('q');
 
-    $hash_path = '#q='.$query.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
+        $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
-    $isSearchPage = true;
+        $hash_path = '#q='.$query.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
+
+        $isSearchPage = true;
+    }
 }
 
 
