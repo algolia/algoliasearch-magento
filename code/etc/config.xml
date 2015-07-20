@@ -77,7 +77,7 @@
                     <algolia_search>
                         <class>algoliasearch/observer</class>
                         <method>controllerFrontInitBefore</method>
-                    </algolia_search >
+                    </algolia_search>
                 </observers>
             </controller_action_layout_generate_blocks_before>
         </events>
