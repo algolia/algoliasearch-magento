@@ -72,14 +72,6 @@
                     </algolia_search>
                 </observers>
             </admin_system_config_changed_section_algoliasearch>
-            <controller_action_layout_generate_blocks_before>
-                <observers>
-                    <algolia_search>
-                        <class>algoliasearch/observer</class>
-                        <method>controllerFrontInitBefore</method>
-                    </algolia_search>
-                </observers>
-            </controller_action_layout_generate_blocks_before>
         </events>
         <resources>
             <algoliasearch_setup>
