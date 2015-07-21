@@ -12,18 +12,18 @@ if (class_exists('AlgoliaSearch\Client', false) == false)
 class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstract
 {
     protected $client;
+    private $config;
 
     public function __construct()
     {
+        $this->config = Mage::helper('algoliasearch/config');
         $this->resetCredentialsFromConfig();
     }
 
     public function resetCredentialsFromConfig()
     {
-        $config = Mage::helper('algoliasearch/config');
-
-        if ($config->getApplicationID() && $config->getAPIKey())
-            $this->client = new \AlgoliaSearch\Client($config->getApplicationID(), $config->getAPIKey());
+        if ($this->config->getApplicationID() && $this->config->getAPIKey())
+            $this->client = new \AlgoliaSearch\Client($this->config->getApplicationID(), $this->config->getAPIKey());
     }
 
     public function getIndex($name)
@@ -93,6 +93,9 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
     {
         $index = $this->getIndex($index_name);
 
-        $index->addObjects($objects);
+        if ($this->config->isPartialUpdateEnabled())
+            $index->partialUpdateObjects($objects);
+        else
+            $index->addObjects($objects);
     }
 }

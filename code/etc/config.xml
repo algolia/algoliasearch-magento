@@ -130,6 +130,9 @@
                 <facets>a:2:{s:18:"_1432907948596_596";a:4:{s:9:"attribute";s:14:"price_with_tax";s:4:"type";s:6:"slider";s:10:"other_type";s:0:"";s:5:"label";s:5:"Price";}s:18:"_1432907963376_376";a:4:{s:9:"attribute";s:10:"categories";s:4:"type";s:11:"conjunctive";s:10:"other_type";s:0:"";s:5:"label";s:10:"Categories";}}</facets>
                 <sorts>a:3:{s:18:"_1432908018844_844";a:3:{s:9:"attribute";s:14:"price_with_tax";s:4:"sort";s:3:"asc";s:5:"label";s:12:"Lowest price";}s:18:"_1432908022539_539";a:3:{s:9:"attribute";s:14:"price_with_tax";s:4:"sort";s:4:"desc";s:5:"label";s:13:"Highest price";}s:18:"_1433768597454_454";a:3:{s:9:"attribute";s:10:"created_at";s:4:"sort";s:4:"desc";s:5:"label";s:12:"Newest first";}}</sorts>
             </instant>
+            <autocomplete>
+                <additional_sections></additional_sections>
+            </autocomplete>
             <categories>
                 <category_additional_attributes2>a:7:{s:18:"_1427960339954_954";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960354437_437";a:4:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961004989_989";a:4:{s:9:"attribute";s:11:"description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961205511_511";a:4:{s:9:"attribute";s:10:"meta_title";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961216134_134";a:4:{s:9:"attribute";s:13:"meta_keywords";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961216916_916";a:4:{s:9:"attribute";s:16:"meta_description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427977778338_338";a:4:{s:9:"attribute";s:13:"product_count";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}}</category_additional_attributes2>
                 <custom_ranking_category_attributes>a:1:{s:18:"_1427961035192_192";a:2:{s:9:"attribute";s:13:"product_count";s:5:"order";s:4:"desc";}}</custom_ranking_category_attributes>
@@ -157,6 +160,9 @@
                 <number_of_element_by_page>100</number_of_element_by_page>
                 <number_of_job_to_run>300</number_of_job_to_run>
             </queue>
+            <advanced>
+                <partial_update>0</partial_update>
+            </advanced>
         </algoliasearch>
     </default>
 </config> 

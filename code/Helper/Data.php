@@ -50,6 +50,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->algolia_helper->setSettings($this->category_helper->getIndexName($storeId), $this->category_helper->getIndexSettings($storeId));
         $this->algolia_helper->setSettings($this->page_helper->getIndexName($storeId), $this->page_helper->getIndexSettings($storeId));
         $this->algolia_helper->setSettings($this->suggestion_helper->getIndexName($storeId), $this->suggestion_helper->getIndexSettings($storeId));
+
+        foreach ($this->config->getAutocompleteAdditionnalSections() as $section)
+            $this->algolia_helper->setSettings($this->additionalsections_helper->getIndexName($storeId).'_'.$section['attribute'], $this->additionalsections_helper->getIndexSettings($storeId));
     }
 
     public function getSearchResult($query, $storeId)
