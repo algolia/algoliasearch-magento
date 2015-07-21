@@ -54,6 +54,14 @@ if ($config->isInstantEnabled())
 
         $hash_path = '#q='.$query.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
 
+        $refinement_key = Mage::app()->getRequest()->getParam('refinement_key');
+        $refinement_value = Mage::app()->getRequest()->getParam('refinement_value');
+
+        if ($refinement_key !== null)
+        {
+            $hash_path = '#q=&page=0&refinements=%5B%7B%22' . $refinement_key . '%22%3A%5B%22' . $refinement_value . '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22' . $product_helper->getBaseIndexName() . '_products%22';
+        }
+
         $isSearchPage = true;
     }
 }
@@ -196,6 +204,16 @@ $class = $isSearchPage ? 'search-page' : '';
     <a class="algoliasearch-autocomplete-hit" href="{{url}}">
         <div class="info-without-thumb">
             {{{_highlightResult.name.value}}}
+        </div>
+        <div class="clearfix"></div>
+    </a>
+</script>
+
+<!-- Extra attribute hit template -->
+<script type="text/template" id="autocomplete_extra_template">
+    <a class="algoliasearch-autocomplete-hit" href="{{url}}">
+        <div class="info-without-thumb">
+            {{{_highlightResult.value.value}}}
         </div>
         <div class="clearfix"></div>
     </a>
@@ -481,14 +499,16 @@ $class = $isSearchPage ? 'search-page' : '';
                     suggestions: algoliaBundle.Hogan.compile($('#autocomplete_suggestions_template').html()),
                     products: algoliaBundle.Hogan.compile($('#autocomplete_products_template').html()),
                     categories: algoliaBundle.Hogan.compile($('#autocomplete_categories_template').html()),
-                    pages: algoliaBundle.Hogan.compile($('#autocomplete_pages_template').html())
+                    pages: algoliaBundle.Hogan.compile($('#autocomplete_pages_template').html()),
+                    additionnalSection: algoliaBundle.Hogan.compile($('#autocomplete_extra_template').html())
                 },
                 titles: {
                     products: '<?php echo $this->__('Products'); ?>',
                     categories: '<?php echo $this->__('Categories') ?>',
                     pages: '<?php echo $this->__('Pages') ?>',
                     suggestions: '<?php echo $this->__('Suggestions') ?>'
-                }
+                },
+                additionnalSection: <?php echo json_encode($config->getAutocompleteAdditionnalSections()); ?>
             },
             applicationId: '<?php echo $config->getApplicationID() ?>',
             indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
@@ -499,6 +519,8 @@ $class = $isSearchPage ? 'search-page' : '';
             isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
             removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>
         };
+
+        console.log(algoliaConfig);
 
         /*****************
          **
@@ -1056,6 +1078,44 @@ $class = $isSearchPage ? 'search-page' : '';
                     });
                 }
             }
+
+            for (var i = 0; i < algoliaConfig.autocomplete.additionnalSection.length; i++)
+            {
+                var index = algolia_client.initIndex(algoliaConfig.indexName + "_section_" + algoliaConfig.autocomplete.additionnalSection[i].attribute);
+
+                var label = algoliaConfig.autocomplete.additionnalSection[i].label !== "" ?
+                    algoliaConfig.autocomplete.additionnalSection[i].label : algoliaConfig.autocomplete.additionnalSection[i].attribute;
+
+                hogan_objs.push({
+                    source: (function (index, i) {
+                        return function (query, cb) {
+                            index.search(query, {
+                                hitsPerPage: algoliaConfig.autocomplete.additionnalSection[i].hitsPerPage
+                            }, function (err, content) {
+                                if (err)
+                                {
+                                    cb([]);
+                                    return;
+                                }
+
+                                cb(content.hits);
+                            });
+                        }
+                        })(index, i),
+                    displayKey: 'value',
+                    templates: {
+                        header: '<div class="category">' + label + '</div>',
+                        suggestion: (function (i) {
+                            return function (hit) {
+                                hit.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + algoliaConfig.autocomplete.additionnalSection[i].attribute + "&refinement_value=" + hit.value;
+
+                                return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
+                            }
+                        })(i)
+                    }
+                });
+            }
+            console.log(helper);
 
             if (algoliaConfig.removeBranding === false)
             {

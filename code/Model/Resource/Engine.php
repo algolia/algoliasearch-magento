@@ -99,6 +99,14 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         }
     }
 
+    public function rebuildAdditionalSections()
+    {
+        foreach (Mage::app()->getStores() as $store)
+        {
+            $this->addToQueue('algoliasearch/observer', 'rebuildAdditionalSectionsIndex', array('store_id' => $store->getId()), $this->config->getQueueMaxRetries());
+        }
+    }
+
     public function rebuildSuggestions()
     {
         foreach (Mage::app()->getStores() as $store)

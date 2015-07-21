@@ -211,6 +211,32 @@
                         </replace_categories>
                     </fields>
                 </instant>
+                <autocomplete>
+                    <label>Autocomplete configuration</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>35</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <additional_sections>
+                            <label>Additionnal Sections</label>
+                            <frontend_model>algoliasearch/system_config_form_field_additionalsections</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                Configure here the section you want add. Ex. Manufacturer<br />
+                                <span style="color: #D83900">&#9888;</span> All attributes used here must be have been initially included in the Attributes configuration panel + in Instant search facets panel.
+                                ]]>
+                            </comment>
+                        </additional_sections>
+                    </fields>
+                </autocomplete>
                 <categories translate="label">
                     <label>Category Search Configuration</label>
                     <frontend_type>text</frontend_type>

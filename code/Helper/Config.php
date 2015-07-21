@@ -17,6 +17,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_FACETS                           = 'algoliasearch/instant/facets';
     const XML_PATH_SORTING_INDICES                  = 'algoliasearch/instant/sorts';
 
+    const XML_PATH_AUTOCOMPLETE_ADD_SECTIONS        = 'algoliasearch/autocomplete/additional_sections';
+
     const XML_PATH_PRODUCT_ATTRIBUTES               = 'algoliasearch/products/product_additional_attributes';
     const XML_PATH_PRODUCT_CUSTOM_RANKING           = 'algoliasearch/products/custom_ranking_product_attributes';
     const XML_PATH_RESULTS_LIMIT                    = 'algoliasearch/products/results_limit';
@@ -45,6 +47,16 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IS_ACTIVE                        = 'algoliasearch/queue/active';
     const XML_PATH_NUMBER_OF_ELEMENT_BY_PAGE        = 'algoliasearch/queue/number_of_element_by_page';
     const XML_PATH_NUMBER_OF_JOB_TO_RUN             = 'algoliasearch/queue/number_of_job_to_run';
+
+    public function getAutocompleteAdditionnalSections($storeId = null)
+    {
+        $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_AUTOCOMPLETE_ADD_SECTIONS, $storeId));
+
+        if (is_array($attrs))
+            return array_values($attrs);
+
+        return array();
+    }
 
     public function getNumberOfQuerySuggestions($storeId = null)
     {

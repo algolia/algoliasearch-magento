@@ -11,7 +11,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return '_products';
     }
 
-    public function getAllAttributes()
+    public function getAllAttributes($add_empty_row = false)
     {
         if (is_null(self::$_productAttributes))
         {
@@ -36,13 +36,18 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             foreach ($productAttributes as $attributeCode)
                 self::$_productAttributes[$attributeCode] = $config->getAttribute('catalog_category', $attributeCode)->getFrontendLabel();
-
-            uksort(self::$_productAttributes, function ($a, $b) {
-                return strcmp($a, $b);
-            });
         }
 
-        return self::$_productAttributes;
+        $attributes = self::$_productAttributes;
+
+        if ($add_empty_row === true)
+            $attributes[''] = '';
+
+        uksort($attributes, function ($a, $b) {
+            return strcmp($a, $b);
+        });
+
+        return $attributes;
     }
 
     protected function isAttributeEnabled($additionalAttributes, $attr_name)
@@ -378,6 +383,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             if ($attribute_ressource)
             {
+                $attribute_ressource = $attribute_ressource->setStoreId($product->getStoreId());
+
                 if ($value === null)
                 {
                     /** Get values as array in children */
@@ -415,7 +422,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     if ($value_text)
                         $value = $value_text;
                     else
+                    {
+                        $attribute_ressource = $attribute_ressource->setStoreId($product->getStoreId());
                         $value = $attribute_ressource->getFrontend()->getValue($product);
+                    }
 
                     if ($value)
                     {

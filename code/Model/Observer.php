@@ -52,20 +52,6 @@ class Algolia_Algoliasearch_Model_Observer
         $this->helper->deleteProductsAndCategoriesStoreIndices($storeId);
     }
 
-    public function deletePagesStoreIndices(Varien_Object $event)
-    {
-        $storeId = $event->getStoreId();
-
-        $this->helper->deletePagesStoreIndices($storeId);
-    }
-
-    public function deleteSuggestionsStoreIndices(Varien_Object $event)
-    {
-        $storeId = $event->getStoreId();
-
-        $this->helper->deleteSuggestionsStoreIndices($storeId);
-    }
-
     public function removeProducts(Varien_Object $event)
     {
         $storeId = $event->getStoreId();
@@ -80,6 +66,13 @@ class Algolia_Algoliasearch_Model_Observer
         $category_ids = $event->getCategoryIds();
 
         $this->helper->removeCategories($category_ids, $storeId);
+    }
+
+    public function rebuildAdditionalSectionsIndex(Varien_Object $event)
+    {
+        $storeId = $event->getStoreId();
+
+        $this->helper->rebuildStoreAdditionalSectionsIndex($storeId);
     }
 
     public function rebuildPageIndex(Varien_Object $event)

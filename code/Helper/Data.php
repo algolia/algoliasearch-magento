@@ -25,30 +25,21 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         \AlgoliaSearch\Version::$custom_value = " Magento (1.3.5)";
 
-        $this->algolia_helper       = Mage::helper('algoliasearch/algoliahelper');
+        $this->algolia_helper               = Mage::helper('algoliasearch/algoliahelper');
 
-        $this->page_helper          = Mage::helper('algoliasearch/entity_pagehelper');
-        $this->category_helper      = Mage::helper('algoliasearch/entity_categoryhelper');
-        $this->product_helper       = Mage::helper('algoliasearch/entity_producthelper');
-        $this->suggestion_helper    = Mage::helper('algoliasearch/entity_suggestionhelper');
+        $this->page_helper                  = Mage::helper('algoliasearch/entity_pagehelper');
+        $this->category_helper              = Mage::helper('algoliasearch/entity_categoryhelper');
+        $this->product_helper               = Mage::helper('algoliasearch/entity_producthelper');
+        $this->suggestion_helper            = Mage::helper('algoliasearch/entity_suggestionhelper');
+        $this->additionalsections_helper    = Mage::helper('algoliasearch/entity_additionalsectionshelper');
 
-        $this->config               = Mage::helper('algoliasearch/config');
+        $this->config                       = Mage::helper('algoliasearch/config');
     }
 
     public function deleteProductsAndCategoriesStoreIndices($storeId = null)
     {
         $this->algolia_helper->deleteIndex($this->product_helper->getIndexName($storeId));
         $this->algolia_helper->deleteIndex($this->category_helper->getIndexName($storeId));
-    }
-
-    public function deletePagesStoreIndices($storeId = null)
-    {
-        $this->algolia_helper->deleteIndex($this->page_helper->getIndexName($storeId));
-    }
-
-    public function deleteSuggestionsStoreIndices($storeId = null)
-    {
-        $this->algolia_helper->deleteIndex($this->suggestion_helper->getIndexName($storeId));
     }
 
     public function saveConfigurationToAlgolia($storeId = null)
@@ -107,6 +98,25 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $index_name = $this->category_helper->getIndexName($store_id);
 
             $this->algolia_helper->deleteObjects($ids, $index_name);
+        }
+    }
+
+    public function rebuildStoreAdditionalSectionsIndex($storeId)
+    {
+        $additionnal_sections = $this->config->getAutocompleteAdditionnalSections();
+
+        foreach ($additionnal_sections as $section)
+        {
+            $index_name = $this->additionalsections_helper->getIndexName($storeId).'_'.$section['attribute'];
+
+            $attribute_values = $this->additionalsections_helper->getAttributeValues($storeId, $section);
+
+            foreach (array_chunk($attribute_values, 100) as $chunk)
+                $this->algolia_helper->addObjects($chunk, $index_name.'_tmp');
+
+            $this->algolia_helper->moveIndex($index_name.'_tmp', $index_name);
+
+            $this->algolia_helper->setSettings($index_name, $this->additionalsections_helper->getIndexSettings($storeId));
         }
     }
 

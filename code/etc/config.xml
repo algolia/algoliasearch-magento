@@ -91,6 +91,9 @@
                 <search_indexer_suggest>
                     <model>algoliasearch/indexer_algoliasuggestions</model>
                 </search_indexer_suggest>
+                <search_indexer_addsections>
+                    <model>algoliasearch/indexer_algoliaadditionalsections</model>
+                </search_indexer_addsections>
             </indexer>
         </index>
     </global>
