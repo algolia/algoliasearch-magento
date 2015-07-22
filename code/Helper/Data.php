@@ -40,26 +40,65 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $this->algolia_helper->deleteIndex($this->product_helper->getIndexName($storeId));
         $this->algolia_helper->deleteIndex($this->category_helper->getIndexName($storeId));
+
+        /**
+         * Handle deletetion for customer groups
+         */
+        if ($this->config->isCustomerGroupsEnabled($storeId))
+        {
+            foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+            {
+                $group_id = (int) $group->getData('customer_group_id');
+
+                $this->algolia_helper->deleteIndex($this->product_helper->getIndexName($storeId).'_group_'.$group_id);
+            }
+        }
     }
 
     public function saveConfigurationToAlgolia($storeId = null)
     {
         $this->algolia_helper->resetCredentialsFromConfig();
 
-        $this->algolia_helper->setSettings($this->product_helper->getIndexName($storeId), $this->product_helper->getIndexSettings($storeId));
         $this->algolia_helper->setSettings($this->category_helper->getIndexName($storeId), $this->category_helper->getIndexSettings($storeId));
         $this->algolia_helper->setSettings($this->page_helper->getIndexName($storeId), $this->page_helper->getIndexSettings($storeId));
         $this->algolia_helper->setSettings($this->suggestion_helper->getIndexName($storeId), $this->suggestion_helper->getIndexSettings($storeId));
 
         foreach ($this->config->getAutocompleteAdditionnalSections() as $section)
             $this->algolia_helper->setSettings($this->additionalsections_helper->getIndexName($storeId).'_'.$section['attribute'], $this->additionalsections_helper->getIndexSettings($storeId));
+
+        $this->algolia_helper->setSettings($this->product_helper->getIndexName($storeId), $this->product_helper->getIndexSettings($storeId));
+
+        /**
+         * Handle deletetion for customer groups
+         */
+        if ($this->config->isCustomerGroupsEnabled($storeId))
+        {
+            foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+            {
+                $group_id = (int) $group->getData('customer_group_id');
+
+                $this->algolia_helper->setSettings($this->product_helper->getIndexName($storeId).'_group_'.$group_id, $this->product_helper->getIndexSettings($storeId, $group_id));
+            }
+        }
     }
 
     public function getSearchResult($query, $storeId)
     {
         $resultsLimit = $this->config->getResultsLimit($storeId);
 
-        $answer = $this->algolia_helper->query($this->product_helper->getIndexName($storeId), $query, array(
+        $index_name = $this->product_helper->getIndexName($storeId);
+
+        /**
+         * Handle customer group
+         */
+        if ($this->config->isCustomerGroupsEnabled($storeId))
+        {
+            $group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
+
+            $index_name = $this->product_helper->getIndexName($storeId).'_group_'.$group_id;
+        }
+
+        $answer = $this->algolia_helper->query($index_name, $query, array(
             'hitsPerPage' => max(5, min($resultsLimit, 1000)), // retrieve all the hits (hard limit is 1000)
             'attributesToRetrieve' => 'objectID',
             'attributesToHighlight' => '',
@@ -89,6 +128,21 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $index_name = $this->product_helper->getIndexName($store_id);
 
             $this->algolia_helper->deleteObjects($ids, $index_name);
+
+            /**
+             * Group Deleting
+             */
+            if ($this->config->isCustomerGroupsEnabled($store_id))
+            {
+                foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+                {
+                    $group_id = (int) $group->getData('customer_group_id');
+
+                    $index_name = $this->product_helper->getIndexName($store_id).'_group_'.$group_id;
+
+                    $this->algolia_helper->deleteObjects($ids, $index_name);
+                }
+            }
         }
     }
 
@@ -295,6 +349,23 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         unset($collection);
     }
 
+    private function getProductsRecords($storeId, $collection, $groupId = null)
+    {
+        $indexData = array();
+
+        /** @var $product Mage_Catalog_Model_Product */
+        foreach ($collection as $product)
+        {
+            $product->setStoreId($storeId);
+
+            $json = $this->product_helper->getObject($product, $groupId);
+
+            array_push($indexData, $json);
+        }
+
+        return $indexData;
+    }
+
     public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize)
     {
         set_time_limit(0);
@@ -307,20 +378,33 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $index_name = $this->product_helper->getIndexName($storeId);
 
-        $indexData = array();
 
-        /** @var $product Mage_Catalog_Model_Product */
-        foreach ($collection as $product)
-        {
-            $product->setStoreId($storeId);
-
-            $json = $this->product_helper->getObject($product);
-
-            array_push($indexData, $json);
-        }
+        /**
+         * Normal Indexing
+         */
+        $indexData = $this->getProductsRecords($storeId, $collection, null);
 
         if (count($indexData) > 0)
             $this->algolia_helper->addObjects($indexData, $index_name);
+
+
+        /**
+         * Group Indexing
+         */
+        if ($this->config->isCustomerGroupsEnabled($storeId))
+        {
+            foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+            {
+                $group_id = (int) $group->getData('customer_group_id');
+
+                $index_name = $this->product_helper->getIndexName($storeId).'_group_'.$group_id;
+
+                $indexData = $this->getProductsRecords($storeId, $collection, $group_id);
+
+                if (count($indexData) > 0)
+                    $this->algolia_helper->addObjects($indexData, $index_name);
+            }
+        }
 
         unset($indexData);
 

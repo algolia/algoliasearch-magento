@@ -49,6 +49,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_NUMBER_OF_JOB_TO_RUN             = 'algoliasearch/queue/number_of_job_to_run';
 
     const XML_PATH_PARTIAL_UPDATES                  = 'algoliasearch/advanced/partial_update';
+    const XML_PATH_CUSTOMER_GROUPS_ENABLE           = 'algoliasearch/advanced/customer_groups_enable';
+
+    public function isCustomerGroupsEnabled($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::XML_PATH_CUSTOMER_GROUPS_ENABLE, $storeId);
+    }
 
     public function isPartialUpdateEnabled($storeId = null)
     {
@@ -186,8 +192,17 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
         $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_SORTING_INDICES, $storeId));
 
+        $group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
+
+        $suffix_index_name = '';
+
+        if ($this->isCustomerGroupsEnabled($storeId))
+        {
+            $suffix_index_name = '_group_' . $group_id;
+        }
+
         foreach ($attrs as &$attr)
-            $attr['index_name'] = $product_helper->getIndexName($storeId).'_'.$attr['attribute'].'_'.$attr['sort'];
+            $attr['index_name'] = $product_helper->getIndexName($storeId).$suffix_index_name.'_'.$attr['attribute'].'_'.$attr['sort'];
 
         if (is_array($attrs))
             return $attrs;

@@ -10,6 +10,15 @@ $base_url = Mage::getBaseUrl();
 $isSearchPage = false;;
 $hash_path = null;
 
+$group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
+
+$suffix_index_name = '';
+
+if ($config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()))
+{
+    $suffix_index_name = '_group_' . $group_id;
+}
+
 /**
  * Handle category replacement
  */
@@ -31,7 +40,7 @@ if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->g
             $path .= $product_helper->getCategoryName($treeCategoryId, Mage::app()->getStore()->getStoreId());
         }
 
-        $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId());
+        $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId()).$suffix_index_name;
         $category_url = $category->getUrl($category);
         $hash_path = '#q=&page=0&refinements=%5B%7B%22categories%22%3A%5B%22'.$path.'%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
 
@@ -52,7 +61,7 @@ if ($config->isInstantEnabled())
 
         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
-        $hash_path = '#q='.$query.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
+        $hash_path = '#q='.$query.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().$suffix_index_name.'%22';
 
         $refinement_key = Mage::app()->getRequest()->getParam('refinement_key');
         $refinement_value = Mage::app()->getRequest()->getParam('refinement_value');
@@ -512,6 +521,7 @@ $class = $isSearchPage ? 'search-page' : '';
             },
             applicationId: '<?php echo $config->getApplicationID() ?>',
             indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
+            suffixIndexName: '<?php echo $suffix_index_name; ?>',
             apiKey: '<?php echo $config->getSearchOnlyAPIKey() ?>',
             facets: <?php echo json_encode($config->getFacets()); ?>,
             hitsPerPage: <?php echo (int) $config->getNumberOfProductResults() ?>,
@@ -519,8 +529,6 @@ $class = $isSearchPage ? 'search-page' : '';
             isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
             removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>
         };
-
-        console.log(algoliaConfig);
 
         /*****************
          **
@@ -560,7 +568,7 @@ $class = $isSearchPage ? 'search-page' : '';
             }
         }
 
-        var helper = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products', {
+        var helper = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products' + algoliaConfig.suffixIndexName, {
             facets: conjunctive_facets,
             disjunctiveFacets: disjunctive_facets,
             hitsPerPage: algoliaConfig.hitsPerPage
@@ -568,7 +576,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
         helper.setQuery('');
 
-        var helper_empty = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products', {
+        var helper_empty = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products' + algoliaConfig.suffixIndexName, {
             facets: conjunctive_facets,
             disjunctiveFacets: disjunctive_facets_empty,
             hitsPerPage: algoliaConfig.hitsPerPage
@@ -678,8 +686,6 @@ $class = $isSearchPage ? 'search-page' : '';
                 helper.setQuery(q);
 
                 helper.clearRefinements();
-
-                console.log(refinements);
 
                 /** Set refinements from url data **/
                 for (var i = 0; i < refinements.length; ++i) {
@@ -917,11 +923,12 @@ $class = $isSearchPage ? 'search-page' : '';
             var hogan_objs = [];
 
             var indices = ['categories', 'products', 'pages'];
+            var indices_with_suffix  = ['categories', 'products' + algoliaConfig.suffixIndexName, 'pages'];
 
             if (algoliaConfig.autocomplete.hitsPerPage['suggestions'] > 0)
             {
                 var suggestions_index = algolia_client.initIndex(algoliaConfig.indexName + "_suggestions");
-                var products_index = algolia_client.initIndex(algoliaConfig.indexName + "_products");
+                var products_index = algolia_client.initIndex(algoliaConfig.indexName + "_products" + algoliaConfig.suffixIndexName);
 
                 hogan_objs.push({
                     displayKey: 'query',
@@ -1010,7 +1017,7 @@ $class = $isSearchPage ? 'search-page' : '';
             {
                 if (algoliaConfig.autocomplete.hitsPerPage[indices[i]] > 0)
                 {
-                    var index = algolia_client.initIndex(algoliaConfig.indexName + "_" + indices[i]);
+                    var index = algolia_client.initIndex(algoliaConfig.indexName + "_" + indices_with_suffix[i]);
 
                     hogan_objs.push({
                         source: (function (index, i) {
@@ -1040,8 +1047,8 @@ $class = $isSearchPage ? 'search-page' : '';
                                     {
                                         var time = Math.floor(Date.now() / 1000);
 
-                                        if ((hit.special_price_from_date != undefined && hit.special_price_from_date > time) ||
-                                            (hit.special_price_to_date != undefined && hit.special_price_to_date < time))
+                                        if ((hit.special_price_from_date != undefined && (hit.special_price_from_date > time && hit.special_price_from_date !== '')) ||
+                                            (hit.special_price_to_date != undefined && (hit.special_price_to_date < time && hit.special_price_to_date !== '')))
                                         {
                                             delete hit.special_price_from_date;
                                             delete hit.special_price_to_date;
@@ -1115,7 +1122,6 @@ $class = $isSearchPage ? 'search-page' : '';
                     }
                 });
             }
-            console.log(helper);
 
             if (algoliaConfig.removeBranding === false)
             {
@@ -1131,6 +1137,8 @@ $class = $isSearchPage ? 'search-page' : '';
                     }
                 });
             }
+
+            console.log(hogan_objs);
 
             $(algoliaConfig.autocomplete.selector).each(function (i) {
                 var tt = $(this)
@@ -1217,8 +1225,9 @@ $class = $isSearchPage ? 'search-page' : '';
 
                     var time = Math.floor(Date.now() / 1000);
 
-                    if ((content.hits[i].special_price_from_date != undefined && content.hits[i].special_price_from_date > time) ||
-                        (content.hits[i].special_price_to_date != undefined && content.hits[i].special_price_to_date < time))
+
+                    if ((content.hits[i].special_price_from_date != undefined && (content.hits[i].special_price_from_date > time && content.hits[i].special_price_from_date !== '')) ||
+                        (content.hits[i].special_price_to_date != undefined && (content.hits[i].special_price_to_date < time && content.hits[i].special_price_to_date !== '')))
                     {
                         delete content.hits[i].special_price_from_date;
                         delete content.hits[i].special_price_to_date;

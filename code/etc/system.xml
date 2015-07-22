@@ -562,6 +562,20 @@
                                 ]]>
                             </comment>
                         </partial_update>
+                        <customer_groups_enable translate="label">
+                            <label>Customer Groups</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                If enabled, the extension will create duplicate every index for each customer group in order to handle price correctly<br />
+                                ]]>
+                            </comment>
+                        </customer_groups_enable>
                     </fields>
                 </advanced>
             </groups>
