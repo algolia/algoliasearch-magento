@@ -59,6 +59,9 @@ if ($config->isInstantEnabled())
     {
         $query = Mage::app()->getRequest()->getParam('q');
 
+        if ($query == '__empty__')
+            $query = '';
+
         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
         $hash_path = '#q='.$query.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().$suffix_index_name.'%22';
@@ -529,6 +532,20 @@ $class = $isSearchPage ? 'search-page' : '';
             isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
             removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>
         };
+
+
+        $('#search').closest('form').submit(function(e) {
+            var query = $('#search').val();
+
+            if (query == '')
+                query = '__empty__';
+
+            var url = $(this).attr('action') + '?q=' + query;
+
+            window.location = url;
+
+            return false;
+        });
 
         /*****************
          **
@@ -1137,8 +1154,6 @@ $class = $isSearchPage ? 'search-page' : '';
                     }
                 });
             }
-
-            console.log(hogan_objs);
 
             $(algoliaConfig.autocomplete.selector).each(function (i) {
                 var tt = $(this)
