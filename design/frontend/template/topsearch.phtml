@@ -261,35 +261,42 @@ $class = $isSearchPage ? 'search-page' : '';
 
     <div id="algolia_instant_selector"<?php echo count($config->getFacets()) > 0 ? ' class="with-facets"' : '' ?>>
 
-        <div id="algolia-left-container">
-            <div id="instant-search-facets-container"></div>
-        </div>
+        <div class="row">
+            <div class="col-md-offset-3 col-md-9">
+                {{#second_bar}}
+                <div id="instant-search-bar-container">
+                    <div id="instant-search-box">
+                        <label for="instant-search-bar">
+                            <?php echo $this->__('Search :'); ?>
+                        </label>
 
-        <div id="algolia-right-container">
+                        <input value="<?php echo $catalogSearchHelper->getEscapedQueryText() ?>" placeholder="<?php echo $this->__('Search for products'); ?>" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
 
-            {{#second_bar}}
-            <div id="instant-search-bar-container">
-                <div id="instant-search-box">
-                    <label for="instant-search-bar">
-                        <?php echo $this->__('Search :'); ?>
-                    </label>
-
-                    <input value="<?php echo $catalogSearchHelper->getEscapedQueryText() ?>" placeholder="<?php echo $this->__('Search for products'); ?>" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
-
-                    <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128">
-                        <g transform="scale(4)">
-                            <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
-                            <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
-                            <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z"></path>
-                        </g>
-                    </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128">
+                            <g transform="scale(4)">
+                                <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
+                                <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
+                                <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z"></path>
+                            </g>
+                        </svg>
+                    </div>
                 </div>
+                {{/second_bar}}
             </div>
-            {{/second_bar}}
-
-            <div id="instant-search-results-container"></div>
-            <div id="instant-search-pagination-container"></div>
         </div>
+
+        <div class="row">
+            <div class="col-md-3" id="algolia-left-container">
+                <div id="refine-toggle" class="visible-xs visible-sm">+ <?php echo $this->__('Refine'); ?></div>
+                <div class="hidden-xs hidden-sm" id="instant-search-facets-container"></div>
+            </div>
+
+            <div class="col-md-9" id="algolia-right-container">
+                <div id="instant-search-results-container"></div>
+                <div id="instant-search-pagination-container"></div>
+            </div>
+        </div>
+
     </div>
 </script>
 
@@ -316,78 +323,83 @@ $class = $isSearchPage ? 'search-page' : '';
         </div>
         {{/hits.length}}
 
-        {{#hits}}
-        <div class="result-wrapper">
-            <a href="{{url}}" class="result">
-                <div class="result-content">
-                    <div class="result-thumbnail">
-                        {{#image_url}}
-                        <img src="{{{ image_url }}}" />
-                        {{/image_url}}
-                        {{^image_url}}
-                        <span class="no-image"></span>
-                        {{/image_url}}
-                    </div>
-                    <div class="result-sub-content">
-                        <h3 class="result-title text-ellipsis">
-                            {{{ _highlightResult.name.value }}}
-                        </h3>
-                        <div class="ratings">
-                            <div class="rating-box">
-                                <div class="rating" style="width:{{rating_summary}}%" width="148" height="148"></div>
+        <div class="row">
+            {{#hits}}
+            <div class="col-md-4 col-sm-6">
+                <div class="result-wrapper">
+                    <a href="{{url}}" class="result">
+                        <div class="result-content">
+                            <div class="result-thumbnail">
+                                {{#image_url}}
+                                <img src="{{{ image_url }}}" />
+                                {{/image_url}}
+                                {{^image_url}}
+                                <span class="no-image"></span>
+                                {{/image_url}}
                             </div>
-                        </div>
-                        <div class="price">
-                            <div class="algoliasearch-autocomplete-price">
-                                <div>
-                                    {{#special_price_with_tax}}
-                                    <span class="after_special">
-                                        {{special_price_with_tax_formated}}
-                                    </span>
-                                    {{/special_price_with_tax}}
-
-                                    {{#special_price_with_tax}}
-                                    <span class="before_special">
-                                    {{/special_price_with_tax}}
-
-                                    {{#price_with_tax}}{{price_with_tax_formated}}{{/price_with_tax}}
-                                    {{^price_with_tax}}
-                                    {{#min_with_tax_formated}}
-                                    {{min_with_tax_formated}} - {{max_with_tax_formated}}
-                                    {{/min_with_tax_formated}}
-                                    {{^min_with_tax_formated}}-{{/min_with_tax_formated}}
-                                    {{/price_with_tax}}
-
-                                    {{#special_price_with_tax}}
-                                    </span>
-                                    {{/special_price_with_tax}}
-
-
+                            <div class="result-sub-content">
+                                <h3 class="result-title text-ellipsis">
+                                    {{{ _highlightResult.name.value }}}
+                                </h3>
+                                <div class="ratings">
+                                    <div class="rating-box">
+                                        <div class="rating" style="width:{{rating_summary}}%" width="148" height="148"></div>
+                                    </div>
                                 </div>
+                                <div class="price">
+                                    <div class="algoliasearch-autocomplete-price">
+                                        <div>
+                                            {{#special_price_with_tax}}
+                                            <span class="after_special">
+                                                {{special_price_with_tax_formated}}
+                                            </span>
+                                            {{/special_price_with_tax}}
+
+                                            {{#special_price_with_tax}}
+                                            <span class="before_special">
+                                            {{/special_price_with_tax}}
+
+                                            {{#price_with_tax}}{{price_with_tax_formated}}{{/price_with_tax}}
+                                            {{^price_with_tax}}
+                                            {{#min_with_tax_formated}}
+                                            {{min_with_tax_formated}} - {{max_with_tax_formated}}
+                                            {{/min_with_tax_formated}}
+                                            {{^min_with_tax_formated}}-{{/min_with_tax_formated}}
+                                            {{/price_with_tax}}
+
+                                            {{#special_price_with_tax}}
+                                            </span>
+                                            {{/special_price_with_tax}}
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="result-description text-ellipsis">
+                                    {{{ _highlightResult.description.value }}}
+                                </div>
+
+                                {{#isAddToCartEnabled}}
+                                {{#in_stock}}
+
+                                <form action="<?php echo $base_url; ?>/checkout/cart/add/product/{{objectID}}" method="post">
+                                    <input type="hidden" name="form_key" value="<?php echo $formKey; ?>" />
+
+                                    <input type="hidden" name="qty" value="1">
+
+                                    <button type="submit"><?php echo $this->__('Add to Cart'); ?></button>
+                                </form>
+                                {{/in_stock}}
+                                {{/isAddToCartEnabled}}
                             </div>
                         </div>
-                        <div class="result-description text-ellipsis">
-                            {{{ _highlightResult.description.value }}}
-                        </div>
-
-                        {{#isAddToCartEnabled}}
-                        {{#in_stock}}
-
-                        <form action="<?php echo $base_url; ?>/checkout/cart/add/product/{{objectID}}" method="post">
-                            <input type="hidden" name="form_key" value="<?php echo $formKey; ?>" />
-
-                            <input type="hidden" name="qty" value="1">
-
-                            <button type="submit"><?php echo $this->__('Add to Cart'); ?></button>
-                        </form>
-                        {{/in_stock}}
-                        {{/isAddToCartEnabled}}
-                    </div>
+                        <div class="clearfix"></div>
+                    </a>
                 </div>
-                <div class="clearfix"></div>
-            </a>
+            </div>
+            {{/hits}}
         </div>
-        {{/hits}}
+
         {{^hits.length}}
         <div class="no-results">
             <?php echo $this->__('No results found matching'); ?> "<strong>{{query}}</strong>". <span class="button clear-button"><?php echo $this->__('Clear query and filters'); ?></span>
@@ -1462,6 +1474,17 @@ $class = $isSearchPage ? 'search-page' : '';
 
                 performQueries(true);
             });
+
+            /** Handle small screen **/
+            $('body').on('click', '#refine-toggle', function () {
+                $('#instant-search-facets-container').toggleClass('hidden-sm').toggleClass('hidden-xs');
+
+                if ($(this).html()[0] === '+')
+                    $(this).html('- Refine');
+                else
+                    $(this).html('+ Refine');
+            });
+
 
             /**
              * Handle search
