@@ -549,7 +549,7 @@ $class = $isSearchPage ? 'search-page' : '';
         $('#search').closest('form').submit(function(e) {
             var query = $('#search').val();
 
-            if (query == '')
+            if (algoliaConfig.instant.enabled && query == '')
                 query = '__empty__';
 
             var url = $(this).attr('action') + '?q=' + query;
