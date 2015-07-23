@@ -442,6 +442,7 @@
   border: solid 1px #EDEDED;
   margin: 10px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 /**
