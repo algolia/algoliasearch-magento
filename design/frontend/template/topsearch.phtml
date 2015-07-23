@@ -1272,7 +1272,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 var instant_search_facets_container = $('#instant-search-facets-container');
                 var instant_search_results_container = $('#instant-search-results-container');
                 var instant_search_pagination_container = $('#instant-search-pagination-container');
-                
+
                 instant_search_pagination_container.html('');
 
                 var facets = [];
@@ -1301,7 +1301,9 @@ $class = $isSearchPage ? 'search-page' : '';
 
                 if (instant_search_bar.is(":focus") === false)
                 {
-                    instant_search_bar.focus().val('');
+                    if ($(window).width() > 992) {
+                        instant_search_bar.focus().val('');
+                    }
                     instant_search_bar.val(helper.state.query);
                 }
             }
