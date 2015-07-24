@@ -81,7 +81,7 @@ if ($config->isInstantEnabled())
 
 if ($hash_path !== null)
 {
-    echo '<script>window.location.hash = "'.$hash_path.'"</script>';
+    echo '<script>if (window.location.hash.length <= 1) { window.location.hash = "'.$hash_path.'"; }</script>';
 }
 
 
