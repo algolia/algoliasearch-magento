@@ -504,6 +504,8 @@ $class = $isSearchPage ? 'search-page' : '';
     //<![CDATA[
 
     algoliaBundle.$(function($) {
+        var supportsHistory = window.history && window.history.pushState;
+
         var algoliaConfig = {
             instant: {
                 enabled: <?php echo $config->isInstantEnabled() ? "true" : "false"; ?>,
@@ -684,14 +686,15 @@ $class = $isSearchPage ? 'search-page' : '';
                 '&numerics_refinements=' + encodeURIComponent(JSON.stringify(helper.state.numericRefinements)) +
                 '&index_name=' + encodeURIComponent(JSON.stringify(helper.getIndex()));
 
-            /** If push_state is false wait for one second to push the state in history **/
-            if (push_state)
-                history.pushState(url, null, url);
+            /** If we have pushState push_state is false wait for one second to push the state in history **/
+            if (push_state) {
+                updateBrowserUrlBar(url);
+            }
             else
             {
                 clearTimeout(history_timeout);
-                history_timeout = setTimeout(function () {
-                    history.pushState(url, null, url);
+                history_timeout = setTimeout(function() {
+                    updateBrowserUrlBar(url)
                 }, 1000);
             }
         };
@@ -1538,6 +1541,14 @@ $class = $isSearchPage ? 'search-page' : '';
                 infos.find(".max").html(ui.values[1]);
             }
 
+            function updateBrowserUrlBar(url) {
+                if (supportsHistory) {
+                    history.pushState(url, null, url);
+                } else {
+                    window.location.hash = url;
+                }
+            }
+
             /**
              * Initialization
              */
@@ -1549,10 +1560,11 @@ $class = $isSearchPage ? 'search-page' : '';
                 getRefinementsFromUrl();
             }
 
-            window.addEventListener("popstate", function(e) {
-                getRefinementsFromUrl();
-            });
-
+            if (supportsHistory) {
+                window.addEventListener("popstate", getRefinementsFromUrl);
+            } else {
+                window.addEventListener("hashchange", getRefinementsFromUrl);
+            }
 
             onfocus_css = {
                 'opacity': '1',
