@@ -330,16 +330,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
             $this->engine
                 ->rebuildProductIndex(null, $productIds);
-
-            /*
-            * Change indexer status as need to reindex related categories to update product count.
-            * It's low priority so no need to automatically reindex all related categories after deleting each product.
-            * Do not reindex all if affected categories are given or product count is not indexed.
-            */
-            if ( ! isset($data['catalogsearch_update_category_id'])) {
-                $process = $event->getProcess();
-                $process->changeStatus(Mage_Index_Model_Process::STATUS_REQUIRE_REINDEX);
-            }
         }
 
         /*

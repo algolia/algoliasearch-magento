@@ -81,7 +81,7 @@ if ($config->isInstantEnabled())
 
 if ($hash_path !== null)
 {
-    echo '<script>window.location.hash = "'.$hash_path.'"</script>';
+    echo '<script>if (window.location.hash.length <= 1) { window.location.hash = "'.$hash_path.'"; }</script>';
 }
 
 
@@ -551,7 +551,7 @@ $class = $isSearchPage ? 'search-page' : '';
         $('#search').closest('form').submit(function(e) {
             var query = $('#search').val();
 
-            if (query == '')
+            if (algoliaConfig.instant.enabled && query == '')
                 query = '__empty__';
 
             var url = $(this).attr('action') + '?q=' + query;
