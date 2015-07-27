@@ -228,6 +228,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <depends><active>1</active></depends>
                             <comment>
                                 <![CDATA[
                                 Configure here the section you want add. Ex. Manufacturer<br />
@@ -339,7 +340,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The min number of times a query has been performed in order to be suggested. Default value is 4.</comment>
+                            <comment>The min number of times a query has been performed in order to be suggested. Default value is 100000.</comment>
                         </min_popularity>
                         <min_number_of_results translate="label comment">
                             <label>Min number of products</label>

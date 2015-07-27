@@ -45,6 +45,42 @@ class Algolia_Algoliasearch_Model_Observer
         return $this;
     }
 
+
+
+    private function updateStock($product_id)
+    {
+        foreach (Mage::app()->getStores() as $storeId => $store)
+        {
+            if ( ! $store->getIsActive())
+                continue;
+
+            $this->helper->rebuildStoreProductIndex($storeId, array($product_id));
+        }
+    }
+
+    public function catalogInventorySave(Varien_Event_Observer $observer)
+    {
+        $product = $observer->getItem();
+
+        $this->updateStock($product->getProductId());
+    }
+
+    public function quoteInventory(Varien_Event_Observer $observer)
+    {
+        $quote = $observer->getEvent()->getQuote();
+
+        foreach ($quote->getAllItems() as $product)
+            $this->updateStock($product->getProductId());
+    }
+
+    public function refundOrderInventory(Varien_Event_Observer $observer)
+    {
+        $creditmemo = $observer->getEvent()->getCreditmemo();
+
+        foreach ($creditmemo->getAllItems() as $product)
+            $this->updateStock($product->getProductId());
+    }
+
     public function deleteProductsAndCategoriesStoreIndices(Varien_Object $event)
     {
         $storeId = $event->getStoreId();

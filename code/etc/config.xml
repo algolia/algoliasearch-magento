@@ -72,6 +72,55 @@
                     </algolia_search>
                 </observers>
             </admin_system_config_changed_section_algoliasearch>
+            <cataloginventory_stock_item_save_after>
+                <observers>
+                    <algolia_search>
+                        <class>algoliasearch/observer</class>
+                        <method>inventoryChange</method>
+                    </algolia_search>
+                </observers>
+            </cataloginventory_stock_item_save_after>
+
+            <cataloginventory_stock_item_save_commit_after>
+                <observers>
+                    <genmato_stockupdate>
+                        <class>algoliasearch/observer</class>
+                        <method>catalogInventorySave</method>
+                    </genmato_stockupdate>
+                </observers>
+            </cataloginventory_stock_item_save_commit_after>
+            <sales_model_service_quote_submit_before>
+                <observers>
+                    <genmato_stockupdate>
+                        <class>algoliasearch/observer</class>
+                        <method>quoteInventory</method>
+                    </genmato_stockupdate>
+                </observers>
+            </sales_model_service_quote_submit_before>
+            <sales_model_service_quote_submit_failure>
+                <observers>
+                    <genmato_stockupdate>
+                        <class>algoliasearch/observer</class>
+                        <method>quoteInventory</method>
+                    </genmato_stockupdate>
+                </observers>
+            </sales_model_service_quote_submit_failure>
+            <sales_order_item_cancel>
+                <observers>
+                    <genmato_stockupdate>
+                        <class>algoliasearch/observer</class>
+                        <method>catalogInventorySave</method>
+                    </genmato_stockupdate>
+                </observers>
+            </sales_order_item_cancel>
+            <sales_order_creditmemo_save_after>
+                <observers>
+                    <genmato_stockupdate>
+                        <class>algoliasearch/observer</class>
+                        <method>refundOrderInventory</method>
+                    </genmato_stockupdate>
+                </observers>
+            </sales_order_creditmemo_save_after>
         </events>
         <resources>
             <algoliasearch_setup>
@@ -127,7 +176,7 @@
             <instant>
                 <replace_categories>1</replace_categories>
                 <instant_selector>.main</instant_selector>
-                <facets>a:2:{s:18:"_1432907948596_596";a:4:{s:9:"attribute";s:14:"price_with_tax";s:4:"type";s:6:"slider";s:10:"other_type";s:0:"";s:5:"label";s:5:"Price";}s:18:"_1432907963376_376";a:4:{s:9:"attribute";s:10:"categories";s:4:"type";s:11:"conjunctive";s:10:"other_type";s:0:"";s:5:"label";s:10:"Categories";}}</facets>
+                <facets>a:2:{s:18:"_1432907948596_596";a:4:{s:9:"attribute";s:14:"price_with_tax";s:4:"type";s:6:"slider";s:10:"other_type";s:0:"";s:5:"label";s:5:"Price";}s:18:"_1432907963376_376";a:4:{s:9:"attribute";s:10:"categories";s:4:"type";s:12:"hierarchical";s:10:"other_type";s:0:"";s:5:"label";s:10:"Categories";}}</facets>
                 <sorts>a:3:{s:18:"_1432908018844_844";a:3:{s:9:"attribute";s:14:"price_with_tax";s:4:"sort";s:3:"asc";s:5:"label";s:12:"Lowest price";}s:18:"_1432908022539_539";a:3:{s:9:"attribute";s:14:"price_with_tax";s:4:"sort";s:4:"desc";s:5:"label";s:13:"Highest price";}s:18:"_1433768597454_454";a:3:{s:9:"attribute";s:10:"created_at";s:4:"sort";s:4:"desc";s:5:"label";s:12:"Newest first";}}</sorts>
             </instant>
             <autocomplete>
@@ -138,7 +187,7 @@
                 <custom_ranking_category_attributes>a:1:{s:18:"_1427961035192_192";a:2:{s:9:"attribute";s:13:"product_count";s:5:"order";s:4:"desc";}}</custom_ranking_category_attributes>
             </categories>
             <suggestions>
-                <min_popularity>4</min_popularity>
+                <min_popularity>100000</min_popularity>
                 <min_number_of_results>2</min_number_of_results>
             </suggestions>
             <relevance>
