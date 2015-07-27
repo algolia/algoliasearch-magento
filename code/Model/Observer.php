@@ -45,7 +45,13 @@ class Algolia_Algoliasearch_Model_Observer
         return $this;
     }
 
+    public function saveProduct(Varien_Event_Observer $observer)
+    {
+        $product = $observer->getDataObject();
+        $product = Mage::getModel('catalog/product')->load($product->getId());
 
+        Algolia_Algoliasearch_Model_Indexer_Algolia::$product_categories[$product->getId()] = $product->getCategoryIds();
+    }
 
     private function updateStock($product_id)
     {

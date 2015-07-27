@@ -73,14 +73,14 @@
                 </observers>
             </admin_system_config_changed_section_algoliasearch>
 
-            <catalog_product_save_commit_after>
+            <catalog_product_save_before>
                 <observers>
                     <algolia_stockupdate>
                         <class>algoliasearch/observer</class>
                         <method>saveProduct</method>
                     </algolia_stockupdate>
                 </observers>
-            </catalog_product_save_commit_after>
+            </catalog_product_save_before>
 
             <cataloginventory_stock_item_save_commit_after>
                 <observers>

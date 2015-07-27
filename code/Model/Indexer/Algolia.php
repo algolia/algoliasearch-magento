@@ -8,6 +8,8 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
     private $engine;
     private $config;
 
+    public static $product_categories = array();
+
     public function __construct()
     {
         parent::__construct();
@@ -114,6 +116,16 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 else
                 {
                     $event->addNewData('catalogsearch_update_product_id', $product->getId());
+
+                    if (isset(static::$product_categories[$product->getId()]))
+                    {
+                        $oldCategories = static::$product_categories[$product->getId()];
+                        $newCategories = $product->getCategoryIds();
+
+                        $diffCategories = array_merge(array_diff($oldCategories, $newCategories), array_diff($newCategories, $oldCategories));
+
+                        $event->addNewData('catalogsearch_update_category_id', $diffCategories);
+                    }
                 }
 
                 break;
