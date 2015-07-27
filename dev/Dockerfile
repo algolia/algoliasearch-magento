@@ -40,6 +40,8 @@ RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs cache:flush &&
 RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs config:set dev/template/allow_symlink "1" >/dev/null 2>&1  && service mysql stop
 ## disable admin popup
 RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs admin:notifications >/dev/null 2>&1  && service mysql stop
+## disable url key in admin
+RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs config:set admin/security/use_form_key "0" >/dev/null 2>&1  && service mysql stop
 
 # algoliasearch-magento setup
 RUN cd /tmp && curl -s -L -O https://raw.github.com/colinmollenhour/modman/master/modman-installer && chmod +x modman-installer && ./modman-installer
