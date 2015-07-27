@@ -72,53 +72,54 @@
                     </algolia_search>
                 </observers>
             </admin_system_config_changed_section_algoliasearch>
-            <cataloginventory_stock_item_save_after>
+
+            <catalog_product_save_commit_after>
                 <observers>
-                    <algolia_search>
+                    <algolia_stockupdate>
                         <class>algoliasearch/observer</class>
-                        <method>inventoryChange</method>
-                    </algolia_search>
+                        <method>saveProduct</method>
+                    </algolia_stockupdate>
                 </observers>
-            </cataloginventory_stock_item_save_after>
+            </catalog_product_save_commit_after>
 
             <cataloginventory_stock_item_save_commit_after>
                 <observers>
-                    <genmato_stockupdate>
+                    <algolia_stockupdate>
                         <class>algoliasearch/observer</class>
                         <method>catalogInventorySave</method>
-                    </genmato_stockupdate>
+                    </algolia_stockupdate>
                 </observers>
             </cataloginventory_stock_item_save_commit_after>
             <sales_model_service_quote_submit_before>
                 <observers>
-                    <genmato_stockupdate>
+                    <algolia_stockupdate>
                         <class>algoliasearch/observer</class>
                         <method>quoteInventory</method>
-                    </genmato_stockupdate>
+                    </algolia_stockupdate>
                 </observers>
             </sales_model_service_quote_submit_before>
             <sales_model_service_quote_submit_failure>
                 <observers>
-                    <genmato_stockupdate>
+                    <algolia_stockupdate>
                         <class>algoliasearch/observer</class>
                         <method>quoteInventory</method>
-                    </genmato_stockupdate>
+                    </algolia_stockupdate>
                 </observers>
             </sales_model_service_quote_submit_failure>
             <sales_order_item_cancel>
                 <observers>
-                    <genmato_stockupdate>
+                    <algolia_stockupdate>
                         <class>algoliasearch/observer</class>
                         <method>catalogInventorySave</method>
-                    </genmato_stockupdate>
+                    </algolia_stockupdate>
                 </observers>
             </sales_order_item_cancel>
             <sales_order_creditmemo_save_after>
                 <observers>
-                    <genmato_stockupdate>
+                    <algolia_stockupdate>
                         <class>algoliasearch/observer</class>
                         <method>refundOrderInventory</method>
-                    </genmato_stockupdate>
+                    </algolia_stockupdate>
                 </observers>
             </sales_order_creditmemo_save_after>
         </events>
