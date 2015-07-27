@@ -538,6 +538,17 @@
                             <comment>Number of jobs to run each time the cron is run. Default value is 300.</comment>
                             <depends><active>1</active></depends>
                         </number_of_job_to_run>
+                        <noprocess>
+                            <label>Disable indexing</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Job will stack onto the queue but no indexing will be done. Default value is false.</comment>
+                            <depends><active>1</active></depends>
+                        </noprocess>
                     </fields>
                 </queue>
                 <advanced translate="label">

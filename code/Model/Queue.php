@@ -35,6 +35,9 @@ class Algolia_Algoliasearch_Model_Queue
         if ( ! $this->config->isQueueActive())
             return;
 
+        if ($this->config->noProcess())
+            return;
+
         $this->run($this->config->getNumberOfJobToRun());
     }
 
