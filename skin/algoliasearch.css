@@ -223,13 +223,22 @@
   cursor: pointer;
 }
 
-#algolia_instant_selector .facet .sub_facet.checked {
+#algolia_instant_selector .facet .sub_facet.conjuctive.checked {
   font-weight: bold;
   box-shadow: inset 4px 0 0 #54A5CD;
 }
 
-#algolia_instant_selector .facet .conjunctive .count,
-#algolia_instant_selector .facet .disjunctive .count {
+#algolia_instant_selector .facet .sub_facet.disjunctive.checked {
+  font-weight: bold;
+  box-shadow: inset 4px 0 0 #54A5CD;
+}
+
+#algolia_instant_selector .facet .hierarchical_facet .sub_facet.checked {
+  font-weight: bold;
+  box-shadow: inset 4px 0 0 #54A5CD;
+}
+
+#algolia_instant_selector .facet .count {
   float: right;
   color: #666;
 }

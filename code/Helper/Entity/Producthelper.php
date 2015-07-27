@@ -275,10 +275,30 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $categories_with_path = array_intersect_key($categories_with_path, array_unique(array_map('serialize', $categories_with_path)));
 
+        $categories_hierarchical = array();
+
+        $level_name = 'level';
+
+        foreach ($categories_with_path as $category)
+        {
+            for ($i = 0; $i < count($category); $i++)
+            {
+                if (isset($categories_hierarchical[$level_name.$i]) === false)
+                    $categories_hierarchical[$level_name.$i] = array();
+
+                $categories_hierarchical[$level_name.$i][] = implode(' /// ', array_slice($category, 0, $i + 1));
+            }
+        }
+
+        foreach ($categories_hierarchical as &$level)
+        {
+            $level = array_unique($level);
+        }
+
         foreach ($categories_with_path as &$category)
             $category = implode(' /// ',$category);
 
-        $customData['categories'] = array_values($categories_with_path);
+        $customData['categories'] = $categories_hierarchical;//array_values($categories_with_path);
 
         $customData['categories_without_path'] = $categories;
 
@@ -339,7 +359,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData['max_formated'] = Mage::helper('core')->formatPrice($max, false);
             $customData['min_with_tax_formated'] = Mage::helper('core')->formatPrice($min_with_tax, false);
             $customData['max_with_tax_formated'] = Mage::helper('core')->formatPrice($max_with_tax, false);
-
         }
 
         if (false === isset($defaultData['in_stock']))

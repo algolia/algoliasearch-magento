@@ -409,6 +409,19 @@ $class = $isSearchPage ? 'search-page' : '';
     </div>
 </script>
 
+<script type="text/template" id="instant-facets-hierarchical-template">
+    {{#data}}
+        <div style="padding-left: 10px; padding-right: 0px;" class="hierarchical_facet">
+            <div data-name="{{attribute}}" data-path="{{path}}" data-type="hierarchical" class="{{#isRefined}}checked {{/isRefined}}sub_facet hierarchical">
+                    <input style="display: none;" data-attribute="{{attribute}}" {{#isRefined}}checked{{/isRefined}} data-name="{{name}}" class="facet_value" type="checkbox" />
+                    {{name}}
+                    {{#count}}<span class="count">{{count}}</span>{{/count}}
+            </div>
+            {{>facet_hierarchical}}
+        </div>
+    {{/data}}
+</script>
+
 <!-- Facet template -->
 <script type="text/template" id="instant-facets-template">
     <div class="facets">
@@ -453,6 +466,12 @@ $class = $isSearchPage ? 'search-page' : '';
                     {{#count}}<span class="count">{{count}}</span>{{/count}}
                 </div>
                 {{/type.disjunctive}}
+
+                {{#type.hierarchical}}
+                    <div style="margin-left: -10px;">
+                    {{>facet_hierarchical}}
+                    </div>
+                {{/type.hierarchical}}
 
                 {{/sub_facets}}
             </div>
@@ -526,7 +545,7 @@ $class = $isSearchPage ? 'search-page' : '';
                     products: algoliaBundle.Hogan.compile($('#autocomplete_products_template').html()),
                     categories: algoliaBundle.Hogan.compile($('#autocomplete_categories_template').html()),
                     pages: algoliaBundle.Hogan.compile($('#autocomplete_pages_template').html()),
-                    additionnalSection: algoliaBundle.Hogan.compile($('#autocomplete_extra_template').html())
+                    additionnalSection: algoliaBundle.Hogan.compile($('#autocomplete_extra_template').html()),
                 },
                 titles: {
                     products: '<?php echo $this->__('Products'); ?>',
@@ -575,6 +594,7 @@ $class = $isSearchPage ? 'search-page' : '';
          *  Example : 'menu'
          */
         var conjunctive_facets          = [];
+        var hierarchical_facets         = [];
         var disjunctive_facets          = [];
         var disjunctive_facets_empty    = [];
 
@@ -587,6 +607,18 @@ $class = $isSearchPage ? 'search-page' : '';
             {
                 disjunctive_facets.push(algoliaConfig.facets[i].attribute);
                 disjunctive_facets_empty.push(algoliaConfig.facets[i].attribute);
+            }
+
+            if (algoliaConfig.facets[i].type == "hierarchical")
+            {
+                if (algoliaConfig.facets[i].attribute === 'categories')
+                    hierarchical_facets.push({
+                        name: algoliaConfig.facets[i].attribute,
+                        attributes: ['categories.level0', 'categories.level1', 'categories.level3'],
+                        separator: ' /// '
+                    });
+                else
+                    disjunctive_facets.push(algoliaConfig.facets[i].attribute);
             }
 
             if (algoliaConfig.facets[i].type == "slider")
@@ -602,6 +634,7 @@ $class = $isSearchPage ? 'search-page' : '';
         var helper = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products' + algoliaConfig.suffixIndexName, {
             facets: conjunctive_facets,
             disjunctiveFacets: disjunctive_facets,
+            hierarchicalFacets: hierarchical_facets,
             hitsPerPage: algoliaConfig.hitsPerPage
         });
 
@@ -610,6 +643,7 @@ $class = $isSearchPage ? 'search-page' : '';
         var helper_empty = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products' + algoliaConfig.suffixIndexName, {
             facets: conjunctive_facets,
             disjunctiveFacets: disjunctive_facets_empty,
+            hierarchicalFacets: hierarchical_facets,
             hitsPerPage: algoliaConfig.hitsPerPage
         });
 
@@ -676,6 +710,16 @@ $class = $isSearchPage ? 'search-page' : '';
                 var r = {};
 
                 r[refine] = helper.state.disjunctiveFacetsRefinements[refine];
+
+                refinements.push(r);
+            }
+
+            /** Get refinements for hierarchical facets **/
+            for (var refine in helper.state.hierarchicalFacetsRefinements)
+            {
+                var r = {};
+
+                r[refine] = helper.state.hierarchicalFacetsRefinements[refine];
 
                 refinements.push(r);
             }
@@ -758,6 +802,7 @@ $class = $isSearchPage ? 'search-page' : '';
                     }
                     catch(error)
                     {
+                        console.log(error);
                         throw("Bad facet function for '" + algoliaConfig.facets[i].type + "'");
                     }
                 }
@@ -937,6 +982,8 @@ $class = $isSearchPage ? 'search-page' : '';
                 sorting_indices: algoliaConfig.sortingIndices,
                 sortSelected: sortSelected,
                 empty: empty
+                }, {
+                facet_hierarchical: facet_hierarchical
             });
 
             return facets_html;
@@ -1212,6 +1259,7 @@ $class = $isSearchPage ? 'search-page' : '';
             var resultsTemplate     = algoliaBundle.Hogan.compile($('#instant-content-template').html());
             var facetsTemplate      = algoliaBundle.Hogan.compile($('#instant-facets-template').html());
             var paginationTemplate  = algoliaBundle.Hogan.compile($('#instant-pagination-template').html());
+            var facet_hierarchical  = algoliaBundle.Hogan.compile($('#instant-facets-hierarchical-template').html());
 
 
             function performQueries(push_state)
@@ -1225,9 +1273,7 @@ $class = $isSearchPage ? 'search-page' : '';
             {
                 var instant_search_facets_container = $('#instant-search-facets-container');
 
-                var facets = [];
-
-                facets = getFacets(content);
+                var facets = getFacets(content);
 
                 instant_search_facets_container.html(getHtmlForFacets(facetsTemplate, facets, true));
             }
@@ -1314,6 +1360,19 @@ $class = $isSearchPage ? 'search-page' : '';
             helper.on('result', searchCallback);
             helper_empty.on('result', searchCallbackEmpty);
 
+            custom_facets_types["hierarchical"] = function (helper, content, facet) {
+                var data = [];
+
+                var content_facet = content.getFacetByName(facet.attribute);
+
+                content_facet.name = window.facetsLabels && window.facetsLabels[content_facet.name] != undefined ? window.facetsLabels[content_facet.name] : content_facet.name;
+                content_facet.type = { hierarchical: true };
+
+                console.log(content_facet);
+
+                return [content_facet];
+            };
+
             /**
              * Example of a custom facet type
              */
@@ -1394,6 +1453,22 @@ $class = $isSearchPage ? 'search-page' : '';
                     if ($(this).attr("data-name") != "all")
                         helper.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
                 });
+
+                performQueries(true);
+            });
+
+            /**
+             * Handle click on hierarchical facet
+             */
+            $("body").on("click", ".sub_facet.hierarchical", function (e) {
+
+                e.stopImmediatePropagation();
+
+                if ($(this).hasClass("empty")) {
+                    helper.setQuery("");
+                }
+
+                helper.toggleRefine($(this).attr("data-name"), $(this).attr('data-path'));
 
                 performQueries(true);
             });
