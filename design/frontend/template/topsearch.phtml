@@ -611,12 +611,18 @@ $class = $isSearchPage ? 'search-page' : '';
 
             if (algoliaConfig.facets[i].type == "hierarchical")
             {
+
+                var hierarchical_levels = [];
+
+                for (var l = 0; l < 10; l++)
+                    hierarchical_levels.push('categories.level' + l.toString());
+
                 if (algoliaConfig.facets[i].attribute === 'categories')
                     hierarchical_facets.push({
                         name: algoliaConfig.facets[i].attribute,
-                        attributes: ['categories.level0', 'categories.level1', 'categories.level3'],
+                        attributes: hierarchical_levels,
                         separator: ' /// ',
-                        alwaysGetRootLevel: true,
+                        alwaysGetRootLevel: false,
                         sortBy: ['name:asc']
                     });
                 else
