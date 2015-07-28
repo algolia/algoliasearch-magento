@@ -53,7 +53,7 @@ class Client {
         if(!function_exists('json_decode')){
             throw new \Exception('AlgoliaSearch requires the JSON PHP extension.');
         }
-        $this->cainfoPath = __DIR__ . '/../resources/ca-bundle.crt';
+        $this->cainfoPath = __DIR__ . '/resources/ca-bundle.crt';
         foreach ($options as $option => $value) {
             if ($option == "cainfo") {
                 $this->cainfoPath = $value;
