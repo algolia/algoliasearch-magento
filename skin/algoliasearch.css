@@ -223,7 +223,7 @@
   cursor: pointer;
 }
 
-#algolia_instant_selector .facet .sub_facet.conjuctive.checked {
+#algolia_instant_selector .facet .sub_facet.conjunctive.checked {
   font-weight: bold;
   box-shadow: inset 4px 0 0 #54A5CD;
 }

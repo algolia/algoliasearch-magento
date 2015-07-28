@@ -853,7 +853,10 @@ $class = $isSearchPage ? 'search-page' : '';
                     });
 
                 }
-                facets.push({count: sub_facets.length, attribute: algoliaConfig.facets[i].attribute, facet_categorie_name: algoliaConfig.facets[i].label, sub_facets: sub_facets });
+
+                var label = algoliaConfig.facets[i].label !== "" ? algoliaConfig.facets[i].label : algoliaConfig.facets[i].attribute;
+
+                facets.push({count: sub_facets.length, attribute: algoliaConfig.facets[i].attribute, facet_categorie_name: label, sub_facets: sub_facets });
             }
 
             return facets;
