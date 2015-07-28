@@ -109,7 +109,7 @@
                     </fields>
                 </credentials>
                 <products translate="label">
-                    <label>Product Search Configuration</label>
+                    <label>Product Configuration</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>30</sort_order>
                     <show_in_default>1</show_in_default>
@@ -149,7 +149,7 @@
                             <comment>
                                 <![CDATA[
                                 Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
-                                <span style="color: #D83900">&#9888;</span> All attributes used here must be have been initially included in the Attributes configuration panel.
+                                <span style="color: #D83900">&#9888;</span> All attributes used here must have been initially included in the Attributes configuration panel.
                                 ]]>
                             </comment>
                         </custom_ranking_product_attributes>
@@ -211,35 +211,8 @@
                         </replace_categories>
                     </fields>
                 </instant>
-                <autocomplete>
-                    <label>Autocomplete configuration</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>35</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
-                    <fields>
-                        <additional_sections>
-                            <label>Additionnal Sections</label>
-                            <frontend_model>algoliasearch/system_config_form_field_additionalsections</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <depends><active>1</active></depends>
-                            <comment>
-                                <![CDATA[
-                                Configure here the section you want add. Ex. Manufacturer<br />
-                                <span style="color: #D83900">&#9888;</span> All attributes used here must be have been initially included in the Attributes configuration panel + in Instant search facets panel.
-                                ]]>
-                            </comment>
-                        </additional_sections>
-                    </fields>
-                </autocomplete>
                 <categories translate="label">
-                    <label>Category Search Configuration</label>
+                    <label>Category Autocomplete Configuration</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>40</sort_order>
                     <show_in_default>1</show_in_default>
@@ -279,14 +252,14 @@
                             <comment>
                                 <![CDATA[
                                 Choose here the attributes that reflect the popularity of your categories (number of products, total number of sales of the category,etc.).<br />
-                                <span style="color: #D83900">&#9888;</span> All attributes used here must be have been included before in the Attributes chart.
+                                <span style="color: #D83900">&#9888;</span> All attributes used here must have been included before in the Attributes chart.
                                 ]]>
                             </comment>
                         </custom_ranking_category_attributes>
                     </fields>
                 </categories>
                 <pages>
-                    <label>Page Search Configuration</label>
+                    <label>Page Autocomplete Configuration</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>45</sort_order>
                     <show_in_default>1</show_in_default>
@@ -318,7 +291,7 @@
                     </fields>
                 </pages>
                 <suggestions>
-                    <label>Query Suggestions Configuration</label>
+                    <label>Query Suggestions Autocomplete Configuration</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>46</sort_order>
                     <show_in_default>1</show_in_default>
@@ -359,8 +332,35 @@
                         </min_number_of_results>
                     </fields>
                 </suggestions>
+                <autocomplete>
+                    <label>Additional Autocomplete Sections Configuration</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>47</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <additional_sections>
+                            <label>Additionnal Sections</label>
+                            <frontend_model>algoliasearch/system_config_form_field_additionalsections</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><active>1</active></depends>
+                            <comment>
+                                <![CDATA[
+                                Configure here the additional auto-completion menu sections you want include in the dropdown menu (Ex. Manufacturer).<br />
+                                <span style="color: #D83900">&#9888;</span> All attributes used here must have been initially included in the <strong>Attributes Configuration</strong> panel and configured as a facet in the <strong>Instant Search Results Page Configuration</strong> panel to be able to refine on the specific attribute.
+                                ]]>
+                            </comment>
+                        </additional_sections>
+                    </fields>
+                </autocomplete>
                 <relevance translate="label">
-                    <label>Query Expansion Settings</label>
+                    <label>Query Expansion Configuration</label>
                     <frontend_type>text</frontend_type>
                     <expanded>1</expanded>
                     <sort_order>50</sort_order>
@@ -386,7 +386,7 @@
                     </fields>
                 </relevance>
                 <ui translate="label">
-                    <label>UI/UX</label>
+                    <label>UI Configuration</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>60</sort_order>
                     <show_in_default>1</show_in_default>
