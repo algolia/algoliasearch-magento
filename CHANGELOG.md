@@ -10,6 +10,7 @@
 - FIX: ie8 & ie9 compatibility issue
 - FIX: subfolder magento installation
 - FIX: Missing translation in the template
+- FIX: Issue with compilation
 
 ### 1.3.5
 
