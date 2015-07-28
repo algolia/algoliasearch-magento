@@ -617,7 +617,7 @@ $class = $isSearchPage ? 'search-page' : '';
                         attributes: ['categories.level0', 'categories.level1', 'categories.level3'],
                         separator: ' /// ',
                         alwaysGetRootLevel: true,
-                        sortBy: ['count:desc', 'name:asc']
+                        sortBy: ['name:asc']
                     });
                 else
                     disjunctive_facets.push(algoliaConfig.facets[i].attribute);
