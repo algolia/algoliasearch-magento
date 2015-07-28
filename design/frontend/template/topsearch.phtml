@@ -24,36 +24,27 @@ if ($config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()))
  */
 if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->getRequest()->getControllerName() == 'category')
 {
-    $hierarchical = false;
+    $category = Mage::registry('current_category');
 
-    foreach($config->getFacets() as $facet)
-        if ($facet['attribute'] == 'categories' && $facet['type'] == 'hierarchical')
-            $hierarchical = true;
-
-    if ($hierarchical)
+    if ($category)
     {
-        $category = Mage::registry('current_category');
+        $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
 
-        if ($category)
-        {
-            $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
+        $path = '';
 
-            $path = '';
-
-            foreach ($category->getPathIds() as $treeCategoryId) {
-                if ($path != '') {
-                    $path .= ' /// ';
-                }
-
-                $path .= $product_helper->getCategoryName($treeCategoryId, Mage::app()->getStore()->getStoreId());
+        foreach ($category->getPathIds() as $treeCategoryId) {
+            if ($path != '') {
+                $path .= ' /// ';
             }
 
-            $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId()).$suffix_index_name;
-            $category_url = $category->getUrl($category);
-            $hash_path = '#q=&page=0&refinements=%5B%7B%22categories%22%3A%5B%22'.$path.'%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
-
-            $isSearchPage = true;
+            $path .= $product_helper->getCategoryName($treeCategoryId, Mage::app()->getStore()->getStoreId());
         }
+
+        $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId()).$suffix_index_name;
+        $category_url = $category->getUrl($category);
+        $hash_path = '#q=&page=0&refinements=%5B%7B%22categories%22%3A%5B%22'.$path.'%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
+
+        $isSearchPage = true;
     }
 }
 
@@ -609,6 +600,10 @@ $class = $isSearchPage ? 'search-page' : '';
 
         for (var i = 0; i < algoliaConfig.facets.length; i++)
         {
+            /** Force categories to be hierarchical **/
+            if (algoliaConfig.facets[i].attribute == "categories")
+                algoliaConfig.facets[i].type = "hierarchical";
+
             if (algoliaConfig.facets[i].type == "conjunctive")
                 conjunctive_facets.push(algoliaConfig.facets[i].attribute);
 
