@@ -47,9 +47,15 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IS_ACTIVE                        = 'algoliasearch/queue/active';
     const XML_PATH_NUMBER_OF_ELEMENT_BY_PAGE        = 'algoliasearch/queue/number_of_element_by_page';
     const XML_PATH_NUMBER_OF_JOB_TO_RUN             = 'algoliasearch/queue/number_of_job_to_run';
+    const XML_PATH_NO_PROCESS                       = 'algoliasearch/queue/noprocess';
 
     const XML_PATH_PARTIAL_UPDATES                  = 'algoliasearch/advanced/partial_update';
     const XML_PATH_CUSTOMER_GROUPS_ENABLE           = 'algoliasearch/advanced/customer_groups_enable';
+
+    public function noProcess($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::XML_PATH_NO_PROCESS, $storeId);
+    }
 
     public function isCustomerGroupsEnabled($storeId = null)
     {

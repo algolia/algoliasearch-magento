@@ -3,9 +3,10 @@
 ### 1.3.6
 
 - NEW: The desing of instant search is now responsive and mobile friendly
-- UPDATE: Handle empty query
-- NEW: Add the possibility to do partialUpdates instead of addObjects
 - NEW: Add the possibility to autocomplete on attribute like brands, manufacturer, ...
+- NEW: Handling of customer groups
+- NEW: Add the possibility to do partialUpdates instead of addObjects
+- UPDATE: Handle empty query
 - FIX: ie8 & ie9 compatibility issue
 - FIX: subfolder magento installation
 - FIX: Missing translation in the template
