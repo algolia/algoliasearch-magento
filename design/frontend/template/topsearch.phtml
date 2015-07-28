@@ -611,11 +611,19 @@ $class = $isSearchPage ? 'search-page' : '';
 
             if (algoliaConfig.facets[i].type == "hierarchical")
             {
+
+                var hierarchical_levels = [];
+
+                for (var l = 0; l < 10; l++)
+                    hierarchical_levels.push('categories.level' + l.toString());
+
                 if (algoliaConfig.facets[i].attribute === 'categories')
                     hierarchical_facets.push({
                         name: algoliaConfig.facets[i].attribute,
-                        attributes: ['categories.level0', 'categories.level1', 'categories.level3'],
-                        separator: ' /// '
+                        attributes: hierarchical_levels,
+                        separator: ' /// ',
+                        alwaysGetRootLevel: true,
+                        sortBy: ['name:asc']
                     });
                 else
                     disjunctive_facets.push(algoliaConfig.facets[i].attribute);
@@ -1367,8 +1375,6 @@ $class = $isSearchPage ? 'search-page' : '';
 
                 content_facet.name = window.facetsLabels && window.facetsLabels[content_facet.name] != undefined ? window.facetsLabels[content_facet.name] : content_facet.name;
                 content_facet.type = { hierarchical: true };
-
-                console.log(content_facet);
 
                 return [content_facet];
             };
