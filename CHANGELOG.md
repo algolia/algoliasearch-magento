@@ -1,6 +1,6 @@
 ## Change Log
 
-### 1.3.6
+### 1.4.0
 
 - NEW: The desing of instant search is now responsive and mobile friendly
 - NEW: Add the possibility to autocomplete on attribute like brands, manufacturer, ...
