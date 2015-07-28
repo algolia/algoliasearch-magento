@@ -570,7 +570,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If enabled, all indexing operations add/update operation will use partialUpdateObjects instead of addObjects<br />
+                                If enabled, all add/update operations will use <code>partialUpdateObjects</code> instead of <code>addObjects</code>. You should enable this option if you update some attributes of your records from an external source in addition to Magento to avoid any overriding.
                                 ]]>
                             </comment>
                         </partial_update>
@@ -584,7 +584,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If enabled, the extension will create duplicate every index for each customer group in order to handle price correctly<br />
+                                If enabled, the extension will take into account your customer groups and display the price of the logged-in group instead of the default price.<br />Enabling this option creates an index per customer group.
                                 ]]>
                             </comment>
                         </customer_groups_enable>
