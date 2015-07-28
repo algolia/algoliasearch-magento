@@ -40,6 +40,11 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
             $values = array_unique($products->getColumnValues($attributeCode));
         }
 
+        if ($values && is_array($values) == false)
+        {
+            $values = array($values);
+        }
+
         $values = array_map(function ($value) use ($section) {
 
             $record = array(
