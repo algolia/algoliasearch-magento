@@ -622,7 +622,7 @@ $class = $isSearchPage ? 'search-page' : '';
                         name: algoliaConfig.facets[i].attribute,
                         attributes: hierarchical_levels,
                         separator: ' /// ',
-                        alwaysGetRootLevel: false,
+                        alwaysGetRootLevel: true,
                         sortBy: ['name:asc']
                     });
                 else
@@ -1375,8 +1375,6 @@ $class = $isSearchPage ? 'search-page' : '';
 
                 content_facet.name = window.facetsLabels && window.facetsLabels[content_facet.name] != undefined ? window.facetsLabels[content_facet.name] : content_facet.name;
                 content_facet.type = { hierarchical: true };
-
-                console.log(content_facet);
 
                 return [content_facet];
             };
