@@ -2,15 +2,15 @@
 
 ### 1.4.0
 
-- NEW: The desing of instant search is now responsive and mobile friendly
-- NEW: Add the possibility to autocomplete on attribute like brands, manufacturer, ...
+- NEW: The design of the instant search is now responsive and mobile friendly
+- NEW: Add the possibility to autocomplete on an attribute like brands, manufacturer, ...
 - NEW: Handling of customer groups
-- NEW: Add the possibility to do partialUpdates instead of addObjects
-- UPDATE: Handle empty query
-- FIX: ie8 & ie9 compatibility issue
-- FIX: subfolder magento installation
-- FIX: Missing translation in the template
-- FIX: Issue with compilation
+- NEW: Add the possibility to do `partialUpdates` instead of `addObjects` to allow external sources to patch the records
+- UPDATED: Handle empty query
+- FIX: IE8 & IE9 compatibility issues
+- FIX: Ability to use the extension if the magento instance is hosted in a subdir
+- FIX: Add missing translations in the template
+- FIX: Fixed a bug occurring while concatenating/minifying the JavaScript code
 
 ### 1.3.5
 
