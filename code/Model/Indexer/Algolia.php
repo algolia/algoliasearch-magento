@@ -99,11 +99,11 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 $product = $event->getDataObject();
                 $delete = FALSE;
 
-                if ($product->dataHasChangedFor('status') && $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED)
+                if ($product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED)
                 {
                     $delete = TRUE;
                 }
-                elseif ($product->dataHasChangedFor('visibility') && ! in_array($product->getData('visibility'), Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
+                elseif (! in_array($product->getData('visibility'), Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
                 {
                     $delete = TRUE;
                 }
@@ -181,7 +181,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 $category   = $event->getDataObject();
                 $productIds = $category->getAffectedProductIds();
 
-                if ($category->dataHasChangedFor('is_active') && ! $category->getData('is_active'))
+                if (! $category->getData('is_active'))
                 {
                     $event->addNewData('catalogsearch_delete_category_id', array_merge(array($category->getId()), $category->getAllChildren(TRUE)));
 
