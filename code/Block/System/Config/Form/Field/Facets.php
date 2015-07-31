@@ -32,7 +32,6 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
                         'conjunctive'   => 'Conjunctive',
                         'disjunctive'   => 'Disjunctive',
                         'slider'        => 'Slider',
-                        'hierarchical'  => 'Hierarchical (for categories only)',
                         'other'         => 'Other ->'
                     );
 
