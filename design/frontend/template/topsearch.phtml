@@ -1261,7 +1261,7 @@ $class = $isSearchPage ? 'search-page' : '';
             if ($(algoliaConfig.instant.selector).length !== 1)
                 throw '[Algolia] Invalid instant-search selector: ' + algoliaConfig.instant.selector;
 
-            if ($(algoliaConfig.instant.selector).find(algoliaConfig.autocomplete.selector).length > 0)
+            if (algoliaConfig.autocomplete.enabled && $(algoliaConfig.instant.selector).find(algoliaConfig.autocomplete.selector).length > 0)
                 throw '[Algolia] You can\'t have a search input matching "' + algoliaConfig.autocomplete.selector +
                 '" inside you instant selector "' + algoliaConfig.instant.selector + '"';
 
