@@ -1035,7 +1035,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
                             if (content.hits.length > 0) {
                                 products_index.search(content.hits[0].query, {
-                                    facets: ['categories'],
+                                    facets: ['categories.level0'],
                                     hitsPerPage: 0,
                                     typoTolerance: false,
                                     maxValuesPerFacet: 3
@@ -1051,14 +1051,14 @@ $class = $isSearchPage ? 'search-page' : '';
 
                                     var categories = {};
 
-                                    if (content2.facets.categories) {
+                                    if (content2.facets['categories.level0']) {
 
                                         var obj = $.extend(true, {}, content.hits[0]);
                                         obj.category = '<?php echo $this->__('All departments') ?>';
                                         obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
                                         hits.push(obj);
 
-                                        for (var key in content2.facets.categories) {
+                                        for (var key in content2.facets['categories.level0']) {
 
                                             var explode = key.split(' /// ');
                                             var nameattr = explode[0];
@@ -1070,7 +1070,7 @@ $class = $isSearchPage ? 'search-page' : '';
                                         {
                                             var obj = $.extend(true, {}, content.hits[0]);
                                             obj.category = key;
-                                            obj.url = '<?php echo $base_url; ?>?category=1#q=' + obj.query + '&page=0&refinements=%5B%7B%22categories%22%3A%5B%22' + obj.category + '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22<?php echo $product_helper->getBaseIndexName(); ?>_products%22';
+                                            obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query + '#q=' + obj.query + '&page=0&refinements=%5B%7B%22categories%22%3A%5B%22' + obj.category + '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22<?php echo $product_helper->getBaseIndexName(); ?>_products%22';
                                             hits.push(obj);
                                         }
                                     }
