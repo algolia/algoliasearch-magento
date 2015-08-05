@@ -289,7 +289,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         foreach ($categories_hierarchical as &$level)
         {
-            $level = array_unique($level);
+            $level = array_values(array_unique($level));
         }
 
         foreach ($categories_with_path as &$category)
