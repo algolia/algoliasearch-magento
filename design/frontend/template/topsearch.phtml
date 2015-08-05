@@ -57,14 +57,14 @@ if ($config->isInstantEnabled())
 
     if ($pageIdentifier === 'catalogsearch_result_index')
     {
-        $query = Mage::app()->getRequest()->getParam('q');
+        $query = $catalogSearchHelper->getEscapedQueryText();
 
         if ($query == '__empty__')
             $query = '';
 
         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
-        $hash_path = '#q='.$query.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().$suffix_index_name.'%22';
+        $hash_path = '#q='.htmlentities($query).'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().$suffix_index_name.'%22';
 
         $refinement_key = Mage::app()->getRequest()->getParam('refinement_key');
         $refinement_value = Mage::app()->getRequest()->getParam('refinement_value');
@@ -771,6 +771,8 @@ $class = $isSearchPage ? 'search-page' : '';
                 var numericsRefinements             = JSON.parse(decodeURIComponent(params.substring(numericsRefinementsParamOffset + '&numerics_refinements='.length, indexNameOffset)));
                 var indexName                       = JSON.parse(decodeURIComponent(params.substring(indexNameOffset + '&index_name='.length)));
 
+                q = $("<div/>").html(q).text();
+                
                 helper.setQuery(q);
 
                 helper.clearRefinements();
