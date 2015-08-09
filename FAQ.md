@@ -33,3 +33,11 @@ To fix it you need to change this settings :
 System > Configuration > Algolia Search > Instant Search Results Page Configuration
 DOM Selector to the best suited selector
 ```
+
+## I installed your search extension on my magento store but after that my website template got messy
+
+To be able to have the results instantly, displaying the results or a category page in done directly via javascript with a default html and css avoiding us to go through the magento backend. It's expected that the magento template is not used and you need to modify the default result layout:
+
+- The html can be find in this file: https://github.com/algolia/algoliasearch-magento/blob/master/design/frontend/template/topsearch.phtml
+
+- The css can be find in the file: https://github.com/algolia/algoliasearch-magento/blob/master/skin/algoliasearch.css
