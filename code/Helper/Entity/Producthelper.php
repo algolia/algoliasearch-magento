@@ -35,7 +35,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $productAttributes = array_diff($productAttributes, $excludedAttributes);
 
             foreach ($productAttributes as $attributeCode)
-                self::$_productAttributes[$attributeCode] = $config->getAttribute('catalog_category', $attributeCode)->getFrontendLabel();
+                self::$_productAttributes[$attributeCode] = $config->getAttribute('catalog_product', $attributeCode)->getFrontendLabel();
         }
 
         $attributes = self::$_productAttributes;
