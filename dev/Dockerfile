@@ -23,11 +23,11 @@ COPY bin/config.inc.php /var/www/htdocs/phpmyadmin/
 
 # magento 1.9.1
 ## download & install script
-RUN cd /tmp && curl -O http://demos.algolia.com/magento-1.9.1.1.tar.gz && tar xvf magento-1.9.1.1.tar.gz && mv magento/* magento/.htaccess /var/www/htdocs
+RUN cd /tmp && curl -O http://demos.algolia.com/downloads/magento-1.9.1.1.tar.gz && tar xvf magento-1.9.1.1.tar.gz && mv magento/* magento/.htaccess /var/www/htdocs
 COPY ./bin/install-magento /usr/local/bin/install-magento
 RUN chmod +x /usr/local/bin/install-magento
 ## sample dataset import
-RUN cd /tmp && curl -O http://demos.algolia.com/magento-sample-data-1.9.0.0.tar.gz && tar xvf magento-sample-data-1.9.0.0.tar.gz
+RUN cd /tmp && curl -O http://demos.algolia.com/downloads/magento-sample-data-1.9.0.0.tar.gz && tar xvf magento-sample-data-1.9.0.0.tar.gz
 RUN cd /var/www/htdocs/media && cp -R /tmp/magento-sample-data-1.9.0.0/media/* . && chmod -R 777 /var/www/htdocs/media
 RUN cd /var/www/htdocs/skin && cp -R /tmp/magento-sample-data-1.9.0.0/skin/* .
 RUN chown -R www-data:www-data /var/www/htdocs
