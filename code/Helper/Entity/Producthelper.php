@@ -233,6 +233,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData['special_price_formated']           = Mage::helper('core')->formatPrice($customData['special_price'], false);
             $customData['special_price_with_tax_formated']  = Mage::helper('core')->formatPrice($customData['special_price_with_tax'], false);
         }
+        else
+        {
+            /**
+             * In case of partial updates set back to empty so that it get updated
+             */
+            $customData['special_price'] = '';
+            $customData['special_price_with_tax'] = '';
+        }
 
         $customData['price_formated']           = Mage::helper('core')->formatPrice($customData['price'], false);
         $customData['price_with_tax_formated']  = Mage::helper('core')->formatPrice($customData['price_with_tax'], false);
