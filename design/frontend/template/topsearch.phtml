@@ -412,7 +412,7 @@ $class = $isSearchPage ? 'search-page' : '';
 <script type="text/template" id="instant-facets-hierarchical-template">
     {{#data}}
         <div style="padding-left: 10px; padding-right: 0px;" class="hierarchical_facet">
-            <div data-name="{{attribute}}" data-path="{{path}}" data-type="hierarchical" class="{{#isRefined}}checked {{/isRefined}}sub_facet hierarchical">
+            <div data-name="{{attribute}}" data-path="{{path}}" data-type="hierarchical" class="{{#isRefined}}checked {{/isRefined}}sub_facet hierarchical {{#empty}}empty{{/empty}}">
                     <input style="display: none;" data-attribute="{{attribute}}" {{#isRefined}}checked{{/isRefined}} data-name="{{name}}" class="facet_value" type="checkbox" />
                     {{name}}
                     {{#count}}<span class="count">{{count}}</span>{{/count}}
@@ -782,6 +782,7 @@ $class = $isSearchPage ? 'search-page' : '';
                     for (var refine in refinements[i]) {
                         for (var j = 0; j < refinements[i][refine].length; j++) {
                             helper.toggleRefine(refine, refinements[i][refine][j]);
+                            helper_empty.toggleRefine(refine, refinements[i][refine][j]);
                         }
                     }
                 }
@@ -1353,6 +1354,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 }
                 else
                 {
+                    console.log('ok');
                     helper_empty.search();
                 }
 
@@ -1466,7 +1468,10 @@ $class = $isSearchPage ? 'search-page' : '';
                         helper.state.clearRefinements($(this).attr("data-attribute"));
 
                     if ($(this).attr("data-name") != "all")
+                    {
                         helper.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
+                        helper_empty.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
+                    }
                 });
 
                 performQueries(true);
@@ -1484,6 +1489,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 }
 
                 helper.toggleRefine($(this).attr("data-name"), $(this).attr('data-path'));
+                helper_empty.toggleRefine($(this).attr("data-name"), $(this).attr('data-path'));
 
                 performQueries(true);
             });
@@ -1501,6 +1507,7 @@ $class = $isSearchPage ? 'search-page' : '';
                     $(this).prop("checked", !$(this).prop("checked"));
 
                     helper.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
+                    helper_empty.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
                 });
 
                 performQueries(true);
