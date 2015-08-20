@@ -647,7 +647,8 @@ $class = $isSearchPage ? 'search-page' : '';
             facets: conjunctive_facets,
             disjunctiveFacets: disjunctive_facets,
             hierarchicalFacets: hierarchical_facets,
-            hitsPerPage: algoliaConfig.hitsPerPage
+            hitsPerPage: algoliaConfig.hitsPerPage,
+            analyticsTags: 'instant-search'
         });
 
         helper.setQuery('');
@@ -656,7 +657,8 @@ $class = $isSearchPage ? 'search-page' : '';
             facets: conjunctive_facets,
             disjunctiveFacets: disjunctive_facets_empty,
             hierarchicalFacets: hierarchical_facets,
-            hitsPerPage: algoliaConfig.hitsPerPage
+            hitsPerPage: algoliaConfig.hitsPerPage,
+            analyticsTags: 'instant-search'
         });
 
         helper_empty.setQuery('');
@@ -1031,7 +1033,8 @@ $class = $isSearchPage ? 'search-page' : '';
                     displayKey: 'query',
                     source: function (query, cb) {
                         suggestions_index.search(query, {
-                            hitsPerPage: algoliaConfig.autocomplete.hitsPerPage['suggestions']
+                            hitsPerPage: algoliaConfig.autocomplete.hitsPerPage['suggestions'],
+                            analyticsTags: 'autocomplete'
                         }, function (err, content) {
                             if (err)
                                 return;
@@ -1041,7 +1044,8 @@ $class = $isSearchPage ? 'search-page' : '';
                                     facets: ['categories.level0'],
                                     hitsPerPage: 0,
                                     typoTolerance: false,
-                                    maxValuesPerFacet: 3
+                                    maxValuesPerFacet: 3,
+                                    analyticsTags: 'instant-search'
                                 }, function (err2, content2) {
 
                                     if (err2)
@@ -1120,7 +1124,8 @@ $class = $isSearchPage ? 'search-page' : '';
                         source: (function (index, i) {
                                 return function (query, cb) {
                                     index.search(query, {
-                                        hitsPerPage: algoliaConfig.autocomplete.hitsPerPage[indices[i]]
+                                        hitsPerPage: algoliaConfig.autocomplete.hitsPerPage[indices[i]],
+                                        analyticsTags: 'autocomplete'
                                     }, function (err, content) {
                                         if (err)
                                         {
@@ -1194,7 +1199,8 @@ $class = $isSearchPage ? 'search-page' : '';
                     source: (function (index, i) {
                         return function (query, cb) {
                             index.search(query, {
-                                hitsPerPage: algoliaConfig.autocomplete.additionnalSection[i].hitsPerPage
+                                hitsPerPage: algoliaConfig.autocomplete.additionnalSection[i].hitsPerPage,
+                                analyticsTags: 'autocomplete'
                             }, function (err, content) {
                                 if (err)
                                 {

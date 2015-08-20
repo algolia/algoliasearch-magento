@@ -103,7 +103,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'attributesToRetrieve' => 'objectID',
             'attributesToHighlight' => '',
             'attributesToSnippet' => '',
-            'removeWordsIfNoResult'=> $this->config->getRemoveWordsIfNoResult($storeId)
+            'removeWordsIfNoResult'=> $this->config->getRemoveWordsIfNoResult($storeId),
+            'analyticsTags' => 'backend-search'
         ));
 
         $data = array();
