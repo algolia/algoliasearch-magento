@@ -19,6 +19,9 @@ if ($config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()))
     $suffix_index_name = '_group_' . $group_id;
 }
 
+$title = '';
+$content = '';
+
 /**
  * Handle category replacement
  */
@@ -26,9 +29,17 @@ if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->g
 {
     $category = Mage::registry('current_category');
 
-    if ($category)
+    if ($category && $category->getDisplayMode() !== 'PAGE')
     {
         $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
+
+        if ($category->getDisplayMode() == 'PRODUCTS_AND_PAGE')
+        {
+            $page       = $category->getLandingPage();
+            $cms_block  = Mage::getModel('cms/block')->load($page);
+            $title      = $cms_block->getTitle();
+            $content    = $cms_block->getContent();
+        }
 
         $path = '';
 
@@ -263,25 +274,33 @@ $class = $isSearchPage ? 'search-page' : '';
 
         <div class="row">
             <div class="col-md-offset-3 col-md-9">
-                {{#second_bar}}
-                <div id="instant-search-bar-container">
-                    <div id="instant-search-box">
-                        <label for="instant-search-bar">
-                            <?php echo $this->__('Search :'); ?>
-                        </label>
-
-                        <input value="<?php echo $catalogSearchHelper->getEscapedQueryText() ?>" placeholder="<?php echo $this->__('Search for products'); ?>" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
-
-                        <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128">
-                            <g transform="scale(4)">
-                                <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
-                                <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
-                                <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z"></path>
-                            </g>
-                        </svg>
+                <div id="algolia-static-content">
+                    <div class="page-title category-title">
+                        <h1><?php echo $title; ?></h1>
                     </div>
+                    <?php echo $content; ?>
                 </div>
-                {{/second_bar}}
+                <div>
+                    {{#second_bar}}
+                    <div id="instant-search-bar-container">
+                        <div id="instant-search-box">
+                            <label for="instant-search-bar">
+                                <?php echo $this->__('Search :'); ?>
+                            </label>
+
+                            <input value="<?php echo $catalogSearchHelper->getEscapedQueryText() ?>" placeholder="<?php echo $this->__('Search for products'); ?>" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
+
+                            <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128">
+                                <g transform="scale(4)">
+                                    <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
+                                    <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
+                                    <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z"></path>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                    {{/second_bar}}
+                </div>
             </div>
         </div>
 
@@ -774,7 +793,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 var indexName                       = JSON.parse(decodeURIComponent(params.substring(indexNameOffset + '&index_name='.length)));
 
                 q = $("<div/>").html(q).text();
-                
+
                 helper.setQuery(q);
 
                 helper.clearRefinements();

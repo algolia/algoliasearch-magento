@@ -454,6 +454,11 @@
   cursor: pointer;
 }
 
+#algolia-static-content
+{
+  margin-bottom: 20px;
+}
+
 /**
 ** GRID
 */
