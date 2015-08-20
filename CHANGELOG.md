@@ -3,7 +3,7 @@
 ### 1.4.1
 
 - NEW: Add analytics tags
-- UPDATED: Customer group implementation (to lower the number of record)
+- UPDATED: Customer group implementation (to lower the number of records)
 - FIX: Amazon like suggestion
 - FIX: special price in case of partial updates
 - FIX: No results page (facets)
