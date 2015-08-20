@@ -3,7 +3,7 @@
 
 ## Things to check before anything:
  
-- You are on last version (currently 1.4.0) this can be checked by looking a the user agent of a build query
+- You are on last version (currently 1.4.1) this can be checked by looking a the user agent of a build query
 - Catalog has been indexed at least once.
 
 ## Warning saying an index not up to date ?
