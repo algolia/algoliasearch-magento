@@ -213,8 +213,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     {
         $key = $group_id === null ? 'default' : $group_id;
 
-        $customData['price'][$key]             = (int) $product->getPrice();
-        $customData['price_with_tax'][$key]    = (int) Mage::helper('tax')->getPrice($product, $product->getPrice(), true, null, null, null, null, false);
+        $customData['price'][$key]             = (double) $product->getPrice();
+        $customData['price_with_tax'][$key]    = (double) Mage::helper('tax')->getPrice($product, $product->getPrice(), true, null, null, null, null, false);
 
         $special_price = null;
 
@@ -230,15 +230,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $special_price = $discounted_price;
         }
         else // If fetch default special price
-            $special_price = $product->getFinalPrice();
+            $special_price = (double) $product->getFinalPrice();
 
         if ($special_price && $special_price !== $customData['price'][$key])
         {
             $customData['special_price_from_date'][$key] = strtotime($product->getSpecialFromDate());
             $customData['special_price_to_date'][$key] = strtotime($product->getSpecialToDate());
 
-            $customData['special_price'][$key] = (int) $special_price;
-            $customData['special_price_with_tax'][$key] = (int) Mage::helper('tax')->getPrice($product, $special_price, true, null, null, null, null, false);
+            $customData['special_price'][$key] = (double) $special_price;
+            $customData['special_price_with_tax'][$key] = (double) Mage::helper('tax')->getPrice($product, $special_price, true, null, null, null, null, false);
 
             $customData['special_price_formated'][$key] = Mage::helper('core')->formatPrice($customData['special_price'][$key], false);
             $customData['special_price_with_tax_formated'][$key] = Mage::helper('core')->formatPrice($customData['special_price_with_tax'][$key], false);
