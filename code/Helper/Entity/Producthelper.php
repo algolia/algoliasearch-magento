@@ -275,9 +275,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             'description'       => $product->getDescription()
         );
 
-        foreach (['price', 'price_with_tax', 'special_price_from_date', 'special_price_to_date', 'special_price'
+        foreach (array('price', 'price_with_tax', 'special_price_from_date', 'special_price_to_date', 'special_price'
                     ,'special_price_with_tax', 'special_price_formated', 'special_price_with_tax_formated'
-                    ,'price_formated', 'price_with_tax_formated'] as $price)
+                    ,'price_formated', 'price_with_tax_formated') as $price)
             $customData[$price] = array();
 
         $this->handlePrice($product, $customData);
