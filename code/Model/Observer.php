@@ -152,6 +152,13 @@ class Algolia_Algoliasearch_Model_Observer
         return $this;
     }
 
+    public function moveStoreSuggestionIndex(Varien_Object $event)
+    {
+        $storeId = $event->getStoreId();
+
+        $this->helper->moveStoreSuggestionIndex($storeId);
+    }
+
     public function rebuildCategoryIndex(Varien_Object $event)
     {
         $storeId = $event->getStoreId();

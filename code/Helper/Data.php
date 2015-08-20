@@ -250,6 +250,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
+    public function moveStoreSuggestionIndex($storeId)
+    {
+        $this->algolia_helper->moveIndex($this->suggestion_helper->getIndexName($storeId) . '_tmp', $this->suggestion_helper->getIndexName($storeId));
+    }
+
     public function rebuildStoreProductIndex($storeId, $productIds)
     {
         $emulationInfo = $this->startEmulation($storeId);
@@ -289,7 +294,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $collection->setCurPage($page)->setPageSize($pageSize);
         $collection->load();
 
-        $index_name = $this->suggestion_helper->getIndexName($storeId);
+        $index_name = $this->suggestion_helper->getIndexName($storeId) . '_tmp';
 
         $indexData = array();
 
