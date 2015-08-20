@@ -191,7 +191,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         {
                             $group_id = (int)$group->getData('customer_group_id');
 
-                            $suffix_index_name = 'group_' . $group_id;
+                            $suffix_index_name = '_group_' . $group_id;
 
                             $mergeSettings['ranking'] = array($values['sort'].'('.$values['attribute'].'.'.$group_id.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
@@ -213,8 +213,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     {
         $key = $group_id === null ? 'default' : $group_id;
 
-        $customData['price'][$key]             = $product->getPrice();
-        $customData['price_with_tax'][$key]    = Mage::helper('tax')->getPrice($product, $product->getPrice(), true, null, null, null, null, false);
+        $customData['price'][$key]             = (int) $product->getPrice();
+        $customData['price_with_tax'][$key]    = (int) Mage::helper('tax')->getPrice($product, $product->getPrice(), true, null, null, null, null, false);
 
         $special_price = null;
 
@@ -237,8 +237,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData['special_price_from_date'][$key] = strtotime($product->getSpecialFromDate());
             $customData['special_price_to_date'][$key] = strtotime($product->getSpecialToDate());
 
-            $customData['special_price'][$key] = $special_price;
-            $customData['special_price_with_tax'][$key] = Mage::helper('tax')->getPrice($product, $special_price, true, null, null, null, null, false);
+            $customData['special_price'][$key] = (int) $special_price;
+            $customData['special_price_with_tax'][$key] = (int) Mage::helper('tax')->getPrice($product, $special_price, true, null, null, null, null, false);
 
             $customData['special_price_formated'][$key] = Mage::helper('core')->formatPrice($customData['special_price'][$key], false);
             $customData['special_price_with_tax_formated'][$key] = Mage::helper('core')->formatPrice($customData['special_price_with_tax'][$key], false);
