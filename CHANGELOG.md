@@ -1,5 +1,13 @@
 ## Change Log
 
+### 1.4.1
+
+- NEW: Add analytics tags
+- UPDATED: Customer group implementation (to lower the number of record)
+- FIX: Amazon like suggestion
+- FIX: special price in case of partial updates
+- FIX: No results page (facets)
+
 ### 1.4.0
 
 - NEW: The design of the instant search is now responsive and mobile friendly
@@ -16,7 +24,7 @@
 
 - UPDATED: Administration panel review
 - UPDATED: Handling of the click on the magnifying glass
-- UPDATD: Fixed instant search page if auto-completion menu is disabled
+- UPDATED: Fixed instant search page if auto-completion menu is disabled
 - NEW: Grouped/configurable attributes handling
 
 ### 1.3.4
