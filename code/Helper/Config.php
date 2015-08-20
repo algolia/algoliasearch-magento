@@ -198,18 +198,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
         $attrs = unserialize(Mage::getStoreConfig(self::XML_PATH_SORTING_INDICES, $storeId));
 
-        $group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
-
-        $suffix_index_name = '';
-
-        if ($this->isCustomerGroupsEnabled($storeId))
-        {
-            $suffix_index_name = '_group_' . $group_id;
-        }
-
-        foreach ($attrs as &$attr)
-            $attr['index_name'] = $product_helper->getIndexName($storeId).$suffix_index_name.'_'.$attr['attribute'].'_'.$attr['sort'];
-
         if (is_array($attrs))
             return $attrs;
 

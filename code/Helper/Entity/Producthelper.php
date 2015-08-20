@@ -98,21 +98,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return $products;
     }
 
-    public function getIndexSettings($storeId, $group_id = null)
+    public function setSettings($storeId)
     {
         $attributesToIndex          = array();
         $unretrievableAttributes    = array();
         $attributesForFaceting      = array();
-
-        $suffix_index_name = '';
-
-        /**
-         * Handle grouping
-         */
-        if ($group_id !== null)
-        {
-            $suffix_index_name = '_group_'.$group_id;
-        }
 
         foreach ($this->config->getProductAdditionalAttributes($storeId) as $attribute)
         {
@@ -154,7 +144,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport));
         $indexSettings = $transport->getData();
 
-        $mergeSettings = $this->algolia_helper->mergeSettings($this->getIndexName($storeId).$suffix_index_name, $indexSettings);
+        $mergeSettings = $this->algolia_helper->mergeSettings($this->getIndexName($storeId), $indexSettings);
+
+        $this->algolia_helper->setSettings($this->getIndexName($storeId), $mergeSettings);
 
         /**
          * Handle Slaves
@@ -166,24 +158,105 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $slaves = array();
 
             foreach ($sorting_indices as $values)
-                $slaves[] = $this->getIndexName($storeId).$suffix_index_name.'_'.$values['attribute'].'_'.$values['sort'];
+            {
+                if ($this->config->isCustomerGroupsEnabled($storeId))
+                {
+                    if (strpos($values['attribute'], 'price') !== false)
+                    {
+                        foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+                        {
+                            $group_id = (int)$group->getData('customer_group_id');
 
-            $this->algolia_helper->setSettings($this->getIndexName($storeId).$suffix_index_name, array('slaves' => $slaves));
+                            $suffix_index_name = 'group_' . $group_id;
+
+                            $slaves[] = $this->getIndexName($storeId) . '_' . $suffix_index_name . '_' .$values['attribute'].'_'.$values['sort'];
+                        }
+                    }
+                }
+                else
+                {
+                    $slaves[] = $this->getIndexName($storeId) . '_' . 'default' . '_' .$values['attribute'].'_'.$values['sort'];
+                }
+            }
+
+            $this->algolia_helper->setSettings($this->getIndexName($storeId), array('slaves' => $slaves));
 
             foreach ($sorting_indices as $values)
             {
-                $mergeSettings['ranking'] = array($values['sort'].'('.$values['attribute'].')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
+                if ($this->config->isCustomerGroupsEnabled($storeId))
+                {
+                    if (strpos($values['attribute'], 'price') !== false)
+                    {
+                        foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+                        {
+                            $group_id = (int)$group->getData('customer_group_id');
 
-                $this->algolia_helper->setSettings($this->getIndexName($storeId).$suffix_index_name.'_'.$values['attribute'].'_'.$values['sort'], $mergeSettings);
+                            $suffix_index_name = 'group_' . $group_id;
+
+                            $mergeSettings['ranking'] = array($values['sort'].'('.$values['attribute'].'.'.$group_id.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
+
+                            $this->algolia_helper->setSettings($this->getIndexName($storeId).$suffix_index_name.'_'.$values['attribute'].'_'.$values['sort'], $mergeSettings);
+                        }
+                    }
+                }
+                else
+                {
+                    $mergeSettings['ranking'] = array($values['sort'].'('.$values['attribute'].'.'.'default'.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
+
+                    $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' . 'default' . '_' .$values['attribute'].'_'.$values['sort'], $mergeSettings);
+                }
             }
         }
-
-        unset($mergeSettings['ranking']);
-
-        return $mergeSettings;
     }
 
-    public function getObject(Mage_Catalog_Model_Product $product, $group_id = null)
+    private function handlePrice(&$product, &$customData, $group_id = null)
+    {
+        $key = $group_id === null ? 'default' : $group_id;
+
+        $customData['price'][$key]             = $product->getPrice();
+        $customData['price_with_tax'][$key]    = Mage::helper('tax')->getPrice($product, $product->getPrice(), true, null, null, null, null, false);
+
+        $special_price = null;
+
+        if ($group_id !== null) // If fetch special price for groups
+        {
+            $discounted_price = Mage::getResourceModel('catalogrule/rule')->getRulePrice(
+                Mage::app()->getLocale()->storeTimeStamp($product->getStoreId()),
+                Mage::app()->getStore($product->getStoreId())->getWebsiteId(),
+                $group_id,
+                $product->getId());
+
+            if ($discounted_price !== false)
+                $special_price = $discounted_price;
+        }
+        else // If fetch default special price
+            $special_price = $product->getFinalPrice();
+
+        if ($special_price && $special_price !== $customData['price'][$key])
+        {
+            $customData['special_price_from_date'][$key] = strtotime($product->getSpecialFromDate());
+            $customData['special_price_to_date'][$key] = strtotime($product->getSpecialToDate());
+
+            $customData['special_price'][$key] = $special_price;
+            $customData['special_price_with_tax'][$key] = Mage::helper('tax')->getPrice($product, $special_price, true, null, null, null, null, false);
+
+            $customData['special_price_formated'][$key] = Mage::helper('core')->formatPrice($customData['special_price'][$key], false);
+            $customData['special_price_with_tax_formated'][$key] = Mage::helper('core')->formatPrice($customData['special_price_with_tax'][$key], false);
+        }
+        else
+        {
+            /**
+             * In case of partial updates set back to empty so that it get updated
+             */
+            $customData['special_price'][$key] = '';
+            $customData['special_price_with_tax'][$key] = '';
+        }
+
+        $customData['price_formated'][$key] = Mage::helper('core')->formatPrice($customData['price'][$key], false);
+        $customData['price_with_tax_formated'][$key] = Mage::helper('core')->formatPrice($customData['price_with_tax'][$key], false);
+    }
+
+    public function getObject(Mage_Catalog_Model_Product $product)
     {
         $defaultData    = array();
 
@@ -198,52 +271,25 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $customData = array(
             'objectID'          => $product->getId(),
             'name'              => $product->getName(),
-            'price'             => $product->getPrice(),
-            'price_with_tax'    => Mage::helper('tax')->getPrice($product, $product->getPrice(), true, null, null, null, null, false),
             'url'               => $product->getProductUrl(),
             'description'       => $product->getDescription()
         );
 
-        $special_price = $product->getFinalPrice();
+        foreach (['price', 'price_with_tax', 'special_price_from_date', 'special_price_to_date', 'special_price'
+                    ,'special_price_with_tax', 'special_price_formated', 'special_price_with_tax_formated'
+                    ,'price_formated', 'price_with_tax_formated'] as $price)
+            $customData[$price] = array();
 
-        /**
-         * Handle group price
-         */
-        if ($group_id !== null)
+        $this->handlePrice($product, $customData);
+
+        if ($this->config->isCustomerGroupsEnabled())
         {
-            $discounted_price = Mage::getResourceModel('catalogrule/rule')->getRulePrice(
-                Mage::app()->getLocale()->storeTimeStamp($product->getStoreId()),
-                Mage::app()->getStore($product->getStoreId())->getWebsiteId(),
-                $group_id,
-                $product->getId());
-
-            if ($discounted_price !== false)
-                $special_price = $discounted_price;
+            foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+            {
+                $group_id = (int)$group->getData('customer_group_id');
+                $this->handlePrice($product, $customData, $group_id);
+            }
         }
-
-
-        if ($special_price != $customData['price'])
-        {
-            $customData['special_price_from_date']          = strtotime($product->getSpecialFromDate());
-            $customData['special_price_to_date']            = strtotime($product->getSpecialToDate());
-
-            $customData['special_price']                    = $special_price;
-            $customData['special_price_with_tax']           = Mage::helper('tax')->getPrice($product, $special_price, true, null, null, null, null, false);
-
-            $customData['special_price_formated']           = Mage::helper('core')->formatPrice($customData['special_price'], false);
-            $customData['special_price_with_tax_formated']  = Mage::helper('core')->formatPrice($customData['special_price_with_tax'], false);
-        }
-        else
-        {
-            /**
-             * In case of partial updates set back to empty so that it get updated
-             */
-            $customData['special_price'] = '';
-            $customData['special_price_with_tax'] = '';
-        }
-
-        $customData['price_formated']           = Mage::helper('core')->formatPrice($customData['price'], false);
-        $customData['price_with_tax_formated']  = Mage::helper('core')->formatPrice($customData['price_with_tax'], false);
 
         $categories             = array();
         $categories_with_path   = array();
