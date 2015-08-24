@@ -1,5 +1,9 @@
 ## Change Log
 
+### 1.4.2
+
+- FIX: Issue with slider
+
 ### 1.4.1
 
 - NEW: Add analytics tags
