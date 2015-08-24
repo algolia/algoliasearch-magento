@@ -620,6 +620,9 @@ $class = $isSearchPage ? 'search-page' : '';
             if (algoliaConfig.facets[i].attribute == "categories")
                 algoliaConfig.facets[i].type = "hierarchical";
 
+            if (algoliaConfig.facets[i].attribute.indexOf("price") !== -1)
+                algoliaConfig.facets[i].attribute = algoliaConfig.facets[i].attribute + '<?php echo $price_key; ?>';
+
             if (algoliaConfig.facets[i].type == "conjunctive")
                 conjunctive_facets.push(algoliaConfig.facets[i].attribute);
 
@@ -686,7 +689,8 @@ $class = $isSearchPage ? 'search-page' : '';
         var custom_facets_types = [];
 
         custom_facets_types["slider"] = function (helper, content, facet) {
-            if (content.getFacetByName(facet.attribute) != undefined)
+
+            if (content.getFacetByName(facet.attribute) !== undefined)
             {
                 var min = content.getFacetByName(facet.attribute).stats.min;
                 var max = content.getFacetByName(facet.attribute).stats.max;
