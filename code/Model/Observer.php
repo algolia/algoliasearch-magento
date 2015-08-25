@@ -60,7 +60,15 @@ class Algolia_Algoliasearch_Model_Observer
             if ( ! $store->getIsActive())
                 continue;
 
-            $this->helper->rebuildStoreProductIndex($storeId, array($product_id));
+            try
+            {
+                $this->helper->rebuildStoreProductIndex($storeId, array($product_id));
+            }
+            catch(\Exception $e)
+            {
+                Mage::log($e->getMessage());
+                Mage::log($e->getTraceAsString());
+            }
         }
     }
 
