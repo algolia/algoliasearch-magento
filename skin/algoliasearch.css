@@ -463,13 +463,13 @@
 ** GRID
 */
 
-* {
+#algolia_instant_selector * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-*:before,
-*:after {
+#algolia_instant_selector *:before,
+#algolia_instant_selector *:after {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
