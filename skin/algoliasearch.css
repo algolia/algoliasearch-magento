@@ -463,13 +463,16 @@
 ** GRID
 */
 
-#algolia_instant_selector * {
+#algolia_instant_selector, #algolia_instant_selector *,
+#search_mini_form, #search_mini_form * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-#algolia_instant_selector *:before,
-#algolia_instant_selector *:after {
+#algolia_instant_selector:before, #algolia_instant_selector:after,
+#algolia_instant_selector *:before, #algolia_instant_selector *:after,
+#search_mini_form:before, #search_mini_form:after,
+#search_mini_form *:before, #search_mini_form *:after {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
