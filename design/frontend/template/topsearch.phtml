@@ -208,7 +208,12 @@ $class = $isSearchPage ? 'search-page' : '';
             {{/image_url}}
             {{^image_url}}
             <div class="info-without-thumb">
-                {{{_highlightResult.path.value}}}
+                {{#_highlightResult.path}}
+                    {{{_highlightResult.path.value}}}
+                {{/_highlightResult.path}}
+                {{^_highlightResult.path}}
+                    {{{path}}}
+                {{/_highlightResult.path}}
 
                 {{#product_count}}
                 <small>( {{product_count}} )</small>
