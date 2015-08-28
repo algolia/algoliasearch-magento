@@ -438,7 +438,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $ordered_qty  = 0;
                 $stock_qty    = 0;
 
-                $skus = array();
                 foreach ($sub_products as $sub_product)
                 {
                     $stock_qty += (int)Mage::getModel('cataloginventory/stock_item')->loadByProduct($sub_product)->getQty();
@@ -451,7 +450,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         ->limit(1);
 
                     $ordered_qty += (int) $query->getFirstItem()->ordered_qty;
-                    $skus[] = $sub_product->getSku();
                 }
 
                 $customData['ordered_qty'] = $ordered_qty;
