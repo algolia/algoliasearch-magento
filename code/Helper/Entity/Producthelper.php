@@ -59,26 +59,18 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return false;
     }
 
-    protected function getReportForProduct($product)
-    {
-        $report = Mage::getResourceModel('reports/product_collection')
-            ->addOrderedQty()
-            ->addAttributeToFilter('sku', $product->getSku())
-            ->setOrder('ordered_qty', 'desc')
-            ->getFirstItem();
-
-        return $report;
-    }
-
-    public function getProductCollectionQuery($storeId, $productIds = null)
+    public function getProductCollectionQuery($storeId, $productIds = null, $only_visible = true)
     {
         /** @var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
         $products = Mage::getResourceModel('catalog/product_collection');
 
         $products = $products->setStoreId($storeId)
-                        ->addStoreFilter($storeId)
-                        ->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
-                        ->addFinalPrice()
+                        ->addStoreFilter($storeId);
+
+        if ($only_visible)
+            $products = $products->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()));
+
+        $products = $products->addFinalPrice()
                         ->addAttributeToSelect('special_from_date')
                         ->addAttributeToSelect('special_to_date')
                         ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
@@ -377,6 +369,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $additionalAttributes = $this->config->getProductAdditionalAttributes($product->getStoreId());
 
         $sub_products = null;
+        $ids = null;
+
 
         if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped')
         {
@@ -386,16 +380,21 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             if ($product->getTypeId() == 'configurable')
                 $sub_products = $product->getTypeInstance(true)->getUsedProducts(null, $product);
 
+            $ids = array_map(function ($product) {
+                return $product->getId();
+            }, $sub_products);
+
+            $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false)->load();
+
             $min = PHP_INT_MAX;
             $max = 0;
 
             $min_with_tax = PHP_INT_MAX;
             $max_with_tax = 0;
 
+
             foreach ($sub_products as $sub_product)
             {
-                $sub_product = Mage::getModel('catalog/product')->load($sub_product->getId());
-
                 $price = $sub_product->getPrice();
                 $price_with_tax = Mage::helper('tax')->getPrice($sub_product, $price, true, null, null, null, null, false);
 
@@ -422,13 +421,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         // skip default calculation if we have provided these attributes via the observer in $defaultData
         if (false === isset($defaultData['ordered_qty']) && false === isset($defaultData['stock_qty']))
         {
+            $query = Mage::getResourceModel('sales/order_item_collection');
+            $query->getSelect()->reset(Zend_Db_Select::COLUMNS)
+                ->columns(array('sku','SUM(qty_ordered) as ordered_qty'))
+                ->group(array('sku'))
+                ->where('sku = ?',array($product->getSku()))
+                ->limit(1);
 
-            $ordered_qty = Mage::getResourceModel('reports/product_collection')
-                ->addOrderedQty()
-                ->addAttributeToFilter('sku', $product->getSku())
-                ->setOrder('ordered_qty', 'desc')
-                ->getFirstItem()
-                ->ordered_qty;
+            $ordered_qty = (int) $query->getFirstItem()->ordered_qty;
 
             $customData['ordered_qty'] = (int) $ordered_qty;
             $customData['stock_qty']   = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
@@ -438,23 +438,34 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $ordered_qty  = 0;
                 $stock_qty    = 0;
 
+                $skus = array();
                 foreach ($sub_products as $sub_product)
                 {
                     $stock_qty += (int)Mage::getModel('cataloginventory/stock_item')->loadByProduct($sub_product)->getQty();
 
-                    $ordered_qty += (int) $this->getReportForProduct($sub_product)->ordered_qty;
+                    $query = Mage::getResourceModel('sales/order_item_collection');
+                    $query->getSelect()->reset(Zend_Db_Select::COLUMNS)
+                        ->columns(array('sku','SUM(qty_ordered) as ordered_qty'))
+                        ->group(array('sku'))
+                        ->where('sku = ?',array($sub_product->getSku()))
+                        ->limit(1);
+
+                    $ordered_qty += (int) $query->getFirstItem()->ordered_qty;
+                    $skus[] = $sub_product->getSku();
                 }
 
                 $customData['ordered_qty'] = $ordered_qty;
                 $customData['stock_qty']   = $stock_qty;
             }
 
-            if ($this->isAttributeEnabled($additionalAttributes, 'ordered_qty') == false)
+
+            if ($this->isAttributeEnabled($additionalAttributes, 'ordered_qty') === false)
                 unset($customData['ordered_qty']);
 
-            if ($this->isAttributeEnabled($additionalAttributes, 'stock_qty') == false)
+            if ($this->isAttributeEnabled($additionalAttributes, 'stock_qty') === false)
                 unset($customData['stock_qty']);
         }
+
 
         if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary'))
         {
@@ -488,8 +499,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         foreach ($sub_products as $sub_product)
                         {
-                            $sub_product = Mage::getModel('catalog/product')->load($sub_product->getId());
-
                             $value = $sub_product->getData($attribute['attribute']);
 
                             if ($value)
