@@ -2,11 +2,11 @@
 
 if (class_exists('AlgoliaSearch\Client', false) == false)
 {
-    require_once 'AlgoliaSearch/Version.php';
-    require_once 'AlgoliaSearch/AlgoliaException.php';
-    require_once 'AlgoliaSearch/ClientContext.php';
-    require_once 'AlgoliaSearch/Client.php';
-    require_once 'AlgoliaSearch/Index.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Version.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/AlgoliaException.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/ClientContext.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Client.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Index.php';
 }
 
 class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
@@ -338,8 +338,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize)
     {
-        set_time_limit(0);
-
         $collection = clone $collectionDefault;
         $collection->setCurPage($page)->setPageSize($pageSize);
         $collection->load();
