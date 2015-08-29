@@ -4,7 +4,7 @@
         <algoliasearch translate="label" module="algoliasearch">
             <label>
                 <![CDATA[
-                Algolia Search 1.4.2
+                Algolia Search 1.4.3
                 <style>
                     .algoliasearch-admin-menu span {
                         padding-left: 38px !important;

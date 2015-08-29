@@ -1,5 +1,12 @@
 ## Change Log
 
+### 1.4.3
+
+- UPDATED: improve indexing performance
+- FIX: Issue with importing AlgoliaSearch
+- FIX: CSS issue
+- FIX: Prevent purchase from crashing if Algolia account is blocked
+
 ### 1.4.2
 
 - FIX: Issue with slider
