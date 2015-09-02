@@ -371,44 +371,84 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $sub_products = null;
         $ids = null;
 
-
-        if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped')
+        if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
         {
-            if ($product->getTypeId() == 'grouped')
-                $sub_products = $product->getTypeInstance(true)->getAssociatedProducts($product);
-
-            if ($product->getTypeId() == 'configurable')
-                $sub_products = $product->getTypeInstance(true)->getUsedProducts(null, $product);
-
-            $ids = array_map(function ($product) {
-                return $product->getId();
-            }, $sub_products);
-
-            $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false)->load();
-
             $min = PHP_INT_MAX;
             $max = 0;
 
             $min_with_tax = PHP_INT_MAX;
             $max_with_tax = 0;
 
-
-            foreach ($sub_products as $sub_product)
+            if ($product->getTypeId() == 'bundle')
             {
-                $price = $sub_product->getPrice();
-                $price_with_tax = Mage::helper('tax')->getPrice($sub_product, $price, true, null, null, null, null, false);
 
-                $min = min($min, $price);
-                $max = max($max, $price);
+                $_priceModel  = $product->getPriceModel();
 
-                $min_with_tax = min($min_with_tax, $price_with_tax);
-                $max_with_tax = max($max_with_tax, $price_with_tax);
+                list($min, $max) = $_priceModel->getTotalPrices($product, null, null, false);
+                list($min_with_tax, $max_with_tax) = $_priceModel->getTotalPrices($product, null, true, false);
+
+                $ids = array();
+
+                $selection = $product->getTypeInstance(true)->getSelectionsCollection($product->getTypeInstance(true)->getOptionsIds($product), $product);
+
+                foreach($selection as $option)
+                    $ids[] = $option->product_id;
             }
 
-            $customData['min_formated'] = Mage::helper('core')->formatPrice($min, false);
-            $customData['max_formated'] = Mage::helper('core')->formatPrice($max, false);
-            $customData['min_with_tax_formated'] = Mage::helper('core')->formatPrice($min_with_tax, false);
-            $customData['max_with_tax_formated'] = Mage::helper('core')->formatPrice($max_with_tax, false);
+            if ($product->getTypeId() == 'grouped')
+                $sub_products = $product->getTypeInstance(true)->getAssociatedProducts($product);
+
+            if ($product->getTypeId() == 'configurable')
+                $sub_products = $product->getTypeInstance(true)->getUsedProducts(null, $product);
+
+            if ($product->getTypeId() == 'grouped' || $product->getTypeId() == 'configurable')
+            {
+                $ids = array_map(function ($product)
+                {
+                    return $product->getId();
+                }, $sub_products);
+            }
+
+            $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false)->load();
+
+            if ($product->getTypeId() == 'grouped' || $product->getTypeId() == 'configurable')
+            {
+                foreach ($sub_products as $sub_product)
+                {
+                    $price = $sub_product->getPrice();
+                    $price_with_tax = Mage::helper('tax')->getPrice($sub_product, $price, true, null, null, null, null, false);
+
+                    $min = min($min, $price);
+                    $max = max($max, $price);
+
+                    $min_with_tax = min($min_with_tax, $price_with_tax);
+                    $max_with_tax = max($max_with_tax, $price_with_tax);
+                }
+            }
+
+            $customData['min_formated']             = array();
+            $customData['max_formated']             = array();
+            $customData['min_with_tax_formated']    = array();
+            $customData['max_with_tax_formated']    = array();
+
+            $customData['min_formated']['default'] = Mage::helper('core')->formatPrice($min, false);
+            $customData['max_formated']['default'] = Mage::helper('core')->formatPrice($max, false);
+            $customData['min_with_tax_formated']['default'] = Mage::helper('core')->formatPrice($min_with_tax, false);
+            $customData['max_with_tax_formated']['default'] = Mage::helper('core')->formatPrice($max_with_tax, false);
+
+            if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
+            {
+                foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+                {
+                    $group_id = (int)$group->getData('customer_group_id');
+
+                    $customData['min_formated']['group_' . $group_id]           = Mage::helper('core')->formatPrice($min, false);
+                    $customData['max_formated']['group_' . $group_id]           = Mage::helper('core')->formatPrice($max, false);
+                    $customData['min_with_tax_formated']['group_' . $group_id]  = Mage::helper('core')->formatPrice($min_with_tax, false);
+                    $customData['max_with_tax_formated']['group_' . $group_id]  = Mage::helper('core')->formatPrice($max_with_tax, false);
+                }
+            }
+
         }
 
         if (false === isset($defaultData['in_stock']))
@@ -433,7 +473,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData['ordered_qty'] = (int) $ordered_qty;
             $customData['stock_qty']   = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty();
 
-            if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped')
+            if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
             {
                 $ordered_qty  = 0;
                 $stock_qty    = 0;
@@ -491,7 +531,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 if ($value === null)
                 {
                     /** Get values as array in children */
-                    if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped')
+                    if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
                     {
                         $values = array();
 
