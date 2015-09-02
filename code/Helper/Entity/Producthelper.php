@@ -232,8 +232,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData['special_price'][$key] = (double) $special_price;
             $customData['special_price_with_tax'][$key] = (double) Mage::helper('tax')->getPrice($product, $special_price, true, null, null, null, null, false);
 
-            $customData['special_price_formated'][$key] = Mage::helper('core')->formatPrice($customData['special_price'][$key], false);
-            $customData['special_price_with_tax_formated'][$key] = Mage::helper('core')->formatPrice($customData['special_price_with_tax'][$key], false);
+            $customData['special_price_formated'][$key] = $product->getStore()->formatPrice($customData['special_price'][$key], false);
+            $customData['special_price_with_tax_formated'][$key] = $product->getStore()->formatPrice($customData['special_price_with_tax'][$key], false);
         }
         else
         {
@@ -244,8 +244,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData['special_price_with_tax'][$key] = '';
         }
 
-        $customData['price_formated'][$key] = Mage::helper('core')->formatPrice($customData['price'][$key], false);
-        $customData['price_with_tax_formated'][$key] = Mage::helper('core')->formatPrice($customData['price_with_tax'][$key], false);
+        $customData['price_formated'][$key] = $product->getStore()->formatPrice($customData['price'][$key], false);
+        $customData['price_with_tax_formated'][$key] = $product->getStore()->formatPrice($customData['price_with_tax'][$key], false);
     }
 
     public function getObject(Mage_Catalog_Model_Product $product)
@@ -431,10 +431,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData['min_with_tax_formated']    = array();
             $customData['max_with_tax_formated']    = array();
 
-            $customData['min_formated']['default'] = Mage::helper('core')->formatPrice($min, false);
-            $customData['max_formated']['default'] = Mage::helper('core')->formatPrice($max, false);
-            $customData['min_with_tax_formated']['default'] = Mage::helper('core')->formatPrice($min_with_tax, false);
-            $customData['max_with_tax_formated']['default'] = Mage::helper('core')->formatPrice($max_with_tax, false);
+            $customData['min_formated']['default'] = $product->getStore()->formatPrice($min, false);
+            $customData['max_formated']['default'] = $product->getStore()->formatPrice($max, false);
+            $customData['min_with_tax_formated']['default'] = $product->getStore()->formatPrice($min_with_tax, false);
+            $customData['max_with_tax_formated']['default'] = $product->getStore()->formatPrice($max_with_tax, false);
 
             if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
             {
@@ -442,10 +442,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 {
                     $group_id = (int)$group->getData('customer_group_id');
 
-                    $customData['min_formated']['group_' . $group_id]           = Mage::helper('core')->formatPrice($min, false);
-                    $customData['max_formated']['group_' . $group_id]           = Mage::helper('core')->formatPrice($max, false);
-                    $customData['min_with_tax_formated']['group_' . $group_id]  = Mage::helper('core')->formatPrice($min_with_tax, false);
-                    $customData['max_with_tax_formated']['group_' . $group_id]  = Mage::helper('core')->formatPrice($max_with_tax, false);
+                    $customData['min_formated']['group_' . $group_id]           = $product->getStore()->formatPrice($min, false);
+                    $customData['max_formated']['group_' . $group_id]           = $product->getStore()->formatPrice($max, false);
+                    $customData['min_with_tax_formated']['group_' . $group_id]  = $product->getStore()->formatPrice($min_with_tax, false);
+                    $customData['max_with_tax_formated']['group_' . $group_id]  = $product->getStore()->formatPrice($max_with_tax, false);
                 }
             }
 
