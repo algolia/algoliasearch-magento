@@ -1,5 +1,10 @@
 ## Change Log
 
+### 1.4.4
+
+- NEW: Handle bundle products
+- FIX: Handling of multiple currencies
+
 ### 1.4.3
 
 - UPDATED: improve indexing performance
