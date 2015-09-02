@@ -181,6 +181,19 @@ $class = $isSearchPage ? 'search-page' : '';
             </div>
         </div>
         {{/price_with_tax<?php echo $price_key; ?>}}
+
+        {{^price_with_tax<?php echo $price_key; ?>}}
+            <div class="algoliasearch-autocomplete-price">
+                <div class="after_special">
+                    {{#min_with_tax_formated<?php echo $price_key; ?>}}
+                        {{min_with_tax_formated<?php echo $price_key; ?>}} - {{max_with_tax_formated<?php echo $price_key; ?>}}
+                    {{/min_with_tax_formated<?php echo $price_key; ?>}}
+                    {{^min_with_tax_formated<?php echo $price_key; ?>}}-{{/min_with_tax_formated<?php echo $price_key; ?>}}
+                </div>
+            </div>
+        {{/price_with_tax<?php echo $price_key; ?>}}
+
+
         <div class="info">
             {{{_highlightResult.name.value}}}
 
