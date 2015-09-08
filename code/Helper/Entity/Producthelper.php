@@ -576,6 +576,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
         }
 
+        $transport = new Varien_Object($customData);
+        Mage::dispatchEvent('algolia_subproducts_index', array('custom_data' => $transport, 'sub_products' => $sub_products));
+        $customData = $transport->getData();
+
         $customData = array_merge($customData, $defaultData);
 
         $customData['type_id'] = $product->getTypeId();
