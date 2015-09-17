@@ -552,7 +552,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         if (count($values) > 0)
                         {
-                            $customData[$attribute['attribute']] = $values;
+                            $customData[$attribute['attribute']] = array_unique($values);
                         }
                     }
                 }
