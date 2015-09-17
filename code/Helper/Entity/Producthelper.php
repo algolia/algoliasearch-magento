@@ -185,7 +185,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                             $suffix_index_name = '_group_' . $group_id;
 
-                            $mergeSettings['ranking'] = array($values['sort'].'('.$values['attribute'].'.'.$group_id.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
+                            $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'].'.'.$group_id : $values['attribute'];
+                            $mergeSettings['ranking'] = array($values['sort'].'('.$sort_attribute.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
                             $this->algolia_helper->setSettings($this->getIndexName($storeId).$suffix_index_name.'_'.$values['attribute'].'_'.$values['sort'], $mergeSettings);
                         }
@@ -193,7 +194,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
                 else
                 {
-                    $mergeSettings['ranking'] = array($values['sort'].'('.$values['attribute'].'.'.'default'.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
+                    $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'].'.'.'default' : $values['attribute'];
+
+                    $mergeSettings['ranking'] = array($values['sort'].'('.$sort_attribute.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
                     $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' . 'default' . '_' .$values['attribute'].'_'.$values['sort'], $mergeSettings);
                 }
