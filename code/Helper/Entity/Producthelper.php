@@ -505,14 +505,17 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
 
-        if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary'))
+        if (Mage::helper('core')->isModuleEnabled('Mage_Review'))
         {
-            $summaryData = Mage::getModel('review/review_summary')
-                ->setStoreId($product->getStoreId())
-                ->load($product->getId());
+            if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary'))
+            {
+                $summaryData = Mage::getModel('review/review_summary')
+                    ->setStoreId($product->getStoreId())
+                    ->load($product->getId());
 
-            if ($summaryData['rating_summary'])
-                $customData['rating_summary'] = $summaryData['rating_summary'];
+                if ($summaryData['rating_summary'])
+                    $customData['rating_summary'] = $summaryData['rating_summary'];
+            }
         }
 
         foreach ($additionalAttributes as $attribute)
