@@ -6,11 +6,13 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
     /** Empty because we need it to do nothing (no mysql stuff), Indexing is handled by Model/Indexer/Algolia */
 
     private $engine;
+    private $config;
 
     public function __construct()
     {
         parent::__construct();
         $this->engine = new Algolia_Algoliasearch_Model_Resource_Engine();
+        $this->config = Mage::helper('algoliasearch/config');
     }
 
     public function prepareResult($object, $queryText, $query)
@@ -38,6 +40,12 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
      */
     public function rebuildIndex($storeId = null, $productIds = null)
     {
+        if (! $this->config->getApplicationID() || ! $this->config->getAPIKey() || ! $this->config->getSearchOnlyAPIKey())
+        {
+            Mage::getSingleton('adminhtml/session')->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+            return;
+        }
+
         /** Avoid Indexing twice */
         if (is_array($productIds) && $productIds > 0)
             return $this;
