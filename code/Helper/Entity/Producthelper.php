@@ -266,9 +266,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $customData = array(
             'objectID'          => $product->getId(),
             'name'              => $product->getName(),
-            'url'               => $product->getProductUrl(),
-            'description'       => $product->getDescription()
+            'url'               => $product->getProductUrl()
         );
+
+        $additionalAttributes = $this->config->getProductAdditionalAttributes($product->getStoreId());
+
+        if ($this->isAttributeEnabled($additionalAttributes, 'description'))
+            $customData['description'] = $product->getDescription();
+
 
         foreach (array('price', 'price_with_tax', 'special_price_from_date', 'special_price_to_date', 'special_price'
                     ,'special_price_with_tax', 'special_price_formated', 'special_price_with_tax_formated'
@@ -369,7 +374,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             catch (\Exception $e) {}
         }
 
-        $additionalAttributes = $this->config->getProductAdditionalAttributes($product->getStoreId());
 
         $sub_products = null;
         $ids = null;
