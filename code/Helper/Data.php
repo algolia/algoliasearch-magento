@@ -177,7 +177,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
                 while ($page <= $pages)
                 {
-                    $this->rebuildStoreCategoryIndexPage($storeId, $collection, $page, $this->config->getNumberOfElementByPage());
+                    $this->rebuildStoreCategoryIndexPage($storeId, $collection, $page, $this->config->getNumberOfElementByPage(), $emulationInfo);
 
                     $page++;
                 }
@@ -240,7 +240,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
                 while ($page <= $pages)
                 {
-                    $this->rebuildStoreProductIndexPage($storeId, $collection, $page, $this->config->getNumberOfElementByPage());
+                    $this->rebuildStoreProductIndexPage($storeId, $collection, $page, $this->config->getNumberOfElementByPage(), $emulationInfo);
 
                     $page++;
                 }
@@ -287,8 +287,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         unset($collection);
     }
 
-    public function rebuildStoreCategoryIndexPage($storeId, $collectionDefault, $page, $pageSize)
+    public function rebuildStoreCategoryIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null)
     {
+        $emulationInfoPage = null;
+
+        if ($emulationInfo === null)
+            $emulationInfoPage = $this->startEmulation($storeId);
+
         $collection = clone $collectionDefault;
         $collection->setCurPage($page)->setPageSize($pageSize);
         $collection->load();
@@ -320,6 +325,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $collection->clear();
 
         unset($collection);
+
+        if ($emulationInfo === null)
+            $this->stopEmulation($emulationInfoPage);
     }
 
     private function getProductsRecords($storeId, $collection)
@@ -339,8 +347,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $indexData;
     }
 
-    public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize)
+    public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null)
     {
+        $emulationInfoPage = null;
+
+        if ($emulationInfo === null)
+            $emulationInfoPage = $this->startEmulation($storeId);
+
         $collection = clone $collectionDefault;
         $collection->setCurPage($page)->setPageSize($pageSize);
         $collection->load();
@@ -348,7 +361,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $collection->addUrlRewrite();
 
         $index_name = $this->product_helper->getIndexName($storeId);
-
 
         /**
          * Normal Indexing
@@ -364,6 +376,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $collection->clear();
 
         unset($collection);
+
+        if ($emulationInfo === null)
+            $this->stopEmulation($emulationInfoPage);
     }
 
     public function startEmulation($storeId)
