@@ -9,6 +9,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
     private $config;
 
     public static $product_categories = array();
+    private static $credential_error = false;
 
     public function __construct()
     {
@@ -231,7 +232,12 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
     {
         if (! $this->config->getApplicationID() || ! $this->config->getAPIKey() || ! $this->config->getSearchOnlyAPIKey())
         {
-            Mage::getSingleton('adminhtml/session')->addError('Algolia indexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+            if (self::$credential_error === false)
+            {
+                Mage::getSingleton('adminhtml/session')->addError('Algolia indexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+                self::$credential_error = true;
+            }
+
             return;
         }
 
