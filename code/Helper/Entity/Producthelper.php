@@ -558,6 +558,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         foreach ($sub_products as $sub_product)
                         {
+                            $stock = (int) $sub_product->getStockItem()->getIsInStock();
+
+                            if ($stock == false)
+                                continue;
+
                             $value = $sub_product->getData($attribute['attribute']);
 
                             if ($value)
@@ -573,7 +578,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         if (count($values) > 0)
                         {
-                            $customData[$attribute['attribute']] = array_unique($values);
+                            $customData[$attribute['attribute']] = array_values(array_unique($values));
                         }
                     }
                 }
