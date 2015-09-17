@@ -372,8 +372,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $customData['image_url'] = str_replace(array('https://', 'http://'), '//', $customData['image_url']);
             }
             catch (\Exception $e) {}
-        }
 
+            $product->load('media_gallery');
+
+            $customData['images'] = array();
+
+            foreach ($product->getMediaGalleryImages() as $image)
+                $customData['images'][] = str_replace(array('https://', 'http://'), '//', $image->getUrl());
+        }
 
         $sub_products = null;
         $ids = null;
