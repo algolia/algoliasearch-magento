@@ -2,55 +2,55 @@
 
 class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 {
-    const XML_PATH_MINIMAL_QUERY_LENGTH             = 'algoliasearch/ui/minimal_query_length';
-    const XML_PATH_SEARCH_DELAY                     = 'algoliasearch/ui/search_delay';
+    const XML_PATH_MINIMAL_QUERY_LENGTH                 = 'algoliasearch/ui/minimal_query_length';
+    const XML_PATH_SEARCH_DELAY                         = 'algoliasearch/ui/search_delay';
 
-    const XML_PATH_IS_POPUP_ENABLED                 = 'algoliasearch/credentials/is_popup_enabled';
-    const XML_PATH_APPLICATION_ID                   = 'algoliasearch/credentials/application_id';
-    const XML_PATH_API_KEY                          = 'algoliasearch/credentials/api_key';
-    const XML_PATH_SEARCH_ONLY_API_KEY              = 'algoliasearch/credentials/search_only_api_key';
-    const XML_PATH_INDEX_PREFIX                     = 'algoliasearch/credentials/index_prefix';
-    const XML_PATH_IS_INSTANT_ENABLED               = 'algoliasearch/credentials/is_instant_enabled';
+    const XML_PATH_IS_POPUP_ENABLED                     = 'algoliasearch/credentials/is_popup_enabled';
+    const XML_PATH_APPLICATION_ID                       = 'algoliasearch/credentials/application_id';
+    const XML_PATH_API_KEY                              = 'algoliasearch/credentials/api_key';
+    const XML_PATH_SEARCH_ONLY_API_KEY                  = 'algoliasearch/credentials/search_only_api_key';
+    const XML_PATH_INDEX_PREFIX                         = 'algoliasearch/credentials/index_prefix';
+    const XML_PATH_IS_INSTANT_ENABLED                   = 'algoliasearch/credentials/is_instant_enabled';
 
-    const XML_PATH_REPLACE_CATEGORIES               = 'algoliasearch/instant/replace_categories';
-    const XML_PATH_INSTANT_SELECTOR                 = 'algoliasearch/instant/instant_selector';
-    const XML_PATH_FACETS                           = 'algoliasearch/instant/facets';
-    const XML_PATH_SORTING_INDICES                  = 'algoliasearch/instant/sorts';
+    const XML_PATH_REPLACE_CATEGORIES                   = 'algoliasearch/instant/replace_categories';
+    const XML_PATH_INSTANT_SELECTOR                     = 'algoliasearch/instant/instant_selector';
+    const XML_PATH_FACETS                               = 'algoliasearch/instant/facets';
+    const XML_PATH_MAX_VALUES_PER_FACET                 = 'algoliasearch/instant/max_values_per_facet';
+    const XML_PATH_SORTING_INDICES                      = 'algoliasearch/instant/sorts';
+    const XML_ADD_TO_CART_ENABLE                        = 'algoliasearch/instant/add_to_cart_enable';
 
-    const XML_PATH_AUTOCOMPLETE_ADD_SECTIONS        = 'algoliasearch/autocomplete/additional_sections';
+    const XML_PATH_AUTOCOMPLETE_ADD_SECTIONS            = 'algoliasearch/autocomplete/additional_sections';
 
-    const XML_PATH_PRODUCT_ATTRIBUTES               = 'algoliasearch/products/product_additional_attributes';
-    const XML_PATH_PRODUCT_CUSTOM_RANKING           = 'algoliasearch/products/custom_ranking_product_attributes';
-    const XML_PATH_RESULTS_LIMIT                    = 'algoliasearch/products/results_limit';
+    const XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS        = 'algoliasearch/products/number_product_suggestions';
+    const XML_PATH_NUMBER_OF_PRODUCT_RESULTS            = 'algoliasearch/products/number_product_results';
+    const XML_PATH_NUMBER_OF_PRODUCT_RESULTS_BACKEND    = 'algoliasearch/products/number_product_results_backend';
+    const XML_PATH_PRODUCT_ATTRIBUTES                   = 'algoliasearch/products/product_additional_attributes';
+    const XML_PATH_PRODUCT_CUSTOM_RANKING               = 'algoliasearch/products/custom_ranking_product_attributes';
+    const XML_PATH_RESULTS_LIMIT                        = 'algoliasearch/products/results_limit';
 
-    const XML_PATH_CATEGORY_ATTRIBUTES              = 'algoliasearch/categories/category_additional_attributes2';
-    const XML_PATH_INDEX_PRODUCT_COUNT              = 'algoliasearch/categories/index_product_count';
-    const XML_PATH_CATEGORY_CUSTOM_RANKING          = 'algoliasearch/categories/custom_ranking_category_attributes';
+    const XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS       = 'algoliasearch/categories/number_category_suggestions';
+    const XML_PATH_CATEGORY_ATTRIBUTES                  = 'algoliasearch/categories/category_additional_attributes2';
+    const XML_PATH_INDEX_PRODUCT_COUNT                  = 'algoliasearch/categories/index_product_count';
+    const XML_PATH_CATEGORY_CUSTOM_RANKING              = 'algoliasearch/categories/custom_ranking_category_attributes';
 
-    const XML_PATH_EXCLUDED_PAGES                   = 'algoliasearch/pages/excluded_pages';
+    const XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS           = 'algoliasearch/pages/number_page_suggestions';
+    const XML_PATH_EXCLUDED_PAGES                       = 'algoliasearch/pages/excluded_pages';
 
-    const XML_PATH_MIN_POPULARITY                   = 'algoliasearch/suggestions/min_popularity';
-    const XML_PATH_MIN_NUMBER_OF_RESULTS            = 'algoliasearch/suggestions/min_number_of_results';
+    const XML_PATH_NUMBER_QUERY_SUGGESTIONS             = 'algoliasearch/suggestions/number_query_suggestions';
+    const XML_PATH_MIN_POPULARITY                       = 'algoliasearch/suggestions/min_popularity';
+    const XML_PATH_MIN_NUMBER_OF_RESULTS                = 'algoliasearch/suggestions/min_number_of_results';
 
-    const XML_PATH_REMOVE_IF_NO_RESULT              = 'algoliasearch/relevance/remove_words_if_no_result';
+    const XML_PATH_REMOVE_IF_NO_RESULT                  = 'algoliasearch/relevance/remove_words_if_no_result';
 
-    const XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS    = 'algoliasearch/ui/number_product_suggestions';
-    const XML_PATH_NUMBER_OF_PRODUCT_RESULTS        = 'algoliasearch/ui/number_product_results';
-    const XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS   = 'algoliasearch/ui/number_category_suggestions';
-    const XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS       = 'algoliasearch/ui/number_page_suggestions';
-    const XML_PATH_NUMBER_QUERY_SUGGESTIONS         = 'algoliasearch/ui/number_query_suggestions';
-    const XML_PATH_MAX_VALUES_PER_FACET             = 'algoliasearch/ui/max_values_per_facet';
-    const XML_PATH_REMOVE_BRANDING                  = 'algoliasearch/ui/remove_branding';
-    const XML_ADD_TO_CART_ENABLE                    = 'algoliasearch/ui/add_to_cart_enable';
+    const XML_PATH_MAX_RETRIES                          = 'algoliasearch/queue/retries';
+    const XML_PATH_IS_ACTIVE                            = 'algoliasearch/queue/active';
+    const XML_PATH_NUMBER_OF_ELEMENT_BY_PAGE            = 'algoliasearch/queue/number_of_element_by_page';
+    const XML_PATH_NUMBER_OF_JOB_TO_RUN                 = 'algoliasearch/queue/number_of_job_to_run';
+    const XML_PATH_NO_PROCESS                           = 'algoliasearch/queue/noprocess';
 
-    const XML_PATH_MAX_RETRIES                      = 'algoliasearch/queue/retries';
-    const XML_PATH_IS_ACTIVE                        = 'algoliasearch/queue/active';
-    const XML_PATH_NUMBER_OF_ELEMENT_BY_PAGE        = 'algoliasearch/queue/number_of_element_by_page';
-    const XML_PATH_NUMBER_OF_JOB_TO_RUN             = 'algoliasearch/queue/number_of_job_to_run';
-    const XML_PATH_NO_PROCESS                       = 'algoliasearch/queue/noprocess';
-
-    const XML_PATH_PARTIAL_UPDATES                  = 'algoliasearch/advanced/partial_update';
-    const XML_PATH_CUSTOMER_GROUPS_ENABLE           = 'algoliasearch/advanced/customer_groups_enable';
+    const XML_PATH_PARTIAL_UPDATES                      = 'algoliasearch/advanced/partial_update';
+    const XML_PATH_CUSTOMER_GROUPS_ENABLE               = 'algoliasearch/advanced/customer_groups_enable';
+    const XML_PATH_REMOVE_BRANDING                      = 'algoliasearch/advanced/remove_branding';
 
     public function noProcess($storeId = null)
     {
@@ -134,22 +134,27 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getNumberOfProductSuggestions($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS, $storeId);
+        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS, $storeId);
     }
 
     public function getNumberOfProductResults($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PRODUCT_RESULTS, $storeId);
+        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PRODUCT_RESULTS, $storeId);
+    }
+
+    public function getNumberOfProductResultsBackend($storeId = NULL)
+    {
+        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PRODUCT_RESULTS_BACKEND, $storeId);
     }
 
     public function getNumberOfCategorySuggestions($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS, $storeId);
+        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_CATEGORY_SUGGESTIONS, $storeId);
     }
 
     public function getNumberOfPageSuggestions($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS, $storeId);
+        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PAGE_SUGGESTIONS, $storeId);
     }
 
     public function getResultsLimit($storeId = NULL)
