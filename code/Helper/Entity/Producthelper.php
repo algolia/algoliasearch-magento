@@ -409,7 +409,12 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }, $sub_products);
             }
 
-            $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false)->load();
+            if (count($ids)) {
+                $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false)->load();
+            }
+            else {
+                $sub_products = array();
+            }
 
             if ($product->getTypeId() == 'grouped' || $product->getTypeId() == 'configurable')
             {
