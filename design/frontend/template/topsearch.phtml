@@ -74,7 +74,7 @@ if ($config->isInstantEnabled())
 
         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
-        $hash_path = '#q='.htmlentities($query).'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
+        $hash_path = '#q='.htmlentities($query, ENT_COMPAT, "UTF-8").'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
 
         $refinement_key = Mage::app()->getRequest()->getParam('refinement_key');
         $refinement_value = Mage::app()->getRequest()->getParam('refinement_value');

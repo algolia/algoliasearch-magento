@@ -5,18 +5,22 @@ RUN echo 'mysql-server mysql-server/root_password password P4ssw0rd' | debconf-s
 RUN echo 'mysql-server mysql-server/root_password_again password P4ssw0rd' | debconf-set-selections
 
 # packages/dependencies installation
-RUN apt-get update
-RUN apt-get install -y mysql-client-5.5 mysql-server
-RUN apt-get install -y libxml2-dev
+RUN apt-get update && apt-get install -y \
+  mysql-client-5.5 \
+  mysql-server \
+  php5-mysql \
+  libxml2-dev \
+  vim emacs-nox \
+  git-core \
+  wget \
+  zsh
 RUN docker-php-ext-install soap
 RUN docker-php-ext-install mysqli
-RUN apt-get install -y vim emacs-nox git-core wget zsh
 
 RUN chsh -s /bin/zsh
 RUN sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true
 COPY bin/.zshrc /root/.zshrc
 
-RUN apt-get -y install php5-mysql
 COPY bin/php.ini /usr/local/etc/php/php.ini
 RUN cd /tmp && curl -O https://phpmyadmin-downloads-532693.c.cdn77.org/phpMyAdmin/4.4.9/phpMyAdmin-4.4.9-english.tar.gz && tar xvf phpMyAdmin-4.4.9-english.tar.gz && mv phpMyAdmin-4.4.9-english /var/www/htdocs/phpmyadmin
 COPY bin/config.inc.php /var/www/htdocs/phpmyadmin/
