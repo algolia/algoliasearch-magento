@@ -143,16 +143,6 @@
                             <show_in_store>1</show_in_store>
                             <comment>The number of products displayed on the instant search results page. Default value is 9.</comment>
                         </number_product_results>
-                        <number_product_results_backend translate="label comment">
-                            <label>Number of products per page in the backend search result page (seo)</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The number of products displayed on the backend search results page (seo). Default value is 9.</comment>
-                        </number_product_results_backend>
                         <product_additional_attributes translate="label comment">
                             <label>Attributes</label>
                             <frontend_model>algoliasearch/system_config_form_field_customsortorderproduct</frontend_model>

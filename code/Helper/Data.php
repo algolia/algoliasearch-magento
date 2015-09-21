@@ -65,7 +65,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $index_name = $this->product_helper->getIndexName($storeId);
 
-        $number_of_results = min($this->config->getNumberOfProductResultsBackend($storeId), 1000);
+        $number_of_results = 1000;
+
+        if ($this->config->isInstantEnabled())
+            $number_of_results = min($this->config->getNumberOfProductResults($storeId), 1000);
 
         if ($number_of_results <= 0)
             return array();
