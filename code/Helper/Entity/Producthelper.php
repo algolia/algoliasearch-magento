@@ -444,26 +444,54 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
             }
 
-            $customData['min_formated']             = array();
-            $customData['max_formated']             = array();
-            $customData['min_with_tax_formated']    = array();
-            $customData['max_with_tax_formated']    = array();
 
-            $customData['min_formated']['default'] = $product->getStore()->formatPrice($min, false);
-            $customData['max_formated']['default'] = $product->getStore()->formatPrice($max, false);
-            $customData['min_with_tax_formated']['default'] = $product->getStore()->formatPrice($min_with_tax, false);
-            $customData['max_with_tax_formated']['default'] = $product->getStore()->formatPrice($max_with_tax, false);
-
-            if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
+            if ($min != $max)
             {
-                foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
-                {
-                    $group_id = (int)$group->getData('customer_group_id');
+                $customData['min_formated']             = array();
+                $customData['max_formated']             = array();
+                $customData['min_with_tax_formated']    = array();
+                $customData['max_with_tax_formated']    = array();
 
-                    $customData['min_formated']['group_' . $group_id]           = $product->getStore()->formatPrice($min, false);
-                    $customData['max_formated']['group_' . $group_id]           = $product->getStore()->formatPrice($max, false);
-                    $customData['min_with_tax_formated']['group_' . $group_id]  = $product->getStore()->formatPrice($min_with_tax, false);
-                    $customData['max_with_tax_formated']['group_' . $group_id]  = $product->getStore()->formatPrice($max_with_tax, false);
+                $customData['min_formated']['default'] = $product->getStore()->formatPrice($min, false);
+                $customData['max_formated']['default'] = $product->getStore()->formatPrice($max, false);
+                $customData['min_with_tax_formated']['default'] = $product->getStore()->formatPrice($min_with_tax, false);
+                $customData['max_with_tax_formated']['default'] = $product->getStore()->formatPrice($max_with_tax, false);
+
+                if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
+                {
+                    foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+                    {
+                        $group_id = (int)$group->getData('customer_group_id');
+
+                        $customData['min_formated']['group_' . $group_id]           = $product->getStore()->formatPrice($min, false);
+                        $customData['max_formated']['group_' . $group_id]           = $product->getStore()->formatPrice($max, false);
+                        $customData['min_with_tax_formated']['group_' . $group_id]  = $product->getStore()->formatPrice($min_with_tax, false);
+                        $customData['max_with_tax_formated']['group_' . $group_id]  = $product->getStore()->formatPrice($max_with_tax, false);
+                    }
+                }
+            }
+
+            if ($customData['price']['default'] == 0)
+            {
+                $customData['price']['default'] = $min;
+                $customData['price_with_tax']['default'] = $min_with_tax;
+                $customData['price_formated']['default'] = $product->getStore()->formatPrice($min, false);
+                $customData['price_with_tax_formated']['default'] = $product->getStore()->formatPrice($min_with_tax, false);
+
+                if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
+                {
+                    foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+                    {
+                        $group_id = (int)$group->getData('customer_group_id');
+
+                        if ($customData['price']['group_' . $group_id] == 0)
+                        {
+                            $customData['price']['group_' . $group_id] = $min;
+                            $customData['price_with_tax']['group_' . $group_id] = $min_with_tax;
+                            $customData['price_formated']['group_' . $group_id] = $product->getStore()->formatPrice($min, false);
+                            $customData['price_with_tax_formated']['group_' . $group_id] = $product->getStore()->formatPrice($min_with_tax, false);
+                        }
+                    }
                 }
             }
 

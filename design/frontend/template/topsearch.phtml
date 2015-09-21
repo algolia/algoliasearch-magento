@@ -893,6 +893,14 @@ $class = $isSearchPage ? 'search-page' : '';
                     delete hit.special_price_with_tax_formated;
                 }
 
+                if (hit.min_formated !== undefined)
+                {
+                    delete hit.price;
+                    delete hit.price_formated;
+                    delete hit.price_with_tax;
+                    delete hit.price_with_tax_formated;
+                }
+
                 return instantHitTemplate.render(hit);
             };
 
