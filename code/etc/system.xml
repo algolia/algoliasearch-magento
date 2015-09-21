@@ -4,7 +4,7 @@
         <algoliasearch translate="label" module="algoliasearch">
             <label>
                 <![CDATA[
-                Algolia Search 1.4.4
+                Algolia Search 1.4.5
                 <style>
                     .algoliasearch-admin-menu span {
                         padding-left: 38px !important;
@@ -123,11 +123,31 @@
                      ]]>
                     </comment>
                     <fields>
+                        <number_product_suggestions translate="label comment">
+                            <label>Number of product suggestions in the dropdown menu</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The number of product results displayed in the drop-down menu. Default value is 3. Set the value to 0 if you do not want to display the products section in the menu.</comment>
+                        </number_product_suggestions>
+                        <number_product_results translate="label comment">
+                            <label>Number of products per page in the instant result page</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The number of products displayed on the instant search results page. Default value is 9.</comment>
+                        </number_product_results>
                         <product_additional_attributes translate="label comment">
                             <label>Attributes</label>
                             <frontend_model>algoliasearch/system_config_form_field_customsortorderproduct</frontend_model>
                             <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>10</sort_order>
+                            <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -142,7 +162,7 @@
                             <label>Ranking</label>
                             <frontend_model>algoliasearch/system_config_form_field_customrankingproduct</frontend_model>
                             <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>12</sort_order>
+                            <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -189,11 +209,21 @@
                             <show_in_store>1</show_in_store>
                             <comment>Configure here the filtering options you want to display on your search results page. Choose Disjunctive to allow the selection of different values of a facet (e.g. hotels with 4 OR 5 stars). Choose Conjunctive to allow the selection of only one value of a facet (e.g. only "Size M").</comment>
                         </facets>
+                        <max_values_per_facet translate="label comment">
+                            <label>Number of values per facet</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The number of values each facet can display. Default value is 10.</comment>
+                        </max_values_per_facet>
                         <sorts>
                             <label>Sorts</label>
                             <frontend_model>algoliasearch/system_config_form_field_sorts</frontend_model>
                             <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>40</sort_order>
+                            <sort_order>50</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -203,12 +233,22 @@
                             <label>Replace categories page</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>50</sort_order>
+                            <sort_order>60</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>Choose here if you want the default Magento category pages to be replaced by an instant-search results page when a category is selected either in the menu of categories or in the drop-down menu.</comment>
                         </replace_categories>
+                        <add_to_cart_enable translate="label comment">
+                            <label>Add to Cart</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Choose here if you want to add an "add to cart" button in the template.</comment>
+                        </add_to_cart_enable>
                     </fields>
                 </instant>
                 <categories translate="label">
@@ -226,6 +266,16 @@
                      ]]>
                     </comment>
                     <fields>
+                        <number_category_suggestions translate="label comment">
+                            <label>Number of category suggestions</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The number of category results displayed in the drop-down menu. Default value is 5. Set the value to 0 if you do not want to display the categories section in the menu.</comment>
+                        </number_category_suggestions>
                         <category_additional_attributes2 translate="label comment">
                             <label>Attributes</label>
                             <frontend_model>algoliasearch/system_config_form_field_customsortordercategory</frontend_model>
@@ -273,6 +323,16 @@
                      ]]>
                     </comment>
                     <fields>
+                        <number_page_suggestions translate="label comment">
+                            <label>Number of page suggestions</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The number of page suggestions displayed in the drop-down menu. Default value is 3. Set the value to 0 if you do not want to display the pages section in the menu.</comment>
+                        </number_page_suggestions>
                         <excluded_pages translate="label comment">
                             <label>Excluded Pages</label>
                             <frontend_model>algoliasearch/system_config_form_field_custompages</frontend_model>
@@ -305,6 +365,16 @@
                      ]]>
                     </comment>
                     <fields>
+                        <number_query_suggestions translate="label comment">
+                            <label>Number of query suggestions</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The number of query suggestions displayed in the drop-down menu. Default value is 0.</comment>
+                        </number_query_suggestions>
                         <min_popularity translate="label comment">
                             <label>Min popularity</label>
                             <frontend_type>text</frontend_type>
@@ -385,103 +455,6 @@
                         </remove_words_if_no_result>
                     </fields>
                 </relevance>
-                <ui translate="label">
-                    <label>UI Configuration</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>60</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
-                    <comment>
-                     <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=911" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
-                    </font>
-                     ]]>
-                    </comment>
-                    <fields>
-                        <number_product_suggestions translate="label comment">
-                            <label>Number of product suggestions</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The number of product results displayed in the drop-down menu. Default value is 3. Set the value to 0 if you do not want to display the products section in the menu.</comment>
-                        </number_product_suggestions>
-                        <number_product_results translate="label comment">
-                            <label>Number of products per page</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>50</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The number of products displayed on the search results page. Default value is 9.</comment>
-                        </number_product_results>
-                        <number_category_suggestions translate="label comment">
-                            <label>Number of category suggestions</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The number of category results displayed in the drop-down menu. Default value is 5. Set the value to 0 if you do not want to display the categories section in the menu.</comment>
-                        </number_category_suggestions>
-                        <number_page_suggestions translate="label comment">
-                            <label>Number of page suggestions</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The number of page suggestions displayed in the drop-down menu. Default value is 3. Set the value to 0 if you do not want to display the pages section in the menu.</comment>
-                        </number_page_suggestions>
-                        <number_query_suggestions translate="label comment">
-                            <label>Number of query suggestions</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The number of query suggestions displayed in the drop-down menu. Default value is 0.</comment>
-                        </number_query_suggestions>
-                        <max_values_per_facet translate="label comment">
-                            <label>Number of values per facet</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>60</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The number of values each facet can display. Default value is 10.</comment>
-                        </max_values_per_facet>
-                        <remove_branding translate="label comment">
-                            <label>Remove branding logo</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>70</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Choose here if the algolia logo is added to the drop-down template.</comment>
-                        </remove_branding>
-                        <add_to_cart_enable translate="label comment">
-                            <label>Add to Cart</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>80</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Choose here if you want to add an "add to cart" button in the template.</comment>
-                        </add_to_cart_enable>
-                    </fields>
-                </ui>
                 <queue translate="label">
                     <label>Queue Configuration</label>
                     <expanded>1</expanded>
@@ -588,6 +561,16 @@
                                 ]]>
                             </comment>
                         </customer_groups_enable>
+                        <remove_branding translate="label comment">
+                            <label>Remove branding logo</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Choose here if the algolia logo is added to the drop-down template.</comment>
+                        </remove_branding>
                     </fields>
                 </advanced>
             </groups>
