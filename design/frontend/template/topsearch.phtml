@@ -328,70 +328,57 @@ $class = $isSearchPage ? 'search-page' : '';
             </div>
 
             <div class="col-md-9" id="algolia-right-container">
-                <div id="instant-search-results-container"></div>
-                <div id="instant-search-pagination-container"></div>
+                <div class="row">
+                    <div>
+                        <div class="hits">
+                            <div class="infos">
+                                <div class="pull-left" id="algolia-stats"></div>
+                                <div class="pull-right" id="algolia-sorts"></div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div id="instant-search-results-container"
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="text-center">
+                    <div id="instant-search-pagination-container"></div>
+                </div>
             </div>
         </div>
 
     </div>
 </script>
 
-<!-- Product hit template  -->
-<script type="text/template" id="instant-content-template">
-    <div class="hits">
-        {{#hits.length}}
-        <div class="infos">
-            <div class="pull-left">
-                {{nbHits}} <?php echo $this->__('result'); ?>{{^nbHits_one}}<?php echo $this->__('s'); ?>{{/nbHits_one}} <?php echo $this->__('found'); ?> {{#query}}<?php echo $this->__('matching'); ?> "<strong>{{query}}</strong>" {{/query}}<?php echo $this->__('in'); ?> {{processingTimeMS}} <?php echo $this->__('ms'); ?>
-            </div>
-            {{#sorting_indices.length}}
-            <div class="pull-right">
-                <?php echo $this->__('Order by'); ?>
-                <select id="index_to_use">
-                    <option {{#sortSelected}}{{relevance_index_name}}{{/sortSelected}} value="{{relevance_index_name}}"><?php echo $this->__('Relevance'); ?></option>
-                    {{#sorting_indices}}
-                    <option {{#sortSelected}}{{index_name}}{{/sortSelected}} value="{{index_name}}">{{label}}</option>
-                    {{/sorting_indices}}
-                </select>
-            </div>
-            {{/sorting_indices.length}}
-            <div class="clearfix"></div>
-        </div>
-        {{/hits.length}}
-
-        <div class="row">
-            {{#hits}}
-            <div class="col-md-4 col-sm-6">
-                <div class="result-wrapper">
-                    <a href="{{url}}" class="result">
-                        <div class="result-content">
-                            <div class="result-thumbnail">
-                                {{#image_url}}
-                                <img src="{{{ image_url }}}" />
-                                {{/image_url}}
-                                {{^image_url}}
-                                <span class="no-image"></span>
-                                {{/image_url}}
+<script type="text/template" id="instant-hit-template">
+    <div class="col-md-4 col-sm-6">
+        <div class="result-wrapper">
+            <a href="{{url}}" class="result">
+                <div class="result-content">
+                    <div class="result-thumbnail">
+                        {{#image_url}}<img src="{{{ image_url }}}" />{{/image_url}}
+                        {{^image_url}}<span class="no-image"></span>{{/image_url}}
+                    </div>
+                    <div class="result-sub-content">
+                        <h3 class="result-title text-ellipsis">
+                            {{{ _highlightResult.name.value }}}
+                        </h3>
+                        <div class="ratings">
+                            <div class="rating-box">
+                                <div class="rating" style="width:{{rating_summary}}%" width="148" height="148"></div>
                             </div>
-                            <div class="result-sub-content">
-                                <h3 class="result-title text-ellipsis">
-                                    {{{ _highlightResult.name.value }}}
-                                </h3>
-                                <div class="ratings">
-                                    <div class="rating-box">
-                                        <div class="rating" style="width:{{rating_summary}}%" width="148" height="148"></div>
-                                    </div>
-                                </div>
-                                <div class="price">
-                                    <div class="algoliasearch-autocomplete-price">
-                                        <div>
-                                            {{#special_price_with_tax<?php echo $price_key; ?>}}
+                        </div>
+                        <div class="price">
+                            <div class="algoliasearch-autocomplete-price">
+                                <div>
+                                    {{#special_price_with_tax<?php echo $price_key; ?>}}
                                             <span class="after_special">
                                                 {{special_price_with_tax_formated<?php echo $price_key; ?>}}
                                             </span>
-                                            {{/special_price_with_tax<?php echo $price_key; ?>}}
+                                    {{/special_price_with_tax<?php echo $price_key; ?>}}
 
-                                            {{#special_price_with_tax<?php echo $price_key; ?>}}
+                                    {{#special_price_with_tax<?php echo $price_key; ?>}}
                                             <span class="before_special">
                                             {{/special_price_with_tax<?php echo $price_key; ?>}}
 
@@ -405,43 +392,36 @@ $class = $isSearchPage ? 'search-page' : '';
 
                                             {{#special_price_with_tax<?php echo $price_key; ?>}}
                                             </span>
-                                            {{/special_price_with_tax<?php echo $price_key; ?>}}
+                                    {{/special_price_with_tax<?php echo $price_key; ?>}}
 
-                                        </div>
-                                    </div>
                                 </div>
-                                <div class="result-description text-ellipsis">
-                                    {{{ _highlightResult.description.value }}}
-                                </div>
-
-                                {{#isAddToCartEnabled}}
-                                {{#in_stock}}
-
-                                <form action="<?php echo $base_url; ?>/checkout/cart/add/product/{{objectID}}" method="post">
-                                    <input type="hidden" name="form_key" value="<?php echo $formKey; ?>" />
-
-                                    <input type="hidden" name="qty" value="1">
-
-                                    <button type="submit"><?php echo $this->__('Add to Cart'); ?></button>
-                                </form>
-                                {{/in_stock}}
-                                {{/isAddToCartEnabled}}
                             </div>
                         </div>
-                        <div class="clearfix"></div>
-                    </a>
-                </div>
-            </div>
-            {{/hits}}
-        </div>
+                        <div class="result-description text-ellipsis">{{{ _highlightResult.description.value }}}</div>
 
-        {{^hits.length}}
-        <div class="no-results">
-            <?php echo $this->__('No results found matching'); ?> "<strong>{{query}}</strong>". <span class="button clear-button"><?php echo $this->__('Clear query and filters'); ?></span>
+                        {{#isAddToCartEnabled}}
+                            {{#in_stock}}
+                                <form action="<?php echo $base_url; ?>/checkout/cart/add/product/{{objectID}}" method="post">
+                                    <input type="hidden" name="form_key" value="<?php echo $formKey; ?>" />
+                                    <input type="hidden" name="qty" value="1">
+                                    <button type="submit"><?php echo $this->__('Add to Cart'); ?></button>
+                                </form>
+                            {{/in_stock}}
+                        {{/isAddToCartEnabled}}
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </a>
         </div>
-        {{/hits.length}}
-        <div class="clearfix"></div>
     </div>
+</script>
+
+<script type="text/template" id="instant-stats-template">
+    {{#hasNoResults}}<?php echo $this->__('No results'); ?>{{/hasNoResults}}
+    {{#hasOneResult}}1 <?php echo $this->__('result'); ?>{{/hasOneResult}}
+    {{#hasManyResults}}{{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}} <?php echo $this->__('results'); ?>{{/hasManyResults}}
+    {{#query}}<?php echo $this->__('matching'); ?> "<strong>{{query}}</strong>" {{/query}}
+    <?php echo $this->__('in'); ?> {{processingTimeMS}}<?php echo $this->__('ms'); ?>
 </script>
 
 <script type="text/template" id="instant-facets-hierarchical-template">
@@ -515,35 +495,6 @@ $class = $isSearchPage ? 'search-page' : '';
         {{/facets}}
     </div>
 </script>
-
-<!-- Pagination template -->
-<script type="text/template" id="instant-pagination-template">
-    <div class="pagination-wrapper">
-        <div class="text-center">
-            <ul class="algolia-pagination">
-                <a href="#" data-page="{{prev_page}}">
-                    <li {{^prev_page}}class="disabled"{{/prev_page}}>
-                    &laquo;
-                    </li>
-                </a>
-
-                {{#pages}}
-                <a href="#" data-page="{{number}}">
-                    <li class="{{#current}}active{{/current}}{{#disabled}}disabled{{/disabled}}">
-                        {{ number }}
-                    </li>
-                </a>
-                {{/pages}}
-                <a href="#" data-page="{{next_page}}">
-                    <li {{^next_page}}class="disabled"{{/next_page}}>
-                    &raquo;
-                    </li>
-                </a>
-            </ul>
-        </div>
-    </div>
-</script>
-
 
 <!--
 //================================
@@ -877,29 +828,123 @@ $class = $isSearchPage ? 'search-page' : '';
 
             var wrapperTemplate = algoliaBundle.Hogan.compile($('#instant_wrapper_template').html());
 
-            var initialized = false;
-
-            var resultsTemplate = algoliaBundle.Hogan.compile($('#instant-content-template').html());
-            var facetsTemplate = algoliaBundle.Hogan.compile($('#instant-facets-template').html());
-            var paginationTemplate = algoliaBundle.Hogan.compile($('#instant-pagination-template').html());
-            var facet_hierarchical = algoliaBundle.Hogan.compile($('#instant-facets-hierarchical-template').html());
-
             $(algoliaConfig.instant.selector).html(wrapperTemplate.render({ second_bar: algoliaConfig.autocomplete.enabled })).show();
 
+            /** Initialise instant search **/
             var search = instantsearch({
                 appId: algoliaConfig.applicationId, // Mandatory
                 apiKey: algoliaConfig.apiKey, // Mandatory
                 indexName: algoliaConfig.indexName + '_products' // Mandatory
             });
 
-            /*search.addWidget(
+            /** Search bar **/
+            search.addWidget(
                 instantsearch.widgets.searchBox({
                     container: '#instant-search-box',
-                    placeholder: 'Search for libraries in France...'
+                    placeholder: 'Search for products'
                 })
-            );*/
+            );
 
-            //search.start();
+            /** Stats **/
+            var instantStatsTemplate = $('#instant-stats-template').html();
+            search.addWidget(
+                instantsearch.widgets.stats({
+                    container: '#algolia-stats',
+                    template: instantStatsTemplate
+                })
+            );
+
+            /** Sorts **/
+            var sorting_indices = algoliaConfig.sortingIndices;
+            sorting_indices.unshift({name: algoliaConfig.indexName + '_products', label: '<?php echo $this->__('Relevance'); ?>'});
+
+            search.addWidget(
+                instantsearch.widgets.indexSelector({
+                    container: '#algolia-sorts',
+                    indices: sorting_indices,
+                    cssClass: 'form-control'
+                })
+            );
+
+            /** Hits **/
+            var instantHitTemplate = algoliaBundle.Hogan.compile($('#instant-hit-template').html());
+
+            var renderHit = function (hit) {
+
+                if (Array.isArray(hit.categories))
+                    hit.categories = hit.categories.join(', ');
+
+                if (Array.isArray(hit._highlightResult.name))
+                    hit._highlightResult.name = hit._highlightResult.name[0];
+
+                if (Array.isArray(hit.price))
+                    hit.price = hit.price[0];
+
+                var time = Math.floor(Date.now() / 1000);
+
+                if ((hit.special_price_from_date != undefined && (hit.special_price_from_date > time && hit.special_price_from_date !== '')) ||
+                    (hit.special_price_to_date != undefined && (hit.special_price_to_date < time && hit.special_price_to_date !== '')))
+                {
+                    delete hit.special_price_from_date;
+                    delete hit.special_price_to_date;
+                    delete hit.special_price;
+                    delete hit.special_price_with_tax;
+                    delete hit.special_price_formated;
+                    delete hit.special_price_with_tax_formated;
+                }
+
+                return instantHitTemplate.render(hit);
+            };
+
+            search.addWidget(
+                instantsearch.widgets.hits({
+                    container: '#instant-search-results-container',
+                    templates: {
+                        empty: '<div class="no-results"><?php echo $this->__('No results found matching'); ?> "<strong>{{query}}</strong>". <span class="button clear-button"><?php echo $this->__('Clear query and filters'); ?></span> </div>',
+                        hit: renderHit
+                    },
+                    hitsPerPage: algoliaConfig.hitsPerPage
+                })
+            );
+
+            /** Facets **/
+
+            var facets = algoliaConfig.facets;
+
+            $.map(facets, function (facet) {
+               console.log(facet);
+                if (facet.type == 'slider')
+                {
+                    /*search.addWidget(
+                        instantsearch.widgets.rangeSlider({
+                            container: '#price',
+                            facetName: 'price',
+                            /*tooltips: {
+                                format: function(formattedValue) {
+                                    return formattedValue;
+                                }
+                            }
+                        })
+                    );*/
+                }
+            });
+
+            /** Pagination **/
+            search.addWidget(
+                instantsearch.widgets.pagination({
+                    container: '#instant-search-pagination-container',
+                    cssClass: 'algolia-pagination',
+                    showFirstLast: false,
+                     labels: {
+                         prev: '‹', // &lsaquo;
+                         next: '›', // &rsaquo;
+                         first: '«', // &laquo;
+                         last: '»' // &raquo;
+                     }
+                })
+            );
+
+            search.start();
         }
     });
 

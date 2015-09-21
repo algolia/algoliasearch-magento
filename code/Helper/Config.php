@@ -207,11 +207,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
                 {
                     $suffix_index_name = 'group_' . $group_id;
 
-                    $attr['index_name'] = $product_helper->getIndexName($storeId) . '_' . $suffix_index_name . '_' .$attr['attribute'].'_'.$attr['sort'];
+                    $attr['name'] = $product_helper->getIndexName($storeId) . '_' . $suffix_index_name . '_' .$attr['attribute'].'_'.$attr['sort'];
                 }
             }
             else
-                $attr['index_name'] = $product_helper->getIndexName($storeId) . '_' . 'default' . '_' .$attr['attribute'].'_'.$attr['sort'];
+                $attr['name'] = $product_helper->getIndexName($storeId) . '_' . 'default' . '_' .$attr['attribute'].'_'.$attr['sort'];
         }
 
         if (is_array($attrs))

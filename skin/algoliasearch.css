@@ -167,7 +167,7 @@
 }
 
 #algolia_instant_selector .hits .infos {
-  margin: 0 10px 20px;
+  margin: 0 25px 20px;
   padding: 6px 10px;
   border-bottom: solid 1px #CCCCCC;
   color: #aaa;
@@ -387,7 +387,7 @@
   padding-top: 0px;
 }
 
-#algolia_instant_selector #instant-search-bar {
+#algolia_instant_selector .as-search-box--input {
   width: 100%;
   height: 40px;
   font-family: "Raleway", "Helvetica Neue", Verdana, Arial, sans-serif;
