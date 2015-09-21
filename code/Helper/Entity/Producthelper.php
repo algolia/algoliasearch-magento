@@ -422,7 +422,12 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }, $sub_products);
             }
 
-            $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false)->load();
+            if (count($ids)) {
+                $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false)->load();
+            }
+            else {
+                $sub_products = array();
+            }
 
             if ($product->getTypeId() == 'grouped' || $product->getTypeId() == 'configurable')
             {
@@ -518,14 +523,17 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
 
-        if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary'))
+        if (Mage::helper('core')->isModuleEnabled('Mage_Review'))
         {
-            $summaryData = Mage::getModel('review/review_summary')
-                ->setStoreId($product->getStoreId())
-                ->load($product->getId());
+            if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary'))
+            {
+                $summaryData = Mage::getModel('review/review_summary')
+                    ->setStoreId($product->getStoreId())
+                    ->load($product->getId());
 
-            if ($summaryData['rating_summary'])
-                $customData['rating_summary'] = $summaryData['rating_summary'];
+                if ($summaryData['rating_summary'])
+                    $customData['rating_summary'] = $summaryData['rating_summary'];
+            }
         }
 
         foreach ($additionalAttributes as $attribute)
@@ -593,6 +601,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
             }
         }
+
+        $transport = new Varien_Object($customData);
+        Mage::dispatchEvent('algolia_subproducts_index', array('custom_data' => $transport, 'sub_products' => $sub_products));
+        $customData = $transport->getData();
 
         $customData = array_merge($customData, $defaultData);
 

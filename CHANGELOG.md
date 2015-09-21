@@ -1,5 +1,10 @@
 ## Change Log
 
+### 1.4.5
+
+- FIX: Improve performance issue when backend-search
+- FIX: Various small improvements
+
 ### 1.4.4
 
 - NEW: Handle bundle products
