@@ -23,7 +23,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const XML_PATH_NUMBER_OF_PRODUCT_SUGGESTIONS        = 'algoliasearch/products/number_product_suggestions';
     const XML_PATH_NUMBER_OF_PRODUCT_RESULTS            = 'algoliasearch/products/number_product_results';
-    const XML_PATH_NUMBER_OF_PRODUCT_RESULTS_BACKEND    = 'algoliasearch/products/number_product_results_backend';
     const XML_PATH_PRODUCT_ATTRIBUTES                   = 'algoliasearch/products/product_additional_attributes';
     const XML_PATH_PRODUCT_CUSTOM_RANKING               = 'algoliasearch/products/custom_ranking_product_attributes';
     const XML_PATH_RESULTS_LIMIT                        = 'algoliasearch/products/results_limit';
@@ -140,11 +139,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getNumberOfProductResults($storeId = NULL)
     {
         return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PRODUCT_RESULTS, $storeId);
-    }
-
-    public function getNumberOfProductResultsBackend($storeId = NULL)
-    {
-        return (int) Mage::getStoreConfig(self::XML_PATH_NUMBER_OF_PRODUCT_RESULTS_BACKEND, $storeId);
     }
 
     public function getNumberOfCategorySuggestions($storeId = NULL)
