@@ -185,7 +185,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                             $suffix_index_name = '_group_' . $group_id;
 
-                            $mergeSettings['ranking'] = array($values['sort'].'('.$values['attribute'].'.'.$group_id.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
+                            $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'].'.'.$group_id : $values['attribute'];
+                            $mergeSettings['ranking'] = array($values['sort'].'('.$sort_attribute.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
                             $this->algolia_helper->setSettings($this->getIndexName($storeId).$suffix_index_name.'_'.$values['attribute'].'_'.$values['sort'], $mergeSettings);
                         }
@@ -193,7 +194,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
                 else
                 {
-                    $mergeSettings['ranking'] = array($values['sort'].'('.$values['attribute'].'.'.'default'.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
+                    $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'].'.'.'default' : $values['attribute'];
+
+                    $mergeSettings['ranking'] = array($values['sort'].'('.$sort_attribute.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
                     $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' . 'default' . '_' .$values['attribute'].'_'.$values['sort'], $mergeSettings);
                 }
@@ -263,9 +266,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $customData = array(
             'objectID'          => $product->getId(),
             'name'              => $product->getName(),
-            'url'               => $product->getProductUrl(),
-            'description'       => $product->getDescription()
+            'url'               => $product->getProductUrl()
         );
+
+        $additionalAttributes = $this->config->getProductAdditionalAttributes($product->getStoreId());
+
+        if ($this->isAttributeEnabled($additionalAttributes, 'description'))
+            $customData['description'] = $product->getDescription();
+
 
         foreach (array('price', 'price_with_tax', 'special_price_from_date', 'special_price_to_date', 'special_price'
                     ,'special_price_with_tax', 'special_price_formated', 'special_price_with_tax_formated'
@@ -364,9 +372,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $customData['image_url'] = str_replace(array('https://', 'http://'), '//', $customData['image_url']);
             }
             catch (\Exception $e) {}
-        }
 
-        $additionalAttributes = $this->config->getProductAdditionalAttributes($product->getStoreId());
+            $product->load('media_gallery');
+
+            $customData['images'] = array();
+
+            foreach ($product->getMediaGalleryImages() as $image)
+                $customData['images'][] = str_replace(array('https://', 'http://'), '//', $image->getUrl());
+        }
 
         $sub_products = null;
         $ids = null;
@@ -409,7 +422,12 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }, $sub_products);
             }
 
-            $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false)->load();
+            if (count($ids)) {
+                $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false)->load();
+            }
+            else {
+                $sub_products = array();
+            }
 
             if ($product->getTypeId() == 'grouped' || $product->getTypeId() == 'configurable')
             {
@@ -505,14 +523,17 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
 
-        if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary'))
+        if (Mage::helper('core')->isModuleEnabled('Mage_Review'))
         {
-            $summaryData = Mage::getModel('review/review_summary')
-                ->setStoreId($product->getStoreId())
-                ->load($product->getId());
+            if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary'))
+            {
+                $summaryData = Mage::getModel('review/review_summary')
+                    ->setStoreId($product->getStoreId())
+                    ->load($product->getId());
 
-            if ($summaryData['rating_summary'])
-                $customData['rating_summary'] = $summaryData['rating_summary'];
+                if ($summaryData['rating_summary'])
+                    $customData['rating_summary'] = $summaryData['rating_summary'];
+            }
         }
 
         foreach ($additionalAttributes as $attribute)
@@ -537,6 +558,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         foreach ($sub_products as $sub_product)
                         {
+                            $stock = (int) $sub_product->getStockItem()->getIsInStock();
+
+                            if ($stock == false)
+                                continue;
+
                             $value = $sub_product->getData($attribute['attribute']);
 
                             if ($value)
@@ -552,7 +578,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         if (count($values) > 0)
                         {
-                            $customData[$attribute['attribute']] = $values;
+                            $customData[$attribute['attribute']] = array_values(array_unique($values));
                         }
                     }
                 }
@@ -575,6 +601,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
             }
         }
+
+        $transport = new Varien_Object($customData);
+        Mage::dispatchEvent('algolia_subproducts_index', array('custom_data' => $transport, 'sub_products' => $sub_products));
+        $customData = $transport->getData();
 
         $customData = array_merge($customData, $defaultData);
 

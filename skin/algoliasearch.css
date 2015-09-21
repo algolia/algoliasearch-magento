@@ -147,6 +147,13 @@
   width: 200px;
 }
 
+#algolia_instant_selector .text-ellipsis
+{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 #instant-search-bar-container {
     width: 100%;
     position: relative;

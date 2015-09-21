@@ -46,6 +46,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $this->algolia_helper->resetCredentialsFromConfig();
 
+        if (! ($this->config->getApplicationID() && $this->config->getAPIKey()))
+            return;
+
         $this->algolia_helper->setSettings($this->category_helper->getIndexName($storeId), $this->category_helper->getIndexSettings($storeId));
         $this->algolia_helper->setSettings($this->page_helper->getIndexName($storeId), $this->page_helper->getIndexSettings($storeId));
         $this->algolia_helper->setSettings($this->suggestion_helper->getIndexName($storeId), $this->suggestion_helper->getIndexSettings($storeId));
@@ -179,7 +182,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
                 while ($page <= $pages)
                 {
-                    $this->rebuildStoreCategoryIndexPage($storeId, $collection, $page, $this->config->getNumberOfElementByPage());
+                    $this->rebuildStoreCategoryIndexPage($storeId, $collection, $page, $this->config->getNumberOfElementByPage(), $emulationInfo);
 
                     $page++;
                 }
@@ -242,7 +245,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
                 while ($page <= $pages)
                 {
-                    $this->rebuildStoreProductIndexPage($storeId, $collection, $page, $this->config->getNumberOfElementByPage());
+                    $this->rebuildStoreProductIndexPage($storeId, $collection, $page, $this->config->getNumberOfElementByPage(), $emulationInfo);
 
                     $page++;
                 }
@@ -289,8 +292,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         unset($collection);
     }
 
-    public function rebuildStoreCategoryIndexPage($storeId, $collectionDefault, $page, $pageSize)
+    public function rebuildStoreCategoryIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null)
     {
+        $emulationInfoPage = null;
+
+        if ($emulationInfo === null)
+            $emulationInfoPage = $this->startEmulation($storeId);
+
         $collection = clone $collectionDefault;
         $collection->setCurPage($page)->setPageSize($pageSize);
         $collection->load();
@@ -322,6 +330,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $collection->clear();
 
         unset($collection);
+
+        if ($emulationInfo === null)
+            $this->stopEmulation($emulationInfoPage);
     }
 
     private function getProductsRecords($storeId, $collection)
@@ -341,8 +352,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $indexData;
     }
 
-    public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize)
+    public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null)
     {
+        $emulationInfoPage = null;
+
+        if ($emulationInfo === null)
+            $emulationInfoPage = $this->startEmulation($storeId);
+
         $collection = clone $collectionDefault;
         $collection->setCurPage($page)->setPageSize($pageSize);
         $collection->load();
@@ -350,7 +366,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $collection->addUrlRewrite();
 
         $index_name = $this->product_helper->getIndexName($storeId);
-
 
         /**
          * Normal Indexing
@@ -366,11 +381,17 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $collection->clear();
 
         unset($collection);
+
+        if ($emulationInfo === null)
+            $this->stopEmulation($emulationInfoPage);
     }
 
     public function startEmulation($storeId)
     {
-        $info = new Varien_Object;
+        $appEmulation = Mage::getSingleton('core/app_emulation');
+
+        $info = $appEmulation->startEnvironmentEmulation($storeId);
+
         $info->setInitialStoreId(Mage::app()->getStore()->getId());
         $info->setEmulatedStoreId($storeId);
         $info->setUseProductFlat(Mage::getStoreConfigFlag(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $storeId));
@@ -378,13 +399,18 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::app()->setCurrentStore($storeId);
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, FALSE);
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, FALSE);
+
         return $info;
     }
 
     public function stopEmulation($info)
     {
+        $appEmulation = Mage::getSingleton('core/app_emulation');
+
         Mage::app()->setCurrentStore($info->getInitialStoreId());
         Mage::app()->getStore($info->getEmulatedStoreId())->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, $info->getUseProductFlat());
         Mage::app()->getStore($info->getEmulatedStoreId())->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $info->getUseCategoryFlat());
+
+        $appEmulation->stopEnvironmentEmulation($info);
     }
 }
