@@ -1374,6 +1374,14 @@ $class = $isSearchPage ? 'search-page' : '';
                         delete content.hits[i].special_price_formated;
                         delete content.hits[i].special_price_with_tax_formated;
                     }
+
+                    if (content.hits[i].min_formated !== undefined)
+                    {
+                        delete content.hits[i].price;
+                        delete content.hits[i].price_formated;
+                        delete content.hits[i].price_with_tax;
+                        delete content.hits[i].price_with_tax_formated;
+                    }
                 }
 
                 /**
