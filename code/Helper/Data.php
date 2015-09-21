@@ -62,8 +62,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $index_name = $this->product_helper->getIndexName($storeId);
 
+        $number_of_results = 1000;
+
+        if ($this->config->isInstantEnabled())
+            $number_of_results = min($this->config->getNumberOfProductResults($storeId), 1000);
+
         $answer = $this->algolia_helper->query($index_name, $query, array(
-            'hitsPerPage' => max(5, min($resultsLimit, 1000)), // retrieve all the hits (hard limit is 1000)
+            'hitsPerPage' => $number_of_results, // retrieve all the hits (hard limit is 1000)
             'attributesToRetrieve' => 'objectID',
             'attributesToHighlight' => '',
             'attributesToSnippet' => '',
