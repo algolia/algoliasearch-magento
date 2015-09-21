@@ -5,7 +5,14 @@
             <action method="addCss"><stylesheet>algoliasearch/bundle.css</stylesheet></action>
             <action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>
             <action method="addJs"><script>algoliasearch/bundle.min.js</script></action>
-            <action method="addJs"><script>algoliasearch/instantsearch.js</script></action>
+            <action method="addJs"><script>algoliasearch/Function.prototype.bind.js</script></action>
+            <block type="core/text" name="instantsearch.js">
+               <action method="setText">
+                 <text>
+                    <![CDATA[<script src="https://cdn.jsdelivr.net/instantsearch.js/0.2.2/instantsearch.min.js"></script>]]>
+                 </text>
+               </action>
+            </block>
         </reference>
         <reference name="top.search">
             <action method="setTemplate"><template>algoliasearch/topsearch.phtml</template></action>
