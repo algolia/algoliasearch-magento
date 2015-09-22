@@ -424,6 +424,14 @@ $class = $isSearchPage ? 'search-page' : '';
     <?php echo $this->__('in'); ?> {{processingTimeMS}}<?php echo $this->__('ms'); ?>
 </script>
 
+<script type="text/template" id="facet-template">
+    <div class="sub_facet {{operator}} {{#isRefined}}checked{{/isRefined}}">
+        <input class="facet_value" {{#isRefined}}checked{{/isRefined}} type="checkbox">
+        {{name}}
+        <span class="count">{{count}}</span>
+    </div>
+</script>
+
 <script type="text/template" id="instant-facets-hierarchical-template">
     {{#data}}
         <div style="padding-left: 10px; padding-right: 0px;" class="hierarchical_facet">
@@ -509,8 +517,6 @@ $class = $isSearchPage ? 'search-page' : '';
     //<![CDATA[
 
     algoliaBundle.$(function($) {
-        var supportsHistory = window.history && window.history.pushState;
-
         var algoliaConfig = {
             instant: {
                 enabled: <?php echo $config->isInstantEnabled() ? "true" : "false"; ?>,
@@ -548,7 +554,8 @@ $class = $isSearchPage ? 'search-page' : '';
             hitsPerPage: <?php echo (int) $config->getNumberOfProductResults() ?>,
             sortingIndices: <?php echo json_encode(array_values($config->getSortingIndices())); ?>,
             isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
-            removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>
+            removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>,
+            priceKey: '<?php echo $price_key; ?>'
         };
 
 
@@ -869,47 +876,12 @@ $class = $isSearchPage ? 'search-page' : '';
             /** Hits **/
             var instantHitTemplate = algoliaBundle.Hogan.compile($('#instant-hit-template').html());
 
-            var renderHit = function (hit) {
-
-                if (Array.isArray(hit.categories))
-                    hit.categories = hit.categories.join(', ');
-
-                if (Array.isArray(hit._highlightResult.name))
-                    hit._highlightResult.name = hit._highlightResult.name[0];
-
-                if (Array.isArray(hit.price))
-                    hit.price = hit.price[0];
-
-                var time = Math.floor(Date.now() / 1000);
-
-                if ((hit.special_price_from_date != undefined && (hit.special_price_from_date > time && hit.special_price_from_date !== '')) ||
-                    (hit.special_price_to_date != undefined && (hit.special_price_to_date < time && hit.special_price_to_date !== '')))
-                {
-                    delete hit.special_price_from_date;
-                    delete hit.special_price_to_date;
-                    delete hit.special_price;
-                    delete hit.special_price_with_tax;
-                    delete hit.special_price_formated;
-                    delete hit.special_price_with_tax_formated;
-                }
-
-                if (hit.min_formated !== undefined)
-                {
-                    delete hit.price;
-                    delete hit.price_formated;
-                    delete hit.price_with_tax;
-                    delete hit.price_with_tax_formated;
-                }
-
-                return instantHitTemplate.render(hit);
-            };
-
             search.addWidget(
                 instantsearch.widgets.hits({
                     container: '#instant-search-results-container',
                     templates: {
                         empty: '<div class="no-results"><?php echo $this->__('No results found matching'); ?> "<strong>{{query}}</strong>". <span class="button clear-button"><?php echo $this->__('Clear query and filters'); ?></span> </div>',
-                        hit: renderHit
+                        hit: renderHit(instantHitTemplate)
                     },
                     hitsPerPage: algoliaConfig.hitsPerPage
                 })
@@ -919,22 +891,19 @@ $class = $isSearchPage ? 'search-page' : '';
 
             var facets = algoliaConfig.facets;
 
+            var wrapper = document.getElementById('instant-search-facets-container');
+
+            var facetTemplate = $('#facet-template').html();
+
             $.map(facets, function (facet) {
-               console.log(facet);
-                if (facet.type == 'slider')
-                {
-                    /*search.addWidget(
-                        instantsearch.widgets.rangeSlider({
-                            container: '#price',
-                            facetName: 'price',
-                            /*tooltips: {
-                                format: function(formattedValue) {
-                                    return formattedValue;
-                                }
-                            }
-                        })
-                    );*/
-                }
+
+                if (facet.attribute.indexOf("price") !== -1)
+                    facet.attribute = facet.attribute + algoliaConfig.priceKey;
+
+                facet.template = facetTemplate;
+                facet.wrapper = wrapper;
+
+                search.addWidget(getFacetWidget(facet));
             });
 
             /** Pagination **/

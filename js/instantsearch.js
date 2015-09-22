@@ -15424,6 +15424,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      React.render(React.createElement(Hits, {
 	        hits: results.hits,
+	        results: results,
 	        helper: helper,
 	        noResultsTemplate: templates.empty,
 	        hitTemplate: templates.hit
@@ -35720,15 +35721,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	function getContainerNode(selectorOrHTMLElement) {
-	  if (typeof selectorOrHTMLElement === 'string') {
-	    return document.querySelector(selectorOrHTMLElement);
+	  var isFromString = typeof selectorOrHTMLElement === 'string';
+	  var domElement;
+	  if (isFromString) {
+	    domElement = document.querySelector(selectorOrHTMLElement);
+	  } else {
+	    domElement = selectorOrHTMLElement;
 	  }
 
-	  if (!isDomElement(selectorOrHTMLElement)) {
-	    throw new Error('Container must be `string` or `HTMLElement`');
+	  if (!isDomElement(domElement)) {
+	    var errorMessage = 'Container must be `string` or `HTMLElement`.';
+	    if (isFromString) {
+	      errorMessage += ' Unable to find ' + selectorOrHTMLElement;
+	    }
+	    throw new Error(errorMessage);
 	  }
 
-	  return selectorOrHTMLElement;
+	  return domElement;
 	}
 
 	function isDomElement(o) {
@@ -36633,21 +36642,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return React.createElement(
 	        'div',
 	        null,
-	        React.createElement(Template, { template: this.props.noResultsTemplate })
+	        React.createElement(Template, { data: this.props.results, template: this.props.noResultsTemplate })
 	      );
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var renderedHits = map(this.props.hits, function (hit) {
-	        return React.createElement(Template, { data: hit, key: hit.objectID, template: this.props.hitTemplate });
-	      }, this);
-
-	      return React.createElement(
-	        'div',
-	        null,
-	        renderedHits
-	      );
+	      if (this.props.hits.length > 0) {
+	        return this.renderWithResults();
+	      }
+	      return this.renderNoResults();
 	    }
 	  }]);
 
@@ -36730,10 +36734,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	function indexSelector(_ref) {
 	  var _ref$container = _ref.container;
 	  var container = _ref$container === undefined ? null : _ref$container;
-	  var _ref$cssClass = _ref.cssClass;
-	  var cssClass = _ref$cssClass === undefined ? {} : _ref$cssClass;
 	  var _ref$indices = _ref.indices;
 	  var indices = _ref$indices === undefined ? null : _ref$indices;
+	  var cssClass = _ref.cssClass;
 
 	  var IndexSelector = __webpack_require__(362);
 	  var containerNode = utils.getContainerNode(container);
@@ -36923,7 +36926,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function getFacetValues(results, hierarchicalFacetName, sortBy, limit) {
-	  return results.getFacetValues(hierarchicalFacetName, { sortBy: sortBy }).data.slice(0, limit);
+	  var values = results.getFacetValues(hierarchicalFacetName, { sortBy: sortBy });
+
+	  return values.data && values.data.slice(0, limit) || [];
 	}
 
 	module.exports = menu;
@@ -37194,6 +37199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var cssClass = _ref.cssClass;
 	  var labels = _ref.labels;
 	  var maxPages = _ref.maxPages;
+	  var showFirstLast = _ref.showFirstLast;
 
 	  var Pagination = __webpack_require__(368);
 
@@ -37215,7 +37221,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        nbPages: nbPages,
 	        setCurrentPage: helper.setCurrentPage.bind(helper),
 	        cssClass: cssClass,
-	        labels: labels
+	        labels: labels,
+	        showFirstLast: showFirstLast
 	      }), containerNode);
 	    }
 	  };
@@ -37876,7 +37883,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var helper = _ref2.helper;
 
 	      var stats = results.getFacetStats(facetName);
+
 	      var currentRefinement = this._getCurrentRefinement(helper);
+
+	      if (!stats) {
+	        React.render(React.createElement('div', null), containerNode);
+	        return;
+	      }
 
 	      React.render(React.createElement(Slider, {
 	        start: [currentRefinement.min, currentRefinement.max],
