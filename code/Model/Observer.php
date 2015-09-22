@@ -95,11 +95,18 @@ class Algolia_Algoliasearch_Model_Observer
             $this->updateStock($product->getProductId());
     }
 
-    public function deleteProductsAndCategoriesStoreIndices(Varien_Object $event)
+    public function deleteProductsStoreIndices(Varien_Object $event)
     {
         $storeId = $event->getStoreId();
 
-        $this->helper->deleteProductsAndCategoriesStoreIndices($storeId);
+        $this->helper->deleteProductsStoreIndices($storeId);
+    }
+
+    public function deleteCategoriesStoreIndices(Varien_Object $event)
+    {
+        $storeId = $event->getStoreId();
+
+        $this->helper->deleteCategoriesStoreIndices($storeId);
     }
 
     public function removeProducts(Varien_Object $event)

@@ -128,7 +128,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $this;
     }
 
-    public function rebuildProductsAndCategories()
+    public function rebuildProducts()
     {
         Mage::getSingleton('algoliasearch/observer')->saveSettings();
 
@@ -137,12 +137,27 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             if ($store->getIsActive())
             {
                 $this->_rebuildProductIndex($store->getId(), array());
+            }
+            else
+            {
+                $this->addToQueue('algoliasearch/observer', 'deleteProductsIndices', array('store_id' => $store->getId()), $this->config->getQueueMaxRetries());
+            }
+        }
+    }
 
+    public function rebuildCategories()
+    {
+        Mage::getSingleton('algoliasearch/observer')->saveSettings();
+
+        foreach (Mage::app()->getStores() as $store)
+        {
+            if ($store->getIsActive())
+            {
                 $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $store->getId(), 'category_ids' =>  array()), $this->config->getQueueMaxRetries());
             }
             else
             {
-                $this->addToQueue('algoliasearch/observer', 'deleteProductsAndCategoriesStoreIndices', array('store_id' => $store->getId()), $this->config->getQueueMaxRetries());
+                $this->addToQueue('algoliasearch/observer', 'deleteCategoriesStoreIndices', array('store_id' => $store->getId()), $this->config->getQueueMaxRetries());
             }
         }
     }

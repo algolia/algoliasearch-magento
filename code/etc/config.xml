@@ -135,6 +135,9 @@
                 <algolia_search_indexer>
                     <model>algoliasearch/indexer_algolia</model>
                 </algolia_search_indexer>
+                <algolia_search_indexer_cat>
+                    <model>algoliasearch/indexer_algoliacategories</model>
+                </algolia_search_indexer_cat>
                 <algolia_search_indexer_pages>
                     <model>algoliasearch/indexer_algoliapages</model>
                 </algolia_search_indexer_pages>
