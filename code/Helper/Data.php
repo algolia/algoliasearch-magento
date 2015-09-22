@@ -36,9 +36,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->config                       = Mage::helper('algoliasearch/config');
     }
 
-    public function deleteProductsAndCategoriesStoreIndices($storeId = null)
+    public function deleteProductsStoreIndices($storeId = null)
     {
         $this->algolia_helper->deleteIndex($this->product_helper->getIndexName($storeId));
+    }
+
+    public function deleteCategoriesStoreIndices($storeId = null)
+    {
         $this->algolia_helper->deleteIndex($this->category_helper->getIndexName($storeId));
     }
 

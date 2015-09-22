@@ -227,7 +227,26 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the different sorting options you want to offer.</comment>
+                            <comment>
+                                Configure here the different sorting options you want to offer.
+
+                                <![CDATA[
+                                <br /><br />
+                                The extension will create :<br />
+                                - 1 index/store<br />
+                                - 1 index/store/sort<br /><br />
+                                Which means that for a store with:<br />
+
+                                - 2 store (2 languages for example)<br />
+                                - 100 products<br />
+                                - 2 sorts on price (asc, desc)<br />
+                                - 2 sorts on date (asc, desc)<br /><br />
+
+                                You have 100 * 2 + 100 * 4 * 2 = 1000 product records
+
+                                You can reduce the number of records by removing some sort
+                                ]]>
+                            </comment>
                         </sorts>
                         <replace_categories translate="label comment">
                             <label>Replace categories page</label>
