@@ -273,6 +273,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         );
 
         $additionalAttributes = $this->config->getProductAdditionalAttributes($product->getStoreId());
+        $groups = null;
 
         if ($this->isAttributeEnabled($additionalAttributes, 'description'))
             $customData['description'] = $product->getDescription();
@@ -287,7 +288,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if ($this->config->isCustomerGroupsEnabled())
         {
-            foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+            $groups = Mage::getModel('customer/group')->getCollection();
+
+            foreach ($groups as $group)
             {
                 $group_id = (int)$group->getData('customer_group_id');
                 $this->handlePrice($product, $customData, $group_id);
@@ -304,8 +307,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         foreach ($categoryCollection as $category)
         {
-
-
             $categoryName = $category->getName();
 
             if ($categoryName)
@@ -460,7 +461,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                 if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
                 {
-                    foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+                    foreach ($groups as $group)
                     {
                         $group_id = (int)$group->getData('customer_group_id');
 
@@ -481,7 +482,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                 if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
                 {
-                    foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+                    foreach ($groups as $group)
                     {
                         $group_id = (int)$group->getData('customer_group_id');
 
