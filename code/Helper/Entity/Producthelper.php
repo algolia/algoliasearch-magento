@@ -506,10 +506,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         // skip default calculation if we have provided these attributes via the observer in $defaultData
         if (false === isset($defaultData['ordered_qty']) && $this->isAttributeEnabled($additionalAttributes, 'ordered_qty'))
-            $customData['stock_qty']   = (int) $product->getOrderedQty();
+            $customData['ordered_qty']   = (int) $product->getOrderedQty();
 
         if (false === isset($defaultData['stock_qty']) && $this->isAttributeEnabled($additionalAttributes, 'stock_qty'))
-            $customData['ordered_qty'] = (int) $product->getStockQty();
+            $customData['stock_qty'] = (int) $product->getStockQty();
 
         if (Mage::helper('core')->isModuleEnabled('Mage_Review'))
             if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary'))
