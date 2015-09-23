@@ -68,17 +68,6 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
         return trim(strip_tags($s));
     }
 
-    public function getProductActiveCategories(Mage_Catalog_Model_Product $product, $storeId = null)
-    {
-        $activeCategories = array();
-
-        foreach ($product->getCategoryIds() as $categoryId)
-            if ($this->isCategoryActive($categoryId, $storeId))
-                $activeCategories[] = $categoryId;
-
-        return $activeCategories;
-    }
-
     public function isCategoryActive($categoryId, $storeId = null)
     {
         $storeId        = intval($storeId);

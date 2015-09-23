@@ -365,9 +365,12 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $collection = clone $collectionDefault;
         $collection->setCurPage($page)->setPageSize($pageSize);
-        $collection->load();
         $collection->addCategoryIds();
         $collection->addUrlRewrite();
+        $collection->joinField('stock_qty', 'cataloginventory/stock_item', 'qty', 'product_id=entity_id', '{{table}}.stock_id=1', 'left');
+        $collection->getSelect()->columns('sku, (SELECT SUM(qty_ordered) FROM sales_flat_order_item WHERE sales_flat_order_item.sku = e.sku) as ordered_qty');
+        $collection->getSelect()->columns('(SELECT rating_summary FROM review_entity_summary WHERE review_entity_summary.entity_pk_value = e.entity_id AND review_entity_summary.store_id='.$storeId.') as rating_summary');
+        $collection->load();
 
         $index_name = $this->product_helper->getIndexName($storeId);
 
