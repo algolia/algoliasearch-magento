@@ -22,7 +22,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $allAttributes = $config->getEntityAttributeCodes('catalog_product');
 
-            $productAttributes = array_merge(array('name', 'path', 'categories', 'categories_without_path', 'description', 'ordered_qty', 'stock_qty', 'price_with_tax', 'rating_summary', 'media_gallery'), $allAttributes);
+            $productAttributes = array_merge(array('name', 'path', 'categories', 'categories_without_path', 'description', 'ordered_qty', 'stock_qty', 'price', 'rating_summary', 'media_gallery'), $allAttributes);
 
             $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
@@ -53,7 +53,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     protected function isAttributeEnabled($additionalAttributes, $attr_name)
     {
         foreach ($additionalAttributes as $attr)
-            if ($attr['attribute'] == $attr_name)
+            if ($attr['attribute'] === $attr_name)
                 return true;
 
         return false;
@@ -207,12 +207,22 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
     }
 
-    private function handlePrice(&$product, &$customData, $group_id = null)
+    /**
+     * @param $product
+     * @param $sub_products
+     * @param $additionalAttributes
+     * @param $customData
+     * @param array $groups
+     * @param null $group_id
+     */
+    private function handlePrice(&$product, $sub_products, $additionalAttributes, &$customData, $groups = array(), $group_id = null)
     {
         $key = $group_id === null ? 'default' : $group_id;
 
-        $customData['price'][$key]             = (double) $product->getPrice();
-        $customData['price_with_tax'][$key]    = (double) Mage::helper('tax')->getPrice($product, $product->getPrice(), true, null, null, null, null, false);
+        $customData['price'] = array();
+
+        $customData['price'][$key]             = (double) Mage::helper('tax')->getPrice($product, $product->getPrice(), null, null, null, null, $product->getStore(), null);
+        $customData['price'][$key.'_formated'] = $product->getStore()->formatPrice($customData['price'][$key], false);
 
         $special_price = null;
 
@@ -222,36 +232,95 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 Mage::app()->getLocale()->storeTimeStamp($product->getStoreId()),
                 Mage::app()->getStore($product->getStoreId())->getWebsiteId(),
                 $group_id,
-                $product->getId());
+                $product->getId()
+            );
 
             if ($discounted_price !== false)
                 $special_price = $discounted_price;
         }
         else // If fetch default special price
+        {
             $special_price = (double) $product->getFinalPrice();
+        }
 
         if ($special_price && $special_price !== $customData['price'][$key])
         {
-            $customData['special_price_from_date'][$key] = strtotime($product->getSpecialFromDate());
-            $customData['special_price_to_date'][$key] = strtotime($product->getSpecialToDate());
+            $customData['price']['special_from_date'] = strtotime($product->getSpecialFromDate());
+            $customData['price']['special_to_date'] = strtotime($product->getSpecialToDate());
 
-            $customData['special_price'][$key] = (double) $special_price;
-            $customData['special_price_with_tax'][$key] = (double) Mage::helper('tax')->getPrice($product, $special_price, true, null, null, null, null, false);
-
-            $customData['special_price_formated'][$key] = $product->getStore()->formatPrice($customData['special_price'][$key], false);
-            $customData['special_price_with_tax_formated'][$key] = $product->getStore()->formatPrice($customData['special_price_with_tax'][$key], false);
+            $special_price = (double) Mage::helper('tax')->getPrice($product, $special_price, null, null, null, null, $product->getStore(), null);
+            $customData['price'][$key.'_special'] = $special_price;
+            $customData['price'][$key.'_special_formated'] = $product->getStore()->formatPrice($special_price, false);
         }
-        else
+
+        if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
         {
-            /**
-             * In case of partial updates set back to empty so that it get updated
-             */
-            $customData['special_price'][$key] = '';
-            $customData['special_price_with_tax'][$key] = '';
-        }
+            $min = PHP_INT_MAX;
+            $max = 0;
 
-        $customData['price_formated'][$key] = $product->getStore()->formatPrice($customData['price'][$key], false);
-        $customData['price_with_tax_formated'][$key] = $product->getStore()->formatPrice($customData['price_with_tax'][$key], false);
+            if ($product->getTypeId() == 'bundle')
+            {
+                $_priceModel = $product->getPriceModel();
+
+                list($min, $max) = $_priceModel->getTotalPrices($product, null, null, false);
+                list($min_with_tax, $max_with_tax) = $_priceModel->getTotalPrices($product, null, true, false);
+
+            }
+
+            if ($product->getTypeId() == 'grouped' || $product->getTypeId() == 'configurable')
+            {
+                foreach ($sub_products as $sub_product)
+                {
+                    $price = (double) Mage::helper('tax')->getPrice($sub_product, $sub_product->getFinalPrice(), null, null, null, null, $product->getStore(), null);
+
+                    $min = min($min, $price);
+                    $max = max($max, $price);
+                }
+            }
+
+            if ($min != $max)
+            {
+                $customData['price']['default_formated'] = $product->getStore()->formatPrice($min, false) . ' - ' . $product->getStore()->formatPrice($max, false);
+
+                if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
+                {
+                    foreach ($groups as $group)
+                    {
+                        $group_id = (int)$group->getData('customer_group_id');
+
+                        $customData['price']['group_' . $group_id.'_formated'] = $product->getStore()->formatPrice($min, false) . ' ' . $product->getStore()->formatPrice($max, false);
+
+                        $customData['price']['default'] = 0; // will be reset just after
+                    }
+                }
+
+                //// Do not keep special price that is already taken into account in min max
+                unset($customData['price']['special_from_date']);
+                unset($customData['price']['special_to_date']);
+                unset($customData['price']['default_special']);
+                unset($customData['price']['default_special_formated']);
+
+                $customData['price']['default'] = 0; // will be reset just after
+            }
+
+            if ($customData['price']['default'] == 0)
+            {
+                $customData['price']['default'] = $min;
+
+                if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
+                {
+                    foreach ($groups as $group)
+                    {
+                        $group_id = (int)$group->getData('customer_group_id');
+
+                        if ($customData['price']['group_' . $group_id] == 0)
+                        {
+                            $customData['price']['group_' . $group_id] = $min;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public function getObject(Mage_Catalog_Model_Product $product)
@@ -277,25 +346,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if ($this->isAttributeEnabled($additionalAttributes, 'description'))
             $customData['description'] = $product->getDescription();
-
-
-        foreach (array('price', 'price_with_tax', 'special_price_from_date', 'special_price_to_date', 'special_price'
-                    ,'special_price_with_tax', 'special_price_formated', 'special_price_with_tax_formated'
-                    ,'price_formated', 'price_with_tax_formated') as $price)
-            $customData[$price] = array();
-
-        $this->handlePrice($product, $customData);
-
-        if ($this->config->isCustomerGroupsEnabled())
-        {
-            $groups = Mage::getModel('customer/group')->getCollection();
-
-            foreach ($groups as $group)
-            {
-                $group_id = (int)$group->getData('customer_group_id');
-                $this->handlePrice($product, $customData, $group_id);
-            }
-        }
 
         $categories             = array();
         $categories_with_path   = array();
@@ -401,100 +451,25 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
         {
-            $min = PHP_INT_MAX;
-            $max = 0;
-
-            $min_with_tax = PHP_INT_MAX;
-            $max_with_tax = 0;
-
             if ($product->getTypeId() == 'bundle')
             {
-                $_priceModel  = $product->getPriceModel();
-
-                list($min, $max) = $_priceModel->getTotalPrices($product, null, null, false);
-                list($min_with_tax, $max_with_tax) = $_priceModel->getTotalPrices($product, null, true, false);
-
                 $ids = array();
 
                 $selection = $product->getTypeInstance(true)->getSelectionsCollection($product->getTypeInstance(true)->getOptionsIds($product), $product);
 
-                foreach($selection as $option)
+                foreach ($selection as $option)
                     $ids[] = $option->product_id;
             }
 
             if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped')
                 $ids = $product->getTypeInstance(true)->getChildrenIds($product->getId());
 
-            if (count($ids)) {
+            if (count($ids))
+            {
                 $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false, false)->load();
-            }
-            else {
+            } else
+            {
                 $sub_products = array();
-            }
-
-            if ($product->getTypeId() == 'grouped' || $product->getTypeId() == 'configurable')
-            {
-                foreach ($sub_products as $sub_product)
-                {
-                    $price = $sub_product->getPrice();
-                    $price_with_tax = Mage::helper('tax')->getPrice($sub_product, $price, true, null, null, null, null, false);
-
-                    $min = min($min, $price);
-                    $max = max($max, $price);
-
-                    $min_with_tax = min($min_with_tax, $price_with_tax);
-                    $max_with_tax = max($max_with_tax, $price_with_tax);
-                }
-            }
-
-            if ($min != $max)
-            {
-                $customData['min_formated']             = array();
-                $customData['max_formated']             = array();
-                $customData['min_with_tax_formated']    = array();
-                $customData['max_with_tax_formated']    = array();
-
-                $customData['min_formated']['default'] = $product->getStore()->formatPrice($min, false);
-                $customData['max_formated']['default'] = $product->getStore()->formatPrice($max, false);
-                $customData['min_with_tax_formated']['default'] = $product->getStore()->formatPrice($min_with_tax, false);
-                $customData['max_with_tax_formated']['default'] = $product->getStore()->formatPrice($max_with_tax, false);
-
-                if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
-                {
-                    foreach ($groups as $group)
-                    {
-                        $group_id = (int)$group->getData('customer_group_id');
-
-                        $customData['min_formated']['group_' . $group_id]           = $product->getStore()->formatPrice($min, false);
-                        $customData['max_formated']['group_' . $group_id]           = $product->getStore()->formatPrice($max, false);
-                        $customData['min_with_tax_formated']['group_' . $group_id]  = $product->getStore()->formatPrice($min_with_tax, false);
-                        $customData['max_with_tax_formated']['group_' . $group_id]  = $product->getStore()->formatPrice($max_with_tax, false);
-                    }
-                }
-            }
-
-            if ($customData['price']['default'] == 0)
-            {
-                $customData['price']['default'] = $min;
-                $customData['price_with_tax']['default'] = $min_with_tax;
-                $customData['price_formated']['default'] = $product->getStore()->formatPrice($min, false);
-                $customData['price_with_tax_formated']['default'] = $product->getStore()->formatPrice($min_with_tax, false);
-
-                if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
-                {
-                    foreach ($groups as $group)
-                    {
-                        $group_id = (int)$group->getData('customer_group_id');
-
-                        if ($customData['price']['group_' . $group_id] == 0)
-                        {
-                            $customData['price']['group_' . $group_id] = $min;
-                            $customData['price_with_tax']['group_' . $group_id] = $min_with_tax;
-                            $customData['price_formated']['group_' . $group_id] = $product->getStore()->formatPrice($min, false);
-                            $customData['price_with_tax_formated']['group_' . $group_id] = $product->getStore()->formatPrice($min_with_tax, false);
-                        }
-                    }
-                }
             }
         }
 
@@ -579,6 +554,19 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $customData[$attribute['attribute']] = $value;
                     }
                 }
+            }
+        }
+
+        $this->handlePrice($product, $sub_products, $additionalAttributes, $customData);
+
+        if ($this->config->isCustomerGroupsEnabled())
+        {
+            $groups = Mage::getModel('customer/group')->getCollection();
+
+            foreach ($groups as $group)
+            {
+                $group_id = (int)$group->getData('customer_group_id');
+                $this->handlePrice($product, $sub_products, $additionalAttributes, $customData, $groups, $group_id);
             }
         }
 
