@@ -8,6 +8,7 @@
             <action method="addJs"><script>algoliasearch/Function.prototype.bind.js</script></action>
             <action method="addJs"><script>algoliasearch/helpers.js</script></action>
             <action method="addJs"><script>algoliasearch/instantsearch.js</script></action>
+            <action method="addJs"><script>algoliasearch/autocomplete.js</script></action>
         </reference>
         <reference name="top.search">
             <action method="setTemplate"><template>algoliasearch/topsearch.phtml</template></action>

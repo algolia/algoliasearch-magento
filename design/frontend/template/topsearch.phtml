@@ -432,78 +432,6 @@ $class = $isSearchPage ? 'search-page' : '';
     </div>
 </script>
 
-<script type="text/template" id="instant-facets-hierarchical-template">
-    {{#data}}
-        <div style="padding-left: 10px; padding-right: 0px;" class="hierarchical_facet">
-            <div data-name="{{attribute}}" data-path="{{path}}" data-type="hierarchical" class="{{#isRefined}}checked {{/isRefined}}sub_facet hierarchical {{#empty}}empty{{/empty}}">
-                    <input style="display: none;" data-attribute="{{attribute}}" {{#isRefined}}checked{{/isRefined}} data-name="{{name}}" class="facet_value" type="checkbox" />
-                    {{name}}
-                    {{#count}}<span class="count">{{count}}</span>{{/count}}
-            </div>
-            {{>facet_hierarchical}}
-        </div>
-    {{/data}}
-</script>
-
-<!-- Facet template -->
-<script type="text/template" id="instant-facets-template">
-    <div class="facets">
-        {{#facets}}
-        {{#count}}
-        <div class="facet">
-            <div class="name">
-                {{ facet_categorie_name }}
-            </div>
-            <div>
-                {{#sub_facets}}
-
-                {{#type.menu}}
-                <div data-attribute="{{attribute}}" data-name="{{nameattr}}" data-type="menu" class="{{#checked}}checked {{/checked}}sub_facet menu {{#empty}}empty{{/empty}}">
-                    <input style="display: none;" data-attribute="{{attribute}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
-                    {{name}}
-                    {{#print_count}}<span class="count">{{count}}</span>{{/print_count}}
-                </div>
-                {{/type.menu}}
-
-                {{#type.conjunctive}}
-                <div data-name="{{attribute}}" data-type="conjunctive" class="{{#checked}}checked {{/checked}}sub_facet conjunctive {{#empty}}empty{{/empty}}">
-                    <input style="display: none;" data-attribute="{{attribute}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
-                    {{name}}
-                    {{#count}}<span class="count">{{count}}</span>{{/count}}
-                </div>
-                {{/type.conjunctive}}
-
-                {{#type.slider}}
-                <div class="algolia-slider algolia-slider-true" data-attribute="{{attribute}}" data-min="{{min}}" data-max="{{max}}"></div>
-                <div class="algolia-slider-info">
-                    <div class="min" style="float: left;">{{current_min}}</div>
-                    <div class="max" style="float: right;">{{current_max}}</div>
-                    <div class="clearfix"></div>
-                </div>
-                {{/type.slider}}
-
-                {{#type.disjunctive}}
-                <div data-name="{{attribute}}" data-type="disjunctive" class="{{#checked}}checked {{/checked}}sub_facet disjunctive {{#empty}}empty{{/empty}}">
-                    <input data-attribute="{{attribute}}" {{#checked}}checked{{/checked}} data-name="{{nameattr}}" class="facet_value" type="checkbox" />
-                    {{name}}
-                    {{#count}}<span class="count">{{count}}</span>{{/count}}
-                </div>
-                {{/type.disjunctive}}
-
-                {{#type.hierarchical}}
-                    <div style="margin-left: -10px;">
-                    {{>facet_hierarchical}}
-                    </div>
-                {{/type.hierarchical}}
-
-                {{/sub_facets}}
-            </div>
-        </div>
-        {{/count}}
-        {{/facets}}
-    </div>
-</script>
-
 <!--
 //================================
 //
@@ -798,18 +726,28 @@ $class = $isSearchPage ? 'search-page' : '';
                 });
             }
 
-            $(algoliaConfig.autocomplete.selector).each(function (i) {
-                var tt = $(this)
-                    .typeahead({hint: false}, hogan_objs)
-                    .parent()
-                    .attr('id', 'algolia-autocomplete-tt');
+            var hogan_objs2 = [];
 
-                $(this).on('typeahead:selected', function (e, item) {
-                    autocomplete = false;
-                    instant = false;
-                    window.location.href = item.url;
-                });
+            hogan_objs2.push({
+                source: autocomplete.sources.hits(indices[0], { hitsPerPage: 5 }),
+                displayKey: 'my_attribute',
+                templates: {
+                    suggestion: function(suggestion) {
+                        console.log(suggestion);
+                        return suggestion._highlightResult.my_attribute.value;
+                    }
+                }
             });
+
+
+            autocomplete(algoliaConfig.autocomplete.selector, {hint: false}, hogan_objs2);
+                    //.parent()
+                    //.attr('id', 'algolia-autocomplete-tt');
+
+                /*$(this).on('typeahead:selected', function (e, item) {
+                    window.location.href = item.url;
+                });*/
+
 
             $("#algolia-glass").click(function () {
                 $(this).closest('form').submit();
