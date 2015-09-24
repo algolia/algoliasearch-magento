@@ -52,7 +52,7 @@ if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->g
 
         $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId());
         $category_url = $category->getUrl($category);
-        $hash_path = '#q=&page=0&refinements=%5B%7B%22categories%22%3A%5B%22'.$path.'%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
+        $hash_path = '#q';//=&page=0&refinements=%5B%7B%22categories%22%3A%5B%22'.$path.'%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
 
         $isSearchPage = true;
     }
@@ -74,14 +74,14 @@ if ($config->isInstantEnabled())
 
         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
-        $hash_path = '#q='.htmlentities($query, ENT_COMPAT, "UTF-8").'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
+        $hash_path = '#q='.htmlentities($query, ENT_COMPAT, "UTF-8");//.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
 
         $refinement_key = Mage::app()->getRequest()->getParam('refinement_key');
         $refinement_value = Mage::app()->getRequest()->getParam('refinement_value');
 
         if ($refinement_key !== null)
         {
-            $hash_path = '#q=&page=0&refinements=%5B%7B%22' . $refinement_key . '%22%3A%5B%22' . $refinement_value . '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22' . $product_helper->getBaseIndexName() . '_products%22';
+            $hash_path = '#q=';//&page=0&refinements=%5B%7B%22' . $refinement_key . '%22%3A%5B%22' . $refinement_value . '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22' . $product_helper->getBaseIndexName() . '_products%22';
         }
 
         $isSearchPage = true;
@@ -839,9 +839,9 @@ $class = $isSearchPage ? 'search-page' : '';
 
             /** Initialise instant search **/
             var search = instantsearch({
-                appId: algoliaConfig.applicationId, // Mandatory
-                apiKey: algoliaConfig.apiKey, // Mandatory
-                indexName: algoliaConfig.indexName + '_products' // Mandatory
+                appId: algoliaConfig.applicationId,
+                apiKey: algoliaConfig.apiKey,
+                indexName: algoliaConfig.indexName + '_products'
             });
 
             /** Search bar **/
@@ -895,7 +895,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
             var facetTemplate = $('#facet-template').html();
 
-            $.map(facets, function (facet) {
+            $.each(facets, function (i, facet) {
 
                 if (facet.attribute.indexOf("price") !== -1)
                     facet.attribute = facet.attribute + algoliaConfig.priceKey;
@@ -918,6 +918,15 @@ $class = $isSearchPage ? 'search-page' : '';
                          first: '«', // &laquo;
                          last: '»' // &raquo;
                      }
+                })
+            );
+
+            /** Url sync **/
+            search.addWidget(
+                instantsearch.widgets.urlSync({
+                    useHash: true,
+                    threshold: 5000,
+                    trackedParameters: ['query', 'page', 'attribute:*', 'index']
                 })
             );
 
