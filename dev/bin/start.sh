@@ -20,6 +20,7 @@ wget $BASE_URL
 
 # reindex whole index
 n98-magerun --root-dir=/var/www/htdocs index:reindex algolia_search_indexer
+n98-magerun --root-dir=/var/www/htdocs index:reindex algolia_search_indexer_cat
 n98-magerun --root-dir=/var/www/htdocs index:reindex algolia_search_indexer_pages
 n98-magerun --root-dir=/var/www/htdocs index:reindex search_indexer_suggest
 

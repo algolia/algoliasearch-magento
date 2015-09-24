@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
   mysql-client-5.5 \
   mysql-server \
   php5-mysql \
+  php5-xdebug \
   libxml2-dev \
   vim emacs-nox \
   git-core \
@@ -18,7 +19,7 @@ RUN docker-php-ext-install soap
 RUN docker-php-ext-install mysqli
 
 RUN chsh -s /bin/zsh
-RUN sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true
+RUN sh -x -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | grep -v 'set -e')"
 COPY bin/.zshrc /root/.zshrc
 
 COPY bin/php.ini /usr/local/etc/php/php.ini
