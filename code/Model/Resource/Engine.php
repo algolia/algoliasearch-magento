@@ -140,7 +140,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             }
             else
             {
-                $this->addToQueue('algoliasearch/observer', 'deleteProductsStoresIndices', array('store_id' => $store->getId()), $this->config->getQueueMaxRetries());
+                $this->addToQueue('algoliasearch/observer', 'deleteProductsStoreIndices', array('store_id' => $store->getId()), $this->config->getQueueMaxRetries());
             }
         }
     }
