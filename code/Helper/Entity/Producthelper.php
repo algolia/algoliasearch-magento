@@ -350,12 +350,18 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             {
                 $customData['price']['default'] = $min;
 
+                if ($min === $max)
+                    $customData['price']['default_formated'] = $product->getStore()->formatPrice($min, false);
+
                 if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
                 {
                     foreach ($groups as $group)
                     {
                         $group_id = (int)$group->getData('customer_group_id');
                         $customData['price']['group_' . $group_id] = $min;
+
+                        if ($min === $max)
+                            $customData['price']['group_' . $group_id] = $product->getStore()->formatPrice($min, false);
                     }
                 }
             }
