@@ -293,7 +293,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData['price']['special_from_date'] = strtotime($product->getSpecialFromDate());
             $customData['price']['special_to_date'] = strtotime($product->getSpecialToDate());
 
-            $customData['price']['default_old_formated'] = $customData['price']['default'.'_formated'];
+            $customData['price']['default_original_formated'] = $customData['price']['default'.'_formated'];
 
             $special_price = (double) Mage::helper('tax')->getPrice($product, $special_price, null, null, null, null, $product->getStore(), null);
             $customData['price']['default'] = $special_price;
@@ -341,7 +341,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 //// Do not keep special price that is already taken into account in min max
                 unset($customData['price']['special_from_date']);
                 unset($customData['price']['special_to_date']);
-                unset($customData['price']['default_old_formated']);
+                unset($customData['price']['default_original_formated']);
 
                 $customData['price']['default'] = 0; // will be reset just after
             }
