@@ -15,7 +15,7 @@ $price_key = '.default';
 
 if ($config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()))
 {
-    $price_key = '.'.$group_id;
+    $price_key = '.group_'.$group_id;
 }
 
 $title = '';
@@ -171,19 +171,16 @@ $class = $isSearchPage ? 'search-page' : '';
         {{/thumbnail_url}}
 
         <div class="algoliasearch-autocomplete-price">
-            {{#price<?php echo $price_key; ?>_special}}
-                <span class="after_special">
-                    {{price<?php echo $price_key; ?>_special_formated}}
+            <span class="after_special">
+                {{price<?php echo $price_key; ?>_formated}}
+            </span>
+
+            {{#price<?php echo $price_key; ?>_old_formated}}
+                <span class="before_special">
+                    {{price<?php echo $price_key; ?>_old_formated}}
                 </span>
-            {{/price<?php echo $price_key; ?>_special}}
-
-            {{#price<?php echo $price_key; ?>_special}}<span class="before_special">{{/price<?php echo $price_key; ?>_special}}
-
-            {{price<?php echo $price_key; ?>_formated}}
-
-            {{#price<?php echo $price_key; ?>_special}}</span>{{/price<?php echo $price_key; ?>_special}}
+            {{/price<?php echo $price_key; ?>_old_formated}}
         </div>
-
 
         <div class="info">
             {{{_highlightResult.name.value}}}
@@ -376,17 +373,15 @@ $class = $isSearchPage ? 'search-page' : '';
                                 <div class="price">
                                     <div class="algoliasearch-autocomplete-price">
                                         <div>
-                                            {{#price<?php echo $price_key; ?>_special}}
-                                                <span class="after_special">
-                                                    {{price<?php echo $price_key; ?>_special_formated}}
+                                            <span class="after_special">
+                                                {{price<?php echo $price_key; ?>_formated}}
+                                            </span>
+
+                                            {{#price<?php echo $price_key; ?>_old_formated}}
+                                                <span class="before_special">
+                                                    {{price<?php echo $price_key; ?>_old_formated}}
                                                 </span>
-                                            {{/price<?php echo $price_key; ?>_special}}
-
-                                            {{#price<?php echo $price_key; ?>_special}}<span class="before_special">{{/price<?php echo $price_key; ?>_special}}
-
-                                            {{price<?php echo $price_key; ?>_formated}}
-
-                                            {{#price<?php echo $price_key; ?>_special}}</span>{{/price<?php echo $price_key; ?>_special}}
+                                            {{/price<?php echo $price_key; ?>_old_formated}}
                                         </div>
                                     </div>
                                 </div>
@@ -632,7 +627,6 @@ $class = $isSearchPage ? 'search-page' : '';
 
             if (algoliaConfig.facets[i].type == "hierarchical")
             {
-
                 var hierarchical_levels = [];
 
                 for (var l = 0; l < 10; l++)
