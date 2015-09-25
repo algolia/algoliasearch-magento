@@ -1,5 +1,12 @@
 ## Change Log
 
+### 1.4.6
+
+- UPDATED: Price handling, no template update required anymore + correct handling of special price + correct handling of tax
+- UPDATED: indexing process has been optimized
+- FIX: add emulation for pages to have correct urls
+- UPDATED: Separate category and product indexer
+
 ### 1.4.5
 
 - FIX: Improve performance issue when backend-search
