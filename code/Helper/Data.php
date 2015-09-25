@@ -156,6 +156,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function rebuildStorePageIndex($storeId)
     {
+        $emulationInfo = $this->startEmulation($storeId);
+
         $index_name = $this->page_helper->getIndexName($storeId);
 
         $pages = $this->page_helper->getPages($storeId);
@@ -166,6 +168,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->algolia_helper->moveIndex($index_name.'_tmp', $index_name);
 
         $this->algolia_helper->setSettings($index_name, $this->page_helper->getIndexSettings($storeId));
+
+        $this->stopEmulation($emulationInfo);
     }
 
     public function rebuildStoreCategoryIndex($storeId, $categoryIds = null)
