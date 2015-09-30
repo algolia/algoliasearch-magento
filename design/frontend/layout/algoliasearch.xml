@@ -2,9 +2,8 @@
 <layout>
     <algolia_search_handle>
         <reference name="head">
-            <action method="addCss"><stylesheet>algoliasearch/bundle.css</stylesheet></action>
             <action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>
-            <action method="addJs"><script>algoliasearch/bundle.min.js</script></action>
+            <action method="addJs"><script>algoliasearch/algoliaBundle.min.js</script></action>
             <action method="addJs"><script>algoliasearch/Function.prototype.bind.js</script></action>
             <action method="addJs"><script>algoliasearch/helpers.js</script></action>
             <action method="addJs"><script>algoliasearch/instantsearch.js</script></action>
