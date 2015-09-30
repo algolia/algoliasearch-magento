@@ -23,7 +23,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function __construct()
     {
-        \AlgoliaSearch\Version::$custom_value = " Magento (1.4.5)";
+        \AlgoliaSearch\Version::$custom_value = " Magento (1.4.6)";
 
         $this->algolia_helper               = Mage::helper('algoliasearch/algoliahelper');
 
@@ -156,6 +156,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function rebuildStorePageIndex($storeId)
     {
+        $emulationInfo = $this->startEmulation($storeId);
+
         $index_name = $this->page_helper->getIndexName($storeId);
 
         $pages = $this->page_helper->getPages($storeId);
@@ -166,6 +168,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->algolia_helper->moveIndex($index_name.'_tmp', $index_name);
 
         $this->algolia_helper->setSettings($index_name, $this->page_helper->getIndexSettings($storeId));
+
+        $this->stopEmulation($emulationInfo);
     }
 
     public function rebuildStoreCategoryIndex($storeId, $categoryIds = null)
