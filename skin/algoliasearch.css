@@ -159,6 +159,12 @@
     position: relative;
 }
 
+#algolia_instant_selector #instant-search-bar {
+  width: 100%;
+  height: 40px;
+  font-family: "Raleway", "Helvetica Neue", Verdana, Arial, sans-serif;
+}
+
 #algolia_instant_selector.with-facets #algolia-right-container {
 }
 
@@ -238,6 +244,16 @@
 #algolia_instant_selector .facet .sub_facet.disjunctive.checked {
   font-weight: bold;
   box-shadow: inset 4px 0 0 #54A5CD;
+}
+
+#algolia_instant_selector .hierarchical_facet.first_level
+{
+  margin-left: -10px;
+}
+
+#algolia_instant_selector .hierarchical_facet
+{
+  padding-left: 10px;
 }
 
 #algolia_instant_selector .facet .hierarchical_facet .sub_facet.checked {
@@ -330,7 +346,7 @@
 }
 
 #algolia_instant_selector .result .result-sub-content {
-  padding: 10px;
+  padding: 0px 10px;
 }
 
 #algolia_instant_selector .result .result-thumbnail {
@@ -353,6 +369,11 @@
 #algolia_instant_selector .result .ratings .rating-box {
   margin: 0 auto 10px;
   float: inherit;
+}
+
+#algolia_instant_selector h3
+{
+  margin-bottom: 0;
 }
 
 #algolia_instant_selector .result .price {
@@ -425,9 +446,9 @@
 #algolia_instant_selector button {
   background: #39C none repeat scroll 0% 0%;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
+  margin: auto;
+  margin-bottom: 10px;
+  margin-top: 0px;
   padding: 7px 15px;
   border: 0px none;
   color: #FFF;
