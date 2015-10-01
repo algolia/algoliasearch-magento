@@ -41,7 +41,7 @@ var getFacetWidget = function (facet, templates) {
         for (var l = 0; l < 10; l++)
             hierarchical_levels.push('categories.level' + l.toString());
 
-        return instantsearch.widgets.hierarchicalMenu({
+        return algoliaBundle.instantsearch.widgets.hierarchicalMenu({
             container: facet.wrapper.appendChild(document.createElement('div')),
             attributes: hierarchical_levels,
             separator: ' /// ',
@@ -56,7 +56,7 @@ var getFacetWidget = function (facet, templates) {
     }
 
     if (facet.type === 'conjunctive') {
-        return instantsearch.widgets.refinementList({
+        return algoliaBundle.instantsearch.widgets.refinementList({
             container: facet.wrapper.appendChild(document.createElement('div')),
             facetName: facet.attribute,
             operator: 'and',
@@ -65,7 +65,7 @@ var getFacetWidget = function (facet, templates) {
     }
 
     if (facet.type === 'disjunctive') {
-        return instantsearch.widgets.refinementList({
+        return algoliaBundle.instantsearch.widgets.refinementList({
             container: facet.wrapper.appendChild(document.createElement('div')),
             facetName: facet.attribute,
             operator: 'or',
@@ -74,7 +74,7 @@ var getFacetWidget = function (facet, templates) {
     }
 
     if (facet.type == 'slider') {
-        return instantsearch.widgets.rangeSlider({
+        return algoliaBundle.instantsearch.widgets.rangeSlider({
             container: facet.wrapper.appendChild(document.createElement('div')),
             facetName: facet.attribute,
             templates: templates,
