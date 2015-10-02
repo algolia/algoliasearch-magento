@@ -54,8 +54,10 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
 
         if ($storeId == null)
         {
-            foreach (Mage::app()->getStores() as $id => $store)
+            foreach (Mage::app()->getStores() as $id => $store) {
+                if ( !$store->getIsActive() || !$this->config->isEnabled($store->getId()) ) continue;
                 $this->engine->rebuildProductIndex($id, null);
+            }
         }
         else
             $this->engine->rebuildProductIndex($storeId, null);

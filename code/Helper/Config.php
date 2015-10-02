@@ -5,6 +5,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_MINIMAL_QUERY_LENGTH                 = 'algoliasearch/ui/minimal_query_length';
     const XML_PATH_SEARCH_DELAY                         = 'algoliasearch/ui/search_delay';
 
+    const XML_PATH_IS_ENABLED                           = 'algoliasearch/credentials/is_enabled';
     const XML_PATH_IS_POPUP_ENABLED                     = 'algoliasearch/credentials/is_popup_enabled';
     const XML_PATH_APPLICATION_ID                       = 'algoliasearch/credentials/application_id';
     const XML_PATH_API_KEY                              = 'algoliasearch/credentials/api_key';
@@ -154,6 +155,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getResultsLimit($storeId = NULL)
     {
         return Mage::getStoreConfig(self::XML_PATH_RESULTS_LIMIT, $storeId);
+    }
+
+    public function isEnabled($storeId = NULL)
+    {
+        return Mage::getStoreConfigFlag(self::XML_PATH_IS_ENABLED, $storeId);
     }
 
     public function isPopupEnabled($storeId = NULL)

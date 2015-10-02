@@ -95,6 +95,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     {
         foreach (Mage::app()->getStores() as $store)
         {
+            if ( !$store->getIsActive() || !$this->config->isEnabled($store->getId()) ) continue;
             $this->addToQueue('algoliasearch/observer', 'rebuildPageIndex', array('store_id' => $store->getId()), $this->config->getQueueMaxRetries());
         }
     }
@@ -103,6 +104,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     {
         foreach (Mage::app()->getStores() as $store)
         {
+            if ( !$store->getIsActive() || !$this->config->isEnabled($store->getId()) ) continue;
             $this->addToQueue('algoliasearch/observer', 'rebuildAdditionalSectionsIndex', array('store_id' => $store->getId()), $this->config->getQueueMaxRetries());
         }
     }
@@ -111,6 +113,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     {
         foreach (Mage::app()->getStores() as $store)
         {
+            if ( !$store->getIsActive() || !$this->config->isEnabled($store->getId()) ) continue;
             $size       = $this->suggestion_helper->getSuggestionCollectionQuery($store->getId())->getSize();
             $by_page    = $this->config->getNumberOfElementByPage();
             $nb_page    = ceil($size / $by_page);
@@ -134,7 +137,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
         foreach (Mage::app()->getStores() as $store)
         {
-            if ($store->getIsActive())
+            if ($store->getIsActive() && $this->config->isEnabled($store->getId()))
             {
                 $this->_rebuildProductIndex($store->getId(), array());
             }
@@ -151,7 +154,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
         foreach (Mage::app()->getStores() as $store)
         {
-            if ($store->getIsActive())
+            if ($store->getIsActive() && $this->config->isEnabled($store->getId()))
             {
                 $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', array('store_id' => $store->getId(), 'category_ids' =>  array()), $this->config->getQueueMaxRetries());
             }
