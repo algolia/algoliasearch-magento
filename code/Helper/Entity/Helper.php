@@ -209,7 +209,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
         if ($store_id == null)
         {
             foreach (Mage::app()->getStores() as $store)
-                if ($store->getIsActive())
+                if ($store->getIsActive() && Mage::helper('algoliasearch/config')->isEnabled($store->getId()))
                     $store_ids[] = $store->getId();
         }
         else

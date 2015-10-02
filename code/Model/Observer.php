@@ -30,7 +30,7 @@ class Algolia_Algoliasearch_Model_Observer
     public function saveSettings()
     {
         foreach (Mage::app()->getStores() as $store) /** @var $store Mage_Core_Model_Store */
-            if ($store->getIsActive())
+            if ($store->getIsActive() && $this->config->isEnabled($store->getId()))
                 $this->helper->saveConfigurationToAlgolia($store->getId());
     }
 
@@ -39,7 +39,7 @@ class Algolia_Algoliasearch_Model_Observer
      */
     public function useAlgoliaSearchPopup(Varien_Event_Observer $observer)
     {
-        if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled()) {
+        if ($this->config->isEnabled() && ($this->config->isPopupEnabled() || $this->config->isInstantEnabled())) {
             $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
         }
         return $this;
@@ -57,7 +57,7 @@ class Algolia_Algoliasearch_Model_Observer
     {
         foreach (Mage::app()->getStores() as $storeId => $store)
         {
-            if ( ! $store->getIsActive())
+            if ( !$store->getIsActive() || !$this->config->isEnabled($store->getId()) )
                 continue;
 
             try
@@ -150,7 +150,7 @@ class Algolia_Algoliasearch_Model_Observer
         {
             foreach (Mage::app()->getStores() as $storeId => $store)
             {
-                if ( ! $store->getIsActive())
+                if ( !$store->getIsActive() || !$this->config->isEnabled($store->getId()) )
                     continue;
 
                 $this->helper->rebuildStoreSuggestionIndex($storeId, $categoryIds);
@@ -186,7 +186,7 @@ class Algolia_Algoliasearch_Model_Observer
         {
             foreach (Mage::app()->getStores() as $storeId => $store)
             {
-                if ( ! $store->getIsActive())
+                if ( !$store->getIsActive() || !$this->config->isEnabled($store->getId()) )
                     continue;
 
                 $this->helper->rebuildStoreCategoryIndex($storeId, $categoryIds);
@@ -216,7 +216,7 @@ class Algolia_Algoliasearch_Model_Observer
         {
             foreach (Mage::app()->getStores() as $storeId => $store)
             {
-                if ( ! $store->getIsActive())
+                if ( !$store->getIsActive() || !$this->config->isEnabled($store->getId()) )
                     continue;
 
                 $this->helper->rebuildStoreProductIndex($storeId, $productIds);
