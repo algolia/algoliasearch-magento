@@ -10,6 +10,9 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext_Collection extends Mage_Cata
         $storeId = Mage::app()->getStore()->getId();
         $config = Mage::helper('algoliasearch/config');
 
+        if ($config->isEnabledFrontEnd($storeId) === false)
+            return parent::addSearchFilter($query);
+
         $data = array();
 
         if ($config->isInstantEnabled($storeId) === false || $config->makeSeoRequest($storeId))

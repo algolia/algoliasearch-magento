@@ -23,6 +23,9 @@ class Algolia_Algoliasearch_Helper_Logger extends Mage_Core_Helper_Abstract
 
     public function getStoreName($storeId)
     {
+        if ($storeId === null)
+            return 'undefined store';
+
         return $storeId . ' (' . $this->stores[$storeId] . ')';
     }
 

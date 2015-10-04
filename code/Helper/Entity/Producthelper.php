@@ -226,7 +226,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                     $mergeSettings['ranking'] = array($values['sort'].'('.$sort_attribute.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
-                    $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' .$values['attribute'].'_' . 'default' . '_'.$values['sort'], $mergeSettings);
+                    if ($values['attribute'] === 'price')
+                        $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' .$values['attribute']. '_default_' . $values['sort'], $mergeSettings);
+                    else
+                        $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' .$values['attribute']. '_' . $values['sort'], $mergeSettings);
+
                 }
             }
         }

@@ -124,6 +124,8 @@
     <default>
         <algoliasearch>
             <credentials>
+                <enable_frontend>1</enable_frontend>
+                <enable_backend>1</enable_backend>
                 <application_id></application_id>
                 <search_only_api_key></search_only_api_key>
                 <api_key></api_key>

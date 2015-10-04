@@ -39,9 +39,14 @@ class Algolia_Algoliasearch_Model_Observer
      */
     public function useAlgoliaSearchPopup(Varien_Event_Observer $observer)
     {
-        if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled()) {
-            $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
+        if ($this->config->isEnabledFrontEnd())
+        {
+            if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled())
+            {
+                $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
+            }
         }
+
         return $this;
     }
 

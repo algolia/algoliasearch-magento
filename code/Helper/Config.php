@@ -5,6 +5,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const MINIMAL_QUERY_LENGTH                 = 'algoliasearch/ui/minimal_query_length';
     const SEARCH_DELAY                         = 'algoliasearch/ui/search_delay';
 
+    const ENABLE_FRONTEND                      = 'algoliasearch/credentials/enable_frontend';
+    const ENABLE_BACKEND                       = 'algoliasearch/credentials/enable_backend';
     const IS_POPUP_ENABLED                     = 'algoliasearch/credentials/is_popup_enabled';
     const APPLICATION_ID                       = 'algoliasearch/credentials/application_id';
     const API_KEY                              = 'algoliasearch/credentials/api_key';
@@ -17,7 +19,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const FACETS                               = 'algoliasearch/instant/facets';
     const MAX_VALUES_PER_FACET                 = 'algoliasearch/instant/max_values_per_facet';
     const SORTING_INDICES                      = 'algoliasearch/instant/sorts';
-    const XML_ADD_TO_CART_ENABLE                        = 'algoliasearch/instant/add_to_cart_enable';
+    const XML_ADD_TO_CART_ENABLE               = 'algoliasearch/instant/add_to_cart_enable';
 
     const AUTOCOMPLETE_ADD_SECTIONS            = 'algoliasearch/autocomplete/additional_sections';
 
@@ -54,6 +56,16 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const SHOW_OUT_OF_STOCK                    = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED                      = 'dev/log/active';
+
+    public function isEnabledFrontEnd($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ENABLE_BACKEND, $storeId) && Mage::getStoreConfigFlag(self::ENABLE_FRONTEND, $storeId);
+    }
+
+    public function isEnabledBackend($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ENABLE_BACKEND, $storeId);
+    }
 
     public function makeSeoRequest($storeId = null)
     {
