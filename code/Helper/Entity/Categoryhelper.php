@@ -117,7 +117,9 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
     {
         /** @var $productCollection Mage_Catalog_Model_Resource_Product_Collection */
         $productCollection = $category->getProductCollection();
-        $category->setProductCount($productCollection->addMinimalPrice()->count());
+        $productCollection = $productCollection->addMinimalPrice();
+
+        $category->setProductCount($productCollection->getSize());
 
         $transport = new Varien_Object();
         Mage::dispatchEvent('algolia_category_index_before', array('category' => $category, 'custom_data' => $transport));

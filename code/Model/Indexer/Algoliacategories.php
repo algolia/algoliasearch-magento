@@ -8,7 +8,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
     private $engine;
     private $config;
 
-    public static $product_categories = array();
     private static $credential_error = false;
 
     public function __construct()

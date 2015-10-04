@@ -86,6 +86,24 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
             case Mage_Core_Model_Store_Group::ENTITY:
                 $event->addNewData('algoliasearch_reindex_all', TRUE);
                 break;
+            case Mage_CatalogInventory_Model_Stock_Item::ENTITY:
+                if (false == $this->config->getShowOutOfStock())
+                    $this->_registerCatalogInventoryStockItemEvent($event);
+                break;
+        }
+    }
+
+    protected function _registerCatalogInventoryStockItemEvent(Mage_Index_Model_Event $event)
+    {
+        if ($event->getType() == Mage_Index_Model_Event::TYPE_SAVE)
+        {
+            $object = $event->getDataObject();
+
+            if ($object->getData('is_in_stock') == false)
+            {
+                $event->addNewData('catalogsearch_delete_product_id', $object->getProduct()->getId());
+                $event->addNewData('catalogsearch_update_category_id', $object->getProduct()->getCategoryIds());
+            }
         }
     }
 
@@ -115,6 +133,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 {
                     $event->addNewData('catalogsearch_update_product_id', $product->getId());
 
+                    /* product_categories is filled in Observer::saveProduct */
                     if (isset(static::$product_categories[$product->getId()]))
                     {
                         $oldCategories = static::$product_categories[$product->getId()];

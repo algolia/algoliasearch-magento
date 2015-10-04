@@ -70,6 +70,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         if ($only_visible)
             $products = $products->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()));
 
+        if (false === $this->config->getShowOutOfStock($storeId))
+            Mage::getSingleton('cataloginventory/stock')->addInStockFilterToCollection($products);
+
         $products = $products->addFinalPrice()
                         ->addAttributeToSelect('special_from_date')
                         ->addAttributeToSelect('special_to_date')
