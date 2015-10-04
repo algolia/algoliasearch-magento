@@ -116,6 +116,9 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 }
                 catch(\Exception $e)
                 {
+                    $this->logger->log('Error while trying to update stock');
+                    $this->logger->log($e->getMessage());
+                    $this->logger->log($e->getTraceAsString());
                 }
             }
         }

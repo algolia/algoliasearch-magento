@@ -53,41 +53,6 @@ class Algolia_Algoliasearch_Model_Observer
         Algolia_Algoliasearch_Model_Indexer_Algolia::$product_categories[$product->getId()] = $product->getCategoryIds();
     }
 
-    private function updateStock($product_id)
-    {
-        foreach (Mage::app()->getStores() as $storeId => $store)
-        {
-            if ( ! $store->getIsActive())
-                continue;
-
-            try
-            {
-                $this->helper->rebuildStoreProductIndex($storeId, array($product_id));
-            }
-            catch(\Exception $e)
-            {
-                Mage::log($e->getMessage());
-                Mage::log($e->getTraceAsString());
-            }
-        }
-    }
-
-    public function quoteInventory(Varien_Event_Observer $observer)
-    {
-        $quote = $observer->getEvent()->getQuote();
-
-        foreach ($quote->getAllItems() as $product)
-            $this->updateStock($product->getProductId());
-    }
-
-    public function refundOrderInventory(Varien_Event_Observer $observer)
-    {
-        $creditmemo = $observer->getEvent()->getCreditmemo();
-
-        foreach ($creditmemo->getAllItems() as $product)
-            $this->updateStock($product->getProductId());
-    }
-
     public function deleteProductsStoreIndices(Varien_Object $event)
     {
         $storeId = $event->getStoreId();
