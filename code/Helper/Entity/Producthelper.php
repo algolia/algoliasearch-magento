@@ -400,32 +400,33 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $categories             = array();
         $categories_with_path   = array();
 
-        $categoryCollection = Mage::getResourceModel('catalog/category_collection')
-            ->addAttributeToSelect('name')
-            ->addAttributeToFilter('entity_id', $product->getCategoryIds())
-            ->addIsActiveFilter();
+        $_categoryIds = $product->getCategoryIds();
+        if (count($_categoryIds)) {
+            $categoryCollection = Mage::getResourceModel('catalog/category_collection')
+                ->addAttributeToSelect('name')
+                ->addAttributeToFilter('entity_id', $_categoryIds)
+                ->addIsActiveFilter();
 
-        foreach ($categoryCollection as $category)
-        {
-            $categoryName = $category->getName();
-
-            if ($categoryName)
-                $categories[] = $categoryName;
-
-            $category->getUrlInstance()->setStore($product->getStoreId());
-            $path = array();
-
-            foreach ($category->getPathIds() as $treeCategoryId)
+            foreach ($categoryCollection as $category)
             {
-                $name = $this->getCategoryName($treeCategoryId, $product->getStoreId());
-                if ($name)
-                    $path[] = $name;
+                $categoryName = $category->getName();
+
+                if ($categoryName)
+                    $categories[] = $categoryName;
+
+                $category->getUrlInstance()->setStore($product->getStoreId());
+                $path = array();
+
+                foreach ($category->getPathIds() as $treeCategoryId)
+                {
+                    $name = $this->getCategoryName($treeCategoryId, $product->getStoreId());
+                    if ($name)
+                        $path[] = $name;
+                }
+
+                $categories_with_path[] = $path;
             }
-
-            $categories_with_path[] = $path;
         }
-
-
 
         foreach ($categories_with_path as $result)
         {
