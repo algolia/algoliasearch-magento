@@ -373,6 +373,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     public function getObject(Mage_Catalog_Model_Product $product)
     {
+        $this->logger->start('CREATE RECORD '.$product->getId(). ' '.$this->logger->getStoreName($product->storeId));
+        $this->logger->log('Product type ('.$product->getTypeId().')');
         $defaultData    = array();
 
         $transport      = new Varien_Object($defaultData);
@@ -627,6 +629,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $customData['type_id'] = $product->getTypeId();
 
         $this->castProductObject($customData);
+
+        $this->logger->stop('CREATE RECORD '.$product->getId(). ' '.$this->logger->getStoreName($product->storeId));
 
         return $customData;
     }

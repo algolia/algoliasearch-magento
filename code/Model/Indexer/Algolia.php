@@ -11,12 +11,16 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
     public static $product_categories = array();
     private static $credential_error = false;
 
+    /** @var Algolia_Algoliasearch_Helper_Logger */
+    private $logger;
+
     public function __construct()
     {
         parent::__construct();
 
         $this->engine = new Algolia_Algoliasearch_Model_Resource_Engine();
         $this->config = Mage::helper('algoliasearch/config');
+        $this->logger = Mage::helper('algoliasearch/logger');
     }
 
     protected $_matchedEntities = array(
@@ -316,10 +320,13 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
         if (! $this->config->getApplicationID() || ! $this->config->getAPIKey() || ! $this->config->getSearchOnlyAPIKey())
         {
             Mage::getSingleton('adminhtml/session')->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+            $this->logger->log('ERROR Credentials not configured correctly');
             return;
         }
 
+        $this->logger->start('PRODUCTS FULL REINDEX');
         $this->engine->rebuildProducts();
+        $this->logger->stop('PRODUCTS FULL REINDEX');
 
         return $this;
     }

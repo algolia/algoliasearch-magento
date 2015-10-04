@@ -19,6 +19,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     protected $category_helper;
     protected $product_helper;
 
+    /** @var Algolia_Algoliasearch_Helper_Logger */
+    protected $logger;
     protected $config;
 
     public function __construct()
@@ -34,6 +36,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->additionalsections_helper    = Mage::helper('algoliasearch/entity_additionalsectionshelper');
 
         $this->config                       = Mage::helper('algoliasearch/config');
+
+        $this->logger                       = Mage::helper('algoliasearch/logger');
     }
 
     public function deleteProductsStoreIndices($storeId = null)
@@ -245,6 +249,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $size = $collection->getSize();
 
+            $this->logger->log('Store '.$this->logger->getStoreName($storeId). ' collection size : '.$size);
+
             if ($size > 0)
             {
                 $pages = ceil($size / $this->config->getNumberOfElementByPage());
@@ -347,6 +353,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $indexData = array();
 
+        $this->logger->start('CREATE RECORDS '.$this->logger->getStoreName($storeId));
+        $this->logger->log(count($collection). ' product records to create');
         /** @var $product Mage_Catalog_Model_Product */
         foreach ($collection as $product)
         {
@@ -356,12 +364,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             array_push($indexData, $json);
         }
+        $this->logger->stop('CREATE RECORDS '.$this->logger->getStoreName($storeId));
 
         return $indexData;
     }
 
     public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null)
     {
+        $this->logger->start('rebuildStoreProductIndexPage '.$this->logger->getStoreName($storeId).' page ' . $page . ' pageSize '. $pageSize);
         $emulationInfoPage = null;
 
         if ($emulationInfo === null)
@@ -374,7 +384,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $collection->joinField('stock_qty', 'cataloginventory/stock_item', 'qty', 'product_id=entity_id', '{{table}}.stock_id=1', 'left');
         $collection->getSelect()->columns('sku, (SELECT SUM(qty_ordered) FROM sales_flat_order_item WHERE sales_flat_order_item.sku = e.sku) as ordered_qty');
         $collection->getSelect()->columns('(SELECT rating_summary FROM review_entity_summary WHERE review_entity_summary.entity_pk_value = e.entity_id AND review_entity_summary.store_id='.$storeId.') as rating_summary');
+
+
+        $this->logger->start('LOADING '.$this->logger->getStoreName($storeId). ' collection page '. $page . ', pageSize '.$pageSize);
+
         $collection->load();
+
+        $this->logger->log('Loaded '.count($collection).' products');
+        $this->logger->stop('LOADING '.$this->logger->getStoreName($storeId). ' collection page '. $page . ', pageSize '.$pageSize);
 
         $index_name = $this->product_helper->getIndexName($storeId);
 
@@ -383,8 +400,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
          */
         $indexData = $this->getProductsRecords($storeId, $collection);
 
+        $this->logger->start('SEND TO ALGOLIA');
         if (count($indexData) > 0)
             $this->algolia_helper->addObjects($indexData, $index_name);
+        $this->logger->stop('SEND TO ALGOLIA');
 
         unset($indexData);
 
@@ -395,10 +414,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         if ($emulationInfo === null)
             $this->stopEmulation($emulationInfoPage);
+
+        $this->logger->stop('rebuildStoreProductIndexPage '.$this->logger->getStoreName($storeId).' page ' . $page . ' pageSize '. $pageSize);
     }
 
     public function startEmulation($storeId)
     {
+        $this->logger->start('START EMULATION');
         $appEmulation = Mage::getSingleton('core/app_emulation');
 
         $info = $appEmulation->startEnvironmentEmulation($storeId);
@@ -411,11 +433,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, FALSE);
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, FALSE);
 
+        $this->logger->stop('START EMULATION');
         return $info;
     }
 
     public function stopEmulation($info)
     {
+        $this->logger->start('STOP EMULATION');
         $appEmulation = Mage::getSingleton('core/app_emulation');
 
         Mage::app()->setCurrentStore($info->getInitialStoreId());
@@ -423,5 +447,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::app()->getStore($info->getEmulatedStoreId())->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, $info->getUseCategoryFlat());
 
         $appEmulation->stopEnvironmentEmulation($info);
+        $this->logger->stop('STOP EMULATION');
     }
 }

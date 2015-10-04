@@ -3,6 +3,8 @@
 abstract class Algolia_Algoliasearch_Helper_Entity_Helper
 {
     protected $config;
+    /** @var Algolia_Algoliasearch_Helper_Logger */
+    protected $logger;
     protected $algolia_helper;
 
     protected static $_activeCategories;
@@ -14,6 +16,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
     {
         $this->config           = Mage::helper('algoliasearch/config');
         $this->algolia_helper   = Mage::helper('algoliasearch/algoliahelper');
+        $this->logger           = Mage::helper('algoliasearch/logger');
     }
 
     public function getBaseIndexName($storeId = null)

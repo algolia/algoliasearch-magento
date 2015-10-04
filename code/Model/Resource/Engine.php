@@ -130,8 +130,6 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function rebuildProducts()
     {
-        Mage::getSingleton('algoliasearch/observer')->saveSettings();
-
         foreach (Mage::app()->getStores() as $store)
         {
             if ($store->getIsActive())
@@ -147,8 +145,6 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function rebuildCategories()
     {
-        Mage::getSingleton('algoliasearch/observer')->saveSettings();
-
         foreach (Mage::app()->getStores() as $store)
         {
             if ($store->getIsActive())
@@ -207,6 +203,8 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     {
         if ($productIds == null || count($productIds) == 0)
         {
+            $logger = Mage::helper('algoliasearch/logger');
+
             $size       = $this->product_helper->getProductCollectionQuery($storeId, $productIds)->getSize();
             $by_page    = $this->config->getNumberOfElementByPage();
             $nb_page    = ceil($size / $by_page);
@@ -219,6 +217,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         }
         else
             $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', array('store_id' => $storeId, 'product_ids' =>  $productIds), $this->config->getQueueMaxRetries());
+
 
         return $this;
     }

@@ -52,6 +52,13 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const REMOVE_BRANDING                      = 'algoliasearch/advanced/remove_branding';
 
     const SHOW_OUT_OF_STOCK                    = 'cataloginventory/options/show_out_of_stock';
+    const LOGGING_ENABLED                      = 'dev/log/active';
+
+
+    public function isLoggingEnabled($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::LOGGING_ENABLED, $storeId);
+    }
 
     public function getShowOutOfStock($storeId = null)
     {
