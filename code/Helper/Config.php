@@ -49,11 +49,16 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const PARTIAL_UPDATES                      = 'algoliasearch/advanced/partial_update';
     const CUSTOMER_GROUPS_ENABLE               = 'algoliasearch/advanced/customer_groups_enable';
+    const MAKE_SEO_REQUEST                     = 'algoliasearch/advanced/make_seo_request';
     const REMOVE_BRANDING                      = 'algoliasearch/advanced/remove_branding';
 
     const SHOW_OUT_OF_STOCK                    = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED                      = 'dev/log/active';
 
+    public function makeSeoRequest($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::MAKE_SEO_REQUEST, $storeId);
+    }
 
     public function isLoggingEnabled($storeId = null)
     {

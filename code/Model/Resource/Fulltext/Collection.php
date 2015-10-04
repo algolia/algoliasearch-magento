@@ -7,7 +7,17 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext_Collection extends Mage_Cata
      */
     public function addSearchFilter($query)
     {
-        $data = Mage::helper('algoliasearch')->getSearchResult($query, Mage::app()->getStore()->getId());
+        $storeId = Mage::app()->getStore()->getId();
+        $config = Mage::helper('algoliasearch/config');
+
+        $data = array();
+
+        if ($config->isInstantEnabled($storeId) === false || $config->makeSeoRequest($storeId))
+        {
+            $algolia_query = $query !== '__empty__' ? $query : '';
+            $data = Mage::helper('algoliasearch')->getSearchResult($algolia_query, $storeId);
+        }
+
 
         $sortedIds = array_reverse(array_keys($data));
 

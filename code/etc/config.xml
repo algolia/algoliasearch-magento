@@ -175,6 +175,7 @@
             </queue>
             <advanced>
                 <partial_update>0</partial_update>
+                <make_seo_request>1</make_seo_request>
                 <remove_branding>0</remove_branding>
             </advanced>
         </algoliasearch>
