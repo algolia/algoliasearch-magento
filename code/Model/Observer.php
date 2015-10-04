@@ -72,13 +72,6 @@ class Algolia_Algoliasearch_Model_Observer
         }
     }
 
-    public function catalogInventorySave(Varien_Event_Observer $observer)
-    {
-        $product = $observer->getItem();
-
-        $this->updateStock($product->getProductId());
-    }
-
     public function quoteInventory(Varien_Event_Observer $observer)
     {
         $quote = $observer->getEvent()->getQuote();

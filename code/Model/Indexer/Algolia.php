@@ -70,7 +70,9 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
     public function matchEvent(Mage_Index_Model_Event $event)
     {
-        $result = true;
+        $process = Mage::getModel('index/indexer')->getProcessByCode('algolia_search_indexer');
+
+        $result = $process->getMode() !== Mage_Index_Model_Process::MODE_MANUAL;
 
         $event->addNewData(self::EVENT_MATCH_RESULT_KEY, $result);
 
@@ -103,10 +105,18 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
         {
             $object = $event->getDataObject();
 
-            if ($object->getData('is_in_stock') == false)
+            $product = Mage::getModel('catalog/product')->load($object->getProductId());
+
+            if ($object->getData('is_in_stock') == false|| $product->getQty() <= 0)
             {
-                $event->addNewData('catalogsearch_delete_product_id', $object->getProduct()->getId());
-                $event->addNewData('catalogsearch_update_category_id', $object->getProduct()->getCategoryIds());
+                try // In case of wrong credentials or overquota or block account. To avoid checkout process to fail
+                {
+                    $event->addNewData('catalogsearch_delete_product_id', $product->getId());
+                    $event->addNewData('catalogsearch_update_category_id', $product->getCategoryIds());
+                }
+                catch(\Exception $e)
+                {
+                }
             }
         }
     }

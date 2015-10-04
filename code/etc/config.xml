@@ -81,47 +81,6 @@
                     </algolia_stockupdate>
                 </observers>
             </catalog_product_save_before>
-
-            <cataloginventory_stock_item_save_commit_after>
-                <observers>
-                    <algolia_stockupdate>
-                        <class>algoliasearch/observer</class>
-                        <method>catalogInventorySave</method>
-                    </algolia_stockupdate>
-                </observers>
-            </cataloginventory_stock_item_save_commit_after>
-            <sales_model_service_quote_submit_before>
-                <observers>
-                    <algolia_stockupdate>
-                        <class>algoliasearch/observer</class>
-                        <method>quoteInventory</method>
-                    </algolia_stockupdate>
-                </observers>
-            </sales_model_service_quote_submit_before>
-            <sales_model_service_quote_submit_failure>
-                <observers>
-                    <algolia_stockupdate>
-                        <class>algoliasearch/observer</class>
-                        <method>quoteInventory</method>
-                    </algolia_stockupdate>
-                </observers>
-            </sales_model_service_quote_submit_failure>
-            <sales_order_item_cancel>
-                <observers>
-                    <algolia_stockupdate>
-                        <class>algoliasearch/observer</class>
-                        <method>catalogInventorySave</method>
-                    </algolia_stockupdate>
-                </observers>
-            </sales_order_item_cancel>
-            <sales_order_creditmemo_save_after>
-                <observers>
-                    <algolia_stockupdate>
-                        <class>algoliasearch/observer</class>
-                        <method>refundOrderInventory</method>
-                    </algolia_stockupdate>
-                </observers>
-            </sales_order_creditmemo_save_after>
         </events>
         <resources>
             <algoliasearch_setup>
