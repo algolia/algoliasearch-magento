@@ -522,7 +522,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             if (count($ids))
             {
                 $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false, false)->load();
-            } else
+            }
+            else
             {
                 $sub_products = array();
             }
@@ -544,7 +545,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if (Mage::helper('core')->isModuleEnabled('Mage_Review'))
             if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary'))
-                    $customData['rating_summary'] = $product->getRatingSummary();
+                    $customData['rating_summary'] = (int) $product->getRatingSummary();
 
         foreach ($additionalAttributes as $attribute)
         {

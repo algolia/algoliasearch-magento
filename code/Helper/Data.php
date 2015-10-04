@@ -467,14 +467,15 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         if ($emulationInfo === null)
             $emulationInfoPage = $this->startEmulation($storeId);
 
+        $index_prefix = Mage::getConfig()->getTablePrefix();
+
         $collection = clone $collectionDefault;
         $collection->setCurPage($page)->setPageSize($pageSize);
         $collection->addCategoryIds();
         $collection->addUrlRewrite();
-        $collection->joinField('stock_qty', 'cataloginventory/stock_item', 'qty', 'product_id=entity_id', '{{table}}.stock_id=1', 'left');
-        $collection->getSelect()->columns('sku, (SELECT SUM(qty_ordered) FROM sales_flat_order_item WHERE sales_flat_order_item.sku = e.sku) as ordered_qty');
-        $collection->getSelect()->columns('(SELECT rating_summary FROM review_entity_summary WHERE review_entity_summary.entity_pk_value = e.entity_id AND review_entity_summary.store_id='.$storeId.') as rating_summary');
-
+        $collection->joinField('stock_qty', $index_prefix.'cataloginventory_stock_item', 'qty', 'product_id=entity_id', '{{table}}.stock_id=1', 'left');
+        $collection->joinField('ordered_qty', $index_prefix.'ordered_qty_view', 'ordered_qty', 'product_id=entity_id', '1', 'left');
+        $collection->joinField('rating_summary', $index_prefix.'review_entity_summary', 'rating_summary', 'entity_pk_value=entity_id', '{{table}}.store_id='.$storeId, 'left');
 
         $this->logger->start('LOADING '.$this->logger->getStoreName($storeId). ' collection page '. $page . ', pageSize '.$pageSize);
 
