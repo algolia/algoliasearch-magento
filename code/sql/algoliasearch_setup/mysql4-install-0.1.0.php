@@ -19,12 +19,12 @@ CREATE TABLE IF NOT EXISTS `{$installer->getTable('algoliasearch/queue')}` (
 ");
 
 $table = Mage::getConfig()->getTablePrefix().'sales_flat_order_item';
-$installer->run("ALTER TABLE `{$table}` ADD INDEX `IDX_SALES_FLAT_ORDER_ITEM_PRODUCT_ID` (`product_id`);");
+$installer->run("ALTER TABLE `{$table}` ADD INDEX `IDX_ALGOLIA_SALES_FLAT_ORDER_ITEM_PRODUCT_ID` (`product_id`);");
 
 $table = Mage::getConfig()->getTablePrefix().'ordered_qty_view';
 $installer->run("CREATE OR REPLACE VIEW `{$table}` AS SELECT product_id, SUM(qty_ordered) as ordered_qty FROM sales_flat_order_item GROUP BY product_id");
 
 $table = Mage::getConfig()->getTablePrefix().'review_entity_summary';
-$installer->run("ALTER TABLE `{$table}` ADD UNIQUE `IDX_REVIEW_ENTITY_SUMMARY_ENTITY_PK_VALUE_STORE_ID` (`store_id`, `entity_pk_value`);");
+$installer->run("ALTER TABLE `{$table}` ADD INDEX `IDX_ALGOLIA_REVIEW_ENTITY_SUMMARY_ENTITY_PK_VALUE_STORE_ID` (`store_id`, `entity_pk_value`);");
 
 $installer->endSetup();
