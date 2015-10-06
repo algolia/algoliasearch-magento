@@ -520,6 +520,9 @@ $class = $isSearchPage ? 'search-page' : '';
                         typoTolerance: false,
                         maxValuesPerFacet: 3,
                         analytics: false
+                    }, {
+                        includeAll: true,
+                        allTitle: '<?php echo $this->__('All departments') ?>'
                     }),
                     templates: {
                         suggestion: function (hit) {
