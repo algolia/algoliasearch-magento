@@ -405,7 +405,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $categories_with_path   = array();
 
         $_categoryIds = $product->getCategoryIds();
-        if (count($_categoryIds)) {
+
+        if (count($_categoryIds) > 0)
+        {
             $categoryCollection = Mage::getResourceModel('catalog/category_collection')
                 ->addAttributeToSelect('name')
                 ->addAttributeToFilter('entity_id', $_categoryIds)
