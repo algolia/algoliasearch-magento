@@ -433,26 +433,32 @@ $class = $isSearchPage ? 'search-page' : '';
             autocomplete: {
                 enabled: <?php echo $config->isAutoCompleteEnabled() ? "true" : "false"; ?>,
                 selector: '#search',
-                hitsPerPage: {
-                    products: <?php echo (int) $config->getNumberOfProductSuggestions() ?>,
-                    categories: <?php echo (int) $config->getNumberOfCategorySuggestions() ?>,
-                    pages: <?php echo (int) $config->getNumberOfPageSuggestions() ?>,
-                    suggestions: <?php echo (int) $config->getNumberOfQuerySuggestions() ?>
+                popularSuggestionsSection: {
+                    hitsPerPage: <?php echo (int) $config->getNumberOfQuerySuggestions() ?>,
+                    title: '<?php echo $this->__('Suggestions') ?>'
                 },
+                sections: {
+                    products: {
+                        hitsPerPage: <?php echo (int) $config->getNumberOfProductSuggestions() ?>,
+                        title: '<?php echo $this->__('Products'); ?>'
+                    },
+                    categories: {
+                        hitsPerPage: <?php echo (int) $config->getNumberOfCategorySuggestions() ?>,
+                        title: '<?php echo $this->__('Categories') ?>'
+                    },
+                    pages: {
+                        hitsPerPage: <?php echo (int) $config->getNumberOfPageSuggestions() ?>,
+                        title: '<?php echo $this->__('Pages') ?>'
+                    }
+                },
+                additionnalSections: <?php echo json_encode($config->getAutocompleteAdditionnalSections()); ?>,
                 templates: {
                     suggestions: algoliaBundle.Hogan.compile($('#autocomplete_suggestions_template').html()),
                     products: algoliaBundle.Hogan.compile($('#autocomplete_products_template').html()),
                     categories: algoliaBundle.Hogan.compile($('#autocomplete_categories_template').html()),
                     pages: algoliaBundle.Hogan.compile($('#autocomplete_pages_template').html()),
                     additionnalSection: algoliaBundle.Hogan.compile($('#autocomplete_extra_template').html()),
-                },
-                titles: {
-                    products: '<?php echo $this->__('Products'); ?>',
-                    categories: '<?php echo $this->__('Categories') ?>',
-                    pages: '<?php echo $this->__('Pages') ?>',
-                    suggestions: '<?php echo $this->__('Suggestions') ?>'
-                },
-                additionnalSection: <?php echo json_encode($config->getAutocompleteAdditionnalSections()); ?>
+                }
             },
             applicationId: '<?php echo $config->getApplicationID() ?>',
             indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
@@ -495,203 +501,122 @@ $class = $isSearchPage ? 'search-page' : '';
 
         if (algoliaConfig.autocomplete.enabled) {
             var params = {};
-            var hogan_objs = [];
-            var indices = ['categories', 'products', 'pages'];
-            var indices_with_suffix  = ['categories', 'products', 'pages'];
-            if (algoliaConfig.autocomplete.hitsPerPage['suggestions'] > 0)
-            {
+            var sources = [];
+
+            /// popular queries/suggestions
+            if (algoliaConfig.autocomplete.popularSuggestionsSection.hitsPerPage > 0) {
                 var suggestions_index = algolia_client.initIndex(algoliaConfig.indexName + "_suggestions");
                 var products_index = algolia_client.initIndex(algoliaConfig.indexName + "_products");
-                hogan_objs.push({
-                    displayKey: 'query',
-                    source: function (query, cb) {
-                        suggestions_index.search(query, {
-                            hitsPerPage: algoliaConfig.autocomplete.hitsPerPage['suggestions'],
-                            analyticsTags: 'autocomplete'
-                        }, function (err, content) {
-                            if (err)
-                                return;
-                            if (content.hits.length > 0) {
-                                products_index.search(content.hits[0].query, {
-                                    facets: ['categories.level0'],
-                                    hitsPerPage: 0,
-                                    typoTolerance: false,
-                                    maxValuesPerFacet: 3,
-                                    analyticsTags: 'instant-search'
-                                }, function (err2, content2) {
-                                    if (err2)
-                                    {
-                                        cb([]);
-                                        return;
-                                    }
-                                    var hits = [];
-                                    var categories = {};
-                                    if (content2.facets['categories.level0']) {
-                                        var obj = $.extend(true, {}, content.hits[0]);
-                                        obj.category = '<?php echo $this->__('All departments') ?>';
-                                        obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
-                                        hits.push(obj);
-                                        for (var key in content2.facets['categories.level0']) {
-                                            var explode = key.split(' /// ');
-                                            var nameattr = explode[0];
-                                            categories[nameattr] = 1;
-                                        }
-                                        for (var key in categories)
-                                        {
-                                            var obj = $.extend(true, {}, content.hits[0]);
-                                            obj.category = key;
-                                            obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query + '#q=' + obj.query + '&page=0&refinements=%5B%7B%22categories%22%3A%5B%22' + obj.category + '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22<?php echo $product_helper->getBaseIndexName(); ?>_products%22';
-                                            hits.push(obj);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        var obj = $.extend(true, {}, content.hits[0]);
-                                        obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
-                                        hits.push(obj);
-                                    }
-                                    for (var k = 1; k < content.hits.length; k++)
-                                    {
-                                        var obj = $.extend(true, {}, content.hits[k]);
-                                        obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
-                                        hits.push(obj);
-                                    }
-                                    for (var k = 0; k < hits.length; k++)
-                                        hits[k].query = content.query;
-                                    cb(hits);
-                                });
-                            }
-                            else
-                                cb([]);
-                        });
-                    },
+
+                /// FIXME: ADD 'All department'
+                sources.push({
+                    source: $.fn.autocomplete.sources.popularIn(suggestions_index, {
+                        hitsPerPage: algoliaConfig.autocomplete.popularSuggestionsSection.hitsPerPage
+                    }, {
+                        source: 'query',
+                        index: products_index,
+                        facets: ['categories.level0'],
+                        hitsPerPage: 0,
+                        typoTolerance: false,
+                        maxValuesPerFacet: 3,
+                        analytics: false
+                    }),
                     templates: {
                         suggestion: function (hit) {
-                            return algoliaConfig.autocomplete.templates['suggestions'].render(hit);
+                            if (hit.facet) {
+                                hit.category = hit.facet.value;
+                                /// FIXME: refinement
+                                hit.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + hit.query + '#q=' + hit.query + '&FIXME_REFINEMENT=' + hit.category + '&idx=<?php echo $product_helper->getBaseIndexName(); ?>_products';
+                            } else {
+                                hit.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + hit.query;
+                            }
+                            return algoliaConfig.autocomplete.templates.suggestions.render(hit);
                         }
                     }
                 });
             }
-            for (var i = 0; i < indices.length; i++)
-            {
-                if (algoliaConfig.autocomplete.hitsPerPage[indices[i]] > 0)
-                {
-                    var index = algolia_client.initIndex(algoliaConfig.indexName + "_" + indices_with_suffix[i]);
-                    hogan_objs.push({
-                        source: (function (index, i) {
-                            return function (query, cb) {
-                                index.search(query, {
-                                    hitsPerPage: algoliaConfig.autocomplete.hitsPerPage[indices[i]],
-                                    analyticsTags: 'autocomplete'
-                                }, function (err, content) {
-                                    if (err)
-                                    {
-                                        cb([]);
-                                        return;
-                                    }
-                                    for (var k = 0; k < content.hits.length; k++)
-                                        content.hits[k].query = content.query;
-                                    cb(content.hits);
-                                });
-                            }
-                        })(index, i),
-                        displayKey: 'query',
+
+            /// regular auto-complete sections
+            $.each(algoliaConfig.autocomplete.sections, function(indexName, section) {
+                if (section.hitsPerPage > 0) {
+                    var index = algolia_client.initIndex(algoliaConfig.indexName + "_" + indexName);
+
+                    sources.push({
+                        source: $.fn.autocomplete.sources.hits(index, {
+                            hitsPerPage: section.hitsPerPage,
+                            analyticsTags: 'autocomplete'
+                        }),
                         templates: {
-                            header: '<div class="category">' + algoliaConfig.autocomplete.titles[indices[i]] + '</div>',
-                            suggestion: (function (i) {
-                                return function (hit) {
-                                    if (indices[i] == 'products')
-                                    {
-                                        var time = Math.floor(Date.now() / 1000);
-                                        if ((hit.special_price_from_date != undefined && (hit.special_price_from_date > time && hit.special_price_from_date !== '')) ||
-                                            (hit.special_price_to_date != undefined && (hit.special_price_to_date < time && hit.special_price_to_date !== '')))
-                                        {
-                                            delete hit.special_price_from_date;
-                                            delete hit.special_price_to_date;
-                                            delete hit.special_price;
-                                            delete hit.special_price_with_tax;
-                                            delete hit.special_price_formated;
-                                            delete hit.special_price_with_tax_formated;
-                                        }
-                                        if (Array.isArray(hit.categories_without_path))
-                                            hit.categories_without_path = hit.categories_without_path.join(', ');
-                                        if (Array.isArray(hit._highlightResult.name)) {
-                                            hit._highlightResult.name = hit._highlightResult.name[0];
-                                            hit.displayKey = hit.name[0];
-                                        }
-                                        if (Array.isArray(hit.price))
-                                            hit.price = hit.price[0];
+                            header: '<div class="category">' + section.title + '</div>',
+                            suggestion: function (hit) {
+                                if (indexName === 'products') {
+                                    var time = Math.floor(Date.now() / 1000);
+                                    if ((hit.special_price_from_date != undefined && (hit.special_price_from_date > time && hit.special_price_from_date !== '')) ||
+                                        (hit.special_price_to_date != undefined && (hit.special_price_to_date < time && hit.special_price_to_date !== ''))) {
+                                        delete hit.special_price_from_date;
+                                        delete hit.special_price_to_date;
+                                        delete hit.special_price;
+                                        delete hit.special_price_with_tax;
+                                        delete hit.special_price_formated;
+                                        delete hit.special_price_with_tax_formated;
                                     }
-                                    if (indices[i] == 'categories')
-                                    {
-                                        hit.displayKey = hit.path;
+                                    if (Array.isArray(hit.categories_without_path)) {
+                                        hit.categories_without_path = hit.categories_without_path.join(', ');
                                     }
-                                    hit.displayKey = hit.displayKey || hit.name;
-                                    return algoliaConfig.autocomplete.templates[indices[i]].render(hit);
+                                    if (Array.isArray(hit._highlightResult.name)) {
+                                        hit._highlightResult.name = hit._highlightResult.name[0];
+                                        hit.displayKey = hit.name[0];
+                                    }
+                                    if (Array.isArray(hit.price)) {
+                                        hit.price = hit.price[0];
+                                    }
+                                } else if (indexName === 'categories') {
+                                    hit.displayKey = hit.path;
                                 }
-                            })(i)
+                                hit.displayKey = hit.displayKey || hit.name;
+                                return algoliaConfig.autocomplete.templates[indexName].render(hit);
+                            }
                         }
                     });
                 }
-            }
-            for (var i = 0; i < algoliaConfig.autocomplete.additionnalSection.length; i++)
-            {
-                var index = algolia_client.initIndex(algoliaConfig.indexName + "_section_" + algoliaConfig.autocomplete.additionnalSection[i].attribute);
-                var label = algoliaConfig.autocomplete.additionnalSection[i].label !== "" ?
-                    algoliaConfig.autocomplete.additionnalSection[i].label : algoliaConfig.autocomplete.additionnalSection[i].attribute;
-                hogan_objs.push({
-                    source: (function (index, i) {
-                        return function (query, cb) {
-                            index.search(query, {
-                                hitsPerPage: algoliaConfig.autocomplete.additionnalSection[i].hitsPerPage,
-                                analyticsTags: 'autocomplete'
-                            }, function (err, content) {
-                                if (err)
-                                {
-                                    cb([]);
-                                    return;
-                                }
-                                cb(content.hits);
-                            });
-                        }
-                    })(index, i),
+            });
+
+            /// additional auto-complete sections
+            $.each(algoliaConfig.autocomplete.additionnalSections, function(i, section) {
+                var index = algolia_client.initIndex(algoliaConfig.indexName + "_section_" + section.attribute);
+                var label = section.label || section.attribute;
+
+                sources.push({
+                    source: $.fn.autocomplete.sources.hits(index, {
+                        hitsPerPage: section.hitsPerPage,
+                        analyticsTags: 'autocomplete'
+                    }),
                     displayKey: 'value',
                     templates: {
                         header: '<div class="category">' + label + '</div>',
-                        suggestion: (function (i) {
-                            return function (hit) {
-                                hit.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + algoliaConfig.autocomplete.additionnalSection[i].attribute + "&refinement_value=" + hit.value;
-                                return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
-                            }
-                        })(i)
-                    }
-                });
-            }
-            if (algoliaConfig.removeBranding === false)
-            {
-                hogan_objs.push({
-                    source: function findMatches(q, cb) {
-                        return cb(["algolia-branding"]);
-                    },
-                    displayKey: 'title',
-                    templates: {
                         suggestion: function (hit) {
-                            return '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo $base_url; ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
+                            hit.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + section.attribute + "&refinement_value=" + hit.value;
+                            return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
                         }
                     }
                 });
-            }
-            $(algoliaConfig.autocomplete.selector).each(function (i) {
-                var tt = $(this)
-                    .autocomplete({hint: false}, hogan_objs)
-                    .parent()
-                    .attr('id', 'algolia-autocomplete-tt');
-                $(this).on('autocomplete:selected', function (e, item) {
-                    window.location.href = item.url;
-                });
             });
-            $("#algolia-glass").click(function () {
-                $(this).closest('form').submit();
+
+            // setup the auto-completed search input
+            $(algoliaConfig.autocomplete.selector).each(function (i) {
+                var options = {hint: false};
+                if (algoliaConfig.removeBranding === false) {
+                    options.templates = {
+                        footer: '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo $base_url; ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>'
+                    };
+                }
+                $(this)
+                    .autocomplete(options, sources)
+                    .parent()
+                    .attr('id', 'algolia-autocomplete-tt')
+                    .on('autocomplete:selected', function (e, item) {
+                        window.location.href = item.url;
+                    });
             });
         }
 
