@@ -318,13 +318,18 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             if ($product->getTypeId() == 'grouped' || $product->getTypeId() == 'configurable')
             {
-                foreach ($sub_products as $sub_product)
+                if (count($sub_products) > 0)
                 {
-                    $price = (double) Mage::helper('tax')->getPrice($sub_product, $sub_product->getFinalPrice(), null, null, null, null, $product->getStore(), null);
+                    foreach ($sub_products as $sub_product)
+                    {
+                        $price = (double) Mage::helper('tax')->getPrice($sub_product, $sub_product->getFinalPrice(), null, null, null, null, $product->getStore(), null);
 
-                    $min = min($min, $price);
-                    $max = max($max, $price);
+                        $min = min($min, $price);
+                        $max = max($max, $price);
+                    }
                 }
+                else
+                    $min = $max; // avoid to have PHP_INT_MAX in case of no subproducts (Corner case of visibility and stock options)
             }
 
             if ($min != $max)
@@ -464,7 +469,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         foreach ($categories_with_path as &$category)
             $category = implode(' /// ',$category);
 
-        $customData['categories'] = $categories_hierarchical;//array_values($categories_with_path);
+        $customData['categories'] = $categories_hierarchical;
 
         $customData['categories_without_path'] = $categories;
 
