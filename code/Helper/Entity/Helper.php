@@ -207,13 +207,20 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
 
     public static function getStores($store_id)
     {
+        $config = Mage::helper('algoliasearch/config');
         $store_ids = array();
 
         if ($store_id == null)
         {
             foreach (Mage::app()->getStores() as $store)
+            {
+                if ($config->isEnabledBackEnd($store->getId()) === false)
+                    continue;
+
                 if ($store->getIsActive())
                     $store_ids[] = $store->getId();
+
+            }
         }
         else
             $store_ids = array($store_id);
