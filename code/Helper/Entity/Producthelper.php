@@ -50,7 +50,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return $attributes;
     }
 
-    protected function isAttributeEnabled($additionalAttributes, $attr_name)
+    public function isAttributeEnabled($additionalAttributes, $attr_name)
     {
         foreach ($additionalAttributes as $attr)
             if ($attr['attribute'] === $attr_name)

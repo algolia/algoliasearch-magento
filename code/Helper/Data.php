@@ -469,13 +469,21 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $index_prefix = Mage::getConfig()->getTablePrefix();
 
+        $additionalAttributes = $this->config->getProductAdditionalAttributes($storeId);
+
         $collection = clone $collectionDefault;
         $collection->setCurPage($page)->setPageSize($pageSize);
         $collection->addCategoryIds();
         $collection->addUrlRewrite();
-        $collection->joinField('stock_qty', $index_prefix.'cataloginventory_stock_item', 'qty', 'product_id=entity_id', '{{table}}.stock_id=1', 'left');
-        $collection->getSelect()->columns('(SELECT SUM(qty_ordered) FROM '.$index_prefix.'sales_flat_order_item WHERE sales_flat_order_item.product_id = e.entity_id) as ordered_qty');
-        $collection->joinField('rating_summary', $index_prefix.'review_entity_summary', 'rating_summary', 'entity_pk_value=entity_id', '{{table}}.store_id='.$storeId, 'left');
+
+        if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'stock_qty'))
+            $collection->joinField('stock_qty', $index_prefix.'cataloginventory_stock_item', 'qty', 'product_id=entity_id', '{{table}}.stock_id=1', 'left');
+
+        if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'ordered_qty'))
+            $collection->getSelect()->columns('(SELECT SUM(qty_ordered) FROM '.$index_prefix.'sales_flat_order_item WHERE sales_flat_order_item.product_id = e.entity_id) as ordered_qty');
+
+        if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'rating_summary'))
+            $collection->joinField('rating_summary', $index_prefix.'review_entity_summary', 'rating_summary', 'entity_pk_value=entity_id', '{{table}}.store_id='.$storeId, 'left');
 
         $this->logger->start('LOADING '.$this->logger->getStoreName($storeId). ' collection page '. $page . ', pageSize '.$pageSize);
 
