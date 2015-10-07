@@ -640,11 +640,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $this->logger->stop('CREATE RECORD '.$product->getId(). ' '.$this->logger->getStoreName($product->storeId));
 
-        echo '<pre>';
-        print_r($customData);
-        die();
-
-
         return $customData;
     }
 }
