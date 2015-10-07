@@ -9,6 +9,7 @@
 - UPDATED: improve performance overall indexing performance
 - FIX: issue with category ids
 - FIX: issue with configurable product additionnal attributes
+- FIX: corner case for price with visibility and stock options
 
 ### 1.4.6
 
