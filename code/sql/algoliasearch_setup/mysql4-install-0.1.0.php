@@ -18,10 +18,4 @@ CREATE TABLE IF NOT EXISTS `{$installer->getTable('algoliasearch/queue')}` (
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8 AUTO_INCREMENT=1;
 ");
 
-$table = Mage::getConfig()->getTablePrefix().'sales_flat_order_item';
-$installer->run("ALTER TABLE `{$table}` ADD INDEX `IDX_ALGOLIA_SALES_FLAT_ORDER_ITEM_PRODUCT_ID` (`product_id`);");
-
-$table = Mage::getConfig()->getTablePrefix().'review_entity_summary';
-$installer->run("ALTER TABLE `{$table}` ADD INDEX `IDX_ALGOLIA_REVIEW_ENTITY_SUMMARY_ENTITY_PK_VALUE_STORE_ID` (`store_id`, `entity_pk_value`);");
-
 $installer->endSetup();
