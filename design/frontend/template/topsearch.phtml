@@ -524,6 +524,7 @@ $class = $isSearchPage ? 'search-page' : '';
                         includeAll: true,
                         allTitle: '<?php echo $this->__('All departments') ?>'
                     }),
+                    displayKey: 'query',
                     templates: {
                         suggestion: function (hit) {
                             if (hit.facet) {
@@ -549,6 +550,7 @@ $class = $isSearchPage ? 'search-page' : '';
                             hitsPerPage: section.hitsPerPage,
                             analyticsTags: 'autocomplete'
                         }),
+                        //displayKey: 'displayKey',
                         templates: {
                             header: '<div class="category">' + section.title + '</div>',
                             suggestion: function (hit) {
