@@ -176,9 +176,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
             $this->engine
                 ->rebuildCategoryIndex(null, $updateCategoryIds);
         }
-
-        $process_products = Mage::getSingleton('index/indexer')->getProcessByCode('algolia_search_indexer');
-        $process_products->changeStatus(Mage_Index_Model_Process::STATUS_REQUIRE_REINDEX);
     }
 
     /**
