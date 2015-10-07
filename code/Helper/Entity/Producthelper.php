@@ -59,7 +59,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return false;
     }
 
-    public function getProductCollectionQuery($storeId, $productIds = null, $only_visible = true, $additional_attributes = true)
+    public function getProductCollectionQuery($storeId, $productIds = null, $only_visible = true)
     {
         /** @var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
         $products = Mage::getResourceModel('catalog/product_collection');
@@ -80,13 +80,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $additionalAttr = $this->config->getProductAdditionalAttributes($storeId);
 
-        if ($additional_attributes)
-        {
-            foreach ($additionalAttr as &$attr)
-                $attr = $attr['attribute'];
+        foreach ($additionalAttr as &$attr)
+            $attr = $attr['attribute'];
 
-            $products = $products->addAttributeToSelect(array_values(array_merge(static::$_predefinedProductAttributes, $additionalAttr)));
-        }
+        $products = $products->addAttributeToSelect(array_values(array_merge(static::$_predefinedProductAttributes, $additionalAttr)));
 
         if ($productIds && count($productIds) > 0)
             $products = $products->addAttributeToFilter('entity_id', array('in' => $productIds));
@@ -523,7 +520,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             if (count($ids))
             {
-                $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false, true)->load();
+                $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false)->load();
             }
             else
             {
