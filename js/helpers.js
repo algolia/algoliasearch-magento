@@ -1,7 +1,10 @@
 var tranformHit = function (hit) {
-
     if (Array.isArray(hit.categories))
         hit.categories = hit.categories.join(', ');
+
+    if (Array.isArray(hit.categories_without_path)) {
+        hit.categories_without_path = hit.categories_without_path.join(', ');
+    }
 
     if (Array.isArray(hit._highlightResult.name))
         hit._highlightResult.name = hit._highlightResult.name[0];
@@ -49,8 +52,8 @@ var getFacetWidget = function (facet, templates) {
             templates: templates,
             sortBy: ['name:asc'],
             cssClasses: {
-                list: 'hierarchical_facet',
-                root: 'hierarchical_facet_wrapper'
+                list: 'hierarchical',
+                root: 'facet hierarchical'
             }
         });
     }
@@ -61,6 +64,9 @@ var getFacetWidget = function (facet, templates) {
             facetName: facet.attribute,
             operator: 'and',
             templates: templates,
+            cssClasses: {
+                root: 'facet conjunctive'
+            }
         });
     }
 
@@ -70,6 +76,9 @@ var getFacetWidget = function (facet, templates) {
             facetName: facet.attribute,
             operator: 'or',
             templates: templates,
+            cssClasses: {
+                root: 'facet disjunctive'
+            }
         });
     }
 
@@ -78,6 +87,9 @@ var getFacetWidget = function (facet, templates) {
             container: facet.wrapper.appendChild(document.createElement('div')),
             facetName: facet.attribute,
             templates: templates,
+            cssClasses: {
+                root: 'facet slider'
+            }
         });
     }
 };

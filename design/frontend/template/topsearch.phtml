@@ -404,7 +404,7 @@ $class = $isSearchPage ? 'search-page' : '';
 </script>
 
 <script type="text/template" id="facet-template">
-    <div class="sub_facet {{operator}} {{#isRefined}}checked{{/isRefined}}">
+    <div class="sub_facet {{#isRefined}}checked{{/isRefined}}">
         <input class="facet_value" {{#isRefined}}checked{{/isRefined}} type="checkbox">
         {{name}}
         <span class="count">{{count}}</span>
@@ -550,31 +550,11 @@ $class = $isSearchPage ? 'search-page' : '';
                             hitsPerPage: section.hitsPerPage,
                             analyticsTags: 'autocomplete'
                         }),
-                        //displayKey: 'displayKey',
                         templates: {
                             header: '<div class="category">' + section.title + '</div>',
                             suggestion: function (hit) {
                                 if (indexName === 'products') {
-                                    var time = Math.floor(Date.now() / 1000);
-                                    if ((hit.special_price_from_date != undefined && (hit.special_price_from_date > time && hit.special_price_from_date !== '')) ||
-                                        (hit.special_price_to_date != undefined && (hit.special_price_to_date < time && hit.special_price_to_date !== ''))) {
-                                        delete hit.special_price_from_date;
-                                        delete hit.special_price_to_date;
-                                        delete hit.special_price;
-                                        delete hit.special_price_with_tax;
-                                        delete hit.special_price_formated;
-                                        delete hit.special_price_with_tax_formated;
-                                    }
-                                    if (Array.isArray(hit.categories_without_path)) {
-                                        hit.categories_without_path = hit.categories_without_path.join(', ');
-                                    }
-                                    if (Array.isArray(hit._highlightResult.name)) {
-                                        hit._highlightResult.name = hit._highlightResult.name[0];
-                                        hit.displayKey = hit.name[0];
-                                    }
-                                    if (Array.isArray(hit.price)) {
-                                        hit.price = hit.price[0];
-                                    }
+                                    hit = tranformHit(hit)
                                 } else if (indexName === 'categories') {
                                     hit.displayKey = hit.path;
                                 }
@@ -662,22 +642,22 @@ $class = $isSearchPage ? 'search-page' : '';
             );
 
             /** Stats **/
-            var instantStatsTemplate = $('#instant-stats-template').html();
             search.addWidget(
                 algoliaBundle.instantsearch.widgets.stats({
                     container: '#algolia-stats',
-                    template: instantStatsTemplate
+                    templates: {
+                        body: $('#instant-stats-template').html()
+                    }
                 })
             );
 
             /** Sorts **/
-            var sorting_indices = algoliaConfig.sortingIndices;
-            sorting_indices.unshift({name: algoliaConfig.indexName + '_products', label: '<?php echo $this->__('Relevance'); ?>'});
+            algoliaConfig.sortingIndices.unshift({name: algoliaConfig.indexName + '_products', label: '<?php echo $this->__('Relevance'); ?>'});
 
             search.addWidget(
                 algoliaBundle.instantsearch.widgets.indexSelector({
                     container: '#algolia-sorts',
-                    indices: sorting_indices,
+                    indices: algoliaConfig.sortingIndices,
                     cssClass: 'form-control'
                 })
             );
@@ -703,26 +683,21 @@ $class = $isSearchPage ? 'search-page' : '';
             );
 
             /** Facets **/
-
-            var facets = algoliaConfig.facets;
-
             var wrapper = document.getElementById('instant-search-facets-container');
-
             var facetTemplate = $('#facet-template').html();
 
-            $.each(facets, function (i, facet) {
+            $.each(algoliaConfig.facets, function (i, facet) {
 
                 if (facet.attribute.indexOf("price") !== -1)
                     facet.attribute = facet.attribute + algoliaConfig.priceKey;
 
-                facet.template = facetTemplate;
+                facet.template  = facetTemplate;
+                facet.wrapper   = wrapper;
 
-                facet.wrapper = wrapper;
-
+                console.log(facet);
                 search.addWidget(getFacetWidget(facet, {
-                    item: facet.template,
-                    header: '<div class="facet"><div class="name">' + (facet.label ? facet.label : facet.name) + '</div></div>',
-                    footer: '</div/></div>',
+                    item:   facet.template,
+                    header: '<div class="name">' + (facet.label ? facet.label : facet.attribute) + '</div>',
                 }));
             });
 
@@ -731,13 +706,14 @@ $class = $isSearchPage ? 'search-page' : '';
                 algoliaBundle.instantsearch.widgets.pagination({
                     container: '#instant-search-pagination-container',
                     cssClass: 'algolia-pagination',
-                    showFirstLast: false,
-                     labels: {
-                         prev: '‹', // &lsaquo;
-                         next: '›', // &rsaquo;
-                         first: '«', // &laquo;
-                         last: '»' // &raquo;
-                     }
+                    showFirstLast: true,
+                    labels: {
+                        prev: '‹', // &lsaquo;
+                        next: '›', // &rsaquo;
+                        first: '«', // &laquo;
+                        last: '»' // &raquo;
+                    },
+                    scrollTo: false
                 })
             );
 

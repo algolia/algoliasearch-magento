@@ -131,6 +131,12 @@
   margin: 10px;
 }
 
+#algolia_instant_selector a,
+#algolia_instant_selector a:hover,
+#algolia_instant_selector a:focus {
+  outline: 0;
+}
+
 #algolia_instant_selector:after {
   content: "";
   clear: both;
@@ -236,27 +242,45 @@
   cursor: pointer;
 }
 
-#algolia_instant_selector .facet .sub_facet.conjunctive.checked {
+#algolia_instant_selector .as-range-slider--base
+{
+    margin-top: 45px;
+}
+
+#algolia_instant_selector .facet.slider
+{
+  margin-bottom: 40px;
+}
+
+#algolia_instant_selector .facet.conjunctive .sub_facet.checked {
   font-weight: bold;
   box-shadow: inset 4px 0 0 #54A5CD;
 }
 
-#algolia_instant_selector .facet .sub_facet.disjunctive.checked {
+#algolia_instant_selector .facet.conjunctive input {
+  display: none;
+}
+
+#algolia_instant_selector .facet.hierarchical input {
+  display: none;
+}
+
+#algolia_instant_selector .facet.disjunctive .sub_facet.checked {
   font-weight: bold;
   box-shadow: inset 4px 0 0 #54A5CD;
 }
 
-#algolia_instant_selector .hierarchical_facet.first_level
+#algolia_instant_selector .facet.hierarchical .hierarchical:first-child
 {
   margin-left: -10px;
 }
 
-#algolia_instant_selector .hierarchical_facet
+#algolia_instant_selector .hierarchical
 {
   padding-left: 10px;
 }
 
-#algolia_instant_selector .facet .hierarchical_facet .sub_facet.checked {
+#algolia_instant_selector .facet.hierarchical .sub_facet.checked {
   font-weight: bold;
   box-shadow: inset 4px 0 0 #54A5CD;
 }
@@ -269,19 +293,6 @@
 
 #algolia_instant_selector .facet .sub_facet:not(:last-child) {
   border-bottom: 1px dotted #e0e0e0;
-}
-
-#algolia_instant_selector .algolia-slider {
-  margin: 15px;
-  background: #CFEAFA;
-}
-
-#algolia_instant_selector .algolia-slider .ui-slider-range {
-  background: #54A5CD;
-}
-
-#algolia_instant_selector .algolia-slider-info {
-  margin: 10px 5px;
 }
 
 #algolia_instant_selector .pagination-wrapper {
