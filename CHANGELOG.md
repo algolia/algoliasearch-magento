@@ -1,5 +1,16 @@
 ## Change Log
 
+### 1.4.7
+
+- NEW: added an option to disable the seo request
+- NEW: added ability to disable (search OR search + indexing) per store
+- NEW: added logging
+- UPDATED: improve handling of out of stock products
+- UPDATED: improve performance overall indexing performance
+- FIX: issue with category ids
+- FIX: issue with configurable product additionnal attributes
+- FIX: corner case for price with visibility and stock options
+
 ### 1.4.6
 
 - UPDATED: Price handling, no template update required anymore + correct handling of special price + correct handling of tax

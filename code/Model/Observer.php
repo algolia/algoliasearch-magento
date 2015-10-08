@@ -39,9 +39,14 @@ class Algolia_Algoliasearch_Model_Observer
      */
     public function useAlgoliaSearchPopup(Varien_Event_Observer $observer)
     {
-        if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled()) {
-            $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
+        if ($this->config->isEnabledFrontEnd())
+        {
+            if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled())
+            {
+                $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
+            }
         }
+
         return $this;
     }
 
@@ -51,48 +56,6 @@ class Algolia_Algoliasearch_Model_Observer
         $product = Mage::getModel('catalog/product')->load($product->getId());
 
         Algolia_Algoliasearch_Model_Indexer_Algolia::$product_categories[$product->getId()] = $product->getCategoryIds();
-    }
-
-    private function updateStock($product_id)
-    {
-        foreach (Mage::app()->getStores() as $storeId => $store)
-        {
-            if ( ! $store->getIsActive())
-                continue;
-
-            try
-            {
-                $this->helper->rebuildStoreProductIndex($storeId, array($product_id));
-            }
-            catch(\Exception $e)
-            {
-                Mage::log($e->getMessage());
-                Mage::log($e->getTraceAsString());
-            }
-        }
-    }
-
-    public function catalogInventorySave(Varien_Event_Observer $observer)
-    {
-        $product = $observer->getItem();
-
-        $this->updateStock($product->getProductId());
-    }
-
-    public function quoteInventory(Varien_Event_Observer $observer)
-    {
-        $quote = $observer->getEvent()->getQuote();
-
-        foreach ($quote->getAllItems() as $product)
-            $this->updateStock($product->getProductId());
-    }
-
-    public function refundOrderInventory(Varien_Event_Observer $observer)
-    {
-        $creditmemo = $observer->getEvent()->getCreditmemo();
-
-        foreach ($creditmemo->getAllItems() as $product)
-            $this->updateStock($product->getProductId());
     }
 
     public function deleteProductsStoreIndices(Varien_Object $event)

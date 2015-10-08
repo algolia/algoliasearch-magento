@@ -11,12 +11,16 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
     public static $product_categories = array();
     private static $credential_error = false;
 
+    /** @var Algolia_Algoliasearch_Helper_Logger */
+    private $logger;
+
     public function __construct()
     {
         parent::__construct();
 
         $this->engine = new Algolia_Algoliasearch_Model_Resource_Engine();
         $this->config = Mage::helper('algoliasearch/config');
+        $this->logger = Mage::helper('algoliasearch/logger');
     }
 
     protected $_matchedEntities = array(
@@ -66,7 +70,9 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
     public function matchEvent(Mage_Index_Model_Event $event)
     {
-        $result = true;
+        $process = Mage::getModel('index/indexer')->getProcessByCode('algolia_search_indexer');
+
+        $result = $process->getMode() !== Mage_Index_Model_Process::MODE_MANUAL;
 
         $event->addNewData(self::EVENT_MATCH_RESULT_KEY, $result);
 
@@ -86,6 +92,35 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
             case Mage_Core_Model_Store_Group::ENTITY:
                 $event->addNewData('algoliasearch_reindex_all', TRUE);
                 break;
+            case Mage_CatalogInventory_Model_Stock_Item::ENTITY:
+                if (false == $this->config->getShowOutOfStock())
+                    $this->_registerCatalogInventoryStockItemEvent($event);
+                break;
+        }
+    }
+
+    protected function _registerCatalogInventoryStockItemEvent(Mage_Index_Model_Event $event)
+    {
+        if ($event->getType() == Mage_Index_Model_Event::TYPE_SAVE)
+        {
+            $object = $event->getDataObject();
+
+            $product = Mage::getModel('catalog/product')->load($object->getProductId());
+
+            if ($object->getData('is_in_stock') == false|| $product->getQty() <= 0)
+            {
+                try // In case of wrong credentials or overquota or block account. To avoid checkout process to fail
+                {
+                    $event->addNewData('catalogsearch_delete_product_id', $product->getId());
+                    $event->addNewData('catalogsearch_update_category_id', $product->getCategoryIds());
+                }
+                catch(\Exception $e)
+                {
+                    $this->logger->log('Error while trying to update stock');
+                    $this->logger->log($e->getMessage());
+                    $this->logger->log($e->getTraceAsString());
+                }
+            }
         }
     }
 
@@ -115,6 +150,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 {
                     $event->addNewData('catalogsearch_update_product_id', $product->getId());
 
+                    /* product_categories is filled in Observer::saveProduct */
                     if (isset(static::$product_categories[$product->getId()]))
                     {
                         $oldCategories = static::$product_categories[$product->getId()];
@@ -297,10 +333,13 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
         if (! $this->config->getApplicationID() || ! $this->config->getAPIKey() || ! $this->config->getSearchOnlyAPIKey())
         {
             Mage::getSingleton('adminhtml/session')->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+            $this->logger->log('ERROR Credentials not configured correctly');
             return;
         }
 
+        $this->logger->start('PRODUCTS FULL REINDEX');
         $this->engine->rebuildProducts();
+        $this->logger->stop('PRODUCTS FULL REINDEX');
 
         return $this;
     }

@@ -8,30 +8,30 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
     private $engine;
     private $config;
 
+    /** @var Algolia_Algoliasearch_Helper_Logger */
+    private $logger;
+
     public function __construct()
     {
         parent::__construct();
         $this->engine = new Algolia_Algoliasearch_Model_Resource_Engine();
         $this->config = Mage::helper('algoliasearch/config');
+        $this->logger = Mage::helper('algoliasearch/logger');
     }
 
     public function prepareResult($object, $queryText, $query)
     {
+        if ($this->config->isEnabledFrontEnd(Mage::app()->getStore()->getId()) === false)
+            return parent::prepareResult($object, $queryText, $query);
+
         return $this;
     }
 
     protected function _saveProductIndexes($storeId, $productIndexes)
     {
-        return $this;
-    }
+        if ($this->config->isEnabledBackEnd(Mage::app()->getStore()->getId()) === false)
+            return parent::_saveProductIndexes($storeId, $productIndexes);
 
-    public function cleanEntityIndex($entity, $storeId = NULL, $entityId = NULL)
-    {
-        return $this;
-    }
-
-    public function rebuildCategoryIndex($storeId = NULL, $categoryIds = NULL)
-    {
         return $this;
     }
 
@@ -40,6 +40,9 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
      */
     public function rebuildIndex($storeId = null, $productIds = null)
     {
+        if ($this->config->isEnabledBackEnd(Mage::app()->getStore()->getId()) === false)
+            return parent::rebuildIndex($storeId, $productIds);
+
         if (! $this->config->getApplicationID() || ! $this->config->getAPIKey() || ! $this->config->getSearchOnlyAPIKey())
         {
             Mage::getSingleton('adminhtml/session')->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
@@ -50,8 +53,6 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
         if (is_array($productIds) && $productIds > 0)
             return $this;
 
-        $this->engine->saveSettings();
-
         if ($storeId == null)
         {
             foreach (Mage::app()->getStores() as $id => $store)
@@ -61,15 +62,5 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
             $this->engine->rebuildProductIndex($storeId, null);
 
         return $this;
-    }
-
-    public function rebuildProductIndex($storeId = NULL, $productIds = NULL)
-    {
-        return $this;
-    }
-
-    public function getAttributeValue($attributeCode, $value, $storeId, $entity = 'catalog_category')
-    {
-        return $value;
     }
 }

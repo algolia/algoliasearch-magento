@@ -22,6 +22,10 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Additionalsections ex
                     $attributes = $config->getFacets();
 
                     foreach ($attributes as $attribute) {
+                        if ($attribute['attribute'] == 'categories')
+                            continue;
+                        if ($attribute['attribute'] == 'price')
+                            continue;
                         $aOptions[$attribute['attribute']] = $attribute['label'] ? $attribute['label'] : $attribute['attribute'];
                     }
 
