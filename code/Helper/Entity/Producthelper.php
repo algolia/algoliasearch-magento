@@ -250,19 +250,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             {
                 $group_id = (int)$group->getData('customer_group_id');
 
-                $customData['price']['group_' . $group_id] = $customData['price']['default'];
-                $customData['price']['group_' . $group_id . '_formated'] = $customData['price']['default_formated'];
-            }
-        }
-
-        $special_price = (double) $product->getFinalPrice();
-
-        if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
-        {
-            foreach ($groups as $group)
-            {
-                $group_id = (int)$group->getData('customer_group_id');
-
                 $product->setCustomerGroupId($group_id);
                 $discounted_price = $product->getPriceModel()->getFinalPrice(1, $product);
 
@@ -271,10 +258,17 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     $customData['price']['group_' . $group_id] = (double) Mage::helper('tax')->getPrice($product, $discounted_price, null, null, null, null, $product->getStore(), null);
                     $customData['price']['group_' . $group_id . '_formated'] = $product->getStore()->formatPrice($customData['price']['group_' . $group_id], false);
                 }
+                else
+                {
+                    $customData['price']['group_' . $group_id] = $customData['price']['default'];
+                    $customData['price']['group_' . $group_id . '_formated'] = $customData['price']['default_formated'];
+                }
             }
 
             $product->setCustomerGroupId(null);
         }
+
+        $special_price = (double) $product->getFinalPrice();
 
         if ($special_price && $special_price !== $customData['price']['default'])
         {
@@ -354,7 +348,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $customData['price']['group_' . $group_id] = $min;
 
                         if ($min === $max)
-                            $customData['price']['group_' . $group_id] = $product->getStore()->formatPrice($min, false);
+                            $customData['price']['group_' . $group_id . '_formated'] = $product->getStore()->formatPrice($min, false);
                     }
                 }
             }
