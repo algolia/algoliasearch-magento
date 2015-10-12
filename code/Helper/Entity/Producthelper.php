@@ -233,15 +233,19 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
     }
 
-    private function handlePrice(&$product, $sub_products, &$customData, $groups = array(), $current_group_id = null)
+    private function handlePrice(&$product, $sub_products, &$customData)
     {
         $customData['price'] = array();
 
         $customData['price']['default']             = (double) Mage::helper('tax')->getPrice($product, $product->getPrice(), null, null, null, null, $product->getStore(), null);
-        $customData['price']['default_formated'] = $product->getStore()->formatPrice($customData['price']['default'], false);
+        $customData['price']['default_formated']    = $product->getStore()->formatPrice($customData['price']['default'], false);
+
+        $groups = array();
 
         if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
         {
+            $groups = Mage::getModel('customer/group')->getCollection();
+
             foreach ($groups as $group)
             {
                 $group_id = (int)$group->getData('customer_group_id');
@@ -251,45 +255,25 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
         }
 
-        $special_price = null;
+        $special_price = (double) $product->getFinalPrice();
 
-        if ($current_group_id !== null) // If fetch special price for groups
+        if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
         {
-            $discounted_price = Mage::getResourceModel('catalogrule/rule')->getRulePrice(
-                Mage::app()->getLocale()->storeTimeStamp($product->getStoreId()),
-                Mage::app()->getStore($product->getStoreId())->getWebsiteId(),
-                $current_group_id,
-                $product->getId()
-            );
-
-            if ($discounted_price !== false)
-                $special_price = $discounted_price;
-
-            if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
+            foreach ($groups as $group)
             {
-                foreach ($groups as $group)
+                $group_id = (int)$group->getData('customer_group_id');
+
+                $product->setCustomerGroupId($group_id);
+                $discounted_price = $product->getPriceModel()->getFinalPrice(1, $product);
+
+                if ($discounted_price !== false)
                 {
-                    $group_id = (int)$group->getData('customer_group_id');
-
-                    $discounted_price = Mage::getResourceModel('catalogrule/rule')->getRulePrice(
-                        Mage::app()->getLocale()->storeTimeStamp($product->getStoreId()),
-                        Mage::app()->getStore($product->getStoreId())->getWebsiteId(),
-                        $group_id,
-                        $product->getId()
-                    );
-
-                    if ($discounted_price !== false)
-                    {
-                        $customData['price']['group_' . $group_id] = (double) Mage::helper('tax')->getPrice($product, $discounted_price, null, null, null, null, $product->getStore(), null);
-                        $customData['price']['group_' . $group_id . '_formated'] = $product->getStore()->formatPrice($customData['price']['group_' . $group_id], false);
-                    }
+                    $customData['price']['group_' . $group_id] = (double) Mage::helper('tax')->getPrice($product, $discounted_price, null, null, null, null, $product->getStore(), null);
+                    $customData['price']['group_' . $group_id . '_formated'] = $product->getStore()->formatPrice($customData['price']['group_' . $group_id], false);
                 }
             }
 
-        }
-        else // If fetch default special price
-        {
-            $special_price = (double) $product->getFinalPrice();
+            $product->setCustomerGroupId(null);
         }
 
         if ($special_price && $special_price !== $customData['price']['default'])
@@ -618,17 +602,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         $this->handlePrice($product, $sub_products, $customData);
-
-        if ($this->config->isCustomerGroupsEnabled())
-        {
-            $groups = Mage::getModel('customer/group')->getCollection();
-
-            foreach ($groups as $group)
-            {
-                $group_id = (int)$group->getData('customer_group_id');
-                $this->handlePrice($product, $sub_products, $customData, $groups, $group_id);
-            }
-        }
 
         $transport = new Varien_Object($customData);
         Mage::dispatchEvent('algolia_subproducts_index', array('custom_data' => $transport, 'sub_products' => $sub_products));
