@@ -411,6 +411,15 @@ $class = $isSearchPage ? 'search-page' : '';
     </div>
 </script>
 
+<script type="text/template" id="hierarchical-facet-template">
+    <a href="#">
+        <div class="sub_facet {{#isRefined}}checked{{/isRefined}}">
+            {{name}}
+            <span class="count">{{count}}</span>
+        </div>
+    </a>
+</script>
+
 <!--
 //================================
 //
@@ -500,7 +509,6 @@ $class = $isSearchPage ? 'search-page' : '';
          *****************/
 
         if (algoliaConfig.autocomplete.enabled) {
-            var params = {};
             var sources = [];
 
             /// popular queries/suggestions
@@ -696,11 +704,11 @@ $class = $isSearchPage ? 'search-page' : '';
 
                 console.log(facet);
                 search.addWidget(getFacetWidget(facet, {
-                    item:   facet.template,
+                    item:   facet.attribute == 'categories' ? $('#hierarchical-facet-template').html() : facet.template,
                     header: '<div class="name">' + (facet.label ? facet.label : facet.attribute) + '</div>',
                 }));
             });
-            
+
             /** Pagination **/
             search.addWidget(
                 algoliaBundle.instantsearch.widgets.pagination({

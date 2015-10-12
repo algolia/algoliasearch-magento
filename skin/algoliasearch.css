@@ -261,8 +261,9 @@
   display: none;
 }
 
-#algolia_instant_selector .facet.hierarchical input {
-  display: none;
+#algolia_instant_selector .facet.hierarchical a {
+  color: #636363;
+  text-decoration: none;
 }
 
 #algolia_instant_selector .facet.disjunctive .sub_facet.checked {
