@@ -1183,6 +1183,11 @@ $class = $isSearchPage ? 'search-page' : '';
                                         if (Array.isArray(hit.price))
                                             hit.price = hit.price[0];
 
+                                        if ('<?php echo $price_key; ?>' !== '.default' && hit['price']['<?php echo $price_key; ?>'.substr(1) + '_formated'] !== hit['price']['default_formated'])
+                                        {
+                                            hit['price']['<?php echo $price_key; ?>'.substr(1) + '_original_formated'] = hit['price']['default_formated'];
+                                        }
+
                                     }
 
                                     if (indices[i] == 'categories')
@@ -1356,6 +1361,12 @@ $class = $isSearchPage ? 'search-page' : '';
                         delete content.hits[i].price_with_tax;
                         delete content.hits[i].price_with_tax_formated;
                     }
+
+                    if ('<?php echo $price_key; ?>' !== '.default' && content.hits[i]['price']['<?php echo $price_key; ?>'.substr(1) + '_formated'] !== content.hits[i]['price']['default_formated'])
+                    {
+                        content.hits[i]['price']['<?php echo $price_key; ?>'.substr(1) + '_original_formated'] = content.hits[i]['price']['default_formated'];
+                    }
+
                 }
 
                 /**
