@@ -233,122 +233,173 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
     }
 
-    private function handlePrice(&$product, $sub_products, &$customData)
+    private function getPrice(&$product, $price, $returnWithTax) {
+        return (double) Mage::helper('tax')->getPrice(
+            $product,
+            $price,
+            $returnWithTax,
+            null,
+            null,
+            null,
+            $product->getStore(),
+            null
+        );
+    }
+
+    private function getFields($store) {
+        $_taxHelper = Mage::helper('tax');
+        $fields = array();
+        if ($_taxHelper->displayPriceExcludingTax())
+            $fields['price'] = false;
+        elseif ($_taxHelper->displayPriceIncludingTax())
+            $fields['price'] = true;
+        else
+        {
+            $fields['price'] = false;
+            $fields['price_with_tax'] = true;
+        }
+        return $fields;
+    }
+
+
+    private function calculateMinMax(&$product, $sub_products, $returnWithTax = false)
     {
-        $customData['price'] = array();
-
-        $customData['price']['default']             = (double) Mage::helper('tax')->getPrice($product, $product->getPrice(), null, null, null, null, $product->getStore(), null);
-        $customData['price']['default_formated']    = $product->getStore()->formatPrice($customData['price']['default'], false);
-
-        $groups = array();
-
-        if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
+        $minMax = array(0,0);
+        if ($product->getTypeId() == 'bundle')
         {
-            $groups = Mage::getModel('customer/group')->getCollection();
-
-            foreach ($groups as $group)
-            {
-                $group_id = (int)$group->getData('customer_group_id');
-
-                $product->setCustomerGroupId($group_id);
-                $discounted_price = $product->getPriceModel()->getFinalPrice(1, $product);
-
-                if ($discounted_price !== false)
-                {
-                    $customData['price']['group_' . $group_id] = (double) Mage::helper('tax')->getPrice($product, $discounted_price, null, null, null, null, $product->getStore(), null);
-                    $customData['price']['group_' . $group_id . '_formated'] = $product->getStore()->formatPrice($customData['price']['group_' . $group_id], false);
-                }
-                else
-                {
-                    $customData['price']['group_' . $group_id] = $customData['price']['default'];
-                    $customData['price']['group_' . $group_id . '_formated'] = $customData['price']['default_formated'];
-                }
-            }
-
-            $product->setCustomerGroupId(null);
-        }
-
-        $special_price = (double) $product->getFinalPrice();
-
-        if ($special_price && $special_price !== $customData['price']['default'])
-        {
-            $customData['price']['special_from_date'] = strtotime($product->getSpecialFromDate());
-            $customData['price']['special_to_date'] = strtotime($product->getSpecialToDate());
-
-            $customData['price']['default_original_formated'] = $customData['price']['default'.'_formated'];
-
-            $special_price = (double) Mage::helper('tax')->getPrice($product, $special_price, null, null, null, null, $product->getStore(), null);
-            $customData['price']['default'] = $special_price;
-            $customData['price']['default_formated'] = $product->getStore()->formatPrice($special_price, false);
-        }
-
-        if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
-        {
-            $min = PHP_INT_MAX;
-            $max = 0;
-
-            if ($product->getTypeId() == 'bundle')
+            $fields = $this->getFields($returnWithTax);
+            foreach ($fields as $field => $withTax)
             {
                 $_priceModel = $product->getPriceModel();
 
-                list($min, $max) = $_priceModel->getTotalPrices($product, null, null, true);
+                $minMax = $_priceModel->getTotalPrices($product, null, $withTax, true);
             }
-
-            if ($product->getTypeId() == 'grouped' || $product->getTypeId() == 'configurable')
+        }
+        else
+        {
+            if (count($sub_products) > 0)
             {
-                if (count($sub_products) > 0)
+                $fields = $this->getFields($returnWithTax);
+                foreach ($fields as $field => $withTax)
                 {
+                    $prices = array();
                     foreach ($sub_products as $sub_product)
                     {
-                        $price = (double) Mage::helper('tax')->getPrice($sub_product, $sub_product->getFinalPrice(), null, null, null, null, $product->getStore(), null);
+                        $prices[]= $this->getPrice($sub_product, $sub_product->getFinalPrice(), $withTax);
+                    }
+                    $minMax = array(min($prices), max($prices));
+                }
+            }
+        }
+        return $minMax;
+    }
 
-                        $min = min($min, $price);
-                        $max = max($max, $price);
+    private function handlePrice(&$product, $sub_products, &$customData)
+    {
+        $_fields = $this->getFields($product->getStore());
+        $_customerGroupsEnabled = $this->config->isCustomerGroupsEnabled($product->getStoreId());
+        $_store = $product->getStore();
+
+        if ($_customerGroupsEnabled) {
+            $groups = Mage::getModel('customer/group')->getCollection();
+        }
+
+        foreach ($_fields as $field => $withTax)
+        {
+            $price = $this->getPrice($product, $product->getPrice(), $withTax);
+
+            $customData[$field] = array(
+                'default' => $price,
+                'default_formated' => $product->getStore()->formatPrice($price, false)
+            );
+            if ($_customerGroupsEnabled) // If fetch special price for groups
+            {
+                $fields = $this->getFields($returnWithTax);
+
+                foreach ($groups as $group)
+                {
+                    $group_id = (int)$group->getData('customer_group_id');
+                    $product->setCustomerGroupId($group_id);
+
+                    $discounted_price = $product->getPriceModel()->getFinalPrice(1, $product);
+
+                    if ($discounted_price !== false)
+                    {
+                        $customData[$field]['group_' . $group_id] = $this->getPrice($product, $discounted_price, $withTax);
+                        $customData[$field]['group_' . $group_id . '_formated'] = $_store->formatPrice($customData[$field]['group_' . $group_id], false);
+                    } else {
+                        $customData[$field]['group_' . $group_id] = $customData[$field]['default'];
+                        $customData[$field]['group_' . $group_id . '_formated'] = $customData[$field]['default_formated'];
                     }
                 }
-                else
-                    $min = $max; // avoid to have PHP_INT_MAX in case of no subproducts (Corner case of visibility and stock options)
+                $product->setCustomerGroupId(null);
             }
 
-            if ($min != $max)
+            $special_price = (double) $product->getFinalPrice();
+
+            if ($special_price && $special_price !== $customData['price']['default'])
             {
-                $customData['price']['default_formated'] = $product->getStore()->formatPrice($min, false) . ' - ' . $product->getStore()->formatPrice($max, false);
-
-                if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
+                if ('price' == $field)
                 {
-                    foreach ($groups as $group)
-                    {
-                        $group_id = (int)$group->getData('customer_group_id');
+                    $customData['price']['special_from_date'] = strtotime($product->getSpecialFromDate());
+                    $customData['price']['special_to_date'] = strtotime($product->getSpecialToDate());
+                }
+                $special_price = $this->getPrice($product, $special_price, $withTax);
+                $customData[$field]['default_original_formated'] = $customData[$field]['default'.'_formated'];
+                $customData[$field]['default'] = $special_price;
+                $customData[$field]['default_formated'] = $product->getStore()->formatPrice($special_price, false);
+            }
 
-                        $customData['price']['group_' . $group_id] = 0;
-                        $customData['price']['group_' . $group_id . '_formated'] = $product->getStore()->formatPrice($min, false) . ' - ' . $product->getStore()->formatPrice($max, false);
+            if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
+            {
+                list($min, $max) = $this->calculateMinMax($product, $sub_products, $withTax);
+
+                if ($min != $max)
+                {
+                    $dashedFormat = $product->getStore()->formatPrice($min, false) . ' - ' . $product->getStore()->formatPrice($max, false);
+                    $customData[$field]['default_formated'] = $dashedFormat;
+
+                    if ($_customerGroupsEnabled)
+                    {
+                        foreach ($groups as $group)
+                        {
+                            $group_id = (int)$group->getData('customer_group_id');
+
+                            $customData[$field]['group_' . $group_id] = 0;
+                            $customData[$field]['group_' . $group_id . '_formated'] = $dashedFormat;
+                        }
                     }
+
+                    //// Do not keep special price that is already taken into account in min max
+                    unset($customData['price']['special_from_date']);
+                    unset($customData['price']['special_to_date']);
+                    unset($customData['price']['default_original_formated']);
+
+                    $customData[$field]['default'] = 0; // will be reset just after
                 }
 
-                //// Do not keep special price that is already taken into account in min max
-                unset($customData['price']['special_from_date']);
-                unset($customData['price']['special_to_date']);
-                unset($customData['price']['default_original_formated']);
-
-                $customData['price']['default'] = 0; // will be reset just after
-            }
-
-            if ($customData['price']['default'] == 0)
-            {
-                $customData['price']['default'] = $min;
-
-                if ($min === $max)
-                    $customData['price']['default_formated'] = $product->getStore()->formatPrice($min, false);
-
-                if ($this->config->isCustomerGroupsEnabled($product->getStoreId()))
+                if ($customData[$field]['default'] == 0)
                 {
-                    foreach ($groups as $group)
-                    {
-                        $group_id = (int)$group->getData('customer_group_id');
-                        $customData['price']['group_' . $group_id] = $min;
+                    $customData[$field]['default'] = $min;
 
-                        if ($min === $max)
-                            $customData['price']['group_' . $group_id . '_formated'] = $product->getStore()->formatPrice($min, false);
+                    if ($min === $max)
+                    {
+                        $minFormatted = $product->getStore()->formatPrice($min, false);
+                        $customData[$field]['default_formated'] = $minFormatted;
+                    }
+
+                    if ($_customerGroupsEnabled)
+                    {
+                        foreach ($groups as $group)
+                        {
+                            $group_id = (int)$group->getData('customer_group_id');
+                            $customData[$field]['group_' . $group_id] = $min;
+
+                            if ($min === $max)
+                            {
+                                $customData[$field]['group_' . $group_id . '_formated'] = $minFormatted;
+                            }
+                        }
                     }
                 }
             }
