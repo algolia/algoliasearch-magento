@@ -415,6 +415,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $categoryCollection = Mage::getResourceModel('catalog/category_collection')
                 ->addAttributeToSelect('name')
                 ->addAttributeToFilter('entity_id', $_categoryIds)
+                ->addFieldToFilter('level', array('gt' => 1))
                 ->addIsActiveFilter();
 
             foreach ($categoryCollection as $category)
