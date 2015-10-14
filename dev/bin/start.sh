@@ -17,6 +17,9 @@ n98-magerun --root-dir=/var/www/htdocs config:set web/secure/base_url $BASE_URL
 # GET / to initialize the algolia_search_indexer (Open to another cleaner way to do it :) )
 wget $BASE_URL
 
+chmod -R 777 /var/www/htdocs/media
+chown -R www-data:www-data /var/www/htdocs/media
+
 # reindex whole index
 n98-magerun --root-dir=/var/www/htdocs index:reindex algolia_search_indexer
 n98-magerun --root-dir=/var/www/htdocs index:reindex algolia_search_indexer_cat

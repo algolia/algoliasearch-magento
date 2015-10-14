@@ -477,25 +477,41 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if (false === isset($defaultData['thumbnail_url']))
         {
+            $thumb = Mage::helper('catalog/image')->init($product, 'thumbnail')->resize(75, 75);
+
             try
             {
-                $customData['thumbnail_url'] = $product->getThumbnailUrl();
+                $customData['thumbnail_url'] = $thumb->toString();
                 $customData['thumbnail_url'] = str_replace(array('https://', 'http://'
                 ), '//', $customData['thumbnail_url']);
             }
-            catch (\Exception $e) {}
+            catch (\Exception $e)
+            {
+                $this->logger->log($e->getMessage());
+                $this->logger->log($e->getTraceAsString());
+
+                $customData['thumbnail_url'] = str_replace(array('https://', 'http://'), '//', Mage::getDesign()->getSkinUrl($thumb->getPlaceholder()));
+            }
         }
 
         if (false === isset($defaultData['image_url']))
         {
+            $image = Mage::helper('catalog/image')->init($product, 'image')->resize(265);
+
             try
             {
-                $customData['image_url'] = Mage::getModel('catalog/product_media_config')->getMediaUrl($product->getImage());
+                $customData['image_url'] = $image->toString();
                 $customData['image_url'] = str_replace(array('https://', 'http://'), '//', $customData['image_url']);
             }
-            catch (\Exception $e) {}
+            catch (\Exception $e)
+            {
+                $this->logger->log($e->getMessage());
+                $this->logger->log($e->getTraceAsString());
 
-            
+                $customData['image_url'] = str_replace(array('https://', 'http://'), '//', Mage::getDesign()->getSkinUrl($image->getPlaceholder()));
+            }
+
+
             if ($this->isAttributeEnabled($additionalAttributes, 'media_gallery'))
             {
                 $product->load('media_gallery');
