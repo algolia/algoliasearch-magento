@@ -572,11 +572,52 @@
                         </noprocess>
                     </fields>
                 </queue>
+                <image translate="label">
+                    <label>Image Configuration</label>
+                    <expanded>1</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>80</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <width translate="label comment">
+                            <label>Width</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </width>
+                        <height translate="label comment">
+                            <label>Height</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[You can specify the size of the images used at the Search Results Page.<br />
+                                If your images are already present in some size, eg. 265x265, Algolia's index job may not have to resize those, potentially saving time and resources.]]></comment>
+                        </height>
+                        <type translate="label comment">
+                            <label>Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>algoliasearch/system_imagetype</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The image used at the Search Results Page.</comment>
+                        </type>
+                    </fields>
+                </image>
                 <advanced translate="label">
                     <label>Advanced Configuration</label>
                     <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
-                    <sort_order>80</sort_order>
+                    <sort_order>90</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>

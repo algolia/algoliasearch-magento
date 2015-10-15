@@ -4,7 +4,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 {
     protected static $_productAttributes;
 
-    protected static $_predefinedProductAttributes = array('name', 'url_key', 'description', 'image', 'thumbnail');
+    protected static $_predefinedProductAttributes = array('name', 'url_key', 'description', 'image', 'small_image', 'thumbnail');
 
     protected function getIndexNameSuffix()
     {
@@ -488,7 +488,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         {
             try
             {
-                $customData['image_url'] = Mage::getModel('catalog/product_media_config')->getMediaUrl($product->getImage());
+                $customData['image_url'] = (string)
+                    Mage::helper('catalog/image')->init($product, $this->config->getImageType())
+                    ->resize($this->config->getImageWidth(), $this->config->getImageHeight());
                 $customData['image_url'] = str_replace(array('https://', 'http://'), '//', $customData['image_url']);
             }
             catch (\Exception $e) {}
