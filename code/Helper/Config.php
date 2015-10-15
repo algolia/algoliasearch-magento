@@ -49,6 +49,10 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const NUMBER_OF_JOB_TO_RUN                 = 'algoliasearch/queue/number_of_job_to_run';
     const NO_PROCESS                           = 'algoliasearch/queue/noprocess';
 
+    const XML_PATH_IMAGE_WIDTH                 = 'algoliasearch/image/width';
+    const XML_PATH_IMAGE_HEIGHT                = 'algoliasearch/image/height';
+    const XML_PATH_IMAGE_TYPE                  = 'algoliasearch/image/type';
+
     const PARTIAL_UPDATES                      = 'algoliasearch/advanced/partial_update';
     const CUSTOMER_GROUPS_ENABLE               = 'algoliasearch/advanced/customer_groups_enable';
     const MAKE_SEO_REQUEST                     = 'algoliasearch/advanced/make_seo_request';
@@ -85,6 +89,21 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function noProcess($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::NO_PROCESS, $storeId);
+    }
+
+    public function getImageWidth($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_IMAGE_WIDTH, $storeId);
+    }
+
+    public function getImageHeight($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_IMAGE_HEIGHT, $storeId);
+    }
+
+    public function getImageType($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_IMAGE_TYPE, $storeId);
     }
 
     public function isCustomerGroupsEnabled($storeId = null)

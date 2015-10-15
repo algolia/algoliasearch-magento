@@ -180,6 +180,11 @@
                 <number_of_job_to_run>300</number_of_job_to_run>
                 <noprocess>0</noprocess>
             </queue>
+            <image>
+                <width>265</width>
+                <height>265</height>
+                <type>image</type>
+            </image>
             <advanced>
                 <partial_update>0</partial_update>
                 <make_seo_request>1</make_seo_request>
