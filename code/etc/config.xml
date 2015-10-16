@@ -190,6 +190,13 @@
                 <make_seo_request>1</make_seo_request>
                 <remove_branding>0</remove_branding>
             </advanced>
+            <product_map>
+                <!--
+                    This is for custom product types. The node's name is the type of the custom product
+                     and the value is the name of the Magento product type.
+                 -->
+                <kit>grouped</kit>
+            </product_map>
         </algoliasearch>
     </default>
 </config> 

@@ -61,6 +61,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const SHOW_OUT_OF_STOCK                    = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED                      = 'dev/log/active';
 
+    protected $_productTypeMap = array();
+
     public function isEnabledFrontEnd($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::ENABLE_BACKEND, $storeId) && Mage::getStoreConfigFlag(self::ENABLE_FRONTEND, $storeId);
@@ -356,5 +358,26 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         $currencySymbol = Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol();
 
         return $currencySymbol;
+    }
+
+    /**
+     * Loads product type mapping from configuration (default) > algoliasearch > product_map > (product type)
+     *
+     * @param $originalType
+     * @return string
+     */
+    public function getMappedProductType($originalType)
+    {
+        if (!isset($this->_productTypeMap[$originalType]))
+        {
+            $mappedType = (string)Mage::app()->getConfig()->getNode('default/algoliasearch/product_map/' . $originalType);
+
+            if ($mappedType)
+                $this->_productTypeMap[$originalType] = $mappedType;
+            else
+                $this->_productTypeMap[$originalType] = $originalType;
+        }
+
+        return $this->_productTypeMap[$originalType];
     }
 }
