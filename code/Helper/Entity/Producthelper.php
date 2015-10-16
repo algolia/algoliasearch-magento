@@ -6,9 +6,25 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     protected static $_predefinedProductAttributes = array('name', 'url_key', 'description', 'image', 'thumbnail');
 
+    protected $_productTypeMap;
+
     protected function getIndexNameSuffix()
     {
         return '_products';
+    }
+
+    protected function getMappedProductType($originalType)
+    {
+        if (!isset($this->_productTypeMap[$originalType])) {
+            $mappedType = (string)Mage::app()->getConfig()->getNode('default/algoliasearch/product_map/' . $originalType);
+            if ($mappedType) {
+                $this->_productTypeMap[$originalType] = $mappedType;
+            } else {
+                $this->_productTypeMap[$originalType] = $originalType;
+            }
+        }
+
+        return $this->_productTypeMap[$originalType];
     }
 
     public function getAllAttributes($add_empty_row = false)
@@ -65,7 +81,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $products = Mage::getResourceModel('catalog/product_collection');
 
         $products = $products->setStoreId($storeId)
-                        ->addStoreFilter($storeId);
+            ->addStoreFilter($storeId);
 
         if ($only_visible)
             $products = $products->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()));
@@ -74,9 +90,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             Mage::getSingleton('cataloginventory/stock')->addInStockFilterToCollection($products);
 
         $products = $products->addFinalPrice()
-                        ->addAttributeToSelect('special_from_date')
-                        ->addAttributeToSelect('special_to_date')
-                        ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
+            ->addAttributeToSelect('special_from_date')
+            ->addAttributeToSelect('special_to_date')
+            ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
 
         $additionalAttr = $this->config->getProductAdditionalAttributes($storeId);
 
@@ -304,7 +320,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData['price']['default_formated'] = $product->getStore()->formatPrice($special_price, false);
         }
 
-        if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
+        $type = $this->getMappedProductType($product->getTypeId());
+
+        if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
         {
             $min = PHP_INT_MAX;
             $max = 0;
@@ -316,7 +334,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 list($min, $max) = $_priceModel->getTotalPrices($product, null, null, true);
             }
 
-            if ($product->getTypeId() == 'grouped' || $product->getTypeId() == 'configurable')
+            if ($type == 'grouped' || $type == 'configurable')
             {
                 if (count($sub_products) > 0)
                 {
@@ -508,9 +526,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $sub_products = null;
         $ids = null;
 
-        if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
+        $type = $this->getMappedProductType($product->getTypeId());
+
+        if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
         {
-            if ($product->getTypeId() == 'bundle')
+            if ($type == 'bundle')
             {
                 $ids = array();
 
@@ -520,7 +540,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     $ids[] = $option->product_id;
             }
 
-            if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped')
+            if ($type == 'configurable' || $type == 'grouped')
                 $ids = $product->getTypeInstance(true)->getChildrenIds($product->getId());
 
             if (count($ids))
@@ -549,7 +569,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if (Mage::helper('core')->isModuleEnabled('Mage_Review'))
             if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary'))
-                    $customData['rating_summary'] = (int) $product->getRatingSummary();
+                $customData['rating_summary'] = (int) $product->getRatingSummary();
 
         foreach ($additionalAttributes as $attribute)
         {
@@ -567,7 +587,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 if ($value === null)
                 {
                     /** Get values as array in children */
-                    if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
+                    if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
                     {
                         $values = array();
 
@@ -644,4 +664,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         return $customData;
     }
+
+
 }
