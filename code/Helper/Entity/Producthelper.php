@@ -251,6 +251,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $fields                     = $this->getFields($product->getStore());
         $customer_groups_enabled    = $this->config->isCustomerGroupsEnabled($product->getStoreId());
         $store                      = $product->getStore();
+        $type                       = $this->config->getMappedProductType($product->getTypeId());
 
         $groups                     = array();
 
@@ -304,19 +305,19 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $customData[$field]['default_formated'] = $product->getStore()->formatPrice($special_price, false);
             }
 
-            if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
+            if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
             {
                 $min = PHP_INT_MAX;
                 $max = 0;
 
-                if ($product->getTypeId() == 'bundle')
+                if ($type == 'bundle')
                 {
                     $_priceModel = $product->getPriceModel();
 
                     list($min, $max) = $_priceModel->getTotalPrices($product, null, $with_tax, true);
                 }
 
-                if ($product->getTypeId() == 'grouped' || $product->getTypeId() == 'configurable')
+                if ($type == 'grouped' || $type == 'configurable')
                 {
                     if (count($sub_products) > 0)
                     {
@@ -381,8 +382,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     public function getObject(Mage_Catalog_Model_Product $product)
     {
+        $type = $this->config->getMappedProductType($product->getTypeId());
         $this->logger->start('CREATE RECORD '.$product->getId(). ' '.$this->logger->getStoreName($product->storeId));
-        $this->logger->log('Product type ('.$product->getTypeId().')');
+        $this->logger->log('Product type ('.$product->getTypeId().', mapped to: ' . $type . ')');
         $defaultData    = array();
 
         $transport      = new Varien_Object($defaultData);
@@ -526,9 +528,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $sub_products = null;
         $ids = null;
 
-        if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
+        if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
         {
-            if ($product->getTypeId() == 'bundle')
+            if ($type == 'bundle')
             {
                 $ids = array();
 
@@ -538,7 +540,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     $ids[] = $option->product_id;
             }
 
-            if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped')
+            if ($type == 'configurable' || $type == 'grouped')
                 $ids = $product->getTypeInstance(true)->getChildrenIds($product->getId());
 
             if (count($ids))
@@ -585,7 +587,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 if ($value === null)
                 {
                     /** Get values as array in children */
-                    if ($product->getTypeId() == 'configurable' || $product->getTypeId() == 'grouped' || $product->getTypeId() == 'bundle')
+                    if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
                     {
                         $values = array();
 
@@ -643,7 +645,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $customData = array_merge($customData, $defaultData);
 
-        $customData['type_id'] = $product->getTypeId();
+        $customData['type_id'] = $type;
 
         $this->castProductObject($customData);
 
