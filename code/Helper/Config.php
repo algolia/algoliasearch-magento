@@ -368,13 +368,14 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
      */
     public function getMappedProductType($originalType)
     {
-        if (!isset($this->_productTypeMap[$originalType])) {
+        if (!isset($this->_productTypeMap[$originalType]))
+        {
             $mappedType = (string)Mage::app()->getConfig()->getNode('default/algoliasearch/product_map/' . $originalType);
-            if ($mappedType) {
+
+            if ($mappedType)
                 $this->_productTypeMap[$originalType] = $mappedType;
-            } else {
+            else
                 $this->_productTypeMap[$originalType] = $originalType;
-            }
         }
 
         return $this->_productTypeMap[$originalType];
