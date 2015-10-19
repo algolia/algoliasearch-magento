@@ -1,5 +1,14 @@
 ## Change Log
 
+### 1.4.8
+- NEW: allow to have custom product types
+- NEW: make image generation size parameter customizable to be able to save ressources when already in cache
+- UPDATED: remove root category when fetching product categories
+- UPDATED: rewrite image class to be able to log the error when not being able to generate it
+- UPDATED: Handle display price with AND without tax
+- FIX: price issues
+- FIX: Safari issue with instant search
+
 ### 1.4.7
 
 - NEW: added an option to disable the seo request
