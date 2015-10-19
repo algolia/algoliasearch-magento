@@ -22,7 +22,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $allAttributes = $config->getEntityAttributeCodes('catalog_product');
 
-            $productAttributes = array_merge(array('name', 'path', 'categories', 'categories_without_path', 'description', 'ordered_qty', 'stock_qty', 'price', 'rating_summary', 'media_gallery'), $allAttributes);
+            $productAttributes = array_merge(array('name', 'path', 'categories', 'categories_without_path', 'description', 'ordered_qty', 'total_ordered', 'stock_qty', 'price', 'rating_summary', 'media_gallery'), $allAttributes);
 
             $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
@@ -480,7 +480,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if (false === isset($defaultData['thumbnail_url']))
         {
-            $thumb = Mage::helper('catalog/image')->init($product, 'thumbnail')->resize(75, 75);
+            $thumb = Mage::helper('algoliasearch/image')->init($product, 'thumbnail')->resize(75, 75);
 
             try
             {
@@ -499,7 +499,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if (false === isset($defaultData['image_url']))
         {
-            $image = Mage::helper('catalog/image')->init($product, $this->config->getImageType())->resize($this->config->getImageWidth(), $this->config->getImageHeight());
+            $image = Mage::helper('algoliasearch/image')->init($product, $this->config->getImageType())->resize($this->config->getImageWidth(), $this->config->getImageHeight());
 
             try
             {
@@ -565,7 +565,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         // skip default calculation if we have provided these attributes via the observer in $defaultData
         if (false === isset($defaultData['ordered_qty']) && $this->isAttributeEnabled($additionalAttributes, 'ordered_qty'))
-            $customData['ordered_qty']   = (int) $product->getOrderedQty();
+            $customData['ordered_qty'] = (int) $product->getOrderedQty();
+
+        if (false === isset($defaultData['total_ordered']) && $this->isAttributeEnabled($additionalAttributes, 'total_ordered'))
+            $customData['total_ordered'] = (int) $product->getTotalOrdered();
 
         if (false === isset($defaultData['stock_qty']) && $this->isAttributeEnabled($additionalAttributes, 'stock_qty'))
             $customData['stock_qty'] = (int) $product->getStockQty();
