@@ -30,11 +30,6 @@
             <algoliasearch>
                 <class>Algolia_Algoliasearch_Helper</class>
             </algoliasearch>
-            <catalog>
-                <rewrite>
-                    <image>Algolia_Algoliasearch_Helper_Image</image>
-                </rewrite>
-            </catalog>
         </helpers>
         <blocks>
             <algoliasearch>

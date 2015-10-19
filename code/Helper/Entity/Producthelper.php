@@ -480,7 +480,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if (false === isset($defaultData['thumbnail_url']))
         {
-            $thumb = Mage::helper('catalog/image')->init($product, 'thumbnail')->resize(75, 75);
+            $thumb = Mage::helper('algoliasearch/image')->init($product, 'thumbnail')->resize(75, 75);
 
             try
             {
@@ -499,7 +499,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if (false === isset($defaultData['image_url']))
         {
-            $image = Mage::helper('catalog/image')->init($product, $this->config->getImageType())->resize($this->config->getImageWidth(), $this->config->getImageHeight());
+            $image = Mage::helper('algoliasearch/image')->init($product, $this->config->getImageType())->resize($this->config->getImageWidth(), $this->config->getImageHeight());
 
             try
             {
