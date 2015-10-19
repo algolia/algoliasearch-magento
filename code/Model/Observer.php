@@ -158,7 +158,7 @@ class Algolia_Algoliasearch_Model_Observer
         else
         {
             if (! empty($page) && ! empty($pageSize))
-                $this->helper->rebuildStoreCategoryIndexPage($storeId, $this->category_helper->getProductCollectionQuery($storeId, $categoryIds), $page, $pageSize);
+                $this->helper->rebuildStoreCategoryIndexPage($storeId, $this->category_helper->getCategoryCollectionQuery($storeId, $categoryIds), $page, $pageSize);
             else
                 $this->helper->rebuildStoreCategoryIndex($storeId, $categoryIds);
         }
