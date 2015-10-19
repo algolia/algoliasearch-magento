@@ -195,4 +195,55 @@ class Algolia_Algoliasearch_Model_Observer
 
         return $this;
     }
+
+    public function rebuildAfterFSIProductImport($event) {
+        $ids = $event->getEntityId();
+        $products = Mage::getModel('catalog/product')->getCollection()
+            ->addIdFilter($ids);
+        $cif = Mage::getResourceSingleton('catalogsearch/indexer_fulltext');
+        $updateIds = array();
+        $removeIds = array();
+        $visibleInSearchIds = Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds();
+        foreach ($products as $product)
+        {
+            if (!$product->isComposite())
+            {
+                $parentIds = $cif->getRelationsByChild($product->getId());
+                if ( ! empty($parentIds))
+                    $ids = array_merge($ids, $parentIds);
+            }
+        }
+        $allProducts = Mage::getModel('catalog/product')->getCollection()
+            ->addAttributeToSelect('visibility')
+            ->addIdFilter($ids);
+        foreach ($allProducts as $product) {
+            if (
+                ($product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED)
+                ||
+                (! in_array($product->getData('visibility'), $visibleInSearchIds))
+            )
+            {
+                $removeIds[] = $product->getId();
+            }
+            else
+            {
+                $updateIds[] = $product->getId();
+            }
+        }
+        $engine = new Algolia_Algoliasearch_Model_Resource_Engine();
+        $engine->rebuildProductIndex(null, $updateIds);
+        $engine->removeProducts(null, $removeIds);
+        # As there's no way of no whether these changed reindex the categories
+        # they're in to keep numbers up to date
+        $resource = Mage::getSingleton('core/resource');
+        $connection = $resource->getConnection('core_read');
+        $select = $connection->select()
+            ->from($resource->getTableName('catalog/category_product'), 'category_id')
+            ->where('product_id IN (?)', $ids);
+        $categoryIds = $connection->fetchCol($select);
+        if (!empty($categoryIds))
+            $engine->rebuildCategoryIndex(null, $categoryIds);
+
+        return $this;
+    }
 }
