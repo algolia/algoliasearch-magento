@@ -541,7 +541,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
 
             if ($type == 'configurable' || $type == 'grouped')
+            {
                 $ids = $product->getTypeInstance(true)->getChildrenIds($product->getId());
+                $ids = call_user_func_array('array_merge', $ids);
+            }
 
             if (count($ids))
             {
