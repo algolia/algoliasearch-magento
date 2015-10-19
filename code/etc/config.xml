@@ -81,6 +81,16 @@
                     </algolia_stockupdate>
                 </observers>
             </catalog_product_save_before>
+
+            <fastsimpleimport_reindex_products_before_fulltext>
+                <observers>
+                    <algolia_search>
+                        <type>singleton</type>
+                        <class>algoliasearch/observer</class>
+                        <method>rebuildAfterFSIProductImport</method>
+                    </algolia_search>
+                </observers>
+            </fastsimpleimport_reindex_products_before_fulltext>
         </events>
         <resources>
             <algoliasearch_setup>
