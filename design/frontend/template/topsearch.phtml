@@ -904,13 +904,13 @@ $class = $isSearchPage ? 'search-page' : '';
                     }
 
                     sub_facets.sort(function sortByCheckedThenCount(f1, f2) {
-                        if (f1.checked !== f2.checked)
-                            return f1.checked ? -1 : 1;
+                      if (f1.checked !== f2.checked)
+                          return f1.checked ? -1 : 1;
 
-                        if (f2.count !== f1.count)
-                            return f2.count - f1.count;
+                      if (f2.count !== f1.count)
+                          return f2.count - f1.count;
 
-                        return f1.name.localeCompare(f2.name);
+                      return f1.name.localeCompare(f2.name);
                     });
 
                 }
@@ -975,8 +975,8 @@ $class = $isSearchPage ? 'search-page' : '';
                 helper.setQueryParameter('hitsPerPage', algoliaConfig.maxSize);
                 helper.viewAll = true;
             } else {
-                helper.viewAll = false;
                 helper.setQueryParameter('hitsPerPage', algoliaConfig.hitsPerPage);
+                helper.viewAll = false;
             }
         };
 
@@ -1027,7 +1027,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 facets_count: facets.length,
                 prev_page: (content.page > 0 ? content.page : false),
                 next_page: (content.page + 1 < content.nbPages ? content.page + 2 : false),
-                view_all:viewAll || false
+                view_all: viewAll || false
             });
 
             return pagination_html;
@@ -1064,7 +1064,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 sorting_indices: algoliaConfig.sortingIndices,
                 sortSelected: sortSelected,
                 empty: empty
-            }, {
+                }, {
                 facet_hierarchical: facet_hierarchical
             });
 
@@ -1170,7 +1170,7 @@ $class = $isSearchPage ? 'search-page' : '';
                     },
                     templates: {
                         suggestion: function (hit) {
-                            return algoliaConfig.autocomplete.templates['suggestions'].render(hit);
+                                return algoliaConfig.autocomplete.templates['suggestions'].render(hit);
                         }
                     }
                 });
@@ -1184,24 +1184,24 @@ $class = $isSearchPage ? 'search-page' : '';
 
                     hogan_objs.push({
                         source: (function (index, i) {
-                            return function (query, cb) {
-                                index.search(query, {
-                                    hitsPerPage: algoliaConfig.autocomplete.hitsPerPage[indices[i]],
-                                    analyticsTags: 'autocomplete'
-                                }, function (err, content) {
-                                    if (err)
-                                    {
-                                        cb([]);
-                                        return;
-                                    }
+                                return function (query, cb) {
+                                    index.search(query, {
+                                        hitsPerPage: algoliaConfig.autocomplete.hitsPerPage[indices[i]],
+                                        analyticsTags: 'autocomplete'
+                                    }, function (err, content) {
+                                        if (err)
+                                        {
+                                            cb([]);
+                                            return;
+                                        }
 
-                                    for (var k = 0; k < content.hits.length; k++)
-                                        content.hits[k].query = content.query;
+                                        for (var k = 0; k < content.hits.length; k++)
+                                            content.hits[k].query = content.query;
 
-                                    cb(content.hits);
-                                });
-                            }
-                        })(index, i),
+                                        cb(content.hits);
+                                    });
+                                }
+                            })(index, i),
                         displayKey: 'query',
                         templates: {
                             header: '<div class="category">' + algoliaConfig.autocomplete.titles[indices[i]] + '</div>',
@@ -1232,6 +1232,11 @@ $class = $isSearchPage ? 'search-page' : '';
 
                                         if (Array.isArray(hit.price))
                                             hit.price = hit.price[0];
+
+                                        if ('<?php echo $price_key; ?>' !== '.default' && hit['price']['<?php echo $price_key; ?>'.substr(1) + '_formated'] !== hit['price']['default_formated'])
+                                        {
+                                            hit['price']['<?php echo $price_key; ?>'.substr(1) + '_original_formated'] = hit['price']['default_formated'];
+                                        }
 
                                     }
 
@@ -1273,7 +1278,7 @@ $class = $isSearchPage ? 'search-page' : '';
                                 cb(content.hits);
                             });
                         }
-                    })(index, i),
+                        })(index, i),
                     displayKey: 'value',
                     templates: {
                         header: '<div class="category">' + label + '</div>',
@@ -1406,6 +1411,12 @@ $class = $isSearchPage ? 'search-page' : '';
                         delete content.hits[i].price_with_tax;
                         delete content.hits[i].price_with_tax_formated;
                     }
+
+                    if ('<?php echo $price_key; ?>' !== '.default' && content.hits[i]['price']['<?php echo $price_key; ?>'.substr(1) + '_formated'] !== content.hits[i]['price']['default_formated'])
+                    {
+                        content.hits[i]['price']['<?php echo $price_key; ?>'.substr(1) + '_original_formated'] = content.hits[i]['price']['default_formated'];
+                    }
+
                 }
 
                 /**
@@ -1733,23 +1744,36 @@ $class = $isSearchPage ? 'search-page' : '';
             $(algoliaConfig.autocomplete.selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
 
             if (<?php echo $isSearchPage ? "true" : "false"; ?> || location.hash.length > 1) {
-            getRefinementsFromUrl();
-        }
+                getRefinementsFromUrl();
+            }
+
 
             if (supportsHistory) {
-                window.addEventListener("popstate", getRefinementsFromUrl);
+                // FIX SAFARI ISSUE
+                if (document.readyState !== 'complete') {
+                    // load event has not fired
+                    window.addEventListener('load', function() {
+                        setTimeout(function() {
+                            window.addEventListener("popstate", getRefinementsFromUrl);
+                        }, 0);
+                    }, false);
+                }
+                else {
+                    // load event has fired
+                    window.addEventListener("popstate", getRefinementsFromUrl);
+                }
             } else {
                 window.addEventListener("hashchange", getRefinementsFromUrl);
             }
 
-            // SO: delete
             onfocus_css = {
+                'opacity': '1',
                 'fill': '#54A5CD',
                 'stroke': '#54A5CD'
             };
 
-            // SO: delete
             onblur_css = {
+                'opacity': '0.4',
                 'fill': '#AAA',
                 'stroke': '#AAA'
             };
