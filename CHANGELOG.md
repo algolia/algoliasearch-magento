@@ -1,5 +1,11 @@
 ## Change Log
 
+### 1.4.9
+
+- NEW: add total_ordered because ordered_qty does not always make sense
+- FIX: issue with configurable and gouped sub_products query
+- FIX: replace image helper override by subclass
+
 ### 1.4.8
 - NEW: allow to have custom product types
 - NEW: make image generation size parameter customizable to be able to save ressources when already in cache
