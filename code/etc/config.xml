@@ -25,6 +25,26 @@
             </controller_action_layout_load_before>
         </events>
     </frontend>
+    <adminhtml>
+        <layout>
+            <updates>
+                <algoliasearch>
+                    <file>algoliasearch.xml</file>
+                </algoliasearch>
+            </updates>
+        </layout>
+        <events>
+            <controller_action_layout_load_before>
+                <observers>
+                    <algolia_search>
+                        <type>singleton</type>
+                        <class>algoliasearch/observer</class>
+                        <method>addBundleToAdmin</method>
+                    </algolia_search>
+                </observers>
+            </controller_action_layout_load_before>
+        </events>
+    </adminhtml>
     <global>
         <helpers>
             <algoliasearch>

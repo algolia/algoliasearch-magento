@@ -34,6 +34,14 @@ class Algolia_Algoliasearch_Model_Observer
                 $this->helper->saveConfigurationToAlgolia($store->getId());
     }
 
+    public function addBundleToAdmin(Varien_Event_Observer $observer)
+    {
+        $req  = Mage::app()->getRequest();
+
+        if (strpos($req->getPathInfo(), 'system_config/edit/section/algoliasearch') !== false)
+            $observer->getLayout()->getUpdate()->addHandle('algolia_bundle_handle');
+    }
+
     /**
      * Call algoliasearch.xml To load js / css / phtml
      */
