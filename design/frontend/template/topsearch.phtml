@@ -496,6 +496,12 @@ $class = $isSearchPage ? 'search-page' : '';
     <div class="pagination-wrapper">
         <div class="text-center">
             <ul class="algolia-pagination">
+                {{#view_all}}
+                <a href="#" data-page="1">
+                    <li><?php echo $this->__('View Pages');?></li>
+                </a>
+                {{/view_all}}
+                {{^view_all}}
                 <a href="#" data-page="{{prev_page}}">
                     <li {{^prev_page}}class="disabled"{{/prev_page}}>
                     &laquo;
@@ -514,6 +520,11 @@ $class = $isSearchPage ? 'search-page' : '';
                     &raquo;
                     </li>
                 </a>
+
+                <a href="#" data-page="all">
+                    <li class="view-all"><?php echo $this->__('View All');?></li>
+                </a>
+                {{/view_all}}
             </ul>
         </div>
     </div>
@@ -572,7 +583,8 @@ $class = $isSearchPage ? 'search-page' : '';
             hitsPerPage: <?php echo (int) $config->getNumberOfProductResults() ?>,
             sortingIndices: <?php echo json_encode(array_values($config->getSortingIndices())); ?>,
             isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
-            removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>
+            removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>,
+            maxSize: 999
         };
 
 
@@ -752,6 +764,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
             var url = '#q=' + encodeURIComponent(helper.state.query) +
                 '&page=' + helper.getCurrentPage() +
+                '&size=' + helper.getQueryParameter('hitsPerPage') +
                 '&refinements=' + encodeURIComponent(JSON.stringify(refinements)) +
                 '&numerics_refinements=' + encodeURIComponent(JSON.stringify(helper.state.numericRefinements)) +
                 '&index_name=' + encodeURIComponent(JSON.stringify(helper.getIndex()));
@@ -769,21 +782,40 @@ $class = $isSearchPage ? 'search-page' : '';
             }
         };
 
+        var explodeHash = function()
+        {
+            var hash = location.hash;
+            if (hash[0] == '#') {
+                hash = hash.substring(1);
+            }
+
+            var urlPieces = hash.split('&'),
+                values = {},
+                i = 0;
+
+            for( ; i < urlPieces.length; i++) {
+                var pieceHash = urlPieces[i].split('='),
+                    key = pieceHash[0],
+                    value = pieceHash.length > 1 ? pieceHash[1] : "";
+
+                values[key] = value;
+            }
+
+            return values;
+        };
+
         var getRefinementsFromUrl = function() {
 
             if (location.hash && location.hash.indexOf('#q=') === 0)
             {
-                var params                          = location.hash.substring(3);
-                var pageParamOffset                 = params.indexOf('&page=');
-                var refinementsParamOffset          = params.indexOf('&refinements=');
-                var numericsRefinementsParamOffset  = params.indexOf('&numerics_refinements=');
-                var indexNameOffset                 = params.indexOf('&index_name=');
+                var params = explodeHash();
 
-                var q                               = decodeURIComponent(params.substring(0, pageParamOffset));
-                var page                            = parseInt(params.substring(pageParamOffset + '&page='.length, refinementsParamOffset));
-                var refinements                     = JSON.parse(decodeURIComponent(params.substring(refinementsParamOffset + '&refinements='.length, numericsRefinementsParamOffset)));
-                var numericsRefinements             = JSON.parse(decodeURIComponent(params.substring(numericsRefinementsParamOffset + '&numerics_refinements='.length, indexNameOffset)));
-                var indexName                       = JSON.parse(decodeURIComponent(params.substring(indexNameOffset + '&index_name='.length)));
+                var q                               = decodeURIComponent(params['q']) || "";
+                var page                            = parseInt(params['page']) || 1;
+                var size                            = parseInt(params['size']) || algoliaConfig.hitsPerPage;
+                var refinements                     = JSON.parse(decodeURIComponent(params['refinements']));
+                var numericsRefinements             = JSON.parse(decodeURIComponent(params['numerics_refinements']));
+                var indexName                       = JSON.parse(decodeURIComponent(params['index_name']));
 
                 q = $("<div/>").html(q).text();
 
@@ -807,6 +839,14 @@ $class = $isSearchPage ? 'search-page' : '';
 
                 helper.setIndex(indexName).setCurrentPage(page);
 
+                if (size == algoliaConfig.maxSize) {
+                    helper.setQueryParameter('hitsPerPage', size);
+                    helper.viewAll = true;
+                    helper.standardHitsPerPage = algoliaConfig.hitsPerPage;
+                    helper.setCurrentPage(0);
+                } else {
+                    helper.viewAll = false;
+                }
             }
             helper.search();
         };
@@ -927,8 +967,17 @@ $class = $isSearchPage ? 'search-page' : '';
             }
         };
 
-        var gotoPage = function(page) {
+        var gotoPage = function(page, viewAll) {
             helper.setCurrentPage(+page - 1);
+
+            if (viewAll === true) {
+                helper.standardHitsPerPage = helper.hitsPerPage;
+                helper.setQueryParameter('hitsPerPage', algoliaConfig.maxSize);
+                helper.viewAll = true;
+            } else {
+                helper.setQueryParameter('hitsPerPage', algoliaConfig.hitsPerPage);
+                helper.viewAll = false;
+            }
         };
 
         var getDate = function () {
@@ -972,12 +1021,13 @@ $class = $isSearchPage ? 'search-page' : '';
          **
          *****************/
 
-        function getHtmlForPagination(paginationTemplate, content, pages, facets) {
+        function getHtmlForPagination(paginationTemplate, content, pages, facets, viewAll) {
             var pagination_html = paginationTemplate.render({
                 pages: pages,
                 facets_count: facets.length,
                 prev_page: (content.page > 0 ? content.page : false),
-                next_page: (content.page + 1 < content.nbPages ? content.page + 2 : false)
+                next_page: (content.page + 1 < content.nbPages ? content.page + 2 : false),
+                view_all: viewAll || false
             });
 
             return pagination_html;
@@ -1397,7 +1447,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 instant_search_results_container.html(getHtmlForResults(resultsTemplate, content, facets));
 
                 if (content.hits.length > 0)
-                    instant_search_pagination_container.html(getHtmlForPagination(paginationTemplate, content, pages, facets));
+                    instant_search_pagination_container.html(getHtmlForPagination(paginationTemplate, content, pages, facets, helper.viewAll));
 
                 updateSliderValues();
 
@@ -1597,7 +1647,11 @@ $class = $isSearchPage ? 'search-page' : '';
             $("body").on("click", ".algolia-pagination a", function (e) {
                 e.preventDefault();
 
-                gotoPage($(this).attr("data-page"));
+                if ($(this).attr('data-page') == 'all') {
+                    gotoPage(1, true);
+                } else {
+                    gotoPage($(this).attr("data-page"), false);
+                }
                 performQueries(true);
 
                 $("body").scrollTop(0);
