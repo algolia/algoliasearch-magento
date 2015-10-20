@@ -25,7 +25,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function __construct()
     {
-        \AlgoliaSearch\Version::$custom_value = " Magento (1.4.7)";
+        \AlgoliaSearch\Version::$custom_value = " Magento (1.4.9)";
 
         $this->algolia_helper               = Mage::helper('algoliasearch/algoliahelper');
 
@@ -484,6 +484,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'ordered_qty'))
             $collection->getSelect()->columns('(SELECT SUM(qty_ordered) FROM '.$index_prefix.'sales_flat_order_item WHERE sales_flat_order_item.product_id = e.entity_id) as ordered_qty');
+
+        if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'total_ordered'))
+            $collection->getSelect()->columns('(SELECT SUM(row_total) FROM '.$index_prefix.'sales_flat_order_item WHERE sales_flat_order_item.product_id = e.entity_id) as total_ordered');
 
         if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'rating_summary'))
             $collection->joinField('rating_summary', $index_prefix.'review_entity_summary', 'rating_summary', 'entity_pk_value=entity_id', '{{table}}.store_id='.$storeId, 'left');

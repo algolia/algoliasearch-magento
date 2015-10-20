@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.4.7</version>
+            <version>1.4.9</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -25,6 +25,26 @@
             </controller_action_layout_load_before>
         </events>
     </frontend>
+    <adminhtml>
+        <layout>
+            <updates>
+                <algoliasearch>
+                    <file>algoliasearch.xml</file>
+                </algoliasearch>
+            </updates>
+        </layout>
+        <events>
+            <controller_action_layout_load_before>
+                <observers>
+                    <algolia_search>
+                        <type>singleton</type>
+                        <class>algoliasearch/observer</class>
+                        <method>addBundleToAdmin</method>
+                    </algolia_search>
+                </observers>
+            </controller_action_layout_load_before>
+        </events>
+    </adminhtml>
     <global>
         <helpers>
             <algoliasearch>
@@ -175,11 +195,23 @@
                 <number_of_job_to_run>300</number_of_job_to_run>
                 <noprocess>0</noprocess>
             </queue>
+            <image>
+                <width>265</width>
+                <height>265</height>
+                <type>image</type>
+            </image>
             <advanced>
                 <partial_update>0</partial_update>
                 <make_seo_request>1</make_seo_request>
                 <remove_branding>0</remove_branding>
             </advanced>
+            <product_map>
+                <!--
+                    This is for custom product types. The node's name is the type of the custom product
+                     and the value is the name of the Magento product type.
+                 -->
+                <kit>grouped</kit>
+            </product_map>
         </algoliasearch>
     </default>
 </config> 

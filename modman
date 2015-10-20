@@ -7,6 +7,7 @@
 Algolia_Algoliasearch.xml                   app/etc/modules/Algolia_Algoliasearch.xml
 code                                        app/code/community/Algolia/Algoliasearch/
 design/frontend/layout/algoliasearch.xml    app/design/frontend/base/default/layout/algoliasearch.xml
+design/adminhtml/layout/algoliasearch.xml   app/design/adminhtml/default/default/layout/algoliasearch.xml
 design/frontend/template                    app/design/frontend/base/default/template/algoliasearch
 skin                                        skin/frontend/base/default/algoliasearch
 js                                          js/algoliasearch

@@ -49,6 +49,10 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const NUMBER_OF_JOB_TO_RUN                 = 'algoliasearch/queue/number_of_job_to_run';
     const NO_PROCESS                           = 'algoliasearch/queue/noprocess';
 
+    const XML_PATH_IMAGE_WIDTH                 = 'algoliasearch/image/width';
+    const XML_PATH_IMAGE_HEIGHT                = 'algoliasearch/image/height';
+    const XML_PATH_IMAGE_TYPE                  = 'algoliasearch/image/type';
+
     const PARTIAL_UPDATES                      = 'algoliasearch/advanced/partial_update';
     const CUSTOMER_GROUPS_ENABLE               = 'algoliasearch/advanced/customer_groups_enable';
     const MAKE_SEO_REQUEST                     = 'algoliasearch/advanced/make_seo_request';
@@ -56,6 +60,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const SHOW_OUT_OF_STOCK                    = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED                      = 'dev/log/active';
+
+    protected $_productTypeMap = array();
 
     public function isEnabledFrontEnd($storeId = null)
     {
@@ -85,6 +91,21 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function noProcess($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::NO_PROCESS, $storeId);
+    }
+
+    public function getImageWidth($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_IMAGE_WIDTH, $storeId);
+    }
+
+    public function getImageHeight($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_IMAGE_HEIGHT, $storeId);
+    }
+
+    public function getImageType($storeId = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_IMAGE_TYPE, $storeId);
     }
 
     public function isCustomerGroupsEnabled($storeId = null)
@@ -337,5 +358,26 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         $currencySymbol = Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol();
 
         return $currencySymbol;
+    }
+
+    /**
+     * Loads product type mapping from configuration (default) > algoliasearch > product_map > (product type)
+     *
+     * @param $originalType
+     * @return string
+     */
+    public function getMappedProductType($originalType)
+    {
+        if (!isset($this->_productTypeMap[$originalType]))
+        {
+            $mappedType = (string)Mage::app()->getConfig()->getNode('default/algoliasearch/product_map/' . $originalType);
+
+            if ($mappedType)
+                $this->_productTypeMap[$originalType] = $mappedType;
+            else
+                $this->_productTypeMap[$originalType] = $originalType;
+        }
+
+        return $this->_productTypeMap[$originalType];
     }
 }
