@@ -2,7 +2,7 @@
 <layout>
     <algolia_bundle_handle>
         <reference name="head">
-            <action method="addJs"><script>algoliasearch/bundle.min.js</script></action>
+            <action method="addJs"><script>algoliasearch/algoliaBundle.min.js</script></action>
             <action method="addJs"><script>algoliasearch/admin_scripts.js</script></action>
         </reference>
     </algolia_bundle_handle>
