@@ -146,11 +146,11 @@ $class = $isSearchPage ? 'search-page' : '';
         <label for="search"><?php echo $this->__('Search:') ?></label>
         <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="<?php echo $placeholder; ?>" />
         <svg id="algolia-glass" xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128" >
-          <g transform="scale(4)">
-            <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
-            <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
-            <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z" ></path>
-          </g>
+            <g transform="scale(4)">
+                <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
+                <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
+                <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z" ></path>
+            </g>
         </svg>
     </div>
 </form>
@@ -210,10 +210,10 @@ $class = $isSearchPage ? 'search-page' : '';
             {{^image_url}}
             <div class="info-without-thumb">
                 {{#_highlightResult.path}}
-                    {{{_highlightResult.path.value}}}
+                {{{_highlightResult.path.value}}}
                 {{/_highlightResult.path}}
                 {{^_highlightResult.path}}
-                    {{{path}}}
+                {{{path}}}
                 {{/_highlightResult.path}}
 
                 {{#product_count}}
@@ -254,7 +254,7 @@ $class = $isSearchPage ? 'search-page' : '';
             {{{_highlightResult.query.value}}}
 
             {{#category}}
-                <span class="text-muted"><?php echo $this->__('in'); ?></span> <span class="category-tag">{{category}}</span>
+            <span class="text-muted"><?php echo $this->__('in'); ?></span> <span class="category-tag">{{category}}</span>
             {{/category}}
         </div>
         <div class="clearfix"></div>
@@ -421,14 +421,14 @@ $class = $isSearchPage ? 'search-page' : '';
 
 <script type="text/template" id="instant-facets-hierarchical-template">
     {{#data}}
-        <div style="padding-left: 10px; padding-right: 0px;" class="hierarchical_facet">
-            <div data-name="{{attribute}}" data-path="{{path}}" data-type="hierarchical" class="{{#isRefined}}checked {{/isRefined}}sub_facet hierarchical {{#empty}}empty{{/empty}}">
-                    <input style="display: none;" data-attribute="{{attribute}}" {{#isRefined}}checked{{/isRefined}} data-name="{{name}}" class="facet_value" type="checkbox" />
-                    {{name}}
-                    {{#count}}<span class="count">{{count}}</span>{{/count}}
-            </div>
-            {{>facet_hierarchical}}
+    <div style="padding-left: 10px; padding-right: 0px;" class="hierarchical_facet">
+        <div data-name="{{attribute}}" data-path="{{path}}" data-type="hierarchical" class="{{#isRefined}}checked {{/isRefined}}sub_facet hierarchical {{#empty}}empty{{/empty}}">
+            <input style="display: none;" data-attribute="{{attribute}}" {{#isRefined}}checked{{/isRefined}} data-name="{{name}}" class="facet_value" type="checkbox" />
+            {{name}}
+            {{#count}}<span class="count">{{count}}</span>{{/count}}
         </div>
+        {{>facet_hierarchical}}
+    </div>
     {{/data}}
 </script>
 
@@ -478,9 +478,9 @@ $class = $isSearchPage ? 'search-page' : '';
                 {{/type.disjunctive}}
 
                 {{#type.hierarchical}}
-                    <div style="margin-left: -10px;">
+                <div style="margin-left: -10px;">
                     {{>facet_hierarchical}}
-                    </div>
+                </div>
                 {{/type.hierarchical}}
 
                 {{/sub_facets}}
@@ -496,12 +496,6 @@ $class = $isSearchPage ? 'search-page' : '';
     <div class="pagination-wrapper">
         <div class="text-center">
             <ul class="algolia-pagination">
-                {{#view_all}}
-                <a href="#" data-page="1">
-                    <li><?php echo $this->__('View Pages');?></li>
-                </a>
-                {{/view_all}}
-                {{^view_all}}
                 <a href="#" data-page="{{prev_page}}">
                     <li {{^prev_page}}class="disabled"{{/prev_page}}>
                     &laquo;
@@ -520,11 +514,6 @@ $class = $isSearchPage ? 'search-page' : '';
                     &raquo;
                     </li>
                 </a>
-
-                <a href="#" data-page="all">
-                    <li class="view-all"><?php echo $this->__('View All');?></li>
-                </a>
-                {{/view_all}}
             </ul>
         </div>
     </div>
@@ -586,6 +575,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
                 removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>
             };
+
 
             $('#search').closest('form').submit(function (e) {
                 var query = $('#search').val();
@@ -772,21 +762,12 @@ $class = $isSearchPage ? 'search-page' : '';
 
             var getRefinementsFromUrl = function () {
 
-<<<<<<< HEAD
                 if (location.hash && location.hash.indexOf('#q=') === 0) {
                     var params = location.hash.substring(3);
                     var pageParamOffset = params.indexOf('&page=');
                     var refinementsParamOffset = params.indexOf('&refinements=');
                     var numericsRefinementsParamOffset = params.indexOf('&numerics_refinements=');
                     var indexNameOffset = params.indexOf('&index_name=');
-=======
-            var url = '#q=' + encodeURIComponent(helper.state.query) +
-                '&page=' + helper.getCurrentPage() +
-                '&size=' + helper.getQueryParameter('hitsPerPage') +
-                '&refinements=' + encodeURIComponent(JSON.stringify(refinements)) +
-                '&numerics_refinements=' + encodeURIComponent(JSON.stringify(helper.state.numericRefinements)) +
-                '&index_name=' + encodeURIComponent(JSON.stringify(helper.getIndex()));
->>>>>>> "View All" is now a part of the pagination template.
 
                     var q = decodeURIComponent(params.substring(0, pageParamOffset));
                     var page = parseInt(params.substring(pageParamOffset + '&page='.length, refinementsParamOffset));
@@ -794,7 +775,6 @@ $class = $isSearchPage ? 'search-page' : '';
                     var numericsRefinements = JSON.parse(decodeURIComponent(params.substring(numericsRefinementsParamOffset + '&numerics_refinements='.length, indexNameOffset)));
                     var indexName = JSON.parse(decodeURIComponent(params.substring(indexNameOffset + '&index_name='.length)));
 
-<<<<<<< HEAD
                     q = $("<div/>").html(q).text();
 
                     helper.setQuery(q);
@@ -808,55 +788,6 @@ $class = $isSearchPage ? 'search-page' : '';
                                 helper.toggleRefine(refine, refinements[i][refine][j]);
                                 helper_empty.toggleRefine(refine, refinements[i][refine][j]);
                             }
-=======
-        var explodeHash = function()
-        {
-            var hash = location.hash;
-            if (hash[0] == '#') {
-                hash = hash.substring(1);
-            }
-
-            var urlPieces = hash.split('&'),
-                values = {},
-                i = 0;
-
-            for( ; i < urlPieces.length; i++) {
-                var pieceHash = urlPieces[i].split('='),
-                    key = pieceHash[0],
-                    value = pieceHash.length > 1 ? pieceHash[1] : "";
-
-                values[key] = value;
-            }
-
-            return values;
-        };
-
-        var getRefinementsFromUrl = function() {
-
-            if (location.hash && location.hash.indexOf('#q=') === 0)
-            {
-                var params = explodeHash();
-
-                var q                               = decodeURIComponent(params['q']) || "";
-                var page                            = parseInt(params['page']) || 1;
-                var size                            = parseInt(params['size']) || algoliaConfig.hitsPerPage;
-                var refinements                     = JSON.parse(decodeURIComponent(params['refinements']));
-                var numericsRefinements             = JSON.parse(decodeURIComponent(params['numerics_refinements']));
-                var indexName                       = JSON.parse(decodeURIComponent(params['index_name']));
-
-                q = $("<div/>").html(q).text();
-
-                helper.setQuery(q);
-
-                helper.clearRefinements();
-
-                /** Set refinements from url data **/
-                for (var i = 0; i < refinements.length; ++i) {
-                    for (var refine in refinements[i]) {
-                        for (var j = 0; j < refinements[i][refine].length; j++) {
-                            helper.toggleRefine(refine, refinements[i][refine][j]);
-                            helper_empty.toggleRefine(refine, refinements[i][refine][j]);
->>>>>>> "View All" is now a part of the pagination template.
                         }
                     }
 
@@ -866,23 +797,9 @@ $class = $isSearchPage ? 'search-page' : '';
 
                     helper.setIndex(indexName).setCurrentPage(page);
 
-<<<<<<< HEAD
                 }
                 helper.search();
             };
-=======
-                if (size == algoliaConfig.maxSize) {
-                    helper.setQueryParameter('hitsPerPage', size);
-                    helper.viewAll = true;
-                    helper.standardHitsPerPage = algoliaConfig.hitsPerPage;
-                    helper.setCurrentPage(0);
-                } else {
-                    helper.viewAll = false;
-                }
-            }
-            helper.search();
-        };
->>>>>>> "View All" is now a part of the pagination template.
 
             var getFacets = function (content) {
 
@@ -930,7 +847,6 @@ $class = $isSearchPage ? 'search-page' : '';
                             sub_facets.push(params);
                         }
 
-<<<<<<< HEAD
                         sub_facets.sort(function sortByCheckedThenCount(f1, f2) {
                             if (f1.checked !== f2.checked)
                                 return f1.checked ? -1 : 1;
@@ -940,17 +856,6 @@ $class = $isSearchPage ? 'search-page' : '';
 
                             return f1.name.localeCompare(f2.name);
                         });
-=======
-                    sub_facets.sort(function sortByCheckedThenCount(f1, f2) {
-                        if (f1.checked !== f2.checked)
-                            return f1.checked ? -1 : 1;
-
-                        if (f2.count !== f1.count)
-                            return f2.count - f1.count;
-
-                        return f1.name.localeCompare(f2.name);
-                    });
->>>>>>> "View All" is now a part of the pagination template.
 
                     }
 
@@ -1008,24 +913,9 @@ $class = $isSearchPage ? 'search-page' : '';
                 }
             };
 
-<<<<<<< HEAD
             var gotoPage = function (page) {
                 helper.setCurrentPage(+page - 1);
             };
-=======
-        var gotoPage = function(page, viewAll) {
-            helper.setCurrentPage(+page - 1);
-
-            if (viewAll === true) {
-                helper.standardHitsPerPage = helper.hitsPerPage;
-                helper.setQueryParameter('hitsPerPage', algoliaConfig.maxSize);
-                helper.viewAll = true;
-            } else {
-                helper.viewAll = false;
-                helper.setQueryParameter('hitsPerPage', algoliaConfig.hitsPerPage);
-            }
-        };
->>>>>>> "View All" is now a part of the pagination template.
 
             var getDate = function () {
                 return function (val) {
@@ -1058,30 +948,9 @@ $class = $isSearchPage ? 'search-page' : '';
                     else
                         day += "<?php echo $this->__('th'); ?>";
 
-<<<<<<< HEAD
                     return days[date.getDay()] + ", " + months[date.getMonth()] + " " + day + ", " + date.getFullYear();
                 }
             };
-=======
-                return days[date.getDay()] + ", " + months[date.getMonth()] + " " + day + ", " + date.getFullYear();
-            }
-        };
-
-        /*****************
-         **
-         ** RENDERING HELPERS
-         **
-         *****************/
-
-        function getHtmlForPagination(paginationTemplate, content, pages, facets, viewAll) {
-            var pagination_html = paginationTemplate.render({
-                pages: pages,
-                facets_count: facets.length,
-                prev_page: (content.page > 0 ? content.page : false),
-                next_page: (content.page + 1 < content.nbPages ? content.page + 2 : false),
-                view_all:viewAll || false
-            });
->>>>>>> "View All" is now a part of the pagination template.
 
             /*****************
              **
@@ -1123,7 +992,6 @@ $class = $isSearchPage ? 'search-page' : '';
 
             function getHtmlForFacets(facetsTemplate, facets, empty) {
 
-<<<<<<< HEAD
                 var facets_html = facetsTemplate.render({
                     facets: facets,
                     count: facets.length,
@@ -1135,19 +1003,6 @@ $class = $isSearchPage ? 'search-page' : '';
                 }, {
                     facet_hierarchical: facet_hierarchical
                 });
-=======
-            var facets_html = facetsTemplate.render({
-                facets: facets,
-                count: facets.length,
-                getDate: getDate,
-                relevance_index_name: algoliaConfig.indexName + '_products',
-                sorting_indices: algoliaConfig.sortingIndices,
-                sortSelected: sortSelected,
-                empty: empty
-            }, {
-                facet_hierarchical: facet_hierarchical
-            });
->>>>>>> "View All" is now a part of the pagination template.
 
                 return facets_html;
             }
@@ -1236,7 +1091,6 @@ $class = $isSearchPage ? 'search-page' : '';
                                         for (var k = 0; k < hits.length; k++)
                                             hits[k].query = content.query;
 
-<<<<<<< HEAD
                                         cb(hits);
                                     });
                                 }
@@ -1248,18 +1102,6 @@ $class = $isSearchPage ? 'search-page' : '';
                             suggestion: function (hit) {
                                 return algoliaConfig.autocomplete.templates['suggestions'].render(hit);
                             }
-=======
-                                    cb(hits);
-                                });
-                            }
-                            else
-                                cb([]);
-                        });
-                    },
-                    templates: {
-                        suggestion: function (hit) {
-                            return algoliaConfig.autocomplete.templates['suggestions'].render(hit);
->>>>>>> "View All" is now a part of the pagination template.
                         }
                     });
                 }
@@ -1268,7 +1110,6 @@ $class = $isSearchPage ? 'search-page' : '';
                     if (algoliaConfig.autocomplete.hitsPerPage[indices[i]] > 0) {
                         var index = algolia_client.initIndex(algoliaConfig.indexName + "_" + indices_with_suffix[i]);
 
-<<<<<<< HEAD
                         hogan_objs.push({
                             source: (function (index, i) {
                                 return function (query, cb) {
@@ -1280,25 +1121,10 @@ $class = $isSearchPage ? 'search-page' : '';
                                             cb([]);
                                             return;
                                         }
-=======
-                    hogan_objs.push({
-                        source: (function (index, i) {
-                            return function (query, cb) {
-                                index.search(query, {
-                                    hitsPerPage: algoliaConfig.autocomplete.hitsPerPage[indices[i]],
-                                    analyticsTags: 'autocomplete'
-                                }, function (err, content) {
-                                    if (err)
-                                    {
-                                        cb([]);
-                                        return;
-                                    }
->>>>>>> "View All" is now a part of the pagination template.
 
-                                    for (var k = 0; k < content.hits.length; k++)
-                                        content.hits[k].query = content.query;
+                                        for (var k = 0; k < content.hits.length; k++)
+                                            content.hits[k].query = content.query;
 
-<<<<<<< HEAD
                                         cb(content.hits);
                                     });
                                 }
@@ -1335,38 +1161,9 @@ $class = $isSearchPage ? 'search-page' : '';
                                             if ('<?php echo $price_key; ?>' !== '.default' && hit['price']['<?php echo $price_key; ?>'.substr(1) + '_formated'] !== hit['price']['default_formated']) {
                                                 hit['price']['<?php echo $price_key; ?>'.substr(1) + '_original_formated'] = hit['price']['default_formated'];
                                             }
-=======
-                                    cb(content.hits);
-                                });
-                            }
-                        })(index, i),
-                        displayKey: 'query',
-                        templates: {
-                            header: '<div class="category">' + algoliaConfig.autocomplete.titles[indices[i]] + '</div>',
-                            suggestion: (function (i) {
-                                return function (hit) {
-                                    if (indices[i] == 'products')
-                                    {
-                                        var time = Math.floor(Date.now() / 1000);
-
-                                        if ((hit.special_price_from_date != undefined && (hit.special_price_from_date > time && hit.special_price_from_date !== '')) ||
-                                            (hit.special_price_to_date != undefined && (hit.special_price_to_date < time && hit.special_price_to_date !== '')))
-                                        {
-                                            delete hit.special_price_from_date;
-                                            delete hit.special_price_to_date;
-                                            delete hit.special_price;
-                                            delete hit.special_price_with_tax;
-                                            delete hit.special_price_formated;
-                                            delete hit.special_price_with_tax_formated;
-                                        }
-
-                                        if (Array.isArray(hit.categories_without_path))
-                                            hit.categories_without_path = hit.categories_without_path.join(', ');
->>>>>>> "View All" is now a part of the pagination template.
 
                                         }
 
-<<<<<<< HEAD
                                         if (indices[i] == 'categories') {
                                             hit.displayKey = hit.path;
                                         }
@@ -1374,11 +1171,6 @@ $class = $isSearchPage ? 'search-page' : '';
                                         hit.displayKey = hit.displayKey || hit.name;
 
                                         return algoliaConfig.autocomplete.templates[indices[i]].render(hit);
-=======
-                                        if (Array.isArray(hit.price))
-                                            hit.price = hit.price[0];
-
->>>>>>> "View All" is now a part of the pagination template.
                                     }
                                 })(i)
                             }
@@ -1433,18 +1225,8 @@ $class = $isSearchPage ? 'search-page' : '';
                                 return '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo $base_url; ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
                             }
                         }
-<<<<<<< HEAD
                     });
                 }
-=======
-                    })(index, i),
-                    displayKey: 'value',
-                    templates: {
-                        header: '<div class="category">' + label + '</div>',
-                        suggestion: (function (i) {
-                            return function (hit) {
-                                hit.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + algoliaConfig.autocomplete.additionnalSection[i].attribute + "&refinement_value=" + hit.value;
->>>>>>> "View All" is now a part of the pagination template.
 
                 $(algoliaConfig.autocomplete.selector).each(function (i) {
                     var tt = $(this)
@@ -1568,23 +1350,11 @@ $class = $isSearchPage ? 'search-page' : '';
 
                         instant_search_facets_container.html(getHtmlForFacets(facetsTemplate, facets, false));
                     }
-<<<<<<< HEAD
                     else {
                         helper_empty.search();
                     }
 
                     instant_search_results_container.html(getHtmlForResults(resultsTemplate, content, facets));
-=======
-                }
-
-                /**
-                 * Generate HTML
-                 */
-
-                var instant_search_facets_container = $('#instant-search-facets-container');
-                var instant_search_results_container = $('#instant-search-results-container');
-                var instant_search_pagination_container = $('#instant-search-pagination-container');
->>>>>>> "View All" is now a part of the pagination template.
 
                     if (content.hits.length > 0)
                         instant_search_pagination_container.html(getHtmlForPagination(paginationTemplate, content, pages, facets));
@@ -1601,15 +1371,8 @@ $class = $isSearchPage ? 'search-page' : '';
                     }
                 }
 
-<<<<<<< HEAD
                 helper.on('result', searchCallback);
                 helper_empty.on('result', searchCallbackEmpty);
-=======
-                instant_search_results_container.html(getHtmlForResults(resultsTemplate, content, facets));
-
-                if (content.hits.length > 0)
-                    instant_search_pagination_container.html(getHtmlForPagination(paginationTemplate, content, pages, facets, helper.viewAll));
->>>>>>> "View All" is now a part of the pagination template.
 
                 custom_facets_types["hierarchical"] = function (helper, content, facet) {
                     var data = [];
@@ -1791,17 +1554,8 @@ $class = $isSearchPage ? 'search-page' : '';
                 $("body").on("click", ".algolia-pagination a", function (e) {
                     e.preventDefault();
 
-<<<<<<< HEAD
                     gotoPage($(this).attr("data-page"));
                     performQueries(true);
-=======
-                if ($(this).attr('data-page') == 'all') {
-                    gotoPage(1, true);
-                } else {
-                    gotoPage($(this).attr("data-page"), false);
-                }
-                performQueries(true);
->>>>>>> "View All" is now a part of the pagination template.
 
                     $("body").scrollTop(0);
 
@@ -1890,7 +1644,6 @@ $class = $isSearchPage ? 'search-page' : '';
                 /** Clean input **/
                 $(algoliaConfig.autocomplete.selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
 
-<<<<<<< HEAD
                 if (<?php echo $isSearchPage ? "true" : "false"; ?> || location.hash.length > 1
             )
                 {
@@ -1927,29 +1680,6 @@ $class = $isSearchPage ? 'search-page' : '';
                     'fill': '#AAA',
                     'stroke': '#AAA'
                 };
-=======
-            if (<?php echo $isSearchPage ? "true" : "false"; ?> || location.hash.length > 1) {
-            getRefinementsFromUrl();
-        }
-
-            if (supportsHistory) {
-                window.addEventListener("popstate", getRefinementsFromUrl);
-            } else {
-                window.addEventListener("hashchange", getRefinementsFromUrl);
-            }
-
-            // SO: delete
-            onfocus_css = {
-                'fill': '#54A5CD',
-                'stroke': '#54A5CD'
-            };
-
-            // SO: delete
-            onblur_css = {
-                'fill': '#AAA',
-                'stroke': '#AAA'
-            };
->>>>>>> "View All" is now a part of the pagination template.
 
                 $('#search').focus(function () {
                     $(this).parent().next().css(onfocus_css);
