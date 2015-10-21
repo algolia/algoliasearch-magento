@@ -563,7 +563,7 @@ $class = $isSearchPage ? 'search-page' : '';
                                 header: '<div class="category">' + section.title + '</div>',
                                 suggestion: function (hit) {
                                     if (indexName === 'products') {
-                                        hit = tranformHit(hit)
+                                        hit = transformHit(hit, algoliaConfig.priceKey)
                                     } else if (indexName === 'categories') {
                                         hit.displayKey = hit.path;
                                     }
@@ -684,7 +684,7 @@ $class = $isSearchPage ? 'search-page' : '';
                         },
                         transformData: {
                             hit: function (hit) {
-                                hit = tranformHit(hit);
+                                hit = transformHit(hit, algoliaConfig.priceKey);
                                 hit.isAddToCartEnabled = algoliaConfig.instant.isAddToCartEnabled;
 
                                 return hit;

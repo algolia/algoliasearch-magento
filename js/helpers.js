@@ -1,4 +1,4 @@
-var tranformHit = function (hit) {
+var transformHit = function (hit, price_key) {
     if (Array.isArray(hit.categories))
         hit.categories = hit.categories.join(', ');
 
@@ -12,23 +12,8 @@ var tranformHit = function (hit) {
     if (Array.isArray(hit.price))
         hit.price = hit.price[0];
 
-    var time = Math.floor(Date.now() / 1000);
-
-    if ((hit.special_price_from_date != undefined && (hit.special_price_from_date > time && hit.special_price_from_date !== '')) ||
-        (hit.special_price_to_date != undefined && (hit.special_price_to_date < time && hit.special_price_to_date !== ''))) {
-        delete hit.special_price_from_date;
-        delete hit.special_price_to_date;
-        delete hit.special_price;
-        delete hit.special_price_with_tax;
-        delete hit.special_price_formated;
-        delete hit.special_price_with_tax_formated;
-    }
-
-    if (hit.min_formated !== undefined) {
-        delete hit.price;
-        delete hit.price_formated;
-        delete hit.price_with_tax;
-        delete hit.price_with_tax_formated;
+    if (price_key !== '.default' && hit['price'][price_key.substr(1) + '_formated'] !== hit['price']['default_formated']) {
+        hit['price'][price_key.substr(1) + '_original_formated'] = hit['price']['default_formated'];
     }
 
     return hit;
