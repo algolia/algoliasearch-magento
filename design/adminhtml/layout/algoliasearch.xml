@@ -1,18 +1,6 @@
 <?xml version="1.0"?>
 <layout>
     <algolia_bundle_handle>
-        <reference name="head">
-            <block type="core/text" name="algolia-polyfill">
-                <action method="setText">
-                    <text>
-                        <![CDATA[<meta http-equiv="X-UA-Compatible" content="IE=Edge">
-                            <!--[if lte IE 9]>
-                                <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
-                        <![endif]-->]]>
-                    </text>
-                </action>
-            </block>
-        </reference>
         <reference name="before_body_end">
             <block type="core/template" template="algoliasearch/adminjs.phtml"/>
         </reference>
