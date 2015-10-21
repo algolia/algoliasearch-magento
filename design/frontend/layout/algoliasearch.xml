@@ -4,7 +4,9 @@
         <reference name="head">
             <action method="addCss"><stylesheet>algoliasearch/bundle.css</stylesheet></action>
             <action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>
-            <action method="addJs"><script>algoliasearch/bundle.min.js</script></action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="core/template" template="algoliasearch/frontjs.phtml"/>
         </reference>
         <reference name="top.search">
             <action method="setTemplate"><template>algoliasearch/topsearch.phtml</template></action>
