@@ -398,7 +398,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $customData = array(
             'objectID'          => $product->getId(),
             'name'              => $product->getName(),
-            'url'               => $product->getProductUrl()
+            'url'               => Mage::getSingleton('catalog/product_url')->getUrl($product)
         );
 
         $additionalAttributes = $this->config->getProductAdditionalAttributes($product->getStoreId());
