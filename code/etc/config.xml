@@ -106,6 +106,7 @@
             <algoliasearch_setup>
                 <setup>
                     <module>Algolia_Algoliasearch</module>
+                    <class>Mage_Eav_Model_Entity_Setup</class>
                 </setup>
             </algoliasearch_setup>
         </resources>
