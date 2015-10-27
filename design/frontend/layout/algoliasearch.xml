@@ -13,6 +13,7 @@
                     </text>
                 </action>
             </block>
+            <block type="core/template" template="algoliasearch/beforetopsearch.phtml"/>
         </reference>
         <reference name="before_body_end">
             <block type="core/template" template="algoliasearch/frontjs.phtml"/>

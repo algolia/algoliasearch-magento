@@ -16,7 +16,7 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
 
     public function getAttributeValues($storeId, $section)
     {
-        $attributeCode = $section['attribute'];
+        $attributeCode = $section['name'];
 
         $products = Mage::getResourceModel('catalog/product_collection')
             ->addStoreFilter($storeId)

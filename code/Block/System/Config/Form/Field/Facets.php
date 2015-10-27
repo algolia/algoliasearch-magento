@@ -31,8 +31,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
                     $aOptions = array(
                         'conjunctive'   => 'Conjunctive',
                         'disjunctive'   => 'Disjunctive',
-                        'slider'        => 'Slider',
-                        'other'         => 'Other ->'
+                        'slider'        => 'Slider'
                     );
 
                     $selectField->setExtraParams('style="width:100px;"');
@@ -58,11 +57,6 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
         $this->addColumn('type', array(
             'label' => Mage::helper('adminhtml')->__('Facet type'),
             'renderer'=> $this->getRenderer('type'),
-        ));
-
-        $this->addColumn('other_type', array(
-            'label' => Mage::helper('adminhtml')->__('Other facet type'),
-            'style' => 'width: 100px;'
         ));
 
         $this->addColumn('label', array(
