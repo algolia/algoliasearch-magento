@@ -420,8 +420,18 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 ->addFieldToFilter('level', array('gt' => 1))
                 ->addIsActiveFilter();
 
+            $rootCat = Mage::app()->getStore($product->getStoreId())->getRootCategoryId();
+
             foreach ($categoryCollection as $category)
             {
+                // Check and skip all categories that is not
+                // in the path of the current store.
+                $path = $category->getPath();
+                $path_parts = explode("/",$path);
+                if (isset($path_parts[1]) && $path_parts[1] != $rootCat) {
+                    continue;
+                }
+                
                 $categoryName = $category->getName();
 
                 if ($categoryName)
