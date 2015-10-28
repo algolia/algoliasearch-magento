@@ -304,8 +304,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $customData[$field]['special_from_date'] = strtotime($product->getSpecialFromDate());
                         $customData[$field]['special_to_date'] = strtotime($product->getSpecialToDate());
 
-                        $customData[$field]['group_' . $group_id . '_original_formated'] = $customData[$field]['group_' . $group_id . '_formated'];
-
                         $customData[$field]['group_' . $group_id] = $special_price;
                         $customData[$field]['group_' . $group_id . '_formated'] = $product->getStore()->formatPrice($special_price, false);
                     }
