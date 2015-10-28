@@ -264,6 +264,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             return source;
         }
 
+        /** If is not products, categories, pages or suggestions, it's additional section **/
         var index = algolia_client.initIndex(algoliaConfig.indexName + "_section_" + section.name);
 
         var source = {
