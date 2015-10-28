@@ -267,6 +267,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customData[$field]['default'] = $price;
             $customData[$field]['default_formated'] = $product->getStore()->formatPrice($price, false);
 
+            $special_price = (double) Mage::helper('tax')->getPrice($product, $product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
 
             if ($customer_groups_enabled) // If fetch special price for groups
             {
@@ -292,17 +293,36 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $product->setCustomerGroupId(null);
             }
 
-            $special_price = (double) Mage::helper('tax')->getPrice($product, $product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
-
-            if ($special_price && $special_price !== $customData[$field]['default'])
+            if ($customer_groups_enabled)
             {
-                $customData[$field]['special_from_date'] = strtotime($product->getSpecialFromDate());
-                $customData[$field]['special_to_date'] = strtotime($product->getSpecialToDate());
+                foreach ($groups as $group)
+                {
+                    $group_id = (int)$group->getData('customer_group_id');
 
-                $customData[$field]['default_original_formated'] = $customData[$field]['default_formated'];
+                    if ($special_price && $special_price < $customData[$field]['group_' . $group_id])
+                    {
+                        $customData[$field]['special_from_date'] = strtotime($product->getSpecialFromDate());
+                        $customData[$field]['special_to_date'] = strtotime($product->getSpecialToDate());
 
-                $customData[$field]['default'] = $special_price;
-                $customData[$field]['default_formated'] = $product->getStore()->formatPrice($special_price, false);
+                        $customData[$field]['group_' . $group_id . '_original_formated'] = $customData[$field]['group_' . $group_id . '_formated'];
+
+                        $customData[$field]['group_' . $group_id] = $special_price;
+                        $customData[$field]['group_' . $group_id . '_formated'] = $product->getStore()->formatPrice($special_price, false);
+                    }
+                }
+            }
+            else
+            {
+                if ($special_price && $special_price < $customData[$field]['default'])
+                {
+                    $customData[$field]['special_from_date'] = strtotime($product->getSpecialFromDate());
+                    $customData[$field]['special_to_date'] = strtotime($product->getSpecialToDate());
+
+                    $customData[$field]['default_original_formated'] = $customData[$field]['default_formated'];
+
+                    $customData[$field]['default'] = $special_price;
+                    $customData[$field]['default_formated'] = $product->getStore()->formatPrice($special_price, false);
+                }
             }
 
             if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
