@@ -144,21 +144,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $index_name = $this->product_helper->getIndexName($store_id);
 
             $this->algolia_helper->deleteObjects($ids, $index_name);
-
-            /**
-             * Group Deleting
-             */
-            if ($this->config->isCustomerGroupsEnabled($store_id))
-            {
-                foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
-                {
-                    $group_id = (int) $group->getData('customer_group_id');
-
-                    $index_name = $this->product_helper->getIndexName($store_id).'_group_'.$group_id;
-
-                    $this->algolia_helper->deleteObjects($ids, $index_name);
-                }
-            }
         }
     }
 
@@ -491,10 +476,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $collection->joinField('stock_qty', $index_prefix.'cataloginventory_stock_item', 'qty', 'product_id=entity_id', '{{table}}.stock_id=1', 'left');
 
         if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'ordered_qty'))
-            $collection->getSelect()->columns('(SELECT SUM(qty_ordered) FROM '.$index_prefix.'sales_flat_order_item WHERE sales_flat_order_item.product_id = e.entity_id) as ordered_qty');
+            $collection->getSelect()->columns('(SELECT SUM(qty_ordered) FROM '.$index_prefix.'sales_flat_order_item WHERE '.$index_prefix.'sales_flat_order_item.product_id = e.entity_id) as ordered_qty');
 
         if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'total_ordered'))
-            $collection->getSelect()->columns('(SELECT SUM(row_total) FROM '.$index_prefix.'sales_flat_order_item WHERE sales_flat_order_item.product_id = e.entity_id) as total_ordered');
+            $collection->getSelect()->columns('(SELECT SUM(row_total) FROM '.$index_prefix.'sales_flat_order_item WHERE '.$index_prefix.'sales_flat_order_item.product_id = e.entity_id) as total_ordered');
 
         if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'rating_summary'))
             $collection->joinField('rating_summary', $index_prefix.'review_entity_summary', 'rating_summary', 'entity_pk_value=entity_id', '{{table}}.store_id='.$storeId, 'left');
