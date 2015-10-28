@@ -139,21 +139,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $index_name = $this->product_helper->getIndexName($store_id);
 
             $this->algolia_helper->deleteObjects($ids, $index_name);
-
-            /**
-             * Group Deleting
-             */
-            if ($this->config->isCustomerGroupsEnabled($store_id))
-            {
-                foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
-                {
-                    $group_id = (int) $group->getData('customer_group_id');
-
-                    $index_name = $this->product_helper->getIndexName($store_id).'_group_'.$group_id;
-
-                    $this->algolia_helper->deleteObjects($ids, $index_name);
-                }
-            }
         }
     }
 

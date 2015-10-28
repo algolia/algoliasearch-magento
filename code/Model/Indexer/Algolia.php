@@ -107,7 +107,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
             $product = Mage::getModel('catalog/product')->load($object->getProductId());
 
-            if ($object->getData('is_in_stock') == false|| $product->getQty() <= 0)
+            if ($object->getData('is_in_stock') == false || (int) $product->getStockItem()->getQty() <= 0)
             {
                 try // In case of wrong credentials or overquota or block account. To avoid checkout process to fail
                 {
