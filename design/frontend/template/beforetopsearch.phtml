@@ -8,7 +8,7 @@ $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 $base_url = Mage::getBaseUrl();
 
 $isSearchPage = false;
-$hash_path = null;
+$hash_params = null;
 
 $group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
 $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.group_'.$group_id : '.default';
@@ -36,7 +36,7 @@ if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->g
 
         $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId());
         $category_url = $category->getUrl($category);
-        $hash_path = '#q';//=&page=0&refinements=%5B%7B%22categories%22%3A%5B%22'.$path.'%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$indexName.'%22';
+        $hash_params = '{index: "'.$product_helper->getBaseIndexName() . '_products", hierarchicalFacetsRefinements: {"categories.level0": ["'.$path.'"]}}';
 
         $isSearchPage = true;
     }
@@ -58,24 +58,32 @@ if ($config->isInstantEnabled())
 
         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
-        $hash_path = '#q='.htmlentities($query, ENT_COMPAT, "UTF-8");//.'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$product_helper->getIndexName().'%22';
+        $hash_params = '{query: "'.htmlentities($query, ENT_COMPAT, "UTF-8").'", index: "'.$product_helper->getBaseIndexName() . '_products"}';
 
         $refinement_key = Mage::app()->getRequest()->getParam('refinement_key');
         $refinement_value = Mage::app()->getRequest()->getParam('refinement_value');
 
         if ($refinement_key !== null)
         {
-            $hash_path = '#q=';//&page=0&refinements=%5B%7B%22' . $refinement_key . '%22%3A%5B%22' . $refinement_value . '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22' . $product_helper->getBaseIndexName() . '_products%22';
+            $hash_params = '{query: "", index: "'.$product_helper->getBaseIndexName() . '_products", facetsRefinements: {"'.$refinement_key.'": ["'.$refinement_value.'"]}}';
         }
 
         $isSearchPage = true;
     }
 }
 
-
-if ($hash_path !== null)
+if ($hash_params !== null)
 {
-    echo '<script>if (window.location.hash.length <= 1) { window.location.hash = "'.$hash_path.'"; }</script>';
+    ?>
+    <script>
+    if (window.location.hash.length <= 1)
+    {
+        document.addEventListener('DOMContentLoaded', function(event) {
+            window.location.hash = algoliaBundle.instantsearch.createQueryString(<?php echo $hash_params; ?>);
+        });
+    }
+    </script>
+    <?php
 }
 
 if ($base_url[strlen($base_url) - 1] == '/')

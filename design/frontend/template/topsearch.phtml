@@ -198,7 +198,7 @@ if (count($sections) > 0)
                                 <?php echo $this->__('Search :'); ?>
                             </label>
 
-                            <input value="<?php echo ($catalogSearchHelper->getEscapedQueryText() !== '__empty__' ? $catalogSearchHelper->getEscapedQueryText() : '') ?>" placeholder="<?php echo $this->__('Search for products'); ?>" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
+                            <input value="<?php echo ($catalogSearchHelper->getEscapedQueryText() !== '__empty__' && Mage::app()->getRequest()->getParam('refinement_key') === null ? $catalogSearchHelper->getEscapedQueryText() : '') ?>" placeholder="<?php echo $this->__('Search for products'); ?>" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
 
                             <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128">
                                 <g transform="scale(4)">
@@ -314,15 +314,6 @@ if (count($sections) > 0)
         {{name}}
         <span class="count">{{count}}</span>
     </div>
-</script>
-
-<script type="text/template" id="hierarchical-facet-template">
-
-    <div class="sub_facet {{#isRefined}}checked{{/isRefined}}">
-        {{name}}
-        <span class="count">{{count}}</span>
-    </div>
-
 </script>
 
 <!--
@@ -472,19 +463,16 @@ if (count($sections) > 0)
 
                 /** Facets **/
                 var wrapper = document.getElementById('instant-search-facets-container');
-                var facetTemplate = $('#facet-template').html();
 
                 $.each(algoliaConfig.facets, function (i, facet) {
 
                     if (facet.attribute.indexOf("price") !== -1)
                         facet.attribute = facet.attribute + algoliaConfig.priceKey;
 
-                    facet.template = facetTemplate;
                     facet.wrapper = wrapper;
 
                     search.addWidget(getFacetWidget(facet, {
-                        item: facet.attribute == 'categories' ? $('#hierarchical-facet-template').html() : facet.template,
-                        header: '<div class="name">' + (facet.label ? facet.label : facet.attribute) + '</div>',
+                        header: '<div class="name">' + (facet.label ? facet.label : facet.attribute) + '</div>'
                     }));
                 });
 
