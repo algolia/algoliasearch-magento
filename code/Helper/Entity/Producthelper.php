@@ -293,6 +293,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $product->setCustomerGroupId(null);
             }
 
+            $customData[$field]['special_from_date'] = strtotime($product->getSpecialFromDate());
+            $customData[$field]['special_to_date'] = strtotime($product->getSpecialToDate());
+
             if ($customer_groups_enabled)
             {
                 foreach ($groups as $group)
@@ -301,9 +304,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                     if ($special_price && $special_price < $customData[$field]['group_' . $group_id])
                     {
-                        $customData[$field]['special_from_date'] = strtotime($product->getSpecialFromDate());
-                        $customData[$field]['special_to_date'] = strtotime($product->getSpecialToDate());
-
                         $customData[$field]['group_' . $group_id] = $special_price;
                         $customData[$field]['group_' . $group_id . '_formated'] = $product->getStore()->formatPrice($special_price, false);
                     }
@@ -313,9 +313,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             {
                 if ($special_price && $special_price < $customData[$field]['default'])
                 {
-                    $customData[$field]['special_from_date'] = strtotime($product->getSpecialFromDate());
-                    $customData[$field]['special_to_date'] = strtotime($product->getSpecialToDate());
-
                     $customData[$field]['default_original_formated'] = $customData[$field]['default_formated'];
 
                     $customData[$field]['default'] = $special_price;
