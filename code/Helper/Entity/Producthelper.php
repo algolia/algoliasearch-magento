@@ -351,10 +351,23 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $min = $max; // avoid to have PHP_INT_MAX in case of no subproducts (Corner case of visibility and stock options)
                 }
 
+
                 if ($min != $max)
                 {
                     $dashed_format = $product->getStore()->formatPrice($min, false) . ' - ' . $product->getStore()->formatPrice($max, false);
-                    $customData[$field]['default_formated'] = $dashed_format;
+
+                    if (isset($customData[$field]['default_original_formated']) === false || $min <= $customData[$field]['default'])
+                    {
+
+                        $customData[$field]['default_formated'] = $dashed_format;
+
+                        //// Do not keep special price that is already taken into account in min max
+                        unset($customData['price']['special_from_date']);
+                        unset($customData['price']['special_to_date']);
+                        unset($customData['price']['default_original_formated']);
+
+                        $customData[$field]['default'] = 0; // will be reset just after
+                    }
 
                     if ($customer_groups_enabled)
                     {
@@ -362,18 +375,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         {
                             $group_id = (int)$group->getData('customer_group_id');
 
-                            $customData[$field]['group_' . $group_id] = 0;
-                            $customData[$field]['group_' . $group_id . '_formated'] = $dashed_format;
+                            if ($min != $max && $min <= $customData[$field]['group_' . $group_id])
+                            {
+                                $customData[$field]['group_' . $group_id] = 0;
+                                $customData[$field]['group_' . $group_id . '_formated'] = $dashed_format;
+                            }
                         }
                     }
-
-                    //// Do not keep special price that is already taken into account in min max
-                    unset($customData['price']['special_from_date']);
-                    unset($customData['price']['special_to_date']);
-                    unset($customData['price']['default_original_formated']);
-
-                    $customData[$field]['default'] = 0; // will be reset just after
                 }
+
 
                 if ($customData[$field]['default'] == 0)
                 {
@@ -381,12 +391,16 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                     if ($min === $max)
                         $customData[$field]['default_formated'] = $product->getStore()->formatPrice($min, false);
+                }
 
-                    if ($customer_groups_enabled)
+                if ($customer_groups_enabled)
+                {
+                    foreach ($groups as $group)
                     {
-                        foreach ($groups as $group)
+                        $group_id = (int)$group->getData('customer_group_id');
+
+                        if ($customData[$field]['group_' . $group_id] == 0)
                         {
-                            $group_id = (int)$group->getData('customer_group_id');
                             $customData[$field]['group_' . $group_id] = $min;
 
                             if ($min === $max)
