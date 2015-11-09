@@ -769,7 +769,7 @@ $class = $isSearchPage ? 'search-page' : '';
                     var numericsRefinementsParamOffset = params.indexOf('&numerics_refinements=');
                     var indexNameOffset = params.indexOf('&index_name=');
 
-                    var q = decodeURIComponent(params.substring(0, pageParamOffset));
+                    var q =  $("<div>").text(decodeURIComponent(params.substring(0, pageParamOffset))).html();
                     var page = parseInt(params.substring(pageParamOffset + '&page='.length, refinementsParamOffset));
                     var refinements = JSON.parse(decodeURIComponent(params.substring(refinementsParamOffset + '&refinements='.length, numericsRefinementsParamOffset)));
                     var numericsRefinements = JSON.parse(decodeURIComponent(params.substring(numericsRefinementsParamOffset + '&numerics_refinements='.length, indexNameOffset)));
