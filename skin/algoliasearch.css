@@ -37,7 +37,7 @@
 
 /* REFINEMENT LIST */
 .ais-hierarchical-menu--item__active > div > .ais-hierarchical-menu--link,
-.ais-refinement-list--item__active > div > .ais-hierarchical-list--linkk,
+.ais-refinement-list--item__active > div > .ais-hierarchical-list--link,
 .ais-refinement-list--item__active > div > .ais-refinement-list--label
 {
   font-weight: bold;
@@ -59,8 +59,10 @@
   font-weight: inherit;
   font-size: inherit;
 }
+
 .ais-menu--link:hover, .ais-hierarchical-menu--link:hover {
   text-decoration: none;
+  color: #636363;
 }
 .ais-menu--count, .ais-hierarchical-menu--count, .ais-refinement-list--count {
   float: right;
@@ -528,10 +530,6 @@
   font-size: 14px;
   text-align: center;
   color: #636363;
-}
-
-#algolia_instant_selector .result:hover .result-title{
-  color: #54A5CD;
 }
 
 #algolia_instant_selector .ui-widget-header {
