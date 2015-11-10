@@ -464,6 +464,27 @@ if (count($sections) > 0)
                 /** Facets **/
                 var wrapper = document.getElementById('instant-search-facets-container');
 
+                var customAttributeFacet = {
+                    categories: function(facet, templates) {
+                        var hierarchical_levels = [];
+                        for (var l = 0; l < 10; l++)
+                            hierarchical_levels.push('categories.level' + l.toString());
+
+                        return algoliaBundle.instantsearch.widgets.hierarchicalMenu({
+                            container: facet.wrapper.appendChild(document.createElement('div')),
+                            attributes: hierarchical_levels,
+                            separator: ' /// ',
+                            alwaysGetRootLevel: true,
+                            templates: templates,
+                            sortBy: ['name:asc'],
+                            cssClasses: {
+                                list: 'hierarchical',
+                                root: 'facet hierarchical'
+                            }
+                        });
+                    }
+                };
+
                 $.each(algoliaConfig.facets, function (i, facet) {
 
                     if (facet.attribute.indexOf("price") !== -1)
@@ -471,9 +492,15 @@ if (count($sections) > 0)
 
                     facet.wrapper = wrapper;
 
-                    search.addWidget(getFacetWidget(facet, {
+                    var templates = {
                         header: '<div class="name">' + (facet.label ? facet.label : facet.attribute) + '</div>'
-                    }));
+                    };
+
+                    var widget = customAttributeFacet[facet.attribute] !== undefined ?
+                                    customAttributeFacet[facet.attribute](facet, templates) :
+                                    getFacetWidget(facet, templates);
+
+                    search.addWidget(widget);
                 });
 
                 /** Pagination **/
