@@ -24,6 +24,15 @@
                 </observers>
             </controller_action_layout_load_before>
         </events>
+        <translate>
+            <modules>
+                <algoliasearch>
+                    <files>
+                        <default>Algolia_Algoliasearch.csv</default>
+                    </files>
+                </algoliasearch>
+            </modules>
+        </translate>        
     </frontend>
     <adminhtml>
         <layout>
