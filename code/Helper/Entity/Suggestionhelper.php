@@ -33,6 +33,7 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
     public function getSuggestionCollectionQuery($storeId)
     {
         $collection = Mage::getResourceModel('catalogsearch/query_collection')
+                            ->addStoreFilter($storeId)
                             ->setStoreId($storeId);
 
         return $collection;
