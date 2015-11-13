@@ -576,13 +576,8 @@ $class = $isSearchPage ? 'search-page' : '';
                 isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
                 removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>
             };
-
-
-<<<<<<< HEAD
+            
             $('#search').closest('form').submit(function (e) {
-=======
-            $('#search').closest('form').submit(function(e) {
->>>>>>> master
                 var query = $('#search').val();
 
                 if (algoliaConfig.instant.enabled && query == '')
