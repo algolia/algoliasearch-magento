@@ -533,607 +533,608 @@ $class = $isSearchPage ? 'search-page' : '';
     //<![CDATA[
 
     algoliaBundle.$(function($) {
-        var supportsHistory = window.history && window.history.pushState;
+        $(document).ready(function () {
+            var supportsHistory = window.history && window.history.pushState;
 
-        var algoliaConfig = {
-            instant: {
-                enabled: <?php echo $config->isInstantEnabled() ? "true" : "false"; ?>,
-                selector: '<?php echo $config->getInstantSelector(); ?>',
-                isAddToCartEnabled: <?php echo $config->isAddToCartEnable() ? "true" : "false"; ?>
-            },
-            autocomplete: {
-                enabled: <?php echo $config->isAutoCompleteEnabled() ? "true" : "false"; ?>,
-                selector: '#search',
-                hitsPerPage: {
-                    products: <?php echo (int) $config->getNumberOfProductSuggestions() ?>,
-                    categories: <?php echo (int) $config->getNumberOfCategorySuggestions() ?>,
-                    pages: <?php echo (int) $config->getNumberOfPageSuggestions() ?>,
-                    suggestions: <?php echo (int) $config->getNumberOfQuerySuggestions() ?>
+            var algoliaConfig = {
+                instant: {
+                    enabled: <?php echo $config->isInstantEnabled() ? "true" : "false"; ?>,
+                    selector: '<?php echo $config->getInstantSelector(); ?>',
+                    isAddToCartEnabled: <?php echo $config->isAddToCartEnable() ? "true" : "false"; ?>
                 },
-                templates: {
-                    suggestions: algoliaBundle.Hogan.compile($('#autocomplete_suggestions_template').html()),
-                    products: algoliaBundle.Hogan.compile($('#autocomplete_products_template').html()),
-                    categories: algoliaBundle.Hogan.compile($('#autocomplete_categories_template').html()),
-                    pages: algoliaBundle.Hogan.compile($('#autocomplete_pages_template').html()),
-                    additionnalSection: algoliaBundle.Hogan.compile($('#autocomplete_extra_template').html()),
+                autocomplete: {
+                    enabled: <?php echo $config->isAutoCompleteEnabled() ? "true" : "false"; ?>,
+                    selector: '#search',
+                    hitsPerPage: {
+                        products: <?php echo (int) $config->getNumberOfProductSuggestions() ?>,
+                        categories: <?php echo (int) $config->getNumberOfCategorySuggestions() ?>,
+                        pages: <?php echo (int) $config->getNumberOfPageSuggestions() ?>,
+                        suggestions: <?php echo (int) $config->getNumberOfQuerySuggestions() ?>
+                    },
+                    templates: {
+                        suggestions: algoliaBundle.Hogan.compile($('#autocomplete_suggestions_template').html()),
+                        products: algoliaBundle.Hogan.compile($('#autocomplete_products_template').html()),
+                        categories: algoliaBundle.Hogan.compile($('#autocomplete_categories_template').html()),
+                        pages: algoliaBundle.Hogan.compile($('#autocomplete_pages_template').html()),
+                        additionnalSection: algoliaBundle.Hogan.compile($('#autocomplete_extra_template').html()),
+                    },
+                    titles: {
+                        products: '<?php echo $this->__('Products'); ?>',
+                        categories: '<?php echo $this->__('Categories') ?>',
+                        pages: '<?php echo $this->__('Pages') ?>',
+                        suggestions: '<?php echo $this->__('Suggestions') ?>'
+                    },
+                    additionnalSection: <?php echo json_encode($config->getAutocompleteAdditionnalSections()); ?>
                 },
-                titles: {
-                    products: '<?php echo $this->__('Products'); ?>',
-                    categories: '<?php echo $this->__('Categories') ?>',
-                    pages: '<?php echo $this->__('Pages') ?>',
-                    suggestions: '<?php echo $this->__('Suggestions') ?>'
-                },
-                additionnalSection: <?php echo json_encode($config->getAutocompleteAdditionnalSections()); ?>
-            },
-            applicationId: '<?php echo $config->getApplicationID() ?>',
-            indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
-            apiKey: '<?php echo $config->getSearchOnlyAPIKey() ?>',
-            facets: <?php echo json_encode($config->getFacets()); ?>,
-            hitsPerPage: <?php echo (int) $config->getNumberOfProductResults() ?>,
-            sortingIndices: <?php echo json_encode(array_values($config->getSortingIndices())); ?>,
-            isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
-            removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>
-        };
+                applicationId: '<?php echo $config->getApplicationID() ?>',
+                indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
+                apiKey: '<?php echo $config->getSearchOnlyAPIKey() ?>',
+                facets: <?php echo json_encode($config->getFacets()); ?>,
+                hitsPerPage: <?php echo (int) $config->getNumberOfProductResults() ?>,
+                sortingIndices: <?php echo json_encode(array_values($config->getSortingIndices())); ?>,
+                isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
+                removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>
+            };
 
 
-        $('#search').closest('form').submit(function(e) {
-            var query = $('#search').val();
+            $('#search').closest('form').submit(function(e) {
+                var query = $('#search').val();
 
-            if (algoliaConfig.instant.enabled && query == '')
-                query = '__empty__';
+                if (algoliaConfig.instant.enabled && query == '')
+                    query = '__empty__';
 
-            var url = $(this).attr('action') + '?q=' + query;
+                var url = $(this).attr('action') + '?q=' + query;
 
-            window.location = url;
+                window.location = url;
 
-            return false;
-        });
+                return false;
+            });
 
-        /*****************
-         **
-         ** INITIALIZATION
-         **
-         *****************/
+            /*****************
+             **
+             ** INITIALIZATION
+             **
+             *****************/
 
-        var algolia_client = algoliaBundle.algoliasearch(algoliaConfig.applicationId, algoliaConfig.apiKey);
+            var algolia_client = algoliaBundle.algoliasearch(algoliaConfig.applicationId, algoliaConfig.apiKey);
 
-        /**
-         *  Foreach Type decide if it need to have a conjunctive or dijunctive faceting
-         *  When you create a custom facet type you need to add it here.
-         *  Example : 'menu'
-         */
-        var conjunctive_facets          = [];
-        var hierarchical_facets         = [];
-        var disjunctive_facets          = [];
-        var disjunctive_facets_empty    = [];
-
-        for (var i = 0; i < algoliaConfig.facets.length; i++)
-        {
-            /** Force categories to be hierarchical **/
-            if (algoliaConfig.facets[i].attribute == "categories")
-                algoliaConfig.facets[i].type = "hierarchical";
-
-            if (algoliaConfig.facets[i].attribute.indexOf("price") !== -1)
-                algoliaConfig.facets[i].attribute = algoliaConfig.facets[i].attribute + '<?php echo $price_key; ?>';
-
-            if (algoliaConfig.facets[i].type == "conjunctive")
-                conjunctive_facets.push(algoliaConfig.facets[i].attribute);
-
-            if (algoliaConfig.facets[i].type == "disjunctive")
-            {
-                disjunctive_facets.push(algoliaConfig.facets[i].attribute);
-                disjunctive_facets_empty.push(algoliaConfig.facets[i].attribute);
-            }
-
-            if (algoliaConfig.facets[i].type == "hierarchical")
-            {
-                var hierarchical_levels = [];
-
-                for (var l = 0; l < 10; l++)
-                    hierarchical_levels.push('categories.level' + l.toString());
-
-                if (algoliaConfig.facets[i].attribute === 'categories')
-                    hierarchical_facets.push({
-                        name: algoliaConfig.facets[i].attribute,
-                        attributes: hierarchical_levels,
-                        separator: ' /// ',
-                        alwaysGetRootLevel: true,
-                        sortBy: ['name:asc']
-                    });
-                else
-                    disjunctive_facets.push(algoliaConfig.facets[i].attribute);
-            }
-
-            if (algoliaConfig.facets[i].type == "slider")
-                disjunctive_facets.push(algoliaConfig.facets[i].attribute);
-
-            if (algoliaConfig.facets[i].type == "menu")
-            {
-                disjunctive_facets.push(algoliaConfig.facets[i].attribute);
-                disjunctive_facets_empty.push(algoliaConfig.facets[i].attribute);
-            }
-        }
-
-        var helper = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products', {
-            facets: conjunctive_facets,
-            disjunctiveFacets: disjunctive_facets,
-            hierarchicalFacets: hierarchical_facets,
-            hitsPerPage: algoliaConfig.hitsPerPage,
-            analyticsTags: 'instant-search'
-        });
-
-        helper.setQuery('');
-
-        var helper_empty = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products', {
-            facets: conjunctive_facets,
-            disjunctiveFacets: disjunctive_facets_empty,
-            hierarchicalFacets: hierarchical_facets,
-            hitsPerPage: algoliaConfig.hitsPerPage,
-            analyticsTags: 'instant-search'
-        });
-
-        helper_empty.setQuery('');
-
-        /**
-         *  Helper functions
-         */
-        var history_timeout;
-        var custom_facets_types = [];
-
-        custom_facets_types["slider"] = function (helper, content, facet) {
-
-            if (content.getFacetByName(facet.attribute) !== undefined)
-            {
-                var min = content.getFacetByName(facet.attribute).stats.min;
-                var max = content.getFacetByName(facet.attribute).stats.max;
-
-                var current_min = helper.state.getNumericRefinement(facet.attribute, ">=");
-                var current_max = helper.state.getNumericRefinement(facet.attribute, "<=");
-
-                if (current_min == undefined)
-                    current_min = min;
-
-                if (current_max == undefined)
-                    current_max = max;
-
-                var params = {
-                    type: {},
-                    current_min: Math.floor(current_min),
-                    current_max: Math.ceil(current_max),
-                    count: min == max ? 0 : 1,
-                    min: Math.floor(min),
-                    max: Math.ceil(max)
-                };
-
-                params.type[facet.type] = true;
-
-                return [params];
-            }
-
-            return [];
-        };
-
-        var updateUrl = function (push_state) {
-
-            var refinements = [];
-
-            /** Get refinements for conjunctive facets **/
-            for (var refine in helper.state.facetsRefinements)
-            {
-                if (helper.state.facetsRefinements[refine])
-                {
-                    var r = {};
-
-                    r[refine] = helper.state.facetsRefinements[refine];
-
-                    refinements.push(r);
-                }
-            }
-
-            /** Get refinements for disjunctive facets **/
-            for (var refine in helper.state.disjunctiveFacetsRefinements)
-            {
-                var r = {};
-
-                r[refine] = helper.state.disjunctiveFacetsRefinements[refine];
-
-                refinements.push(r);
-            }
-
-            /** Get refinements for hierarchical facets **/
-            for (var refine in helper.state.hierarchicalFacetsRefinements)
-            {
-                var r = {};
-
-                r[refine] = helper.state.hierarchicalFacetsRefinements[refine];
-
-                refinements.push(r);
-            }
-
-            var url = '#q=' + encodeURIComponent(helper.state.query) +
-                '&page=' + helper.getCurrentPage() +
-                '&refinements=' + encodeURIComponent(JSON.stringify(refinements)) +
-                '&numerics_refinements=' + encodeURIComponent(JSON.stringify(helper.state.numericRefinements)) +
-                '&index_name=' + encodeURIComponent(JSON.stringify(helper.getIndex()));
-
-            /** If we have pushState push_state is false wait for one second to push the state in history **/
-            if (push_state) {
-                updateBrowserUrlBar(url);
-            }
-            else
-            {
-                clearTimeout(history_timeout);
-                history_timeout = setTimeout(function() {
-                    updateBrowserUrlBar(url)
-                }, 1000);
-            }
-        };
-
-        var getRefinementsFromUrl = function() {
-
-            if (location.hash && location.hash.indexOf('#q=') === 0)
-            {
-                var params                          = location.hash.substring(3);
-                var pageParamOffset                 = params.indexOf('&page=');
-                var refinementsParamOffset          = params.indexOf('&refinements=');
-                var numericsRefinementsParamOffset  = params.indexOf('&numerics_refinements=');
-                var indexNameOffset                 = params.indexOf('&index_name=');
-
-                var q                               = decodeURIComponent(params.substring(0, pageParamOffset));
-                var page                            = parseInt(params.substring(pageParamOffset + '&page='.length, refinementsParamOffset));
-                var refinements                     = JSON.parse(decodeURIComponent(params.substring(refinementsParamOffset + '&refinements='.length, numericsRefinementsParamOffset)));
-                var numericsRefinements             = JSON.parse(decodeURIComponent(params.substring(numericsRefinementsParamOffset + '&numerics_refinements='.length, indexNameOffset)));
-                var indexName                       = JSON.parse(decodeURIComponent(params.substring(indexNameOffset + '&index_name='.length)));
-
-                q = $("<div/>").html(q).text();
-
-                helper.setQuery(q);
-
-                helper.clearRefinements();
-
-                /** Set refinements from url data **/
-                for (var i = 0; i < refinements.length; ++i) {
-                    for (var refine in refinements[i]) {
-                        for (var j = 0; j < refinements[i][refine].length; j++) {
-                            helper.toggleRefine(refine, refinements[i][refine][j]);
-                            helper_empty.toggleRefine(refine, refinements[i][refine][j]);
-                        }
-                    }
-                }
-
-                for (var key in numericsRefinements)
-                    for (var operator in numericsRefinements[key])
-                        helper.addNumericRefinement(key, operator, numericsRefinements[key][operator]);
-
-                helper.setIndex(indexName).setCurrentPage(page);
-
-            }
-            helper.search();
-        };
-
-        var getFacets = function (content) {
-
-            var facets = [];
+            /**
+             *  Foreach Type decide if it need to have a conjunctive or dijunctive faceting
+             *  When you create a custom facet type you need to add it here.
+             *  Example : 'menu'
+             */
+            var conjunctive_facets          = [];
+            var hierarchical_facets         = [];
+            var disjunctive_facets          = [];
+            var disjunctive_facets_empty    = [];
 
             for (var i = 0; i < algoliaConfig.facets.length; i++)
             {
-                var sub_facets = [];
+                /** Force categories to be hierarchical **/
+                if (algoliaConfig.facets[i].attribute == "categories")
+                    algoliaConfig.facets[i].type = "hierarchical";
 
-                if (custom_facets_types[algoliaConfig.facets[i].type] != undefined)
+                if (algoliaConfig.facets[i].attribute.indexOf("price") !== -1)
+                    algoliaConfig.facets[i].attribute = algoliaConfig.facets[i].attribute + '<?php echo $price_key; ?>';
+
+                if (algoliaConfig.facets[i].type == "conjunctive")
+                    conjunctive_facets.push(algoliaConfig.facets[i].attribute);
+
+                if (algoliaConfig.facets[i].type == "disjunctive")
                 {
-                    try
-                    {
-                        var params = custom_facets_types[algoliaConfig.facets[i].type](helper, content, algoliaConfig.facets[i]);
-
-                        if (params)
-                            for (var k = 0; k < params.length; k++)
-                                sub_facets.push(params[k]);
-                    }
-                    catch(error)
-                    {
-                        console.log(error);
-                        throw("Bad facet function for '" + algoliaConfig.facets[i].type + "'");
-                    }
-                }
-                else
-                {
-                    var content_facet = content.getFacetByName(algoliaConfig.facets[i].attribute);
-
-                    if (content_facet == undefined)
-                        continue;
-
-                    for (var key in content_facet.data)
-                    {
-                        var checked = helper.isRefined(algoliaConfig.facets[i].attribute, key);
-
-                        var nameattr = window.facetsLabels && window.facetsLabels[key] != undefined ? window.facetsLabels[key] : key;
-                        var explode = nameattr.split(' /// ');
-                        var name = explode[explode.length - 1];
-
-                        var params = {
-                            type: {},
-                            checked: checked,
-                            nameattr: nameattr,
-                            name: name,
-                            count: content_facet.data[key]
-                        };
-
-                        params.type[algoliaConfig.facets[i].type] = true;
-
-                        sub_facets.push(params);
-                    }
-
-                    sub_facets.sort(function sortByCheckedThenCount(f1, f2) {
-                      if (f1.checked !== f2.checked)
-                          return f1.checked ? -1 : 1;
-
-                      if (f2.count !== f1.count)
-                          return f2.count - f1.count;
-
-                      return f1.name.localeCompare(f2.name);
-                    });
-
+                    disjunctive_facets.push(algoliaConfig.facets[i].attribute);
+                    disjunctive_facets_empty.push(algoliaConfig.facets[i].attribute);
                 }
 
-                var label = algoliaConfig.facets[i].label !== "" ? algoliaConfig.facets[i].label : algoliaConfig.facets[i].attribute;
+                if (algoliaConfig.facets[i].type == "hierarchical")
+                {
+                    var hierarchical_levels = [];
 
-                facets.push({count: sub_facets.length, attribute: algoliaConfig.facets[i].attribute, facet_categorie_name: label, sub_facets: sub_facets });
-            }
+                    for (var l = 0; l < 10; l++)
+                        hierarchical_levels.push('categories.level' + l.toString());
 
-            return facets;
-        };
-
-        var getPages = function (content) {
-            var pages = [];
-            if (content.page > 5)
-            {
-                pages.push({ current: false, number: 1 });
-                pages.push({ current: false, number: '...', disabled: true });
-            }
-
-            for (var p = content.page - 5; p < content.page + 5; ++p)
-            {
-                if (p < 0 || p >= content.nbPages)
-                    continue;
-
-                pages.push({ current: content.page == p, number: (p + 1) });
-            }
-            if (content.page + 5 < content.nbPages)
-            {
-                pages.push({ current: false, number: '...', disabled: true });
-                pages.push({ current: false, number: content.nbPages });
-            }
-
-            return pages;
-        };
-
-        var sortSelected = function () {
-            return function (val) {
-                var template = algoliaBundle.Hogan.compile(val);
-
-                var renderer = function(context) {
-                    return function(text) {
-                        return template.c.compile(text, template.options).render(context);
-                    };
-                };
-
-                var render = renderer(this);
-
-                var index_name = render(val);
-
-                if (index_name == helper.getIndex())
-                    return "selected";
-                return "";
-            }
-        };
-
-        var gotoPage = function(page) {
-            helper.setCurrentPage(+page - 1);
-        };
-
-        var getDate = function () {
-            return function (val) {
-                var template = algoliaBundle.Hogan.compile(val);
-
-                var renderer = function(context) {
-                    return function(text) {
-                        return template.c.compile(text, template.options).render(context);
-                    };
-                };
-
-                var render = renderer(this);
-
-                var timestamp = render(val);
-
-
-                var date = new Date(timestamp * 1000);
-
-                var days = ["<?php echo $this->__('Sunday'); ?>", "<?php echo $this->__('Monday'); ?>", "<?php echo $this->__('Tuesday'); ?>", "<?php echo $this->__('Wednesday'); ?>", "<?php echo $this->__('Thursday'); ?>", "<?php echo $this->__('Friday'); ?>", "<?php echo $this->__('Saturday'); ?>"];
-                var months = ["<?php echo $this->__('January'); ?>", "<?php echo $this->__('February'); ?>", "<?php echo $this->__('March'); ?>", "<?php echo $this->__('April'); ?>", "<?php echo $this->__('May'); ?>", "<?php echo $this->__('June'); ?>", "<?php echo $this->__('July'); ?>", "<?php echo $this->__('August'); ?>", "<?php echo $this->__('September'); ?>", "<?php echo $this->__('October'); ?>", "<?php echo $this->__('November'); ?>", "<?php echo $this->__('December'); ?>"];
-
-                var day = date.getDate();
-
-                if (day == 1)
-                    day += "<?php echo $this->__('st'); ?>";
-                else if (day == 2)
-                    day += "<?php echo $this->__('nd'); ?>";
-                else if (day == 3)
-                    day += "<?php echo $this->__('rd'); ?>";
-                else
-                    day += "<?php echo $this->__('th'); ?>";
-
-                return days[date.getDay()] + ", " + months[date.getMonth()] + " " + day + ", " + date.getFullYear();
-            }
-        };
-
-        /*****************
-         **
-         ** RENDERING HELPERS
-         **
-         *****************/
-
-        function getHtmlForPagination(paginationTemplate, content, pages, facets) {
-            var pagination_html = paginationTemplate.render({
-                pages: pages,
-                facets_count: facets.length,
-                prev_page: (content.page > 0 ? content.page : false),
-                next_page: (content.page + 1 < content.nbPages ? content.page + 2 : false)
-            });
-
-            return pagination_html;
-        }
-
-        function getHtmlForResults(resultsTemplate, content, facets) {
-
-            var results_html = resultsTemplate.render({
-                facets_count: facets.length,
-                getDate: getDate,
-                relevance_index_name: algoliaConfig.indexName + '_products',
-                sorting_indices: algoliaConfig.sortingIndices,
-                sortSelected: sortSelected,
-                hits: content.hits,
-                nbHits: content.nbHits,
-                nbHits_zero: (content.nbHits === 0),
-                nbHits_one: (content.nbHits === 1),
-                nbHits_many: (content.nbHits > 1),
-                query: helper.state.query,
-                processingTimeMS: content.processingTimeMS,
-                isAddToCartEnabled: algoliaConfig.instant.isAddToCartEnabled
-            });
-
-            return results_html;
-        }
-
-        function getHtmlForFacets(facetsTemplate, facets, empty) {
-
-            var facets_html = facetsTemplate.render({
-                facets: facets,
-                count: facets.length,
-                getDate: getDate,
-                relevance_index_name: algoliaConfig.indexName + '_products',
-                sorting_indices: algoliaConfig.sortingIndices,
-                sortSelected: sortSelected,
-                empty: empty
-                }, {
-                facet_hierarchical: facet_hierarchical
-            });
-
-            return facets_html;
-        }
-
-        /*****************
-         **
-         ** AUTOCOMPLETION MENU
-         **
-         *****************/
-
-        if (algoliaConfig.autocomplete.enabled)
-        {
-            var params = {};
-
-            var hogan_objs = [];
-
-            var indices = ['categories', 'products', 'pages'];
-            var indices_with_suffix  = ['categories', 'products', 'pages'];
-
-            if (algoliaConfig.autocomplete.hitsPerPage['suggestions'] > 0)
-            {
-                var suggestions_index = algolia_client.initIndex(algoliaConfig.indexName + "_suggestions");
-                var products_index = algolia_client.initIndex(algoliaConfig.indexName + "_products");
-
-                hogan_objs.push({
-                    displayKey: 'query',
-                    source: function (query, cb) {
-                        suggestions_index.search(query, {
-                            hitsPerPage: algoliaConfig.autocomplete.hitsPerPage['suggestions'],
-                            analyticsTags: 'autocomplete'
-                        }, function (err, content) {
-                            if (err)
-                                return;
-
-                            if (content.hits.length > 0) {
-                                products_index.search(content.hits[0].query, {
-                                    facets: ['categories.level0'],
-                                    hitsPerPage: 0,
-                                    typoTolerance: false,
-                                    maxValuesPerFacet: 3,
-                                    analyticsTags: 'instant-search'
-                                }, function (err2, content2) {
-
-                                    if (err2)
-                                    {
-                                        cb([]);
-                                        return;
-                                    }
-
-                                    var hits = [];
-
-                                    var categories = {};
-
-                                    if (content2.facets['categories.level0']) {
-
-                                        var obj = $.extend(true, {}, content.hits[0]);
-                                        obj.category = '<?php echo $this->__('All departments') ?>';
-                                        obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
-                                        hits.push(obj);
-
-                                        for (var key in content2.facets['categories.level0']) {
-
-                                            var explode = key.split(' /// ');
-                                            var nameattr = explode[0];
-
-                                            categories[nameattr] = 1;
-                                        }
-
-                                        for (var key in categories)
-                                        {
-                                            var obj = $.extend(true, {}, content.hits[0]);
-                                            obj.category = key;
-                                            obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query + '#q=' + obj.query + '&page=0&refinements=%5B%7B%22categories%22%3A%5B%22' + obj.category + '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22<?php echo $product_helper->getBaseIndexName(); ?>_products%22';
-                                            hits.push(obj);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        var obj = $.extend(true, {}, content.hits[0]);
-                                        obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
-                                        hits.push(obj);
-                                    }
-
-                                    for (var k = 1; k < content.hits.length; k++)
-                                    {
-                                        var obj = $.extend(true, {}, content.hits[k]);
-                                        obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
-                                        hits.push(obj);
-                                    }
-
-
-                                    for (var k = 0; k < hits.length; k++)
-                                        hits[k].query = content.query;
-
-                                    cb(hits);
-                                });
-                            }
-                            else
-                                cb([]);
+                    if (algoliaConfig.facets[i].attribute === 'categories')
+                        hierarchical_facets.push({
+                            name: algoliaConfig.facets[i].attribute,
+                            attributes: hierarchical_levels,
+                            separator: ' /// ',
+                            alwaysGetRootLevel: true,
+                            sortBy: ['name:asc']
                         });
-                    },
-                    templates: {
-                        suggestion: function (hit) {
-                                return algoliaConfig.autocomplete.templates['suggestions'].render(hit);
+                    else
+                        disjunctive_facets.push(algoliaConfig.facets[i].attribute);
+                }
+
+                if (algoliaConfig.facets[i].type == "slider")
+                    disjunctive_facets.push(algoliaConfig.facets[i].attribute);
+
+                if (algoliaConfig.facets[i].type == "menu")
+                {
+                    disjunctive_facets.push(algoliaConfig.facets[i].attribute);
+                    disjunctive_facets_empty.push(algoliaConfig.facets[i].attribute);
+                }
+            }
+
+            var helper = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products', {
+                facets: conjunctive_facets,
+                disjunctiveFacets: disjunctive_facets,
+                hierarchicalFacets: hierarchical_facets,
+                hitsPerPage: algoliaConfig.hitsPerPage,
+                analyticsTags: 'instant-search'
+            });
+
+            helper.setQuery('');
+
+            var helper_empty = algoliaBundle.algoliasearchHelper(algolia_client, algoliaConfig.indexName + '_products', {
+                facets: conjunctive_facets,
+                disjunctiveFacets: disjunctive_facets_empty,
+                hierarchicalFacets: hierarchical_facets,
+                hitsPerPage: algoliaConfig.hitsPerPage,
+                analyticsTags: 'instant-search'
+            });
+
+            helper_empty.setQuery('');
+
+            /**
+             *  Helper functions
+             */
+            var history_timeout;
+            var custom_facets_types = [];
+
+            custom_facets_types["slider"] = function (helper, content, facet) {
+
+                if (content.getFacetByName(facet.attribute) !== undefined)
+                {
+                    var min = content.getFacetByName(facet.attribute).stats.min;
+                    var max = content.getFacetByName(facet.attribute).stats.max;
+
+                    var current_min = helper.state.getNumericRefinement(facet.attribute, ">=");
+                    var current_max = helper.state.getNumericRefinement(facet.attribute, "<=");
+
+                    if (current_min == undefined)
+                        current_min = min;
+
+                    if (current_max == undefined)
+                        current_max = max;
+
+                    var params = {
+                        type: {},
+                        current_min: Math.floor(current_min),
+                        current_max: Math.ceil(current_max),
+                        count: min == max ? 0 : 1,
+                        min: Math.floor(min),
+                        max: Math.ceil(max)
+                    };
+
+                    params.type[facet.type] = true;
+
+                    return [params];
+                }
+
+                return [];
+            };
+
+            var updateUrl = function (push_state) {
+
+                var refinements = [];
+
+                /** Get refinements for conjunctive facets **/
+                for (var refine in helper.state.facetsRefinements)
+                {
+                    if (helper.state.facetsRefinements[refine])
+                    {
+                        var r = {};
+
+                        r[refine] = helper.state.facetsRefinements[refine];
+
+                        refinements.push(r);
+                    }
+                }
+
+                /** Get refinements for disjunctive facets **/
+                for (var refine in helper.state.disjunctiveFacetsRefinements)
+                {
+                    var r = {};
+
+                    r[refine] = helper.state.disjunctiveFacetsRefinements[refine];
+
+                    refinements.push(r);
+                }
+
+                /** Get refinements for hierarchical facets **/
+                for (var refine in helper.state.hierarchicalFacetsRefinements)
+                {
+                    var r = {};
+
+                    r[refine] = helper.state.hierarchicalFacetsRefinements[refine];
+
+                    refinements.push(r);
+                }
+
+                var url = '#q=' + encodeURIComponent(helper.state.query) +
+                    '&page=' + helper.getCurrentPage() +
+                    '&refinements=' + encodeURIComponent(JSON.stringify(refinements)) +
+                    '&numerics_refinements=' + encodeURIComponent(JSON.stringify(helper.state.numericRefinements)) +
+                    '&index_name=' + encodeURIComponent(JSON.stringify(helper.getIndex()));
+
+                /** If we have pushState push_state is false wait for one second to push the state in history **/
+                if (push_state) {
+                    updateBrowserUrlBar(url);
+                }
+                else
+                {
+                    clearTimeout(history_timeout);
+                    history_timeout = setTimeout(function() {
+                        updateBrowserUrlBar(url)
+                    }, 1000);
+                }
+            };
+
+            var getRefinementsFromUrl = function() {
+
+                if (location.hash && location.hash.indexOf('#q=') === 0)
+                {
+                    var params                          = location.hash.substring(3);
+                    var pageParamOffset                 = params.indexOf('&page=');
+                    var refinementsParamOffset          = params.indexOf('&refinements=');
+                    var numericsRefinementsParamOffset  = params.indexOf('&numerics_refinements=');
+                    var indexNameOffset                 = params.indexOf('&index_name=');
+
+                    var q                               = decodeURIComponent(params.substring(0, pageParamOffset));
+                    var page                            = parseInt(params.substring(pageParamOffset + '&page='.length, refinementsParamOffset));
+                    var refinements                     = JSON.parse(decodeURIComponent(params.substring(refinementsParamOffset + '&refinements='.length, numericsRefinementsParamOffset)));
+                    var numericsRefinements             = JSON.parse(decodeURIComponent(params.substring(numericsRefinementsParamOffset + '&numerics_refinements='.length, indexNameOffset)));
+                    var indexName                       = JSON.parse(decodeURIComponent(params.substring(indexNameOffset + '&index_name='.length)));
+
+                    q = $("<div/>").html(q).text();
+
+                    helper.setQuery(q);
+
+                    helper.clearRefinements();
+
+                    /** Set refinements from url data **/
+                    for (var i = 0; i < refinements.length; ++i) {
+                        for (var refine in refinements[i]) {
+                            for (var j = 0; j < refinements[i][refine].length; j++) {
+                                helper.toggleRefine(refine, refinements[i][refine][j]);
+                                helper_empty.toggleRefine(refine, refinements[i][refine][j]);
+                            }
                         }
                     }
+
+                    for (var key in numericsRefinements)
+                        for (var operator in numericsRefinements[key])
+                            helper.addNumericRefinement(key, operator, numericsRefinements[key][operator]);
+
+                    helper.setIndex(indexName).setCurrentPage(page);
+
+                }
+                helper.search();
+            };
+
+            var getFacets = function (content) {
+
+                var facets = [];
+
+                for (var i = 0; i < algoliaConfig.facets.length; i++)
+                {
+                    var sub_facets = [];
+
+                    if (custom_facets_types[algoliaConfig.facets[i].type] != undefined)
+                    {
+                        try
+                        {
+                            var params = custom_facets_types[algoliaConfig.facets[i].type](helper, content, algoliaConfig.facets[i]);
+
+                            if (params)
+                                for (var k = 0; k < params.length; k++)
+                                    sub_facets.push(params[k]);
+                        }
+                        catch(error)
+                        {
+                            console.log(error);
+                            throw("Bad facet function for '" + algoliaConfig.facets[i].type + "'");
+                        }
+                    }
+                    else
+                    {
+                        var content_facet = content.getFacetByName(algoliaConfig.facets[i].attribute);
+
+                        if (content_facet == undefined)
+                            continue;
+
+                        for (var key in content_facet.data)
+                        {
+                            var checked = helper.isRefined(algoliaConfig.facets[i].attribute, key);
+
+                            var nameattr = window.facetsLabels && window.facetsLabels[key] != undefined ? window.facetsLabels[key] : key;
+                            var explode = nameattr.split(' /// ');
+                            var name = explode[explode.length - 1];
+
+                            var params = {
+                                type: {},
+                                checked: checked,
+                                nameattr: nameattr,
+                                name: name,
+                                count: content_facet.data[key]
+                            };
+
+                            params.type[algoliaConfig.facets[i].type] = true;
+
+                            sub_facets.push(params);
+                        }
+
+                        sub_facets.sort(function sortByCheckedThenCount(f1, f2) {
+                            if (f1.checked !== f2.checked)
+                                return f1.checked ? -1 : 1;
+
+                            if (f2.count !== f1.count)
+                                return f2.count - f1.count;
+
+                            return f1.name.localeCompare(f2.name);
+                        });
+
+                    }
+
+                    var label = algoliaConfig.facets[i].label !== "" ? algoliaConfig.facets[i].label : algoliaConfig.facets[i].attribute;
+
+                    facets.push({count: sub_facets.length, attribute: algoliaConfig.facets[i].attribute, facet_categorie_name: label, sub_facets: sub_facets });
+                }
+
+                return facets;
+            };
+
+            var getPages = function (content) {
+                var pages = [];
+                if (content.page > 5)
+                {
+                    pages.push({ current: false, number: 1 });
+                    pages.push({ current: false, number: '...', disabled: true });
+                }
+
+                for (var p = content.page - 5; p < content.page + 5; ++p)
+                {
+                    if (p < 0 || p >= content.nbPages)
+                        continue;
+
+                    pages.push({ current: content.page == p, number: (p + 1) });
+                }
+                if (content.page + 5 < content.nbPages)
+                {
+                    pages.push({ current: false, number: '...', disabled: true });
+                    pages.push({ current: false, number: content.nbPages });
+                }
+
+                return pages;
+            };
+
+            var sortSelected = function () {
+                return function (val) {
+                    var template = algoliaBundle.Hogan.compile(val);
+
+                    var renderer = function(context) {
+                        return function(text) {
+                            return template.c.compile(text, template.options).render(context);
+                        };
+                    };
+
+                    var render = renderer(this);
+
+                    var index_name = render(val);
+
+                    if (index_name == helper.getIndex())
+                        return "selected";
+                    return "";
+                }
+            };
+
+            var gotoPage = function(page) {
+                helper.setCurrentPage(+page - 1);
+            };
+
+            var getDate = function () {
+                return function (val) {
+                    var template = algoliaBundle.Hogan.compile(val);
+
+                    var renderer = function(context) {
+                        return function(text) {
+                            return template.c.compile(text, template.options).render(context);
+                        };
+                    };
+
+                    var render = renderer(this);
+
+                    var timestamp = render(val);
+
+
+                    var date = new Date(timestamp * 1000);
+
+                    var days = ["<?php echo $this->__('Sunday'); ?>", "<?php echo $this->__('Monday'); ?>", "<?php echo $this->__('Tuesday'); ?>", "<?php echo $this->__('Wednesday'); ?>", "<?php echo $this->__('Thursday'); ?>", "<?php echo $this->__('Friday'); ?>", "<?php echo $this->__('Saturday'); ?>"];
+                    var months = ["<?php echo $this->__('January'); ?>", "<?php echo $this->__('February'); ?>", "<?php echo $this->__('March'); ?>", "<?php echo $this->__('April'); ?>", "<?php echo $this->__('May'); ?>", "<?php echo $this->__('June'); ?>", "<?php echo $this->__('July'); ?>", "<?php echo $this->__('August'); ?>", "<?php echo $this->__('September'); ?>", "<?php echo $this->__('October'); ?>", "<?php echo $this->__('November'); ?>", "<?php echo $this->__('December'); ?>"];
+
+                    var day = date.getDate();
+
+                    if (day == 1)
+                        day += "<?php echo $this->__('st'); ?>";
+                    else if (day == 2)
+                        day += "<?php echo $this->__('nd'); ?>";
+                    else if (day == 3)
+                        day += "<?php echo $this->__('rd'); ?>";
+                    else
+                        day += "<?php echo $this->__('th'); ?>";
+
+                    return days[date.getDay()] + ", " + months[date.getMonth()] + " " + day + ", " + date.getFullYear();
+                }
+            };
+
+            /*****************
+             **
+             ** RENDERING HELPERS
+             **
+             *****************/
+
+            function getHtmlForPagination(paginationTemplate, content, pages, facets) {
+                var pagination_html = paginationTemplate.render({
+                    pages: pages,
+                    facets_count: facets.length,
+                    prev_page: (content.page > 0 ? content.page : false),
+                    next_page: (content.page + 1 < content.nbPages ? content.page + 2 : false)
                 });
+
+                return pagination_html;
             }
 
-            for (var i = 0; i < indices.length; i++)
+            function getHtmlForResults(resultsTemplate, content, facets) {
+
+                var results_html = resultsTemplate.render({
+                    facets_count: facets.length,
+                    getDate: getDate,
+                    relevance_index_name: algoliaConfig.indexName + '_products',
+                    sorting_indices: algoliaConfig.sortingIndices,
+                    sortSelected: sortSelected,
+                    hits: content.hits,
+                    nbHits: content.nbHits,
+                    nbHits_zero: (content.nbHits === 0),
+                    nbHits_one: (content.nbHits === 1),
+                    nbHits_many: (content.nbHits > 1),
+                    query: helper.state.query,
+                    processingTimeMS: content.processingTimeMS,
+                    isAddToCartEnabled: algoliaConfig.instant.isAddToCartEnabled
+                });
+
+                return results_html;
+            }
+
+            function getHtmlForFacets(facetsTemplate, facets, empty) {
+
+                var facets_html = facetsTemplate.render({
+                    facets: facets,
+                    count: facets.length,
+                    getDate: getDate,
+                    relevance_index_name: algoliaConfig.indexName + '_products',
+                    sorting_indices: algoliaConfig.sortingIndices,
+                    sortSelected: sortSelected,
+                    empty: empty
+                }, {
+                    facet_hierarchical: facet_hierarchical
+                });
+
+                return facets_html;
+            }
+
+            /*****************
+             **
+             ** AUTOCOMPLETION MENU
+             **
+             *****************/
+
+            if (algoliaConfig.autocomplete.enabled)
             {
-                if (algoliaConfig.autocomplete.hitsPerPage[indices[i]] > 0)
+                var params = {};
+
+                var hogan_objs = [];
+
+                var indices = ['categories', 'products', 'pages'];
+                var indices_with_suffix  = ['categories', 'products', 'pages'];
+
+                if (algoliaConfig.autocomplete.hitsPerPage['suggestions'] > 0)
                 {
-                    var index = algolia_client.initIndex(algoliaConfig.indexName + "_" + indices_with_suffix[i]);
+                    var suggestions_index = algolia_client.initIndex(algoliaConfig.indexName + "_suggestions");
+                    var products_index = algolia_client.initIndex(algoliaConfig.indexName + "_products");
 
                     hogan_objs.push({
-                        source: (function (index, i) {
+                        displayKey: 'query',
+                        source: function (query, cb) {
+                            suggestions_index.search(query, {
+                                hitsPerPage: algoliaConfig.autocomplete.hitsPerPage['suggestions'],
+                                analyticsTags: 'autocomplete'
+                            }, function (err, content) {
+                                if (err)
+                                    return;
+
+                                if (content.hits.length > 0) {
+                                    products_index.search(content.hits[0].query, {
+                                        facets: ['categories.level0'],
+                                        hitsPerPage: 0,
+                                        typoTolerance: false,
+                                        maxValuesPerFacet: 3,
+                                        analyticsTags: 'instant-search'
+                                    }, function (err2, content2) {
+
+                                        if (err2)
+                                        {
+                                            cb([]);
+                                            return;
+                                        }
+
+                                        var hits = [];
+
+                                        var categories = {};
+
+                                        if (content2.facets['categories.level0']) {
+
+                                            var obj = $.extend(true, {}, content.hits[0]);
+                                            obj.category = '<?php echo $this->__('All departments') ?>';
+                                            obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
+                                            hits.push(obj);
+
+                                            for (var key in content2.facets['categories.level0']) {
+
+                                                var explode = key.split(' /// ');
+                                                var nameattr = explode[0];
+
+                                                categories[nameattr] = 1;
+                                            }
+
+                                            for (var key in categories)
+                                            {
+                                                var obj = $.extend(true, {}, content.hits[0]);
+                                                obj.category = key;
+                                                obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query + '#q=' + obj.query + '&page=0&refinements=%5B%7B%22categories%22%3A%5B%22' + obj.category + '%22%5D%7D%5D&numerics_refinements=%7B%7D&index_name=%22<?php echo $product_helper->getBaseIndexName(); ?>_products%22';
+                                                hits.push(obj);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var obj = $.extend(true, {}, content.hits[0]);
+                                            obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
+                                            hits.push(obj);
+                                        }
+
+                                        for (var k = 1; k < content.hits.length; k++)
+                                        {
+                                            var obj = $.extend(true, {}, content.hits[k]);
+                                            obj.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + obj.query;
+                                            hits.push(obj);
+                                        }
+
+
+                                        for (var k = 0; k < hits.length; k++)
+                                            hits[k].query = content.query;
+
+                                        cb(hits);
+                                    });
+                                }
+                                else
+                                    cb([]);
+                            });
+                        },
+                        templates: {
+                            suggestion: function (hit) {
+                                return algoliaConfig.autocomplete.templates['suggestions'].render(hit);
+                            }
+                        }
+                    });
+                }
+
+                for (var i = 0; i < indices.length; i++)
+                {
+                    if (algoliaConfig.autocomplete.hitsPerPage[indices[i]] > 0)
+                    {
+                        var index = algolia_client.initIndex(algoliaConfig.indexName + "_" + indices_with_suffix[i]);
+
+                        hogan_objs.push({
+                            source: (function (index, i) {
                                 return function (query, cb) {
                                     index.search(query, {
                                         hitsPerPage: algoliaConfig.autocomplete.hitsPerPage[indices[i]],
@@ -1152,585 +1153,586 @@ $class = $isSearchPage ? 'search-page' : '';
                                     });
                                 }
                             })(index, i),
-                        displayKey: 'query',
+                            displayKey: 'query',
+                            templates: {
+                                header: '<div class="category">' + algoliaConfig.autocomplete.titles[indices[i]] + '</div>',
+                                suggestion: (function (i) {
+                                    return function (hit) {
+                                        if (indices[i] == 'products')
+                                        {
+                                            var time = Math.floor(Date.now() / 1000);
+
+                                            if ((hit.special_price_from_date != undefined && (hit.special_price_from_date > time && hit.special_price_from_date !== '')) ||
+                                                (hit.special_price_to_date != undefined && (hit.special_price_to_date < time && hit.special_price_to_date !== '')))
+                                            {
+                                                delete hit.special_price_from_date;
+                                                delete hit.special_price_to_date;
+                                                delete hit.special_price;
+                                                delete hit.special_price_with_tax;
+                                                delete hit.special_price_formated;
+                                                delete hit.special_price_with_tax_formated;
+                                            }
+
+                                            if (Array.isArray(hit.categories_without_path))
+                                                hit.categories_without_path = hit.categories_without_path.join(', ');
+
+                                            if (Array.isArray(hit._highlightResult.name)) {
+                                                hit._highlightResult.name = hit._highlightResult.name[0];
+                                                hit.displayKey = hit.name[0];
+                                            }
+
+                                            if (Array.isArray(hit.price))
+                                                hit.price = hit.price[0];
+
+                                            if ('<?php echo $price_key; ?>' !== '.default' && hit['price']['<?php echo $price_key; ?>'.substr(1) + '_formated'] !== hit['price']['default_formated'])
+                                            {
+                                                hit['price']['<?php echo $price_key; ?>'.substr(1) + '_original_formated'] = hit['price']['default_formated'];
+                                            }
+
+                                        }
+
+                                        if (indices[i] == 'categories')
+                                        {
+                                            hit.displayKey = hit.path;
+                                        }
+
+                                        hit.displayKey = hit.displayKey || hit.name;
+
+                                        return algoliaConfig.autocomplete.templates[indices[i]].render(hit);
+                                    }
+                                })(i)
+                            }
+                        });
+                    }
+                }
+
+                for (var i = 0; i < algoliaConfig.autocomplete.additionnalSection.length; i++)
+                {
+                    var index = algolia_client.initIndex(algoliaConfig.indexName + "_section_" + algoliaConfig.autocomplete.additionnalSection[i].attribute);
+
+                    var label = algoliaConfig.autocomplete.additionnalSection[i].label !== "" ?
+                        algoliaConfig.autocomplete.additionnalSection[i].label : algoliaConfig.autocomplete.additionnalSection[i].attribute;
+
+                    hogan_objs.push({
+                        source: (function (index, i) {
+                            return function (query, cb) {
+                                index.search(query, {
+                                    hitsPerPage: algoliaConfig.autocomplete.additionnalSection[i].hitsPerPage,
+                                    analyticsTags: 'autocomplete'
+                                }, function (err, content) {
+                                    if (err)
+                                    {
+                                        cb([]);
+                                        return;
+                                    }
+
+                                    cb(content.hits);
+                                });
+                            }
+                        })(index, i),
+                        displayKey: 'value',
                         templates: {
-                            header: '<div class="category">' + algoliaConfig.autocomplete.titles[indices[i]] + '</div>',
+                            header: '<div class="category">' + label + '</div>',
                             suggestion: (function (i) {
                                 return function (hit) {
-                                    if (indices[i] == 'products')
-                                    {
-                                        var time = Math.floor(Date.now() / 1000);
+                                    hit.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + algoliaConfig.autocomplete.additionnalSection[i].attribute + "&refinement_value=" + hit.value;
 
-                                        if ((hit.special_price_from_date != undefined && (hit.special_price_from_date > time && hit.special_price_from_date !== '')) ||
-                                            (hit.special_price_to_date != undefined && (hit.special_price_to_date < time && hit.special_price_to_date !== '')))
-                                        {
-                                            delete hit.special_price_from_date;
-                                            delete hit.special_price_to_date;
-                                            delete hit.special_price;
-                                            delete hit.special_price_with_tax;
-                                            delete hit.special_price_formated;
-                                            delete hit.special_price_with_tax_formated;
-                                        }
-
-                                        if (Array.isArray(hit.categories_without_path))
-                                            hit.categories_without_path = hit.categories_without_path.join(', ');
-
-                                        if (Array.isArray(hit._highlightResult.name)) {
-                                            hit._highlightResult.name = hit._highlightResult.name[0];
-                                            hit.displayKey = hit.name[0];
-                                        }
-
-                                        if (Array.isArray(hit.price))
-                                            hit.price = hit.price[0];
-
-                                        if ('<?php echo $price_key; ?>' !== '.default' && hit['price']['<?php echo $price_key; ?>'.substr(1) + '_formated'] !== hit['price']['default_formated'])
-                                        {
-                                            hit['price']['<?php echo $price_key; ?>'.substr(1) + '_original_formated'] = hit['price']['default_formated'];
-                                        }
-
-                                    }
-
-                                    if (indices[i] == 'categories')
-                                    {
-                                        hit.displayKey = hit.path;
-                                    }
-
-                                    hit.displayKey = hit.displayKey || hit.name;
-
-                                    return algoliaConfig.autocomplete.templates[indices[i]].render(hit);
+                                    return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
                                 }
                             })(i)
                         }
                     });
                 }
-            }
 
-            for (var i = 0; i < algoliaConfig.autocomplete.additionnalSection.length; i++)
-            {
-                var index = algolia_client.initIndex(algoliaConfig.indexName + "_section_" + algoliaConfig.autocomplete.additionnalSection[i].attribute);
-
-                var label = algoliaConfig.autocomplete.additionnalSection[i].label !== "" ?
-                    algoliaConfig.autocomplete.additionnalSection[i].label : algoliaConfig.autocomplete.additionnalSection[i].attribute;
-
-                hogan_objs.push({
-                    source: (function (index, i) {
-                        return function (query, cb) {
-                            index.search(query, {
-                                hitsPerPage: algoliaConfig.autocomplete.additionnalSection[i].hitsPerPage,
-                                analyticsTags: 'autocomplete'
-                            }, function (err, content) {
-                                if (err)
-                                {
-                                    cb([]);
-                                    return;
-                                }
-
-                                cb(content.hits);
-                            });
-                        }
-                        })(index, i),
-                    displayKey: 'value',
-                    templates: {
-                        header: '<div class="category">' + label + '</div>',
-                        suggestion: (function (i) {
-                            return function (hit) {
-                                hit.url = '<?php echo $base_url; ?>/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + algoliaConfig.autocomplete.additionnalSection[i].attribute + "&refinement_value=" + hit.value;
-
-                                return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
+                if (algoliaConfig.removeBranding === false)
+                {
+                    hogan_objs.push({
+                        source: function findMatches(q, cb) {
+                            return cb(["algolia-branding"]);
+                        },
+                        displayKey: 'title',
+                        templates: {
+                            suggestion: function (hit) {
+                                return '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo $base_url; ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
                             }
-                        })(i)
-                    }
-                });
-            }
-
-            if (algoliaConfig.removeBranding === false)
-            {
-                hogan_objs.push({
-                    source: function findMatches(q, cb) {
-                        return cb(["algolia-branding"]);
-                    },
-                    displayKey: 'title',
-                    templates: {
-                        suggestion: function (hit) {
-                            return '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo $base_url; ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
                         }
-                    }
+                    });
+                }
+
+                $(algoliaConfig.autocomplete.selector).each(function (i) {
+                    var tt = $(this)
+                        .typeahead({hint: false}, hogan_objs)
+                        .parent()
+                        .attr('id', 'algolia-autocomplete-tt');
+
+                    $(this).on('typeahead:selected', function (e, item) {
+                        autocomplete = false;
+                        instant = false;
+                        window.location.href = item.url;
+                    });
+                });
+
+                $("#algolia-glass").click(function () {
+                    $(this).closest('form').submit();
                 });
             }
 
-            $(algoliaConfig.autocomplete.selector).each(function (i) {
-                var tt = $(this)
-                    .typeahead({hint: false}, hogan_objs)
-                    .parent()
-                    .attr('id', 'algolia-autocomplete-tt');
+            /*****************
+             **
+             ** INSTANT RESULTS PAGE SEARCH
+             **
+             *****************/
 
-                $(this).on('typeahead:selected', function (e, item) {
-                    autocomplete = false;
-                    instant = false;
-                    window.location.href = item.url;
-                });
-            });
-
-            $("#algolia-glass").click(function () {
-                $(this).closest('form').submit();
-            });
-        }
-
-        /*****************
-         **
-         ** INSTANT RESULTS PAGE SEARCH
-         **
-         *****************/
-
-        if (algoliaConfig.instant.enabled && (<?php echo $isSearchPage ? "true" : "false"; ?> || ! algoliaConfig.autocomplete.enabled))
-        {
-            if ($(algoliaConfig.instant.selector).length !== 1)
-                throw '[Algolia] Invalid instant-search selector: ' + algoliaConfig.instant.selector;
-
-            if (algoliaConfig.autocomplete.enabled && $(algoliaConfig.instant.selector).find(algoliaConfig.autocomplete.selector).length > 0)
-                throw '[Algolia] You can\'t have a search input matching "' + algoliaConfig.autocomplete.selector +
-                '" inside you instant selector "' + algoliaConfig.instant.selector + '"';
-
-            var instant_selector = ! algoliaConfig.autocomplete.enabled ? "#search" : "#instant-search-bar";
-
-            var wrapperTemplate     = algoliaBundle.Hogan.compile($('#instant_wrapper_template').html());
-
-            var initialized         = false;
-
-            var resultsTemplate     = algoliaBundle.Hogan.compile($('#instant-content-template').html());
-            var facetsTemplate      = algoliaBundle.Hogan.compile($('#instant-facets-template').html());
-            var paginationTemplate  = algoliaBundle.Hogan.compile($('#instant-pagination-template').html());
-            var facet_hierarchical  = algoliaBundle.Hogan.compile($('#instant-facets-hierarchical-template').html());
-
-
-            function performQueries(push_state)
+            if (algoliaConfig.instant.enabled && (<?php echo $isSearchPage ? "true" : "false"; ?> || ! algoliaConfig.autocomplete.enabled))
             {
-                helper.search();
+                if ($(algoliaConfig.instant.selector).length !== 1)
+                    throw '[Algolia] Invalid instant-search selector: ' + algoliaConfig.instant.selector;
 
-                updateUrl(push_state);
-            }
+                if (algoliaConfig.autocomplete.enabled && $(algoliaConfig.instant.selector).find(algoliaConfig.autocomplete.selector).length > 0)
+                    throw '[Algolia] You can\'t have a search input matching "' + algoliaConfig.autocomplete.selector +
+                    '" inside you instant selector "' + algoliaConfig.instant.selector + '"';
 
-            function searchCallbackEmpty(content)
-            {
-                var instant_search_facets_container = $('#instant-search-facets-container');
+                var instant_selector = ! algoliaConfig.autocomplete.enabled ? "#search" : "#instant-search-bar";
 
-                var facets = getFacets(content);
+                var wrapperTemplate     = algoliaBundle.Hogan.compile($('#instant_wrapper_template').html());
 
-                instant_search_facets_container.html(getHtmlForFacets(facetsTemplate, facets, true));
-            }
+                var initialized         = false;
 
-            function searchCallback(content)
-            {
-                if (initialized === false)
+                var resultsTemplate     = algoliaBundle.Hogan.compile($('#instant-content-template').html());
+                var facetsTemplate      = algoliaBundle.Hogan.compile($('#instant-facets-template').html());
+                var paginationTemplate  = algoliaBundle.Hogan.compile($('#instant-pagination-template').html());
+                var facet_hierarchical  = algoliaBundle.Hogan.compile($('#instant-facets-hierarchical-template').html());
+
+
+                function performQueries(push_state)
                 {
-                    $(algoliaConfig.instant.selector).html(wrapperTemplate.render({ second_bar: algoliaConfig.autocomplete.enabled })).show();
-                    initialized = true;
+                    helper.search();
+
+                    updateUrl(push_state);
                 }
+
+                function searchCallbackEmpty(content)
+                {
+                    var instant_search_facets_container = $('#instant-search-facets-container');
+
+                    var facets = getFacets(content);
+
+                    instant_search_facets_container.html(getHtmlForFacets(facetsTemplate, facets, true));
+                }
+
+                function searchCallback(content)
+                {
+                    if (initialized === false)
+                    {
+                        $(algoliaConfig.instant.selector).html(wrapperTemplate.render({ second_bar: algoliaConfig.autocomplete.enabled })).show();
+                        initialized = true;
+                    }
+                    /**
+                     *  Modify results to be able to print it with Hogan
+                     */
+                    for (var i = 0; i < content.hits.length; ++i)
+                    {
+                        if (Array.isArray(content.hits[i].categories))
+                            content.hits[i].categories = content.hits[i].categories.join(', ');
+
+                        if (Array.isArray(content.hits[i]._highlightResult.name))
+                            content.hits[i]._highlightResult.name = content.hits[i]._highlightResult.name[0];
+
+                        if (Array.isArray(content.hits[i].price))
+                            content.hits[i].price = content.hits[i].price[0];
+
+                        var time = Math.floor(Date.now() / 1000);
+
+
+                        if ((content.hits[i].special_price_from_date != undefined && (content.hits[i].special_price_from_date > time && content.hits[i].special_price_from_date !== '')) ||
+                            (content.hits[i].special_price_to_date != undefined && (content.hits[i].special_price_to_date < time && content.hits[i].special_price_to_date !== '')))
+                        {
+                            delete content.hits[i].special_price_from_date;
+                            delete content.hits[i].special_price_to_date;
+                            delete content.hits[i].special_price;
+                            delete content.hits[i].special_price_with_tax;
+                            delete content.hits[i].special_price_formated;
+                            delete content.hits[i].special_price_with_tax_formated;
+                        }
+
+                        if (content.hits[i].min_formated !== undefined)
+                        {
+                            delete content.hits[i].price;
+                            delete content.hits[i].price_formated;
+                            delete content.hits[i].price_with_tax;
+                            delete content.hits[i].price_with_tax_formated;
+                        }
+
+                        if ('<?php echo $price_key; ?>' !== '.default' && content.hits[i]['price']['<?php echo $price_key; ?>'.substr(1) + '_formated'] !== content.hits[i]['price']['default_formated'])
+                        {
+                            content.hits[i]['price']['<?php echo $price_key; ?>'.substr(1) + '_original_formated'] = content.hits[i]['price']['default_formated'];
+                        }
+
+                    }
+
+                    /**
+                     * Generate HTML
+                     */
+
+                    var instant_search_facets_container = $('#instant-search-facets-container');
+                    var instant_search_results_container = $('#instant-search-results-container');
+                    var instant_search_pagination_container = $('#instant-search-pagination-container');
+
+                    instant_search_pagination_container.html('');
+
+                    var facets = [];
+                    var pages = [];
+
+                    if (content.hits.length > 0)
+                    {
+                        facets = getFacets(content);
+                        pages = getPages(content);
+
+                        instant_search_facets_container.html(getHtmlForFacets(facetsTemplate, facets, false));
+                    }
+                    else
+                    {
+                        helper_empty.search();
+                    }
+
+                    instant_search_results_container.html(getHtmlForResults(resultsTemplate, content, facets));
+
+                    if (content.hits.length > 0)
+                        instant_search_pagination_container.html(getHtmlForPagination(paginationTemplate, content, pages, facets));
+
+                    updateSliderValues();
+
+                    var instant_search_bar = $(instant_selector);
+
+                    if (instant_search_bar.is(":focus") === false)
+                    {
+                        if ($(window).width() > 992) {
+                            instant_search_bar.focus().val('');
+                        }
+                        instant_search_bar.val(helper.state.query);
+                    }
+                }
+
+                helper.on('result', searchCallback);
+                helper_empty.on('result', searchCallbackEmpty);
+
+                custom_facets_types["hierarchical"] = function (helper, content, facet) {
+                    var data = [];
+
+                    var content_facet = content.getFacetByName(facet.attribute);
+
+                    content_facet.name = window.facetsLabels && window.facetsLabels[content_facet.name] != undefined ? window.facetsLabels[content_facet.name] : content_facet.name;
+                    content_facet.type = { hierarchical: true };
+
+                    return [content_facet];
+                };
+
                 /**
-                 *  Modify results to be able to print it with Hogan
+                 * Example of a custom facet type
                  */
-                for (var i = 0; i < content.hits.length; ++i)
-                {
-                    if (Array.isArray(content.hits[i].categories))
-                        content.hits[i].categories = content.hits[i].categories.join(', ');
+                custom_facets_types["menu"] = function (helper, content, facet) {
 
-                    if (Array.isArray(content.hits[i]._highlightResult.name))
-                        content.hits[i]._highlightResult.name = content.hits[i]._highlightResult.name[0];
+                    var data = [];
 
-                    if (Array.isArray(content.hits[i].price))
-                        content.hits[i].price = content.hits[i].price[0];
+                    var all_count = 0;
+                    var all_unchecked = true;
 
-                    var time = Math.floor(Date.now() / 1000);
+                    var content_facet = content.getFacetByName(facet.attribute);
 
+                    if (content_facet == undefined)
+                        return data;
 
-                    if ((content.hits[i].special_price_from_date != undefined && (content.hits[i].special_price_from_date > time && content.hits[i].special_price_from_date !== '')) ||
-                        (content.hits[i].special_price_to_date != undefined && (content.hits[i].special_price_to_date < time && content.hits[i].special_price_to_date !== '')))
+                    for (var key in content_facet.data)
                     {
-                        delete content.hits[i].special_price_from_date;
-                        delete content.hits[i].special_price_to_date;
-                        delete content.hits[i].special_price;
-                        delete content.hits[i].special_price_with_tax;
-                        delete content.hits[i].special_price_formated;
-                        delete content.hits[i].special_price_with_tax_formated;
+                        var checked = helper.isRefined(facet.attribute, key);
+
+                        all_unchecked = all_unchecked && !checked;
+
+                        var name = window.facetsLabels && window.facetsLabels[key] != undefined ? window.facetsLabels[key] : key;
+                        var explode = name.split(' /// ');
+                        var nameattr = explode[explode.length - 1];
+
+                        var params = {
+                            type: {},
+                            checked: checked,
+                            nameattr: nameattr,
+                            name: name,
+                            print_count: true,
+                            count: content_facet.data[key]
+                        };
+
+                        all_count += content_facet.data[key];
+
+                        params.type[facet.type] = true;
+
+                        data.push(params);
                     }
-
-                    if (content.hits[i].min_formated !== undefined)
-                    {
-                        delete content.hits[i].price;
-                        delete content.hits[i].price_formated;
-                        delete content.hits[i].price_with_tax;
-                        delete content.hits[i].price_with_tax_formated;
-                    }
-
-                    if ('<?php echo $price_key; ?>' !== '.default' && content.hits[i]['price']['<?php echo $price_key; ?>'.substr(1) + '_formated'] !== content.hits[i]['price']['default_formated'])
-                    {
-                        content.hits[i]['price']['<?php echo $price_key; ?>'.substr(1) + '_original_formated'] = content.hits[i]['price']['default_formated'];
-                    }
-
-                }
-
-                /**
-                 * Generate HTML
-                 */
-
-                var instant_search_facets_container = $('#instant-search-facets-container');
-                var instant_search_results_container = $('#instant-search-results-container');
-                var instant_search_pagination_container = $('#instant-search-pagination-container');
-
-                instant_search_pagination_container.html('');
-
-                var facets = [];
-                var pages = [];
-
-                if (content.hits.length > 0)
-                {
-                    facets = getFacets(content);
-                    pages = getPages(content);
-
-                    instant_search_facets_container.html(getHtmlForFacets(facetsTemplate, facets, false));
-                }
-                else
-                {
-                    helper_empty.search();
-                }
-
-                instant_search_results_container.html(getHtmlForResults(resultsTemplate, content, facets));
-
-                if (content.hits.length > 0)
-                    instant_search_pagination_container.html(getHtmlForPagination(paginationTemplate, content, pages, facets));
-
-                updateSliderValues();
-
-                var instant_search_bar = $(instant_selector);
-
-                if (instant_search_bar.is(":focus") === false)
-                {
-                    if ($(window).width() > 992) {
-                        instant_search_bar.focus().val('');
-                    }
-                    instant_search_bar.val(helper.state.query);
-                }
-            }
-
-            helper.on('result', searchCallback);
-            helper_empty.on('result', searchCallbackEmpty);
-
-            custom_facets_types["hierarchical"] = function (helper, content, facet) {
-                var data = [];
-
-                var content_facet = content.getFacetByName(facet.attribute);
-
-                content_facet.name = window.facetsLabels && window.facetsLabels[content_facet.name] != undefined ? window.facetsLabels[content_facet.name] : content_facet.name;
-                content_facet.type = { hierarchical: true };
-
-                return [content_facet];
-            };
-
-            /**
-             * Example of a custom facet type
-             */
-            custom_facets_types["menu"] = function (helper, content, facet) {
-
-                var data = [];
-
-                var all_count = 0;
-                var all_unchecked = true;
-
-                var content_facet = content.getFacetByName(facet.attribute);
-
-                if (content_facet == undefined)
-                    return data;
-
-                for (var key in content_facet.data)
-                {
-                    var checked = helper.isRefined(facet.attribute, key);
-
-                    all_unchecked = all_unchecked && !checked;
-
-                    var name = window.facetsLabels && window.facetsLabels[key] != undefined ? window.facetsLabels[key] : key;
-                    var explode = name.split(' /// ');
-                    var nameattr = explode[explode.length - 1];
 
                     var params = {
                         type: {},
-                        checked: checked,
-                        nameattr: nameattr,
-                        name: name,
-                        print_count: true,
-                        count: content_facet.data[key]
+                        checked: all_unchecked,
+                        nameattr: 'all',
+                        name: 'All',
+                        print_count: false,
+                        count: all_count
                     };
-
-                    all_count += content_facet.data[key];
 
                     params.type[facet.type] = true;
 
-                    data.push(params);
-                }
+                    data.unshift(params);
 
-                var params = {
-                    type: {},
-                    checked: all_unchecked,
-                    nameattr: 'all',
-                    name: 'All',
-                    print_count: false,
-                    count: all_count
+                    return data;
                 };
 
-                params.type[facet.type] = true;
+                /**
+                 * Handle click on menu custom facet
+                 */
+                $("body").on("click", ".sub_facet.menu", function (e) {
 
-                data.unshift(params);
+                    e.stopImmediatePropagation();
 
-                return data;
-            };
+                    if ($(this).hasClass("empty")) {
+                        helper.setQuery("");
+                    }
 
-            /**
-             * Handle click on menu custom facet
-             */
-            $("body").on("click", ".sub_facet.menu", function (e) {
-
-                e.stopImmediatePropagation();
-
-                if ($(this).hasClass("empty")) {
-                    helper.setQuery("");
-                }
-
-                if ($(this).attr("data-name") == "all")
-                    helper.state.clearRefinements($(this).attr("data-attribute"));
-
-                $(this).find("input[type='checkbox']").each(function (i) {
-                    $(this).prop("checked", !$(this).prop("checked"));
-
-                    if (false == helper.isRefined($(this).attr("data-attribute"), $(this).attr("data-name")))
+                    if ($(this).attr("data-name") == "all")
                         helper.state.clearRefinements($(this).attr("data-attribute"));
 
-                    if ($(this).attr("data-name") != "all")
-                    {
+                    $(this).find("input[type='checkbox']").each(function (i) {
+                        $(this).prop("checked", !$(this).prop("checked"));
+
+                        if (false == helper.isRefined($(this).attr("data-attribute"), $(this).attr("data-name")))
+                            helper.state.clearRefinements($(this).attr("data-attribute"));
+
+                        if ($(this).attr("data-name") != "all")
+                        {
+                            helper.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
+                            helper_empty.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
+                        }
+                    });
+
+                    performQueries(true);
+                });
+
+                /**
+                 * Handle click on hierarchical facet
+                 */
+                $("body").on("click", ".sub_facet.hierarchical", function (e) {
+
+                    e.stopImmediatePropagation();
+
+                    if ($(this).hasClass("empty")) {
+                        helper.setQuery("");
+                    }
+
+                    helper.toggleRefine($(this).attr("data-name"), $(this).attr('data-path'));
+                    helper_empty.toggleRefine($(this).attr("data-name"), $(this).attr('data-path'));
+
+                    performQueries(true);
+                });
+
+                /**
+                 * Handle click on conjunctive and disjunctive facet
+                 */
+                $("body").on("click", ".sub_facet", function () {
+
+                    if ($(this).hasClass("empty")) {
+                        helper.setQuery("");
+                    }
+
+                    $(this).find("input[type='checkbox']").each(function (i) {
+                        $(this).prop("checked", !$(this).prop("checked"));
+
                         helper.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
                         helper_empty.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
-                    }
-                });
-
-                performQueries(true);
-            });
-
-            /**
-             * Handle click on hierarchical facet
-             */
-            $("body").on("click", ".sub_facet.hierarchical", function (e) {
-
-                e.stopImmediatePropagation();
-
-                if ($(this).hasClass("empty")) {
-                    helper.setQuery("");
-                }
-
-                helper.toggleRefine($(this).attr("data-name"), $(this).attr('data-path'));
-                helper_empty.toggleRefine($(this).attr("data-name"), $(this).attr('data-path'));
-
-                performQueries(true);
-            });
-
-            /**
-             * Handle click on conjunctive and disjunctive facet
-             */
-            $("body").on("click", ".sub_facet", function () {
-
-                if ($(this).hasClass("empty")) {
-                    helper.setQuery("");
-                }
-
-                $(this).find("input[type='checkbox']").each(function (i) {
-                    $(this).prop("checked", !$(this).prop("checked"));
-
-                    helper.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
-                    helper_empty.toggleRefine($(this).attr("data-attribute"), $(this).attr("data-name"));
-                });
-
-                performQueries(true);
-            });
-
-            /**
-             * Handle jquery-ui slider initialisation
-             */
-            $("body").on("slide", "", function (event, ui) {
-                updateSlideInfos(ui);
-            });
-
-            /**
-             * Handle sort change
-             */
-            $("body").on("change", "#index_to_use", function () {
-                helper.setIndex($(this).val());
-
-                helper.setCurrentPage(0);
-
-                performQueries(true);
-            });
-
-            /**
-             * Handle jquery-ui slide event
-             */
-            $("body").on("slidechange", ".algolia-slider-true", function (event, ui) {
-
-                var slide_dom = $(ui.handle).closest(".algolia-slider");
-                var min = slide_dom.slider("values")[0];
-                var max = slide_dom.slider("values")[1];
-
-                if (parseInt(slide_dom.slider("values")[0]) >= parseInt(slide_dom.attr("data-min")))
-                    helper.addNumericRefinement(slide_dom.attr("data-attribute"), ">=", min);
-                if (parseInt(slide_dom.slider("values")[1]) <= parseInt(slide_dom.attr("data-max")))
-                    helper.addNumericRefinement(slide_dom.attr("data-attribute"), "<=", max);
-
-                if (parseInt(min) == parseInt(slide_dom.attr("data-min")))
-                    helper.removeNumericRefinement(slide_dom.attr("data-attribute"), ">=");
-
-                if (parseInt(max) == parseInt(slide_dom.attr("data-max")))
-                    helper.removeNumericRefinement(slide_dom.attr("data-attribute"), "<=");
-
-                updateSlideInfos(ui);
-                performQueries(true);
-            });
-
-            /**
-             * Handle page change
-             */
-            $("body").on("click", ".algolia-pagination a", function (e) {
-                e.preventDefault();
-
-                gotoPage($(this).attr("data-page"));
-                performQueries(true);
-
-                $("body").scrollTop(0);
-
-                return false;
-            });
-
-            /** Handle input clearing **/
-            $('body').on('click', '.clear-button', function () {
-                $(instant_selector).val('').focus();
-                helper.clearRefinements().setQuery('');
-
-                performQueries(true);
-            });
-
-            /** Handle small screen **/
-            $('body').on('click', '#refine-toggle', function () {
-                $('#instant-search-facets-container').toggleClass('hidden-sm').toggleClass('hidden-xs');
-
-                if ($(this).html()[0] === '+')
-                    $(this).html('- Refine');
-                else
-                    $(this).html('+ Refine');
-            });
-
-
-            /**
-             * Handle search
-             */
-
-            $('body').on('keyup', instant_selector, function (e) {
-                e.preventDefault();
-
-                helper.setQuery($(this).val());
-
-                /* Uncomment to clear refinements on keyup */
-
-                //helper.clearRefinements();
-
-                performQueries(false);
-
-                return false;
-            });
-
-            function updateSliderValues()
-            {
-                $(".algolia-slider-true").each(function (i) {
-                    var min = $(this).attr("data-min");
-                    var max = $(this).attr("data-max");
-
-                    var new_min = helper.state.getNumericRefinement($(this).attr("data-attribute"), ">=");
-                    var new_max = helper.state.getNumericRefinement($(this).attr("data-attribute"), "<=");
-
-                    if (new_min != undefined)
-                        min = new_min;
-
-                    if (new_max != undefined)
-                        max = new_max;
-
-                    $(this).slider({
-                        min: parseInt($(this).attr("data-min")),
-                        max: parseInt($(this).attr("data-max")),
-                        range: true,
-                        values: [min, max]
                     });
+
+                    performQueries(true);
                 });
-            }
 
-            function updateSlideInfos(ui)
-            {
-                var infos = $(ui.handle).closest(".algolia-slider").nextAll(".algolia-slider-info");
+                /**
+                 * Handle jquery-ui slider initialisation
+                 */
+                $("body").on("slide", "", function (event, ui) {
+                    updateSlideInfos(ui);
+                });
 
-                infos.find(".min").html(ui.values[0]);
-                infos.find(".max").html(ui.values[1]);
-            }
+                /**
+                 * Handle sort change
+                 */
+                $("body").on("change", "#index_to_use", function () {
+                    helper.setIndex($(this).val());
 
-            function updateBrowserUrlBar(url) {
-                if (supportsHistory) {
-                    history.pushState(url, null, url);
-                } else {
-                    window.location.hash = url;
+                    helper.setCurrentPage(0);
+
+                    performQueries(true);
+                });
+
+                /**
+                 * Handle jquery-ui slide event
+                 */
+                $("body").on("slidechange", ".algolia-slider-true", function (event, ui) {
+
+                    var slide_dom = $(ui.handle).closest(".algolia-slider");
+                    var min = slide_dom.slider("values")[0];
+                    var max = slide_dom.slider("values")[1];
+
+                    if (parseInt(slide_dom.slider("values")[0]) >= parseInt(slide_dom.attr("data-min")))
+                        helper.addNumericRefinement(slide_dom.attr("data-attribute"), ">=", min);
+                    if (parseInt(slide_dom.slider("values")[1]) <= parseInt(slide_dom.attr("data-max")))
+                        helper.addNumericRefinement(slide_dom.attr("data-attribute"), "<=", max);
+
+                    if (parseInt(min) == parseInt(slide_dom.attr("data-min")))
+                        helper.removeNumericRefinement(slide_dom.attr("data-attribute"), ">=");
+
+                    if (parseInt(max) == parseInt(slide_dom.attr("data-max")))
+                        helper.removeNumericRefinement(slide_dom.attr("data-attribute"), "<=");
+
+                    updateSlideInfos(ui);
+                    performQueries(true);
+                });
+
+                /**
+                 * Handle page change
+                 */
+                $("body").on("click", ".algolia-pagination a", function (e) {
+                    e.preventDefault();
+
+                    gotoPage($(this).attr("data-page"));
+                    performQueries(true);
+
+                    $("body").scrollTop(0);
+
+                    return false;
+                });
+
+                /** Handle input clearing **/
+                $('body').on('click', '.clear-button', function () {
+                    $(instant_selector).val('').focus();
+                    helper.clearRefinements().setQuery('');
+
+                    performQueries(true);
+                });
+
+                /** Handle small screen **/
+                $('body').on('click', '#refine-toggle', function () {
+                    $('#instant-search-facets-container').toggleClass('hidden-sm').toggleClass('hidden-xs');
+
+                    if ($(this).html()[0] === '+')
+                        $(this).html('- Refine');
+                    else
+                        $(this).html('+ Refine');
+                });
+
+
+                /**
+                 * Handle search
+                 */
+
+                $('body').on('keyup', instant_selector, function (e) {
+                    e.preventDefault();
+
+                    helper.setQuery($(this).val());
+
+                    /* Uncomment to clear refinements on keyup */
+
+                    //helper.clearRefinements();
+
+                    performQueries(false);
+
+                    return false;
+                });
+
+                function updateSliderValues()
+                {
+                    $(".algolia-slider-true").each(function (i) {
+                        var min = $(this).attr("data-min");
+                        var max = $(this).attr("data-max");
+
+                        var new_min = helper.state.getNumericRefinement($(this).attr("data-attribute"), ">=");
+                        var new_max = helper.state.getNumericRefinement($(this).attr("data-attribute"), "<=");
+
+                        if (new_min != undefined)
+                            min = new_min;
+
+                        if (new_max != undefined)
+                            max = new_max;
+
+                        $(this).slider({
+                            min: parseInt($(this).attr("data-min")),
+                            max: parseInt($(this).attr("data-max")),
+                            range: true,
+                            values: [min, max]
+                        });
+                    });
                 }
-            }
 
-            /**
-             * Initialization
-             */
+                function updateSlideInfos(ui)
+                {
+                    var infos = $(ui.handle).closest(".algolia-slider").nextAll(".algolia-slider-info");
 
-            /** Clean input **/
-            $(algoliaConfig.autocomplete.selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
+                    infos.find(".min").html(ui.values[0]);
+                    infos.find(".max").html(ui.values[1]);
+                }
 
-            if (<?php echo $isSearchPage ? "true" : "false"; ?> || location.hash.length > 1) {
+                function updateBrowserUrlBar(url) {
+                    if (supportsHistory) {
+                        history.pushState(url, null, url);
+                    } else {
+                        window.location.hash = url;
+                    }
+                }
+
+                /**
+                 * Initialization
+                 */
+
+                /** Clean input **/
+                $(algoliaConfig.autocomplete.selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
+
+                if (<?php echo $isSearchPage ? "true" : "false"; ?> || location.hash.length > 1) {
                 getRefinementsFromUrl();
             }
 
 
-            if (supportsHistory) {
-                // FIX SAFARI ISSUE
-                if (document.readyState !== 'complete') {
-                    // load event has not fired
-                    window.addEventListener('load', function() {
-                        setTimeout(function() {
-                            window.addEventListener("popstate", getRefinementsFromUrl);
-                        }, 0);
-                    }, false);
+                if (supportsHistory) {
+                    // FIX SAFARI ISSUE
+                    if (document.readyState !== 'complete') {
+                        // load event has not fired
+                        window.addEventListener('load', function() {
+                            setTimeout(function() {
+                                window.addEventListener("popstate", getRefinementsFromUrl);
+                            }, 0);
+                        }, false);
+                    }
+                    else {
+                        // load event has fired
+                        window.addEventListener("popstate", getRefinementsFromUrl);
+                    }
+                } else {
+                    window.addEventListener("hashchange", getRefinementsFromUrl);
                 }
-                else {
-                    // load event has fired
-                    window.addEventListener("popstate", getRefinementsFromUrl);
-                }
-            } else {
-                window.addEventListener("hashchange", getRefinementsFromUrl);
+
+                onfocus_css = {
+                    'opacity': '1',
+                    'fill': '#54A5CD',
+                    'stroke': '#54A5CD'
+                };
+
+                onblur_css = {
+                    'opacity': '0.4',
+                    'fill': '#AAA',
+                    'stroke': '#AAA'
+                };
+
+                $('#search').focus(function () {
+                    $(this).parent().next().css(onfocus_css);
+                }).blur(function () {
+                    $(this).parent().next().css(onblur_css);
+                }).parent().next().css(onblur_css);
+
             }
-
-            onfocus_css = {
-                'opacity': '1',
-                'fill': '#54A5CD',
-                'stroke': '#54A5CD'
-            };
-
-            onblur_css = {
-                'opacity': '0.4',
-                'fill': '#AAA',
-                'stroke': '#AAA'
-            };
-
-            $('#search').focus(function () {
-                $(this).parent().next().css(onfocus_css);
-            }).blur(function () {
-                $(this).parent().next().css(onblur_css);
-            }).parent().next().css(onblur_css);
-
-        }
+        });
     });
 
     //]]>
