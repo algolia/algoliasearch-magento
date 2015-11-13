@@ -534,6 +534,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
     document.addEventListener("DOMContentLoaded", function(event) {
         algoliaBundle.$(function ($) {
+        $(document).ready(function () {
             var supportsHistory = window.history && window.history.pushState;
 
             var algoliaConfig = {
@@ -577,7 +578,11 @@ $class = $isSearchPage ? 'search-page' : '';
             };
 
 
+<<<<<<< HEAD
             $('#search').closest('form').submit(function (e) {
+=======
+            $('#search').closest('form').submit(function(e) {
+>>>>>>> master
                 var query = $('#search').val();
 
                 if (algoliaConfig.instant.enabled && query == '')
@@ -678,7 +683,6 @@ $class = $isSearchPage ? 'search-page' : '';
             var custom_facets_types = [];
 
             custom_facets_types["slider"] = function (helper, content, facet) {
-
                 if (content.getFacetByName(facet.attribute) !== undefined) {
                     var min = content.getFacetByName(facet.attribute).stats.min;
                     var max = content.getFacetByName(facet.attribute).stats.max;
@@ -730,7 +734,8 @@ $class = $isSearchPage ? 'search-page' : '';
 
                     r[refine] = helper.state.disjunctiveFacetsRefinements[refine];
 
-                    refinements.push(r);
+                        refinements.push(r);
+                    }
                 }
 
                 /** Get refinements for hierarchical facets **/
@@ -874,6 +879,7 @@ $class = $isSearchPage ? 'search-page' : '';
 
             var getPages = function (content) {
                 var pages = [];
+
                 if (content.page > 5) {
                     pages.push({current: false, number: 1});
                     pages.push({current: false, number: '...', disabled: true});
@@ -1644,9 +1650,7 @@ $class = $isSearchPage ? 'search-page' : '';
                 /** Clean input **/
                 $(algoliaConfig.autocomplete.selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
 
-                if (<?php echo $isSearchPage ? "true" : "false"; ?> || location.hash.length > 1
-            )
-                {
+                if (<?php echo $isSearchPage ? "true" : "false"; ?> || location.hash.length > 1) {
                     getRefinementsFromUrl();
                 }
 
