@@ -43,7 +43,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const REMOVE_IF_NO_RESULT                  = 'algoliasearch/relevance/remove_words_if_no_result';
 
-    const MAX_RETRIES                          = 'algoliasearch/queue/retries';
     const IS_ACTIVE                            = 'algoliasearch/queue/active';
     const NUMBER_OF_ELEMENT_BY_PAGE            = 'algoliasearch/queue/number_of_element_by_page';
     const NUMBER_OF_JOB_TO_RUN                 = 'algoliasearch/queue/number_of_job_to_run';
@@ -156,11 +155,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getMaxValuesPerFacet($storeId = null)
     {
         return Mage::getStoreConfig(self::MAX_VALUES_PER_FACET, $storeId);
-    }
-
-    public function getQueueMaxRetries($storeId = null)
-    {
-        return Mage::getStoreConfig(self::MAX_RETRIES, $storeId);
     }
 
     public function getNumberOfElementByPage($storeId = null)

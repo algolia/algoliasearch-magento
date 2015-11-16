@@ -81,7 +81,7 @@ If enabled, every indexing job (global re-indexing, addition/deletion/update of 
 To asynchronously process those queued indexing jobs, make sure you've configured the Magento cron:
 
 ```
-0,5,10,15,20,25,30,35,40,45,50,55 * * * * /bin/sh /absolute/path/to/magento/cron.sh
+*/5 * * * * php -f /absolute/path/to/magento/shell/indexer.php --reindex algolia_queue_runner
 ```
 
 ##### Cron disabled (development & small stores purpose)

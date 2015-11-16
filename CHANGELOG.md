@@ -2,8 +2,15 @@
 
 ### 1.4.9
 
+BREAKING CHANGE:
+- The queue is now runned outside of the Magento default cron system. To run the jobs you will need to run
+  the `algolia_queue_runner` indexer via the following command `php -f shell/indexer.php --reindex algolia_queue_runner`
+  You can add it to your crontab just add this line:
+  `*/5 * * * * php -f /absolute/path/to/magento/shell/indexer.php --reindex algolia_queue_runner`
+
 - NEW: add total_ordered because ordered_qty does not always make sense
 - NEW: add drag and drop for grid in the config page
+- UPDATED: More intelligent queue that is able to batch jobs
 - FIX: issue with configurable and gouped sub_products query
 - FIX: replace image helper override by subclass
 

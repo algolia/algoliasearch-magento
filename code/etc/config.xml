@@ -126,21 +126,12 @@
                 <search_indexer_addsections>
                     <model>algoliasearch/indexer_algoliaadditionalsections</model>
                 </search_indexer_addsections>
+                <algolia_queue_runner>
+                    <model>algoliasearch/indexer_algoliaqueuerunner</model>
+                </algolia_queue_runner>
             </indexer>
         </index>
     </global>
-    <crontab>
-        <jobs>
-            <algoliasearch_run_queue>
-                <schedule>
-                    <cron_expr>*/5 * * * *</cron_expr>
-                </schedule>
-                <run>
-                    <model>algoliasearch/queue::runCron</model>
-                </run>
-            </algoliasearch_run_queue>
-        </jobs>
-    </crontab>
     <default>
         <algoliasearch>
             <credentials>
@@ -190,7 +181,6 @@
             </relevance>
             <queue>
                 <active>0</active>
-                <retries>3</retries>
                 <number_of_element_by_page>100</number_of_element_by_page>
                 <number_of_job_to_run>300</number_of_job_to_run>
                 <noprocess>0</noprocess>
