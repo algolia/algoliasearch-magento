@@ -20,6 +20,7 @@ if ($config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()))
 
 $title = '';
 $content = '';
+$imgHtml = '';
 
 /**
  * Handle category replacement
@@ -37,7 +38,13 @@ if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->g
             $page       = $category->getLandingPage();
             $cms_block  = Mage::getModel('cms/block')->load($page);
             $title      = $cms_block->getTitle();
-            $content    = $cms_block->getContent();
+            $content    = $this->getLayout()->createBlock('cms/block')->setBlockId($page)->toHtml();
+
+            if ($category->getImageUrl())
+            {
+                $imgHtml = '<p class="category-image"><img src="'.$category->getImageUrl().'" alt="'.$this->escapeHtml($category->getName()).'" title="'.$this->escapeHtml($category->getName()).'" /></p>';
+                $imgHtml = $this->helper('catalog/output')->categoryAttribute($category, $imgHtml, 'image');
+            }
         }
 
         $path = '';
@@ -278,13 +285,19 @@ $class = $isSearchPage ? 'search-page' : '';
     <div id="algolia_instant_selector"<?php echo count($config->getFacets()) > 0 ? ' class="with-facets"' : '' ?>>
 
         <div class="row">
-            <div class="col-md-offset-3 col-md-9">
+            <div class="col-md-12">
                 <div id="algolia-static-content">
                     <div class="page-title category-title">
                         <h1><?php echo $title; ?></h1>
                     </div>
+                    <div>
+                        <?php echo $imgHtml; ?>
+                    </div>
                     <?php echo $content; ?>
                 </div>
+            </div>
+
+            <div class="col-md-offset-3 col-md-9">
                 <div>
                     {{#second_bar}}
                     <div id="instant-search-bar-container">
