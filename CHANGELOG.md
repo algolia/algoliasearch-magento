@@ -1,7 +1,8 @@
 ## Change Log
 
-### 1.4.9
+### 1.5.0
 
+- NEW: replace custom logic by autocomplete.js and instantsearch.js
 - NEW: add total_ordered because ordered_qty does not always make sense
 - NEW: add drag and drop for grid in the config page
 - FIX: issue with configurable and gouped sub_products query

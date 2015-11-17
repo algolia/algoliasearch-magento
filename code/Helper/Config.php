@@ -21,7 +21,10 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const SORTING_INDICES                      = 'algoliasearch/instant/sorts';
     const XML_ADD_TO_CART_ENABLE               = 'algoliasearch/instant/add_to_cart_enable';
 
-    const AUTOCOMPLETE_ADD_SECTIONS            = 'algoliasearch/autocomplete/additional_sections';
+    const AUTOCOMPLETE_SECTIONS                = 'algoliasearch/autocomplete/sections';
+    const EXCLUDED_PAGES                       = 'algoliasearch/autocomplete/excluded_pages';
+    const MIN_POPULARITY                       = 'algoliasearch/autocomplete/min_popularity';
+    const MIN_NUMBER_OF_RESULTS                = 'algoliasearch/autocomplete/min_number_of_results';
 
     const NUMBER_OF_PRODUCT_SUGGESTIONS        = 'algoliasearch/products/number_product_suggestions';
     const NUMBER_OF_PRODUCT_RESULTS            = 'algoliasearch/products/number_product_results';
@@ -29,17 +32,9 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const PRODUCT_CUSTOM_RANKING               = 'algoliasearch/products/custom_ranking_product_attributes';
     const RESULTS_LIMIT                        = 'algoliasearch/products/results_limit';
 
-    const NUMBER_OF_CATEGORY_SUGGESTIONS       = 'algoliasearch/categories/number_category_suggestions';
     const CATEGORY_ATTRIBUTES                  = 'algoliasearch/categories/category_additional_attributes2';
     const INDEX_PRODUCT_COUNT                  = 'algoliasearch/categories/index_product_count';
     const CATEGORY_CUSTOM_RANKING              = 'algoliasearch/categories/custom_ranking_category_attributes';
-
-    const NUMBER_OF_PAGE_SUGGESTIONS           = 'algoliasearch/pages/number_page_suggestions';
-    const EXCLUDED_PAGES                       = 'algoliasearch/pages/excluded_pages';
-
-    const NUMBER_QUERY_SUGGESTIONS             = 'algoliasearch/suggestions/number_query_suggestions';
-    const MIN_POPULARITY                       = 'algoliasearch/suggestions/min_popularity';
-    const MIN_NUMBER_OF_RESULTS                = 'algoliasearch/suggestions/min_number_of_results';
 
     const REMOVE_IF_NO_RESULT                  = 'algoliasearch/relevance/remove_words_if_no_result';
 
@@ -118,9 +113,9 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfigFlag(self::PARTIAL_UPDATES, $storeId);
     }
 
-    public function getAutocompleteAdditionnalSections($storeId = null)
+    public function getAutocompleteSections($storeId = null)
     {
-        $attrs = unserialize(Mage::getStoreConfig(self::AUTOCOMPLETE_ADD_SECTIONS, $storeId));
+        $attrs = unserialize(Mage::getStoreConfig(self::AUTOCOMPLETE_SECTIONS, $storeId));
 
         if (is_array($attrs))
             return array_values($attrs);
@@ -183,24 +178,9 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfig(self::REMOVE_IF_NO_RESULT, $storeId);
     }
 
-    public function getNumberOfProductSuggestions($storeId = NULL)
-    {
-        return (int) Mage::getStoreConfig(self::NUMBER_OF_PRODUCT_SUGGESTIONS, $storeId);
-    }
-
     public function getNumberOfProductResults($storeId = NULL)
     {
         return (int) Mage::getStoreConfig(self::NUMBER_OF_PRODUCT_RESULTS, $storeId);
-    }
-
-    public function getNumberOfCategorySuggestions($storeId = NULL)
-    {
-        return (int) Mage::getStoreConfig(self::NUMBER_OF_CATEGORY_SUGGESTIONS, $storeId);
-    }
-
-    public function getNumberOfPageSuggestions($storeId = NULL)
-    {
-        return (int) Mage::getStoreConfig(self::NUMBER_OF_PAGE_SUGGESTIONS, $storeId);
     }
 
     public function getResultsLimit($storeId = NULL)
@@ -259,17 +239,17 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
                 {
                     $suffix_index_name = 'group_' . $group_id;
 
-                    $attr['index_name'] = $product_helper->getIndexName($storeId) . '_' . $attr['attribute'] . '_' .$suffix_index_name.'_'.$attr['sort'];
+                    $attr['name'] = $product_helper->getIndexName($storeId) . '_' . $attr['attribute'] . '_' .$suffix_index_name.'_'.$attr['sort'];
                 }
                 else
-                    $attr['index_name'] = $product_helper->getIndexName($storeId). '_' .$attr['attribute'] . '_'.$attr['sort'];
+                    $attr['name'] = $product_helper->getIndexName($storeId). '_' .$attr['attribute'] . '_'.$attr['sort'];
             }
             else
             {
                 if (strpos($attr['attribute'], 'price') !== false)
-                    $attr['index_name'] = $product_helper->getIndexName($storeId). '_' .$attr['attribute'].'_' . 'default' . '_'.$attr['sort'];
+                    $attr['name'] = $product_helper->getIndexName($storeId). '_' .$attr['attribute'].'_' . 'default' . '_'.$attr['sort'];
                 else
-                    $attr['index_name'] = $product_helper->getIndexName($storeId). '_' .$attr['attribute'] . '_'.$attr['sort'];
+                    $attr['name'] = $product_helper->getIndexName($storeId). '_' .$attr['attribute'] . '_'.$attr['sort'];
             }
         }
 

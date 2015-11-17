@@ -1,0 +1,290 @@
+<?php
+
+$config = Mage::helper('algoliasearch/config');
+$catalogSearchHelper = $this->helper('catalogsearch'); /** @var $catalogSearchHelper Mage_CatalogSearch_Helper_Data */
+$algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHelper Algolia_Algoliasearch_Helper_Data */
+$product_helper = Mage::helper('algoliasearch/entity_producthelper');
+
+$base_url = Mage::getBaseUrl();
+
+$isSearchPage = false;
+$hash_params = null;
+
+$group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
+$price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.group_'.$group_id : '.default';
+
+/**
+ * Handle category replacement
+ */
+if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->getRequest()->getControllerName() == 'category')
+{
+    $category = Mage::registry('current_category');
+
+    if ($category && $category->getDisplayMode() !== 'PAGE')
+    {
+        $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
+
+        $path = '';
+
+        foreach ($category->getPathIds() as $treeCategoryId) {
+            if ($path != '') {
+                $path .= ' /// ';
+            }
+
+            $path .= $product_helper->getCategoryName($treeCategoryId, Mage::app()->getStore()->getStoreId());
+        }
+
+        $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId());
+        $category_url = $category->getUrl($category);
+        $hash_params = '{index: "'.$product_helper->getBaseIndexName() . '_products", hierarchicalFacetsRefinements: {"categories.level0": ["'.$path.'"]}}';
+
+        $isSearchPage = true;
+    }
+}
+
+/**
+ * Handle search
+ */
+if ($config->isInstantEnabled())
+{
+    $pageIdentifier = Mage::app()->getFrontController()->getAction()->getFullActionName();
+
+    if ($pageIdentifier === 'catalogsearch_result_index')
+    {
+        $query = $catalogSearchHelper->getEscapedQueryText();
+
+        if ($query == '__empty__')
+            $query = '';
+
+        $product_helper = Mage::helper('algoliasearch/entity_producthelper');
+
+        $hash_params = '{query: "'.htmlentities($query, ENT_COMPAT, "UTF-8").'", index: "'.$product_helper->getBaseIndexName() . '_products"}';
+
+        $refinement_key = Mage::app()->getRequest()->getParam('refinement_key');
+        $refinement_value = Mage::app()->getRequest()->getParam('refinement_value');
+
+        if ($refinement_key !== null)
+        {
+            $hash_params = '{query: "", index: "'.$product_helper->getBaseIndexName() . '_products", facetsRefinements: {"'.$refinement_key.'": ["'.$refinement_value.'"]}}';
+        }
+
+        $isSearchPage = true;
+    }
+}
+
+if ($hash_params !== null)
+{
+    ?>
+    <script>
+    if (window.location.hash.length <= 1)
+    {
+        document.addEventListener('DOMContentLoaded', function(event) {
+            window.location.hash = algoliaBundle.instantsearch.createQueryString(<?php echo $hash_params; ?>);
+        });
+    }
+    </script>
+    <?php
+}
+
+if ($base_url[strlen($base_url) - 1] == '/')
+    $base_url = substr($base_url, 0, strlen($base_url) - 1);
+
+if ($config->isInstantEnabled() && $isSearchPage) {
+    // hide the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS
+    echo '<style>' . $config->getInstantSelector() . '{ display: none; }</style>';
+}
+
+?>
+
+<script>
+    var algoliaConfig = {
+        instant: {
+            enabled: <?php echo $config->isInstantEnabled() ? "true" : "false"; ?>,
+            selector: '<?php echo $config->getInstantSelector(); ?>',
+            isAddToCartEnabled: <?php echo $config->isAddToCartEnable() ? "true" : "false"; ?>
+        },
+        autocomplete: {
+            enabled: <?php echo $config->isAutoCompleteEnabled() ? "true" : "false"; ?>,
+            selector: '#search',
+            sections: <?php echo json_encode($config->getAutocompleteSections()); ?>
+        },
+        applicationId: '<?php echo $config->getApplicationID() ?>',
+        indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
+        apiKey: '<?php echo $config->getSearchOnlyAPIKey() ?>',
+        facets: <?php echo json_encode($config->getFacets()); ?>,
+        hitsPerPage: <?php echo (int) $config->getNumberOfProductResults() ?>,
+        sortingIndices: <?php echo json_encode(array_values($config->getSortingIndices())); ?>,
+        isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
+        removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>,
+        priceKey: '<?php echo $price_key; ?>'
+    };
+
+    var transformHit = function (hit, price_key) {
+        if (Array.isArray(hit.categories))
+            hit.categories = hit.categories.join(', ');
+
+        if (Array.isArray(hit.categories_without_path)) {
+            hit.categories_without_path = hit.categories_without_path.join(', ');
+        }
+
+        if (Array.isArray(hit._highlightResult.name))
+            hit._highlightResult.name = hit._highlightResult.name[0];
+
+        if (Array.isArray(hit.price))
+            hit.price = hit.price[0];
+
+        if (price_key !== '.default' && hit['price'][price_key.substr(1) + '_formated'] !== hit['price']['default_formated']) {
+            hit['price'][price_key.substr(1) + '_original_formated'] = hit['price']['default_formated'];
+        }
+
+        return hit;
+    };
+
+    var getFacetWidget = function (facet, templates) {
+
+        if (facet.type === 'conjunctive') {
+            return algoliaBundle.instantsearch.widgets.refinementList({
+                container: facet.wrapper.appendChild(document.createElement('div')),
+                attributeName: facet.attribute,
+                operator: 'and',
+                templates: templates,
+                cssClasses: {
+                    root: 'facet conjunctive'
+                }
+            });
+        }
+
+        if (facet.type === 'disjunctive') {
+            return algoliaBundle.instantsearch.widgets.refinementList({
+                container: facet.wrapper.appendChild(document.createElement('div')),
+                attributeName: facet.attribute,
+                operator: 'or',
+                templates: templates,
+                cssClasses: {
+                    root: 'facet disjunctive'
+                }
+            });
+        }
+
+        if (facet.type == 'slider') {
+            return algoliaBundle.instantsearch.widgets.rangeSlider({
+                container: facet.wrapper.appendChild(document.createElement('div')),
+                attributeName: facet.attribute,
+                templates: templates,
+                cssClasses: {
+                    root: 'facet slider'
+                }
+            });
+        }
+    };
+
+    var getAutocompleteSource = function (section, algolia_client, $) {
+        if (section.hitsPerPage <= 0)
+            return null;
+
+        if (section.name === "products" || section.name === "products" || section.name === "categories" || section.name === "pages")
+        {
+            var source =  {
+                source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), {
+                    hitsPerPage: section.hitsPerPage,
+                    analyticsTags: 'autocomplete'
+                }),
+                templates: {
+                    suggestion: function (hit) {
+                        if (section.name === 'products') {
+                            hit = transformHit(hit, algoliaConfig.priceKey)
+                        } else if (section.name === 'categories') {
+                            hit.displayKey = hit.path;
+                        }
+                        hit.displayKey = hit.displayKey || hit.name;
+                        return algoliaConfig.autocomplete.templates[section.name].render(hit);
+                    }
+                }
+            };
+
+            if (section.label !== '')
+                source.templates.header = '<div class="category">' + section.label + '</div>';
+
+            return source;
+        }
+
+        if (section.name === "suggestions")
+        {
+            /// popular queries/suggestions
+            var suggestions_index = algolia_client.initIndex(algoliaConfig.indexName + "_suggestions");
+            var products_index = algolia_client.initIndex(algoliaConfig.indexName + "_products");
+
+            var source = {
+                source: $.fn.autocomplete.sources.popularIn(suggestions_index, {
+                    hitsPerPage: section.hitsPerPage
+                }, {
+                    source: 'query',
+                    index: products_index,
+                    facets: ['categories.level0'],
+                    hitsPerPage: 0,
+                    typoTolerance: false,
+                    maxValuesPerFacet: 3,
+                    analytics: false
+                }, {
+                    includeAll: true,
+                    allTitle: '<?php echo $this->__('All departments') ?>'
+                }),
+                displayKey: 'query',
+                templates: {
+                    suggestion: function (hit) {
+                        if (hit.facet) {
+                            hit.category = hit.facet.value;
+                            /// FIXME: refinement
+                            hit.url = '<?php echo Mage::getBaseUrl(); ?>/catalogsearch/result/?q=' + hit.query + '#q=' + hit.query + '&FIXME_REFINEMENT=' + hit.category + '&idx=<?php echo $product_helper->getBaseIndexName(); ?>_products';
+                        } else {
+                            hit.url = '<?php echo Mage::getBaseUrl(); ?>/catalogsearch/result/?q=' + hit.query;
+                        }
+                        return algoliaConfig.autocomplete.templates.suggestions.render(hit);
+                    }
+                }
+            };
+
+            if (section.label !== "")
+                source.templates.header = '<div class="category">' + section.label + '</div>';
+
+            return source;
+        }
+
+        /** If is not products, categories, pages or suggestions, it's additional section **/
+        var index = algolia_client.initIndex(algoliaConfig.indexName + "_section_" + section.name);
+
+        var source = {
+            source: $.fn.autocomplete.sources.hits(index, {
+                hitsPerPage: section.hitsPerPage,
+                analyticsTags: 'autocomplete'
+            }),
+            displayKey: 'value',
+            templates: {
+                suggestion: function (hit) {
+                    hit.url = '<?php echo Mage::getBaseUrl(); ?>/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + section.name + "&refinement_value=" + hit.value;
+                    return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
+                }
+            }
+        };
+
+        if (section.label !== "")
+            source.templates.header = '<div class="category">' + section.label + '</div>';
+
+        return source;
+    };
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+        algoliaBundle.$(function ($) {
+            $('#search').closest('form').submit(function (e) {
+                var query = $('#search').val();
+
+                if (algoliaConfig.instant.enabled && query == '')
+                    query = '__empty__';
+
+                window.location = $(this).attr('action') + '?q=' + query;
+
+                return false;
+            });
+        });
+    });
+</script>
