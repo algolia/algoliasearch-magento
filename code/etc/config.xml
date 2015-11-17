@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.4.9</version>
+            <version>1.4.10</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -106,6 +106,7 @@
             <algoliasearch_setup>
                 <setup>
                     <module>Algolia_Algoliasearch</module>
+                    <class>Mage_Eav_Model_Entity_Setup</class>
                 </setup>
             </algoliasearch_setup>
         </resources>

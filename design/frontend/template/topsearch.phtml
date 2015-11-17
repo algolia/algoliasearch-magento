@@ -153,11 +153,11 @@ $class = $isSearchPage ? 'search-page' : '';
         <label for="search"><?php echo $this->__('Search:') ?></label>
         <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="<?php echo $placeholder; ?>" />
         <svg id="algolia-glass" xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128" >
-          <g transform="scale(4)">
-            <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
-            <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
-            <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z" ></path>
-          </g>
+            <g transform="scale(4)">
+                <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
+                <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
+                <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z" ></path>
+            </g>
         </svg>
     </div>
 </form>
@@ -217,10 +217,10 @@ $class = $isSearchPage ? 'search-page' : '';
             {{^image_url}}
             <div class="info-without-thumb">
                 {{#_highlightResult.path}}
-                    {{{_highlightResult.path.value}}}
+                {{{_highlightResult.path.value}}}
                 {{/_highlightResult.path}}
                 {{^_highlightResult.path}}
-                    {{{path}}}
+                {{{path}}}
                 {{/_highlightResult.path}}
 
                 {{#product_count}}
@@ -261,7 +261,7 @@ $class = $isSearchPage ? 'search-page' : '';
             {{{_highlightResult.query.value}}}
 
             {{#category}}
-                <span class="text-muted"><?php echo $this->__('in'); ?></span> <span class="category-tag">{{category}}</span>
+            <span class="text-muted"><?php echo $this->__('in'); ?></span> <span class="category-tag">{{category}}</span>
             {{/category}}
         </div>
         <div class="clearfix"></div>
@@ -434,14 +434,14 @@ $class = $isSearchPage ? 'search-page' : '';
 
 <script type="text/template" id="instant-facets-hierarchical-template">
     {{#data}}
-        <div style="padding-left: 10px; padding-right: 0px;" class="hierarchical_facet">
-            <div data-name="{{attribute}}" data-path="{{path}}" data-type="hierarchical" class="{{#isRefined}}checked {{/isRefined}}sub_facet hierarchical {{#empty}}empty{{/empty}}">
-                    <input style="display: none;" data-attribute="{{attribute}}" {{#isRefined}}checked{{/isRefined}} data-name="{{name}}" class="facet_value" type="checkbox" />
-                    {{name}}
-                    {{#count}}<span class="count">{{count}}</span>{{/count}}
-            </div>
-            {{>facet_hierarchical}}
+    <div style="padding-left: 10px; padding-right: 0px;" class="hierarchical_facet">
+        <div data-name="{{attribute}}" data-path="{{path}}" data-type="hierarchical" class="{{#isRefined}}checked {{/isRefined}}sub_facet hierarchical {{#empty}}empty{{/empty}}">
+            <input style="display: none;" data-attribute="{{attribute}}" {{#isRefined}}checked{{/isRefined}} data-name="{{name}}" class="facet_value" type="checkbox" />
+            {{name}}
+            {{#count}}<span class="count">{{count}}</span>{{/count}}
         </div>
+        {{>facet_hierarchical}}
+    </div>
     {{/data}}
 </script>
 
@@ -491,9 +491,9 @@ $class = $isSearchPage ? 'search-page' : '';
                 {{/type.disjunctive}}
 
                 {{#type.hierarchical}}
-                    <div style="margin-left: -10px;">
+                <div style="margin-left: -10px;">
                     {{>facet_hierarchical}}
-                    </div>
+                </div>
                 {{/type.hierarchical}}
 
                 {{/sub_facets}}

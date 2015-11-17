@@ -84,7 +84,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $products = $products->addFinalPrice()
                         ->addAttributeToSelect('special_from_date')
                         ->addAttributeToSelect('special_to_date')
-                        ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
+                        ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED)
+                        ->addAttributeToFilter('exclude_from_search', array(array('neq' => true), array('null' => true)), 'left');
 
         $additionalAttr = $this->config->getProductAdditionalAttributes($storeId);
 
