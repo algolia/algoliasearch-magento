@@ -19,6 +19,7 @@ if ($config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()))
 }
 
 $title = '';
+$description = '';
 $content = '';
 $imgHtml = '';
 
@@ -28,6 +29,7 @@ $imgHtml = '';
 if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->getRequest()->getControllerName() == 'category')
 {
     $category = Mage::registry('current_category');
+    $title = $category->getName();
 
     if ($category && $category->getDisplayMode() !== 'PAGE')
     {
@@ -35,10 +37,11 @@ if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->g
 
         if ($category->getDisplayMode() == 'PRODUCTS_AND_PAGE')
         {
-            $page       = $category->getLandingPage();
-            $cms_block  = Mage::getModel('cms/block')->load($page);
-            $title      = $cms_block->getTitle();
-            $content    = $this->getLayout()->createBlock('cms/block')->setBlockId($page)->toHtml();
+            $page           = $category->getLandingPage();
+            $cms_block      = Mage::getModel('cms/block')->load($page);
+
+            $description    = $category->getDescription();
+            $content        = $this->getLayout()->createBlock('cms/block')->setBlockId($page)->toHtml();
 
             if ($category->getImageUrl())
             {
@@ -292,6 +295,9 @@ $class = $isSearchPage ? 'search-page' : '';
                     </div>
                     <div>
                         <?php echo $imgHtml; ?>
+                    </div>
+                    <div class="category-description std">
+                        <?php echo $description; ?>
                     </div>
                     <?php echo $content; ?>
                 </div>
