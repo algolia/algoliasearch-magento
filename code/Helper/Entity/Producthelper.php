@@ -326,6 +326,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     $customData[$field]['default'] = $special_price;
                     $customData[$field]['default_formated'] = $product->getStore()->formatPrice($special_price, false);
                 }
+
+                // Handle MSRP price, the attribute should be indexable
+                $msrpPrice = $product->getMsrp();
+                if ($msrpPrice && $msrpPrice != $customData[$field]['default'])
+                {
+                    $customData[$field]['default_original_formated'] = $product->getStore()->formatPrice($msrpPrice, false);
+                }
             }
 
             if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
