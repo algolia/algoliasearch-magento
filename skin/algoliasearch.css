@@ -93,6 +93,8 @@
   height: 6px;
   margin-top: 2em;
   margin-bottom: 4em;
+  width: 88%;
+  margin-left: 6%;
 }
 
 .ais-range-slider--base {
