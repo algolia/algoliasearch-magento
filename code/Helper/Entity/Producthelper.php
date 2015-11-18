@@ -329,7 +329,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                 // Handle MSRP price, the attribute should be indexable
                 $msrpPrice = $product->getMsrp();
-                if ($msrpPrice && $msrpPrice != $customData[$field]['default'])
+                if ($msrpPrice && $msrpPrice > $customData[$field]['default'])
                 {
                     $customData[$field]['default_original_formated'] = $product->getStore()->formatPrice($msrpPrice, false);
                 }
