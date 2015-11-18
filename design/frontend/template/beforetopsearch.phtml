@@ -105,7 +105,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         },
         autocomplete: {
             enabled: <?php echo $config->isAutoCompleteEnabled() ? "true" : "false"; ?>,
-            selector: '#search',
+            selector: '.algolia-search-input',
             sections: <?php echo json_encode($config->getAutocompleteSections()); ?>
         },
         applicationId: '<?php echo $config->getApplicationID() ?>',
@@ -116,7 +116,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         sortingIndices: <?php echo json_encode(array_values($config->getSortingIndices())); ?>,
         isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
         removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>,
-        priceKey: '<?php echo $price_key; ?>'
+        priceKey: '<?php echo $price_key; ?>',
+        currencySymbol: '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>'
     };
 
     var transformHit = function (hit, price_key) {
@@ -141,6 +142,22 @@ if ($config->isInstantEnabled() && $isSearchPage) {
     };
 
     var getFacetWidget = function (facet, templates) {
+
+        if (facet.type === 'priceRanges') {
+            return algoliaBundle.instantsearch.widgets.priceRanges({
+                container: facet.wrapper.appendChild(document.createElement('div')),
+                attributeName: facet.attribute,
+                labels: {
+                    currency: algoliaConfig.currencySymbol,
+                    separator: '<?php echo $this->__("to"); ?>',
+                    button: '<?php echo $this->__("Go"); ?>'
+                },
+                templates: templates,
+                cssClasses: {
+                    root: 'facet conjunctive'
+                }
+            })
+        }
 
         if (facet.type === 'conjunctive') {
             return algoliaBundle.instantsearch.widgets.refinementList({
@@ -275,15 +292,26 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
     document.addEventListener("DOMContentLoaded", function(event) {
         algoliaBundle.$(function ($) {
-            $('#search').closest('form').submit(function (e) {
-                var query = $('#search').val();
+            $(algoliaConfig.autocomplete.selector).each(function () {
+                $(this).closest('form').submit(function (e) {
+                    var query = $(this).find(algoliaConfig.autocomplete.selector).val();
 
-                if (algoliaConfig.instant.enabled && query == '')
-                    query = '__empty__';
+                    if (algoliaConfig.instant.enabled && query == '')
+                        query = '__empty__';
 
-                window.location = $(this).attr('action') + '?q=' + query;
+                    window.location = $(this).attr('action') + '?q=' + query;
 
-                return false;
+                    return false;
+                });
+            });
+
+            /** Handle small screen **/
+            $('body').on('click', '#refine-toggle', function () {
+                $('#instant-search-facets-container').toggleClass('hidden-sm').toggleClass('hidden-xs');
+                if ($(this).html()[0] === '+')
+                    $(this).html('- Refine');
+                else
+                    $(this).html('+ Refine');
             });
         });
     });

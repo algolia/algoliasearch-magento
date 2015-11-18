@@ -38,10 +38,20 @@
 /* REFINEMENT LIST */
 .ais-hierarchical-menu--item__active > div > .ais-hierarchical-menu--link,
 .ais-refinement-list--item__active > div > .ais-hierarchical-list--link,
-.ais-refinement-list--item__active > div > .ais-refinement-list--label
-{
+.ais-refinement-list--item__active > div > .ais-refinement-list--label,
+.ais-price-ranges--item__active > .ais-price-ranges--link{
   font-weight: bold;
   box-shadow: inset 4px 0 0 #54A5CD;
+}
+
+.ais-price-ranges--input
+{
+  width: 70px !important;
+}
+
+.ais-price-ranges--label
+{
+  margin: 5px;
 }
 
 .ais-refinement-list--checkbox
@@ -49,7 +59,10 @@
   margin-right: 10px;
 }
 
-.ais-menu--link, .ais-hierarchical-menu--link, .ais-refinement-list--label {
+.ais-menu--link,
+.ais-hierarchical-menu--link,
+.ais-price-ranges--link,
+.ais-refinement-list--label {
   padding: 6px 10px;
   cursor: pointer;
   color: #636363;
@@ -60,7 +73,9 @@
   font-size: inherit;
 }
 
-.ais-menu--link:hover, .ais-hierarchical-menu--link:hover {
+.ais-menu--link:hover,
+.ais-price-ranges--link:hover,
+.ais-hierarchical-menu--link:hover {
   text-decoration: none;
   color: #636363;
 }
@@ -294,7 +309,7 @@
   stroke: #54A5CD;
 }
 
-#algolia-searchbox #search:focus {
+#algolia-searchbox .algolia-search-input:focus {
   outline: 0;
   box-shadow: none;
   border: solid 1px #54A5CD;
@@ -422,20 +437,6 @@
 #algolia_instant_selector .facet.slider
 {
   margin-bottom: 40px;
-}
-
-#algolia_instant_selector .facet.conjunctive .sub_facet.checked {
-  font-weight: bold;
-  box-shadow: inset 4px 0 0 #54A5CD;
-}
-
-#algolia_instant_selector .facet.conjunctive input {
-  display: none;
-}
-
-#algolia_instant_selector .facet.disjunctive .sub_facet.checked {
-  font-weight: bold;
-  box-shadow: inset 4px 0 0 #54A5CD;
 }
 
 #algolia_instant_selector .hierarchical .ais-hierarchical-menu--list
@@ -583,7 +584,22 @@
   cursor: pointer;
 }
 
-#algolia_instant_selector button {
+.ais-price-ranges--button {
+  background: #39C none repeat scroll 0% 0%;
+  padding: 5px 15px;
+  margin-left: 10px;
+  border: 0px none;
+  color: #FFF;
+  font-size: 13px;
+  font-weight: normal;
+  font-family: "Raleway","Helvetica Neue",Verdana,Arial,sans-serif;
+  line-height: 19px;
+  text-align: center;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+#algolia_instant_selector button:not(.ais-price-ranges--button) {
   background: #39C none repeat scroll 0% 0%;
   display: block;
   margin: auto;

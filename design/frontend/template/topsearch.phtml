@@ -59,7 +59,7 @@ if (count($sections) > 0)
 <form id="search_mini_form" action="<?php echo $catalogSearchHelper->getResultUrl() ?>" method="get">
     <div id="algolia-searchbox">
         <label for="search"><?php echo $this->__('Search:') ?></label>
-        <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" class="input-text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="<?php echo $placeholder; ?>" />
+        <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" class="input-text algolia-search-input" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="<?php echo $placeholder; ?>" />
         <svg id="algolia-glass" xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128" >
             <g transform="scale(4)">
                 <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
@@ -403,7 +403,7 @@ if (count($sections) > 0)
                     throw '[Algolia] You can\'t have a search input matching "' + algoliaConfig.autocomplete.selector +
                     '" inside you instant selector "' + algoliaConfig.instant.selector + '"';
 
-                var instant_selector = !algoliaConfig.autocomplete.enabled ? "#search" : "#instant-search-bar";
+                var instant_selector = !algoliaConfig.autocomplete.enabled ? ".algolia-search-input" : "#instant-search-bar";
 
                 var wrapperTemplate = algoliaBundle.Hogan.compile($('#instant_wrapper_template').html());
 
@@ -446,7 +446,7 @@ if (count($sections) > 0)
                 });
 
                 search.addWidget(
-                    algoliaBundle.instantsearch.widgets.indexSelector({
+                    algoliaBundle.instantsearch.widgets.sortBySelector({
                         container: '#algolia-sorts',
                         indices: algoliaConfig.sortingIndices,
                         cssClass: 'form-control'

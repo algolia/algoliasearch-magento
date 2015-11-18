@@ -31,7 +31,8 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
                     $aOptions = array(
                         'conjunctive'   => 'Conjunctive',
                         'disjunctive'   => 'Disjunctive',
-                        'slider'        => 'Slider'
+                        'slider'        => 'Slider',
+                        'priceRanges'   => 'Price Ranges'
                     );
 
                     $selectField->setExtraParams('style="width:100px;"');
