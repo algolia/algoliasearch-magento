@@ -472,8 +472,7 @@
   margin: 0;
 }
 
-#algolia_instant_selector .result-wrapper
-{
+#algolia_instant_selector .result-wrapper {
   padding-left: 10px;
   padding-right: 10px;
 }
@@ -483,6 +482,11 @@
   margin: 20px 0px 20px 0px;
   border: solid 1px #EDEDED;
   background-color: white;
+  height: 300px;
+}
+
+#algolia_instant_selector .price-wrapper {
+  height: 25px;
 }
 
 #algolia_instant_selector .result:hover {
