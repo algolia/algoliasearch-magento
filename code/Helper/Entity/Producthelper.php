@@ -4,7 +4,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 {
     protected static $_productAttributes;
 
-    protected static $_predefinedProductAttributes = array('name', 'url_key', 'description', 'image', 'small_image', 'thumbnail');
+    protected static $_predefinedProductAttributes = array(
+        'name',
+        'url_key',
+        'description',
+        'image',
+        'small_image',
+        'thumbnail',
+        'msrp_enabled' // NEEDED to handle msrp behavior
+    );
 
     protected function getIndexNameSuffix()
     {
@@ -22,7 +30,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $allAttributes = $config->getEntityAttributeCodes('catalog_product');
 
-            $productAttributes = array_merge(array('name', 'path', 'categories', 'categories_without_path', 'description', 'ordered_qty', 'total_ordered', 'stock_qty', 'price', 'rating_summary', 'media_gallery'), $allAttributes);
+            $productAttributes = array_merge(array('name', 'path', 'categories', 'categories_without_path', 'description', 'ordered_qty', 'total_ordered', 'stock_qty', 'rating_summary', 'media_gallery'), $allAttributes);
 
             $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
@@ -682,7 +690,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
         }
 
-        $this->handlePrice($product, $sub_products, $customData);
+
+        $msrpEnabled = method_exists(Mage::helper('catalog'), 'canApplyMsrp') ? (bool) Mage::helper('catalog')->canApplyMsrp($product): false;
+
+        if (false === $msrpEnabled)
+            $this->handlePrice($product, $sub_products, $customData);
+        else
+            unset($customData['price']);
 
         $transport = new Varien_Object($customData);
         Mage::dispatchEvent('algolia_subproducts_index', array('custom_data' => $transport, 'sub_products' => $sub_products));

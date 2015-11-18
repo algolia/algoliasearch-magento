@@ -85,8 +85,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->algolia_helper->setSettings($this->page_helper->getIndexName($storeId), $this->page_helper->getIndexSettings($storeId));
         $this->algolia_helper->setSettings($this->suggestion_helper->getIndexName($storeId), $this->suggestion_helper->getIndexSettings($storeId));
 
-        foreach ($this->config->getAutocompleteAdditionnalSections() as $section)
-            $this->algolia_helper->setSettings($this->additionalsections_helper->getIndexName($storeId).'_'.$section['attribute'], $this->additionalsections_helper->getIndexSettings($storeId));
+        foreach ($this->config->getAutocompleteSections() as $section)
+        {
+            if ($section['name'] === 'products' || $section['name'] === 'categories' || $section['name'] === 'pages' || $section['name'] === 'suggestions')
+                continue;
+
+            $this->algolia_helper->setSettings($this->additionalsections_helper->getIndexName($storeId).'_'.$section['name'], $this->additionalsections_helper->getIndexSettings($storeId));
+        }
 
         $this->product_helper->setSettings($storeId);
     }
@@ -168,11 +173,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             return;
         }
 
-        $additionnal_sections = $this->config->getAutocompleteAdditionnalSections();
+        $additionnal_sections = $this->config->getAutocompleteSections();
 
         foreach ($additionnal_sections as $section)
         {
-            $index_name = $this->additionalsections_helper->getIndexName($storeId).'_'.$section['attribute'];
+            if ($section['name'] === 'products' || $section['name'] === 'categories' || $section['name'] === 'pages' || $section['name'] === 'suggestions')
+                continue;
+
+            $index_name = $this->additionalsections_helper->getIndexName($storeId).'_'.$section['name'];
 
             $attribute_values = $this->additionalsections_helper->getAttributeValues($storeId, $section);
 
@@ -353,6 +361,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $suggestion->setStoreId($storeId);
 
             $suggestion_obj = $this->suggestion_helper->getObject($suggestion);
+
+            if ($suggestion_obj['query'] == '__query__')
+                continue;
 
             if ($suggestion_obj['popularity'] >= $this->config->getMinPopularity() && $suggestion_obj['number_of_results'] >= $this->config->getMinNumberOfResults())
                 array_push($indexData, $suggestion_obj);

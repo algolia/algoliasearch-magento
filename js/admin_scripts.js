@@ -1,4 +1,4 @@
-algoliaBundle.$(function($) {
+algoliaAdminBundle.$(function($) {
     var fixHelper = function(e, ui) {
         ui.children().each(function() {
             $(this).width($(this).width());
