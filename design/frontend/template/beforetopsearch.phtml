@@ -8,10 +8,14 @@ $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 $base_url = Mage::getBaseUrl();
 
 $isSearchPage = false;
-$hash_params = null;
 
 $group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
 $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.group_'.$group_id : '.default';
+
+$query = '';
+$refinement_key = '';
+$refinement_value = '';
+$path = '';
 
 /**
  * Handle category replacement
@@ -24,8 +28,6 @@ if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->g
     {
         $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
 
-        $path = '';
-
         foreach ($category->getPathIds() as $treeCategoryId) {
             if ($path != '') {
                 $path .= ' /// ';
@@ -36,8 +38,6 @@ if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->g
 
         $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId());
         $category_url = $category->getUrl($category);
-        $hash_params = '{index: "'.$product_helper->getBaseIndexName() . '_products", hierarchicalFacetsRefinements: {"categories.level0": ["'.$path.'"]}}';
-
         $isSearchPage = true;
     }
 }
@@ -58,32 +58,11 @@ if ($config->isInstantEnabled())
 
         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
-        $hash_params = '{query: "'.htmlentities($query, ENT_COMPAT, "UTF-8").'", index: "'.$product_helper->getBaseIndexName() . '_products"}';
-
+        $query = htmlentities($query, ENT_COMPAT, "UTF-8");
         $refinement_key = Mage::app()->getRequest()->getParam('refinement_key');
         $refinement_value = Mage::app()->getRequest()->getParam('refinement_value');
-
-        if ($refinement_key !== null)
-        {
-            $hash_params = '{query: "", index: "'.$product_helper->getBaseIndexName() . '_products", facetsRefinements: {"'.$refinement_key.'": ["'.$refinement_value.'"]}}';
-        }
-
         $isSearchPage = true;
     }
-}
-
-if ($hash_params !== null)
-{
-    ?>
-    <script>
-    if (window.location.hash.length <= 1)
-    {
-        document.addEventListener('DOMContentLoaded', function(event) {
-            window.location.hash = algoliaBundle.instantsearch.createQueryString(<?php echo $hash_params; ?>);
-        });
-    }
-    </script>
-    <?php
 }
 
 if ($base_url[strlen($base_url) - 1] == '/')
@@ -117,7 +96,13 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
         removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>,
         priceKey: '<?php echo $price_key; ?>',
-        currencySymbol: '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>'
+        currencySymbol: '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>',
+        request: {
+            query: '<?php echo $query; ?>',
+            refinement_key: '<?php echo $refinement_key; ?>',
+            refinement_value: '<?php echo $refinement_value; ?>',
+            path: '<?php echo $path; ?>'
+        }
     };
 
     var transformHit = function (hit, price_key) {
@@ -278,7 +263,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             displayKey: 'value',
             templates: {
                 suggestion: function (hit) {
-                    hit.url = '<?php echo Mage::getBaseUrl(); ?>/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + section.name + "&refinement_value=" + hit.value;
+                    hit.url = '<?php echo Mage::getBaseUrl(); ?>/catalogsearch/result/?q=&refinement_key=' + section.name + "&refinement_value=" + hit.value;
+                    console.log(hit.url);
                     return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
                 }
             }

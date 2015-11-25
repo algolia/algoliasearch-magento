@@ -409,6 +409,12 @@ if (count($sections) > 0)
 
                 $(algoliaConfig.instant.selector).html(wrapperTemplate.render({second_bar: algoliaConfig.autocomplete.enabled})).show();
 
+                var searchParameters = {};
+
+                if (algoliaConfig.request.query.length > 0) {
+                    searchParameters.query = algoliaConfig.request.query;
+                }
+
                 /** Initialise instant search **/
                 var search = algoliaBundle.instantsearch({
                     appId: algoliaConfig.applicationId,
@@ -418,7 +424,8 @@ if (count($sections) > 0)
                         useHash: true,
                         threshold: 5000,
                         trackedParameters: ['query', 'page', 'attribute:*', 'index']
-                    }
+                    },
+                    searchParameters: searchParameters
                 });
 
                 /** Search bar **/
@@ -482,7 +489,7 @@ if (count($sections) > 0)
                         for (var l = 0; l < 10; l++)
                             hierarchical_levels.push('categories.level' + l.toString());
 
-                        return algoliaBundle.instantsearch.widgets.hierarchicalMenu({
+                        var hierarchicalMenuParams = {
                             container: facet.wrapper.appendChild(document.createElement('div')),
                             attributes: hierarchical_levels,
                             separator: ' /// ',
@@ -493,7 +500,13 @@ if (count($sections) > 0)
                                 list: 'hierarchical',
                                 root: 'facet hierarchical'
                             }
-                        });
+                        };
+
+                        if (algoliaConfig.request.path.length > 0) {
+                             hierarchicalMenuParams.rootPath = algoliaConfig.request.path;
+                        }
+
+                        return algoliaBundle.instantsearch.widgets.hierarchicalMenu(hierarchicalMenuParams);
                     }
                 };
 
