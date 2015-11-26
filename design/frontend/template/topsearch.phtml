@@ -217,7 +217,7 @@ if (count($sections) > 0)
                                 <?php echo $this->__('Search :'); ?>
                             </label>
 
-                            <input value="<?php echo ($catalogSearchHelper->getEscapedQueryText() !== '__empty__' && Mage::app()->getRequest()->getParam('refinement_key') === null ? $catalogSearchHelper->getEscapedQueryText() : '') ?>" placeholder="<?php echo $this->__('Search for products'); ?>" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
+                            <input placeholder="<?php echo $this->__('Search for products'); ?>" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
 
                             <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128">
                                 <g transform="scale(4)">

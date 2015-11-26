@@ -31,6 +31,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const PRODUCT_ATTRIBUTES                   = 'algoliasearch/products/product_additional_attributes';
     const PRODUCT_CUSTOM_RANKING               = 'algoliasearch/products/custom_ranking_product_attributes';
     const RESULTS_LIMIT                        = 'algoliasearch/products/results_limit';
+    const SHOW_SUGGESTIONS_NO_RESULTS          = 'algoliasearch/products/show_suggestions_on_no_result_page';
 
     const CATEGORY_ATTRIBUTES                  = 'algoliasearch/categories/category_additional_attributes2';
     const INDEX_PRODUCT_COUNT                  = 'algoliasearch/categories/index_product_count';
@@ -57,8 +58,14 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     protected $_productTypeMap = array();
 
+    public function showSuggestionsOnNoResultsPage($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::SHOW_SUGGESTIONS_NO_RESULTS, $storeId);
+    }
+
     public function isEnabledFrontEnd($storeId = null)
     {
+        // Frontend = Backend + Frontent
         return Mage::getStoreConfigFlag(self::ENABLE_BACKEND, $storeId) && Mage::getStoreConfigFlag(self::ENABLE_FRONTEND, $storeId);
     }
 

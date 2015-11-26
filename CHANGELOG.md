@@ -15,6 +15,7 @@
 - NEW: add total_ordered because ordered_qty does not always make sense
 - NEW: add drag and drop for grid in the config page
 - UPDATED: More intelligent queue that is able to batch jobs
+- UPDATED: Option to have most popular suggestions when no result page
 - FIX: issue with configurable and gouped sub_products query
 - FIX: replace image helper override by subclass
 
