@@ -25,7 +25,6 @@
             <show_in_default>1</show_in_default>
             <show_in_website>1</show_in_website>
             <show_in_store>1</show_in_store>
-            <expanded>1</expanded>
             <groups>
                 <credentials translate="label">
                     <label>Credentials &amp; Setup</label>
@@ -138,13 +137,13 @@
                     </fields>
                 </credentials>
                 <products translate="label">
-                    <label>Product Configuration</label>
+                    <label>Products</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>30</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
+                    <expanded>0</expanded>
                     <comment>
                      <![CDATA[
                      <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=398" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
@@ -210,13 +209,13 @@
                     </fields>
                 </products>
                 <instant>
-                    <label>Instant Search Results Page Configuration</label>
+                    <label>Instant Search Results Page</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>31</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
+                    <expanded>0</expanded>
                     <comment>
                      <![CDATA[
                      <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=666" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
@@ -311,7 +310,7 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
+                    <expanded>0</expanded>
                     <fields>
                         <sections>
                             <label>Sections</label>
@@ -372,13 +371,13 @@
                     </fields>
                 </autocomplete>
                 <categories translate="label">
-                    <label>Category Autocomplete Configuration</label>
+                    <label>Categories</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>40</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
+                    <expanded>0</expanded>
                     <comment>
                      <![CDATA[
                      <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=805" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
@@ -419,9 +418,9 @@
                     </fields>
                 </categories>
                 <relevance translate="label">
-                    <label>Query Expansion Configuration</label>
+                    <label>Query Expansion</label>
+                    <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
-                    <expanded>1</expanded>
                     <sort_order>50</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
@@ -445,8 +444,8 @@
                     </fields>
                 </relevance>
                 <queue translate="label">
-                    <label>Queue Configuration</label>
-                    <expanded>1</expanded>
+                    <label>Queue</label>
+                    <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
                     <sort_order>70</sort_order>
                     <show_in_default>1</show_in_default>
@@ -504,8 +503,8 @@
                     </fields>
                 </queue>
                 <image translate="label">
-                    <label>Image Configuration</label>
-                    <expanded>1</expanded>
+                    <label>Images</label>
+                    <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
                     <sort_order>80</sort_order>
                     <show_in_default>1</show_in_default>
@@ -545,7 +544,7 @@
                     </fields>
                 </image>
                 <advanced translate="label">
-                    <label>Advanced Configuration</label>
+                    <label>Advanced</label>
                     <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
                     <sort_order>90</sort_order>

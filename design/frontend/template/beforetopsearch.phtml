@@ -191,7 +191,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 if (section.hitsPerPage <= 0)
                     return null;
 
-                if (section.name === "products" || section.name === "products" || section.name === "categories" || section.name === "pages")
+                if (section.name === "products" || section.name === "categories" || section.name === "pages")
                 {
                     var source =  {
                         source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), {
