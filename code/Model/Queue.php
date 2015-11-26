@@ -12,9 +12,9 @@ class Algolia_Algoliasearch_Model_Queue
     /** @var Algolia_Algoliasearch_Helper_Logger */
     protected $logger;
 
-    private $methods = ['removeProducts', 'removeCategories', 'deleteProductsStoreIndices', 'deleteCategoriesStoreIndices',
+    private $methods = array('removeProducts', 'removeCategories', 'deleteProductsStoreIndices', 'deleteCategoriesStoreIndices',
                         'rebuildPageIndex', 'rebuildAdditionalSectionsIndex', 'rebuildSuggestionIndex',
-                        'rebuildCategoryIndex', 'rebuildProductIndex', 'moveStoreSuggestionIndex'];
+                        'rebuildCategoryIndex', 'rebuildProductIndex', 'moveStoreSuggestionIndex');
 
     private $by_page;
 
