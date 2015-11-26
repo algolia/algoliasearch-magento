@@ -210,6 +210,7 @@
 
 #algolia-autocomplete-tt.algolia-autocomplete {
   width: 100%;
+  display: inline-block !important;
 }
 
 #algolia-autocomplete-tt .aa-dropdown-menu {

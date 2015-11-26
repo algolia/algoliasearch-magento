@@ -157,7 +157,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             'customRanking'             => $customRankingsArr,
             'unretrievableAttributes'   => $unretrievableAttributes,
             'attributesForFaceting'     => $attributesForFaceting,
-            'maxValuesPerFacet'         => (int) $this->config->getMaxValuesPerFacet($storeId)
+            'maxValuesPerFacet'         => (int) $this->config->getMaxValuesPerFacet($storeId),
+            'removeWordsIfNoResults'    => $this->config->getRemoveWordsIfNoResult($storeId)
         );
 
         // Additional index settings from event observer

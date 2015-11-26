@@ -465,7 +465,6 @@ if (count($sections) > 0)
                     algoliaBundle.instantsearch.widgets.hits({
                         container: '#instant-search-results-container',
                         templates: {
-                            empty: '<div class="no-results"><?php echo $this->__('No results found matching'); ?> "<strong>{{query}}</strong>". <span class="button clear-button"><?php echo $this->__('Clear query and filters'); ?></span> </div>',
                             item: $('#instant-hit-template').html()
                         },
                         transformData: {
@@ -479,6 +478,38 @@ if (count($sections) > 0)
                         hitsPerPage: algoliaConfig.hitsPerPage
                     })
                 );
+
+                search.addWidget({
+                   suggestions: "",
+                   init: function () {
+                        if (algoliaConfig.showSuggestionsOnNoResultsPage) {
+                            var index = algolia_client.initIndex(algoliaConfig.indexName + '_suggestions');
+                            var $this = this;
+
+                            index.search('', {hitsPerPage: 9}, function (err, data) {
+                                if (!err) {
+                                    $.each(data.hits, function (i, data) {
+                                        $this.suggestions += '<div><a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(data.query) + '">' + data.query + '</a></div>';
+                                    });
+                                }
+                            });
+                        }
+                   },
+                   render: function (data) {
+                       if (data.results.hits.length === 0) {
+                           var content = '<div class="no-results">';
+                           content += '<div><?php echo $this->__('No results found matching'); ?> "<strong>' + $("<div>").text(data.results.query).html() + '</strong>".</div>';
+
+                           if (algoliaConfig.showSuggestionsOnNoResultsPage && this.suggestions.length > 0) {
+                               content += '<div class="popular-searches"><div><h2><?php echo $this->__('Popular searches'); ?></h2></div>' + this.suggestions + '</div>';
+                           }
+
+                           content += '</div>';
+
+                           $('#instant-search-results-container').html(content);
+                       }
+                   }
+                });
 
                 /** Facets **/
                 var wrapper = document.getElementById('instant-search-facets-container');
