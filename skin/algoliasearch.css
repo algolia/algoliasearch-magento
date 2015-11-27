@@ -216,7 +216,8 @@
 #algolia-autocomplete-tt .aa-dropdown-menu {
   position: absolute;
   top: 0px;
-  width: 100%;
+  width: 953px;
+  margin-left: -653px;
   padding: 3px 2px 2px;
   z-index: 1000 !important;
   border: 1px solid #BBB;
@@ -225,7 +226,7 @@
 }
 
 #algolia-autocomplete-tt .aa-dropdown-menu .category {
-  padding: 8px 0;
+  padding: 8px 30px !important;
   border: 1px solid #ccc;
   border-left: none;
   border-right: none;
@@ -249,7 +250,7 @@
   text-decoration: none;
 }
 
-#algolia-autocomplete-tt .aa-dropdown-menu .aa-cursor {
+#algolia-autocomplete-tt .aa-dropdown-menu .aa-cursor .algoliasearch-autocomplete-hit {
     background-color: #CFEAFA;
 }
 

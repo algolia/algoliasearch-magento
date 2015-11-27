@@ -80,66 +80,70 @@ if (count($sections) > 0)
 
 <!-- Product hit template -->
 <script type="text/template" id="autocomplete_products_template">
-    <a class="algoliasearch-autocomplete-hit" href="{{url}}">
-        {{#thumbnail_url}}
-        <div class="thumb"><img src="{{thumbnail_url}}" /></div>
-        {{/thumbnail_url}}
+    <div class="col-md-6">
+        <a class="algoliasearch-autocomplete-hit" href="{{url}}">
+            {{#thumbnail_url}}
+            <div class="thumb"><img src="{{thumbnail_url}}" /></div>
+            {{/thumbnail_url}}
 
-        <div class="algoliasearch-autocomplete-price">
-            <span class="after_special">
-                {{price<?php echo $price_key; ?>_formated}}
-            </span>
-
-            {{#price<?php echo $price_key; ?>_original_formated}}
-                <span class="before_special">
-                    {{price<?php echo $price_key; ?>_original_formated}}
+            <div class="algoliasearch-autocomplete-price">
+                <span class="after_special">
+                    {{price<?php echo $price_key; ?>_formated}}
                 </span>
-            {{/price<?php echo $price_key; ?>_original_formated}}
-        </div>
 
-        <div class="info">
-            {{{_highlightResult.name.value}}}
-
-            {{#categories_without_path}}
-            <div class="algoliasearch-autocomplete-category">
-                <?php echo $this->__('in'); ?> {{categories_without_path}}
+                {{#price<?php echo $price_key; ?>_original_formated}}
+                    <span class="before_special">
+                        {{price<?php echo $price_key; ?>_original_formated}}
+                    </span>
+                {{/price<?php echo $price_key; ?>_original_formated}}
             </div>
-            {{/categories_without_path}}
-        </div>
-        <div class="clearfix"></div>
-    </a>
+
+            <div class="info">
+                {{{_highlightResult.name.value}}}
+
+                {{#categories_without_path}}
+                <div class="algoliasearch-autocomplete-category">
+                    <?php echo $this->__('in'); ?> {{categories_without_path}}
+                </div>
+                {{/categories_without_path}}
+            </div>
+            <div class="clearfix"></div>
+        </a>
+    </div>
 </script>
 
 <!-- Category hit template -->
 <script type="text/template" id="autocomplete_categories_template">
-    <a class="algoliasearch-autocomplete-hit" href="{{url}}">
-        {{#image_url}}
-        <div class="thumb">
-            <img src="{{image_url}}" />
-        </div>
-        {{/image_url}}
-
-        {{#image_url}}
-        <div class="info">
-            {{/image_url}}
-            {{^image_url}}
-            <div class="info-without-thumb">
-                {{#_highlightResult.path}}
-                {{{_highlightResult.path.value}}}
-                {{/_highlightResult.path}}
-                {{^_highlightResult.path}}
-                {{{path}}}
-                {{/_highlightResult.path}}
-
-                {{#product_count}}
-                <small>( {{product_count}} )</small>
-                {{/product_count}}
-
+    <div class="col-md-12">
+        <a class="algoliasearch-autocomplete-hit" href="{{url}}">
+            {{#image_url}}
+            <div class="thumb">
+                <img src="{{image_url}}" />
             </div>
-            <div class="clearfix"></div>
             {{/image_url}}
-        </div>
-    </a>
+
+            {{#image_url}}
+            <div class="info">
+                {{/image_url}}
+                {{^image_url}}
+                <div class="info-without-thumb">
+                    {{#_highlightResult.path}}
+                    {{{_highlightResult.path.value}}}
+                    {{/_highlightResult.path}}
+                    {{^_highlightResult.path}}
+                    {{{path}}}
+                    {{/_highlightResult.path}}
+
+                    {{#product_count}}
+                    <small>( {{product_count}} )</small>
+                    {{/product_count}}
+
+                </div>
+                <div class="clearfix"></div>
+                {{/image_url}}
+            </div>
+        </a>
+    </div>
 </script>
 
 <!-- Page hit template -->
@@ -335,6 +339,24 @@ if (count($sections) > 0)
     </div>
 </script>
 
+<script type="text/template" id="menu-template">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="aa-dataset-1"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="aa-dataset-2 row"></div>
+        </div>
+        <div class="col-md-4">
+            <div class="aa-dataset-3"></div>
+            <div class="aa-dataset-4"></div>
+            <div class="aa-dataset-5"></div>
+        </div>
+    </div>
+</script>
+
 <!--
 //================================
 //
@@ -370,20 +392,28 @@ if (count($sections) > 0)
 
                 // Loop through each section (products, categories, pages, suggestions and additional sections)
                 $.each(algoliaConfig.autocomplete.sections, function (name, section) {
-                    var source = getAutocompleteSource(section, algolia_client, $);
+                    var source = getAutocompleteSource(section, algolia_client, $, sources.length + 1);
 
                     if (source)
                         sources.push(source);
                 });
 
+                console.log(sources);
+
                 // setup the auto-completed search input
                 $(algoliaConfig.autocomplete.selector).each(function (i) {
-                    var options = {hint: false};
+                    var options = {
+                        hint: false,
+                        templates: {
+                            dropdownMenu: '#menu-template'
+                        },
+                        debug: true
+                    };
+
                     if (algoliaConfig.removeBranding === false) {
-                        options.templates = {
-                            footer: '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>'
-                        };
+                        options.templates.footer = '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
                     }
+
                     $(this)
                         .autocomplete(options, sources)
                         .parent()

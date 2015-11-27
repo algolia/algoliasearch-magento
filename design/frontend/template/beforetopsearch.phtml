@@ -187,7 +187,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 }
             };
 
-            window.getAutocompleteSource = function (section, algolia_client, $) {
+            window.getAutocompleteSource = function (section, algolia_client, $, i) {
                 if (section.hitsPerPage <= 0)
                     return null;
 
@@ -198,6 +198,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             hitsPerPage: section.hitsPerPage,
                             analyticsTags: 'autocomplete'
                         }),
+                        name: i,
                         templates: {
                             suggestion: function (hit) {
                                 if (section.name === 'products') {
@@ -212,7 +213,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     };
 
                     if (section.label !== '')
-                        source.templates.header = '<div class="category">' + section.label + '</div>';
+                        source.templates.header = '<div class="col-md-12"><div class="category">' + section.label + '</div></div>';
 
                     return source;
                 }
@@ -239,6 +240,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             allTitle: '<?php echo $this->__($allDepartments) ?>'
                         }),
                         displayKey: 'query',
+                        name: i,
                         templates: {
                             suggestion: function (hit) {
                                 if (hit.facet) {
@@ -257,7 +259,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     };
 
                     if (section.label !== "")
-                        source.templates.header = '<div class="category">' + section.label + '</div>';
+                        source.templates.header = '<div class="col-md-12"><div class="category">' + section.label + '</div></div>';
 
                     return source;
                 }
@@ -271,6 +273,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         analyticsTags: 'autocomplete'
                     }),
                     displayKey: 'value',
+                    name: i,
                     templates: {
                         suggestion: function (hit) {
                             hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=&refinement_key=' + section.name + "&refinement_value=" + hit.value;
@@ -280,7 +283,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 };
 
                 if (section.label !== "")
-                    source.templates.header = '<div class="category">' + section.label + '</div>';
+                    source.templates.header = '<div class="col-md-12"><div class="category">' + section.label + '</div></div>';
 
                 return source;
             };
