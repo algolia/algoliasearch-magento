@@ -63,7 +63,15 @@ if ($config->isInstantEnabled())
         //$query = htmlentities($query, ENT_COMPAT, "UTF-8");
 
         $refinement_key = Mage::app()->getRequest()->getParam('refinement_key');
-        $refinement_value = Mage::app()->getRequest()->getParam('refinement_value');
+
+        if ($refinement_key !== null)
+        {
+            $refinement_value = $query;
+            $query = "";
+        }
+        else
+            $refinement_key = "";
+
         $isSearchPage = true;
     }
 }
@@ -276,7 +284,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     name: i,
                     templates: {
                         suggestion: function (hit) {
-                            hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=&refinement_key=' + section.name + "&refinement_value=" + hit.value;
+                            hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + section.name;
                             return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
                         }
                     }

@@ -439,12 +439,6 @@ if (count($sections) > 0)
 
                 $(algoliaConfig.instant.selector).html(wrapperTemplate.render({second_bar: algoliaConfig.autocomplete.enabled})).show();
 
-                var searchParameters = {};
-
-                if (algoliaConfig.request.query.length > 0) {
-                    searchParameters.query = algoliaConfig.request.query;
-                }
-
                 /** Initialise instant search **/
                 var search = algoliaBundle.instantsearch({
                     appId: algoliaConfig.applicationId,
@@ -454,8 +448,18 @@ if (count($sections) > 0)
                         useHash: true,
                         threshold: 5000,
                         trackedParameters: ['query', 'page', 'attribute:*', 'index']
-                    },
-                    searchParameters: searchParameters
+                    }
+                });
+
+                search.addWidget({
+                    init: function(data) {
+                        if (algoliaConfig.request.refinement_key.length > 0) {
+                            data.helper.toggleRefine(algoliaConfig.request.refinement_key, algoliaConfig.request.refinement_value);
+                        }
+                        if (algoliaConfig.request.query.length > 0) {
+                            data.helper.setQuery(algoliaConfig.request.query);
+                        }
+                    }
                 });
 
                 /** Search bar **/
