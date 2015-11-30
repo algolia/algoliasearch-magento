@@ -80,70 +80,66 @@ if (count($sections) > 0)
 
 <!-- Product hit template -->
 <script type="text/template" id="autocomplete_products_template">
-    <div class="col-md-6">
-        <a class="algoliasearch-autocomplete-hit" href="{{url}}">
-            {{#thumbnail_url}}
-            <div class="thumb"><img src="{{thumbnail_url}}" /></div>
-            {{/thumbnail_url}}
+    <a class="algoliasearch-autocomplete-hit" href="{{url}}">
+        {{#thumbnail_url}}
+        <div class="thumb"><img src="{{thumbnail_url}}" /></div>
+        {{/thumbnail_url}}
 
-            <div class="algoliasearch-autocomplete-price">
-                <span class="after_special">
-                    {{price<?php echo $price_key; ?>_formated}}
+        <div class="algoliasearch-autocomplete-price">
+            <span class="after_special">
+                {{price<?php echo $price_key; ?>_formated}}
+            </span>
+
+            {{#price<?php echo $price_key; ?>_original_formated}}
+                <span class="before_special">
+                    {{price<?php echo $price_key; ?>_original_formated}}
                 </span>
+            {{/price<?php echo $price_key; ?>_original_formated}}
+        </div>
 
-                {{#price<?php echo $price_key; ?>_original_formated}}
-                    <span class="before_special">
-                        {{price<?php echo $price_key; ?>_original_formated}}
-                    </span>
-                {{/price<?php echo $price_key; ?>_original_formated}}
+        <div class="info">
+            {{{_highlightResult.name.value}}}
+
+            {{#categories_without_path}}
+            <div class="algoliasearch-autocomplete-category">
+                <?php echo $this->__('in'); ?> {{categories_without_path}}
             </div>
-
-            <div class="info">
-                {{{_highlightResult.name.value}}}
-
-                {{#categories_without_path}}
-                <div class="algoliasearch-autocomplete-category">
-                    <?php echo $this->__('in'); ?> {{categories_without_path}}
-                </div>
-                {{/categories_without_path}}
-            </div>
-            <div class="clearfix"></div>
-        </a>
-    </div>
+            {{/categories_without_path}}
+        </div>
+        <div class="clearfix"></div>
+    </a>
 </script>
 
 <!-- Category hit template -->
 <script type="text/template" id="autocomplete_categories_template">
-    <div class="col-md-12">
-        <a class="algoliasearch-autocomplete-hit" href="{{url}}">
-            {{#image_url}}
-            <div class="thumb">
-                <img src="{{image_url}}" />
-            </div>
+    <a class="algoliasearch-autocomplete-hit" href="{{url}}">
+        {{#image_url}}
+        <div class="thumb">
+            <img src="{{image_url}}" />
+        </div>
+        {{/image_url}}
+
+        {{#image_url}}
+        <div class="info">
             {{/image_url}}
+            {{^image_url}}
+            <div class="info-without-thumb">
+                {{#_highlightResult.path}}
+                {{{_highlightResult.path.value}}}
+                {{/_highlightResult.path}}
+                {{^_highlightResult.path}}
+                {{{path}}}
+                {{/_highlightResult.path}}
 
-            {{#image_url}}
-            <div class="info">
-                {{/image_url}}
-                {{^image_url}}
-                <div class="info-without-thumb">
-                    {{#_highlightResult.path}}
-                    {{{_highlightResult.path.value}}}
-                    {{/_highlightResult.path}}
-                    {{^_highlightResult.path}}
-                    {{{path}}}
-                    {{/_highlightResult.path}}
+                {{#product_count}}
+                <small>( {{product_count}} )</small>
+                {{/product_count}}
 
-                    {{#product_count}}
-                    <small>( {{product_count}} )</small>
-                    {{/product_count}}
-
-                </div>
-                <div class="clearfix"></div>
-                {{/image_url}}
             </div>
-        </a>
-    </div>
+            <div class="clearfix"></div>
+            {{/image_url}}
+        </div>
+    </a>
 </script>
 
 <!-- Page hit template -->
@@ -340,19 +336,14 @@ if (count($sections) > 0)
 </script>
 
 <script type="text/template" id="menu-template">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="aa-dataset-1"></div>
+    <div class="aa-dataset-suggestions"></div>
+    <div class="col-2">
+        <div class="col-left">
+            <div class="aa-dataset-products"></div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-8">
-            <div class="aa-dataset-2 row"></div>
-        </div>
-        <div class="col-md-4">
-            <div class="aa-dataset-3"></div>
-            <div class="aa-dataset-4"></div>
-            <div class="aa-dataset-5"></div>
+        <div class="col-right">
+            <div class="aa-dataset-categories"></div>
+            <div class="aa-dataset-pages"></div>
         </div>
     </div>
 </script>
@@ -392,7 +383,7 @@ if (count($sections) > 0)
 
                 // Loop through each section (products, categories, pages, suggestions and additional sections)
                 $.each(algoliaConfig.autocomplete.sections, function (name, section) {
-                    var source = getAutocompleteSource(section, algolia_client, $, sources.length + 1);
+                    var source = getAutocompleteSource(section, algolia_client, $);
 
                     if (source)
                         sources.push(source);

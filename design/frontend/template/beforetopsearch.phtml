@@ -195,18 +195,19 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 }
             };
 
-            window.getAutocompleteSource = function (section, algolia_client, $, i) {
+            window.getAutocompleteSource = function (section, algolia_client, $) {
                 if (section.hitsPerPage <= 0)
                     return null;
 
+                var source;
                 if (section.name === "products" || section.name === "categories" || section.name === "pages")
                 {
-                    var source =  {
+                    source =  {
                         source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), {
                             hitsPerPage: section.hitsPerPage,
                             analyticsTags: 'autocomplete'
                         }),
-                        name: i,
+                        name: section.name,
                         templates: {
                             suggestion: function (hit) {
                                 if (section.name === 'products') {
@@ -219,20 +220,14 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             }
                         }
                     };
-
-                    if (section.label !== '')
-                        source.templates.header = '<div class="col-md-12"><div class="category">' + section.label + '</div></div>';
-
-                    return source;
                 }
-
-                if (section.name === "suggestions")
+                else if (section.name === "suggestions")
                 {
                     /// popular queries/suggestions
                     var suggestions_index = algolia_client.initIndex(algoliaConfig.indexName + "_suggestions");
                     var products_index = algolia_client.initIndex(algoliaConfig.indexName + "_products");
 
-                    var source = {
+                    source = {
                         source: $.fn.autocomplete.sources.popularIn(suggestions_index, {
                             hitsPerPage: section.hitsPerPage
                         }, {
@@ -248,7 +243,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             allTitle: '<?php echo $this->__($allDepartments) ?>'
                         }),
                         displayKey: 'query',
-                        name: i,
+                        name: section.name,
                         templates: {
                             suggestion: function (hit) {
                                 if (hit.facet) {
@@ -265,33 +260,28 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             }
                         }
                     };
+                } else {
+                    /** If is not products, categories, pages or suggestions, it's additional section **/
+                    var index = algolia_client.initIndex(algoliaConfig.indexName + "_section_" + section.name);
 
-                    if (section.label !== "")
-                        source.templates.header = '<div class="col-md-12"><div class="category">' + section.label + '</div></div>';
-
-                    return source;
+                    source = {
+                        source: $.fn.autocomplete.sources.hits(index, {
+                            hitsPerPage: section.hitsPerPage,
+                            analyticsTags: 'autocomplete'
+                        }),
+                        displayKey: 'value',
+                        name: section.name,
+                        templates: {
+                            suggestion: function (hit) {
+                                hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + section.name;
+                                return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
+                            }
+                        }
+                    };
                 }
 
-                /** If is not products, categories, pages or suggestions, it's additional section **/
-                var index = algolia_client.initIndex(algoliaConfig.indexName + "_section_" + section.name);
-
-                var source = {
-                    source: $.fn.autocomplete.sources.hits(index, {
-                        hitsPerPage: section.hitsPerPage,
-                        analyticsTags: 'autocomplete'
-                    }),
-                    displayKey: 'value',
-                    name: i,
-                    templates: {
-                        suggestion: function (hit) {
-                            hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + section.name;
-                            return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
-                        }
-                    }
-                };
-
                 if (section.label !== "")
-                    source.templates.header = '<div class="col-md-12"><div class="category">' + section.label + '</div></div>';
+                    source.templates.header = '<div class="category">' + section.label + '</div>';
 
                 return source;
             };
