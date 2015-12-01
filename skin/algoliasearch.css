@@ -215,13 +215,12 @@
 
 #algolia-autocomplete-tt .aa-dropdown-menu {
   position: absolute;
-  top: 0px;
+  top: 2px;
   width: 900px;
   margin-left: -600px;
   padding: 3px 2px 2px;
   z-index: 1000 !important;
   border: 1px solid #BBB;
-  border-top: none;
   background: white;
 }
 
@@ -242,39 +241,19 @@
   width: 33%;
 }
 
-
-#algolia-autocomplete-tt .aa-dropdown-menu.aa-without-products {
-  width: 300px;
-  margin-left: 0px;
-}
-#algolia-autocomplete-tt .aa-dropdown-menu.aa-without-products .col-left {
-  display: none;
-}
-#algolia-autocomplete-tt .aa-dropdown-menu.aa-without-products .col-right {
-  width: 100%;
-}
-
-#algolia-autocomplete-tt .aa-dropdown-menu.aa-with-products.aa-without-categories.aa-without-pages {
-  width: 600px;
-  margin-left: -300px;
-}
-#algolia-autocomplete-tt .aa-dropdown-menu.aa-with-products.aa-without-categories.aa-without-pages .col-left {
-  width: 100%;
-}
-#algolia-autocomplete-tt .aa-dropdown-menu.aa-with-products.aa-without-categories.aa-without-pages .col-right {
-  display: none;
+#algolia-autocomplete-tt .aa-dropdown-menu .aa-no-results {
+  padding: 10px;
+  font-style: italic;
 }
 
 #algolia-autocomplete-tt .aa-dropdown-menu .category {
-  padding: 8px 30px !important;
-  border: 1px solid #ccc;
-  border-left: none;
-  border-right: none;
+  padding: 4px;
+  border-bottom: 2px solid #54A5CD;
   color: #54A5CD;
   text-align: left;
-  text-align: center;
   font-size: 0.9em;
   text-transform: uppercase;
+  font-weight: bold;
 }
 
 #algolia-autocomplete-tt .aa-dropdown-menu .aa-suggestion:not(:last-child) .algoliasearch-autocomplete-hit {

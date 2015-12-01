@@ -209,6 +209,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         }),
                         name: section.name,
                         templates: {
+                            empty: '<div class="aa-no-results">No results</div>',
                             suggestion: function (hit) {
                                 if (section.name === 'products') {
                                     hit = transformHit(hit, algoliaConfig.priceKey)
@@ -280,8 +281,9 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     };
                 }
 
-                if (section.label !== "")
+                if (section.label !== "" && section.name !== 'suggestions') {
                     source.templates.header = '<div class="category">' + section.label + '</div>';
+                }
 
                 return source;
             };
