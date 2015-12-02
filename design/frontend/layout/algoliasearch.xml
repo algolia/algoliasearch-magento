@@ -21,5 +21,8 @@
         <reference name="top.search">
             <action method="setTemplate"><template>algoliasearch/topsearch.phtml</template></action>
         </reference>
+        <reference name="top.menu">
+            <block type="core/template" before="content" template="algoliasearch/test.phtml"/>
+        </reference>
     </algolia_search_handle>
 </layout>

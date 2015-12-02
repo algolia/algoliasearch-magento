@@ -195,7 +195,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 }
             };
 
-            window.getAutocompleteSource = function (section, algolia_client, $) {
+            window.getAutocompleteSource = function (section, algolia_client, $, i) {
                 if (section.hitsPerPage <= 0)
                     return null;
 
@@ -207,7 +207,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             hitsPerPage: section.hitsPerPage,
                             analyticsTags: 'autocomplete'
                         }),
-                        name: section.name,
+                        name: i,
                         templates: {
                             empty: '<div class="aa-no-results">No results</div>',
                             suggestion: function (hit) {
@@ -237,7 +237,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             facets: ['categories.level0'],
                             hitsPerPage: 0,
                             typoTolerance: false,
-                            maxValuesPerFacet: 3,
+                            maxValuesPerFacet: 1,
                             analytics: false
                         }, {
                             includeAll: true,
@@ -271,7 +271,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             analyticsTags: 'autocomplete'
                         }),
                         displayKey: 'value',
-                        name: section.name,
+                        name: i,
                         templates: {
                             suggestion: function (hit) {
                                 hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + section.name;
@@ -283,6 +283,10 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                 if (section.label !== "" && section.name !== 'suggestions') {
                     source.templates.header = '<div class="category">' + section.label + '</div>';
+                }
+
+                if (section.name === 'suggestions') {
+                    source.templates.header = '<div class="category-suggestions">' + section.label + '</div>';
                 }
 
                 return source;
@@ -310,6 +314,12 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 else
                     $(this).html('+ Refine');
             });
+
+            $.fn.focusWithoutScrolling = function(){
+                var x = window.scrollX, y = window.scrollY;
+                this.focus();
+                window.scrollTo(x, y);
+            };
         });
     });
 </script>
