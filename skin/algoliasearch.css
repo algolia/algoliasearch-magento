@@ -220,7 +220,6 @@
   padding: 3px 2px 2px;
   z-index: 1000 !important;
   border: 1px solid #BBB;
-  border-top: none;
   background: white;
 }
 
@@ -323,6 +322,7 @@
  * Search Box
 */
 #algolia-searchbox{
+  margin: 20px 0;
   position: relative;
 }
 
@@ -335,7 +335,8 @@
 }
 
 #algolia-searchbox .algolia-search-input {
-
+  width: 300px;
+  float: right;
 }
 
 #algolia-searchbox .algolia-search-input:focus {

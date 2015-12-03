@@ -336,7 +336,6 @@ if (count($sections) > 0)
 </script>
 
 <script type="text/template" id="menu-template">
-    <div class="aa-dataset-suggestions"></div>
     <div class="row">
         <div class="col-md-6">
             <div class="aa-dataset-0"></div>
@@ -344,9 +343,10 @@ if (count($sections) > 0)
         <div class="col-md-3">
             <div class="aa-dataset-1"></div>
             <div class="aa-dataset-2"></div>
+            <div class="aa-dataset-3"></div>
         </div>
         <div class="col-md-3">
-            <div class="aa-dataset-3"></div>
+            <div class="aa-dataset-suggestions"></div>
         </div>
     </div>
 </script>
@@ -384,15 +384,18 @@ if (count($sections) > 0)
             if (algoliaConfig.autocomplete.enabled) {
                 var sources = [];
 
+                var i = 0;
                 // Loop through each section (products, categories, pages, suggestions and additional sections)
                 $.each(algoliaConfig.autocomplete.sections, function (name, section) {
-                    var source = getAutocompleteSource(section, algolia_client, $, sources.length);
+                    var source = getAutocompleteSource(section, algolia_client, $, i);
 
                     if (source)
                         sources.push(source);
-                });
 
-                console.log(sources);
+                    if (section.name !== 'suggestions')
+                        i++;
+
+                });
 
                 // setup the auto-completed search input
                 $(algoliaConfig.autocomplete.selector).each(function (i) {
@@ -450,7 +453,8 @@ if (count($sections) > 0)
                         if (algoliaConfig.request.refinement_key.length > 0) {
                             data.helper.toggleRefine(algoliaConfig.request.refinement_key, algoliaConfig.request.refinement_value);
                         }
-                        if (algoliaConfig.request.query.length > 0) {
+
+                        if (algoliaConfig.request.query.length > 0 && location.hash.length < 1) {
                             data.helper.setQuery(algoliaConfig.request.query);
                         }
                     }
@@ -616,7 +620,8 @@ if (count($sections) > 0)
 
                 $(document).on('click', '.ais-hierarchical-menu--link, .ais-refinement-list--checkbox', function () {
                     if ($(window).width() > 992) {
-                        instant_search_bar.focusWithoutScrolling().val('');
+                        instant_search_bar.focusWithoutScrolling();
+                        instant_search_bar.val('');
                     }
                     instant_search_bar.val(search.helper.state.query);
                 });

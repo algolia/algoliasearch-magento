@@ -304,7 +304,7 @@
                     </fields>
                 </instant>
                 <autocomplete>
-                    <label>Autocomplete Sections</label>
+                    <label>Autocomplete</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>36</sort_order>
                     <show_in_default>1</show_in_default>
