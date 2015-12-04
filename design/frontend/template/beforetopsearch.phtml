@@ -313,7 +313,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         }
 
                         var allUrl = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + query.query;
-                        return '<div style="clear: both"><div><div id="autocomplete-products-footer">See results in <span><a href="' + allUrl +  '">All departments (' + content.nbHits + ')</a></span> or in ' + ors + '</div>';
+                        return '<div style="clear: both"><div><div id="autocomplete-products-footer">See results in <span><a href="' + allUrl +  '">All departments</a></span> (' + content.nbHits + ') or in ' + ors + '</div>';
                     }
                 }
 

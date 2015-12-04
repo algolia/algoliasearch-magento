@@ -233,7 +233,7 @@
 #algolia-autocomplete-tt .aa-dropdown-menu {
   position: absolute;
   margin-top: -1px;
-  width: 85%;
+  width: 71.1%;
   right: 0px !important;
   left: auto !important;
   z-index: 1000 !important;
@@ -262,9 +262,9 @@
 
 #algolia-autocomplete-tt .aa-dropdown-menu .category {
   padding: 4px;
-  color: #54A5CD;
+  color: rgb(166, 166, 166);
   text-align: left;
-  font-size: 0.9em;
+  font-size: 0.8em;
   text-transform: uppercase;
   font-weight: bold;
 }
@@ -344,7 +344,7 @@
 
 #algolia-autocomplete-tt .aa-dropdown-menu .algoliasearch-autocomplete-price {
   float: right;
-  font-size: 1.1em;
+  font-size: 1.3em;
   color: #54A5CD;
 }
 

@@ -85,24 +85,24 @@ if (count($sections) > 0)
         <div class="thumb"><img src="{{thumbnail_url}}" /></div>
         {{/thumbnail_url}}
 
-        <div class="algoliasearch-autocomplete-price">
-            <span class="after_special">
-                {{price<?php echo $price_key; ?>_formated}}
-            </span>
-
-            {{#price<?php echo $price_key; ?>_original_formated}}
-                <span class="before_special">
-                    {{price<?php echo $price_key; ?>_original_formated}}
-                </span>
-            {{/price<?php echo $price_key; ?>_original_formated}}
-        </div>
-
         <div class="info">
             {{{_highlightResult.name.value}}}
 
             {{#categories_without_path}}
             <div class="algoliasearch-autocomplete-category">
                 <?php echo $this->__('in'); ?> {{categories_without_path}}
+
+                <div class="algoliasearch-autocomplete-price">
+                    <span class="after_special">
+                        {{price<?php echo $price_key; ?>_formated}}
+                    </span>
+
+                    {{#price<?php echo $price_key; ?>_original_formated}}
+                    <span class="before_special">
+                        {{price<?php echo $price_key; ?>_original_formated}}
+                    </span>
+                    {{/price<?php echo $price_key; ?>_original_formated}}
+                </div>
             </div>
             {{/categories_without_path}}
         </div>
