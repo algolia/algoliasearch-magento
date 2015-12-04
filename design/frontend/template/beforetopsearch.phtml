@@ -202,12 +202,17 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 var source;
                 if (section.name === "products" || section.name === "categories" || section.name === "pages")
                 {
+                    var options = {
+                        hitsPerPage: section.hitsPerPage,
+                        analyticsTags: 'autocomplete'
+                    };
+
+                    if (section.name === 'products') {
+                        options.facets = ['categories.level0'];
+                    }
                     source =  {
-                        source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), {
-                            hitsPerPage: section.hitsPerPage,
-                            analyticsTags: 'autocomplete'
-                        }),
-                        name: i,
+                        source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), options),
+                        name: section.name == 'products' ? 'products' : i,
                         templates: {
                             empty: '<div class="aa-no-results">No results</div>',
                             suggestion: function (hit) {
@@ -224,6 +229,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 }
                 else if (section.name === "suggestions")
                 {
+                    return null;
                     /// popular queries/suggestions
                     var suggestions_index = algolia_client.initIndex(algoliaConfig.indexName + "_suggestions");
                     var products_index = algolia_client.initIndex(algoliaConfig.indexName + "_products");
@@ -252,8 +258,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                                 }
 
                                 if (hit.facet && hit.facet.value !== "<?php echo $allDepartments; ?>") {
-                                    /// FIXME: refinement
-                                    hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.query + '#q=' + hit.query + '&hFR[categories.level0][0]=' + encodeURIComponent(hit.category) + '&idx=<?php echo $product_helper->getBaseIndexName(); ?>_products';
+                                    hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.query + '#q=' + hit.query + '&hFR[categories.level0][0]=' + encodeURIComponent(hit.category) + '&idx=' + algoliaConfig.indexName + '_products';
                                 } else {
                                     hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.query;
                                 }
@@ -281,11 +286,40 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     };
                 }
 
-                if (section.label !== "" && section.name !== 'suggestions') {
-                    source.templates.header = '<div class="category">' + section.label + '</div>';
+                if (section.name === 'products') {
+                    source.templates.footer = function (query, content) {
+                        var keys = [];
+                        for (var key in content.facets['categories.level0']) {
+                            var url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + query.query + '#q=' + query.query + '&hFR[categories.level0][0]=' + encodeURIComponent(key) + '&idx=' + algoliaConfig.indexName + '_products';
+                            keys.push({
+                                key: key,
+                                value: content.facets['categories.level0'][key],
+                                url: url
+                            });
+                        }
+
+                        keys.sort(function (a, b) {
+                            return b.value - a.value;
+                        });
+
+                        var ors = '';
+
+                        if (keys.length > 0) {
+                            ors += '<span><a href="' + keys[0].url + '">' + keys[0].key + '</a></span>';
+                        }
+
+                        if (keys.length > 1) {
+                            ors += ', <span><a href="' + keys[1].url + '">' + keys[1].key + '</a></span>';
+                        }
+
+                        var allUrl = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + query.query;
+                        return '<div style="clear: both"><div><div id="autocomplete-products-footer">See results in <span><a href="' + allUrl +  '">All departments (' + content.nbHits + ')</a></span> or in ' + ors + '</div>';
+                    }
                 }
 
-
+                if (section.label !== "" && section.name !== 'suggestions' && section.name !== 'products') {
+                    source.templates.header = '<div class="category">' + section.label + '</div>';
+                }
 
                 return source;
             };

@@ -207,40 +207,41 @@ if (count($sections) > 0)
                     <?php echo $content; ?>
                 </div>
             </div>
-
-            <div class="col-md-offset-3 col-md-9">
-                <div>
-                    {{#second_bar}}
-                    <div id="instant-search-bar-container">
-                        <div id="instant-search-box">
-                            <label for="instant-search-bar">
-                                <?php echo $this->__('Search :'); ?>
-                            </label>
-
-                            <input placeholder="<?php echo $this->__('Search for products'); ?>" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
-
-                            <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128">
-                                <g transform="scale(4)">
-                                    <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
-                                    <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
-                                    <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z"></path>
-                                </g>
-                            </svg>
-                        </div>
-                    </div>
-                    {{/second_bar}}
-                </div>
-            </div>
         </div>
 
         <div class="row">
             <div class="col-md-3" id="algolia-left-container">
                 <div id="refine-toggle" class="visible-xs visible-sm">+ <?php echo $this->__('Refine'); ?></div>
-                <div class="hidden-xs hidden-sm" id="instant-search-facets-container"></div>
+                <div class="hidden-xs hidden-sm" id="instant-search-facets-container">
+                    <div id="current-refinements"></div>
+                </div>
             </div>
 
             <div class="col-md-9" id="algolia-right-container">
                 <div class="row">
+                    <div>
+                        <div>
+                            {{#second_bar}}
+                            <div id="instant-search-bar-container">
+                                <div id="instant-search-box">
+                                    <label for="instant-search-bar">
+                                        <?php echo $this->__('Search :'); ?>
+                                    </label>
+
+                                    <input placeholder="<?php echo $this->__('Search for products'); ?>" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128">
+                                        <g transform="scale(4)">
+                                            <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
+                                            <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
+                                            <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z"></path>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                            {{/second_bar}}
+                        </div>
+                    </div>
                     <div>
                         <div class="hits">
                             <div class="infos">
@@ -336,17 +337,17 @@ if (count($sections) > 0)
 </script>
 
 <script type="text/template" id="menu-template">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="aa-dataset-0"></div>
-        </div>
-        <div class="col-md-3">
-            <div class="aa-dataset-1"></div>
-            <div class="aa-dataset-2"></div>
-            <div class="aa-dataset-3"></div>
-        </div>
-        <div class="col-md-3">
+    <div>
+        <div class="col9">
+            <div class="aa-dataset-products"></div>
             <div class="aa-dataset-suggestions"></div>
+        </div>
+        <div class="col3">
+            <div class="other-sections">
+                <div class="aa-dataset-1"></div>
+                <div class="aa-dataset-2"></div>
+                <div class="aa-dataset-3"></div>
+            </div>
         </div>
     </div>
 </script>
@@ -408,7 +409,7 @@ if (count($sections) > 0)
                     };
 
                     if (algoliaConfig.removeBranding === false) {
-                        options.templates.footer = '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
+                        options.templates.footer = '<div class="footer_algolia"><span>Powered by</span> <a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
                     }
 
                     $(this)
@@ -545,6 +546,46 @@ if (count($sections) > 0)
 
                 /** Facets **/
                 var wrapper = document.getElementById('instant-search-facets-container');
+
+                var attributes = [];
+
+                $.each(algoliaConfig.facets, function (i, facet) {
+                    var name = facet.attribute;
+
+                    if (name === 'categories') {
+                        name = 'categories.level0';
+                    }
+
+                    if (name === 'price') {
+                        name = facet.attribute + algoliaConfig.priceKey
+                    }
+
+                    attributes.push({
+                        name: name,
+                        label: facet.label ? facet.label : facet.attribute
+                   });
+                });
+
+                search.addWidget(
+                    algoliaBundle.instantsearch.widgets.currentRefinedValues({
+                        container: '#current-refinements',
+                        cssClasses: {
+                            root: 'facet cuurr'
+                        },
+                        templates: {
+                            header: '<div class="name">' + '<?php echo $this->__('Current Refinements'); ?>' + '</div>'
+                        },
+                        attributes: attributes
+                    })
+                );
+
+                search.addWidget({
+                    render: function (data) {
+                        if (data.results.hits.length === 0) {
+
+                        }
+                    }
+                });
 
                 var customAttributeFacet = {
                     categories: function(facet, templates) {
