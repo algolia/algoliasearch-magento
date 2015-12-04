@@ -311,10 +311,12 @@
 
 .other-sections {
   margin: 20px 10px;
+  margin-bottom: 70px;
 }
 
 .aa-dataset-products .aa-suggestions {
   margin: 20px auto;
+  margin-bottom: 70px;
 }
 
 .aa-dataset-products .aa-suggestions:after {
@@ -360,6 +362,10 @@
 
 #autocomplete-products-footer
 {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 70%;
   background-color: #F9F9F9;
   padding: 15px;
   text-align: center;
@@ -381,6 +387,9 @@
 
 #algolia-autocomplete-tt .aa-dropdown-menu .footer_algolia {
   position: absolute;
+  width: 30%;
+  padding: 10px;
+  text-align: center;
   bottom: 4px;
   left: 4px;
   font-size: 13px;
