@@ -229,7 +229,6 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 }
                 else if (section.name === "suggestions")
                 {
-                    return null;
                     /// popular queries/suggestions
                     var suggestions_index = algolia_client.initIndex(algoliaConfig.indexName + "_suggestions");
                     var products_index = algolia_client.initIndex(algoliaConfig.indexName + "_products");
@@ -313,7 +312,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         }
 
                         var allUrl = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + query.query;
-                        return '<div style="clear: both"><div><div id="autocomplete-products-footer">See results in <span><a href="' + allUrl +  '">All departments</a></span> (' + content.nbHits + ') or in ' + ors + '</div>';
+                        return '<div style="clear: both"><div><div id="autocomplete-products-footer">See products in <span><a href="' + allUrl +  '">All departments</a></span> (' + content.nbHits + ') or in ' + ors + '</div>';
                     }
                 }
 

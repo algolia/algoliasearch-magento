@@ -279,6 +279,7 @@
 
 #algolia-autocomplete-tt .aa-dropdown-menu .algoliasearch-autocomplete-hit {
   display: block;
+  position: relative;
   padding: 5px 10px;
   color: #000;
   text-align: left;
@@ -420,6 +421,14 @@
   right: 6px;
   fill: #54A5CD;
   stroke: #54A5CD;
+}
+
+#algolia-searchbox svg.magnifying-glass.algolia-glass-suggestion {
+  top: 7px;
+  left: 4px;
+  right: auto;
+  fill: #A6A6A6;
+  stroke: #A6A6A6;
 }
 
 #algolia-searchbox .algolia-search-input {
