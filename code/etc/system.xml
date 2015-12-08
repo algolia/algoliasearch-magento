@@ -201,8 +201,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                    Choose here if you want to show most popular suggestions on no result page.<br />
-                                    <span style="color: #D83900">&#9888;</span> You need to reindex the suggestions indexer at least once for suggestions to appear
+                                    Choose here if you want to show most popular suggestions on no result page.
                                 ]]>
                             </comment>
                         </show_suggestions_on_no_result_page>

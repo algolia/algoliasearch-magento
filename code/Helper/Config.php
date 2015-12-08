@@ -341,6 +341,18 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return $currencySymbol;
     }
 
+    public function getPopularQueries($storeId = null)
+    {
+        if ($storeId === null) {
+            $storeId = Mage::app()->getStore()->getId();
+        }
+
+        $suggestion_helper = Mage::helper('algoliasearch/entity_suggestionhelper');
+        $popularQueries = $suggestion_helper->getPopularQueries($storeId);
+
+        return $popularQueries;
+    }
+
     /**
      * Loads product type mapping from configuration (default) > algoliasearch > product_map > (product type)
      *

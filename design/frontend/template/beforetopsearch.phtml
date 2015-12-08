@@ -60,8 +60,6 @@ if ($config->isInstantEnabled())
 
         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
-        //$query = htmlentities($query, ENT_COMPAT, "UTF-8");
-
         $refinement_key = Mage::app()->getRequest()->getParam('refinement_key');
 
         if ($refinement_key !== null)
@@ -111,13 +109,14 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 priceKey: '<?php echo $price_key; ?>',
                 currencySymbol: '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>',
                 request: {
-                    query: <?php echo json_encode(array("value" => html_entity_decode($query))); ?>.value,
+                    query:<?php echo json_encode(array("value" => html_entity_decode($query))); ?>.value,
                     refinement_key: '<?php echo $refinement_key; ?>',
                     refinement_value: '<?php echo $refinement_value; ?>',
                     path: '<?php echo $path; ?>'
                 },
                 showSuggestionsOnNoResultsPage: <?php echo $config->showSuggestionsOnNoResultsPage() ? "true" : "false"; ?>,
-                baseUrl: '<?php echo $base_url ?>'
+                baseUrl: '<?php echo $base_url ?>',
+                popularQueries: <?php echo json_encode($config->getPopularQueries()); ?>
             };
 
             window.transformHit = function (hit, price_key) {
@@ -199,26 +198,59 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 if (section.hitsPerPage <= 0)
                     return null;
 
-                var source;
-                if (section.name === "products" || section.name === "categories" || section.name === "pages")
-                {
-                    var options = {
-                        hitsPerPage: section.hitsPerPage,
-                        analyticsTags: 'autocomplete'
-                    };
+                var options = {
+                    hitsPerPage: section.hitsPerPage,
+                    analyticsTags: 'autocomplete'
+                };
 
-                    if (section.name === 'products') {
-                        options.facets = ['categories.level0'];
-                    }
+                var source;
+
+                if (section.name === "products") {
+                    options.facets = ['categories.level0'];
+
                     source =  {
                         source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), options),
-                        name: section.name == 'products' ? 'products' : i,
+                        name: section.name,
+                        templates: {
+                            empty: function (query) {
+                                var template = '<div class="aa-no-results-products">' +
+                                                    '<div class="title"><?php echo $this->__('No results for query'); ?> "' + query.query + '"</div>';
+
+                                var suggestions = [];
+
+                                if (algoliaConfig.showSuggestionsOnNoResultsPage && algoliaConfig.popularQueries.length > 0) {
+                                    $.each(algoliaConfig.popularQueries.slice(0, Math.min(3, algoliaConfig.popularQueries.length)), function (i, query) {
+                                        query = $('<div>').html(query).text(); //xss
+                                        suggestions.push('<a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query) + '">' + query + '</a>');
+                                    });
+
+                                    template +=     '<div class="suggestions"><div><?php echo $this->__('You can try one of the popular search queries'); ?></div>';
+                                    template +=        '<div>' + suggestions.join(', ') + '</div>';
+                                    template +=     '</div>';
+                                }
+
+                                template +=         '<div class="see-all">' + (suggestions.length > 0 ? '<?php echo $this->__('or'); ?> ' : '') + '<a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__"><?php echo $this->__('See all products'); ?></a></div>' +
+                                                '</div>';
+
+                                return template;
+                            },
+                            suggestion: function (hit) {
+                                hit = transformHit(hit, algoliaConfig.priceKey)
+                                hit.displayKey = hit.displayKey || hit.name;
+                                return algoliaConfig.autocomplete.templates[section.name].render(hit);
+                            }
+                        }
+                    };
+                }
+                else if (section.name === "categories" || section.name === "pages")
+                {
+                    source =  {
+                        source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), options),
+                        name: i,
                         templates: {
                             empty: '<div class="aa-no-results">No results</div>',
                             suggestion: function (hit) {
-                                if (section.name === 'products') {
-                                    hit = transformHit(hit, algoliaConfig.priceKey)
-                                } else if (section.name === 'categories') {
+                                if (section.name === 'categories') {
                                     hit.displayKey = hit.path;
                                 }
                                 hit.displayKey = hit.displayKey || hit.name;
@@ -312,7 +344,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         }
 
                         var allUrl = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + query.query;
-                        return '<div style="clear: both"><div><div id="autocomplete-products-footer">See products in <span><a href="' + allUrl +  '">All departments</a></span> (' + content.nbHits + ') or in ' + ors + '</div>';
+                        return '<div id="autocomplete-products-footer">See products in <span><a href="' + allUrl +  '">All departments</a></span> (' + content.nbHits + ') or in ' + ors + '</div>';
                     }
                 }
 

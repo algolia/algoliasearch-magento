@@ -14,6 +14,7 @@
   background-color: transparent;
   border: none;
   box-shadow: none;
+  margin: 20px auto;
 }
 .ais-pagination li {
   display: inline-block;
@@ -22,17 +23,24 @@
   padding: 5px 10px;
   margin: 0 5px;
   line-height: 25px;
-  border: solid 1px #eee;
   background-color: white;
+  color: #727272;
 }
 
 .ais-pagination--item__disabled {
   visibility: hidden;
 }
 
-.ais-pagination--item-page__active a {
-  border: solid 1px #54A5CD;
-  background-color: white;
+.ais-pagination--item__active a {
+  font-weight: bolder;
+  color: #606060;
+  text-decoration: underline;
+}
+
+.ais-pagination--item.ais-pagination--item__next a,
+.ais-pagination--item.ais-pagination--item__previous a {
+  font-weight: bold;
+  color: #606060;
 }
 
 /* REFINEMENT LIST */
@@ -41,7 +49,7 @@
 .ais-refinement-list--item__active > div > .ais-refinement-list--label,
 .ais-price-ranges--item__active > .ais-price-ranges--link{
   font-weight: bold;
-  box-shadow: inset 4px 0 0 #54A5CD;
+  box-shadow: inset 4px 0 0 #999999;
 }
 
 .ais-price-ranges--input
@@ -59,13 +67,16 @@
   margin-right: 10px;
 }
 
+.current-refinements
+{
+  position: relative;
+}
+
 .ais-menu--link,
 .ais-hierarchical-menu--link,
-.ais-current-refined-values--link,
-.ais-current-refined-values--clear-all,
 .ais-price-ranges--link,
 .ais-refinement-list--label {
-  padding: 6px 10px;
+  padding: 4px 10px;
   cursor: pointer;
   color: #636363;
   text-decoration: none;
@@ -77,23 +88,81 @@
 
 .ais-current-refined-values--link
 {
-  display: list-item;
+  cursor: pointer;
+  color: #636363;
+  border-radius: 2px;
+  border: solid 1px #DDDDDD;
+}
+.ais-current-refined-values--clear-all
+{
+  position: absolute;
+  right: 23px;
+  top: 8px;
+  color: #666666;
+  font-weight: 500;
 }
 
-.ais-current-refined-values--list
+a.ais-current-refined-values--link:hover
 {
-  padding-left: 30px;
+  text-decoration: none;
 }
 
-.ais-current-refined-values--link:hover
+.ais-current-refined-values--link
 {
+  background-color: #f4f4f4;
+  display: inline-block;
+}
+
+.ais-current-refined-values--link:hover .current-refinement-wrapper {
   text-decoration: line-through;
+}
+
+
+.ais-current-refined-values--item {
+  margin-top: 8px;
+}
+
+.ais-current-refined-values--item:after {
+  clear: both;
+  content: "";
+  display: block;
+}
+
+.ais-current-refined-values--item .current-refinement-label {
+  font-weight: bold;
+}
+
+.ais-current-refined-values--item .current-refinement-name {
+}
+
+.ais-current-refined-values--item .cross-wrapper {
+  font-weight: bold;
+  background-color: #DDDDDD;
+  padding: 4px 8px;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+.ais-current-refined-values--link:hover .cross-wrapper {
+  text-decoration: none;
+  background-color: #888888;
+}
+
+.ais-current-refined-values--link:hover .cross-wrapper svg {
+  fill: white;
+  stoke: white;
+}
+
+
+.ais-current-refined-values--item .current-refinement-wrapper {
+  display: inline-block;
+  padding: 4px 16px 4px 8px;
 }
 
 .ais-menu--link:hover,
 .ais-price-ranges--link:hover,
 .ais-hierarchical-menu--link:hover {
-  text-decoration: none;
+
   color: #636363;
 }
 .ais-menu--count, .ais-hierarchical-menu--count, .ais-refinement-list--count {
@@ -108,7 +177,7 @@
   direction: ltr;
   background: #F3F4F7;
   height: 6px;
-  margin-top: 2em;
+  margin-top: 3em;
   margin-bottom: 4em;
   width: 88%;
   margin-left: 6%;
@@ -255,6 +324,25 @@
   width: 33%;
 }
 
+#algolia-autocomplete-tt .aa-dropdown-menu .aa-no-results-products {
+  padding: 40px 40px;
+}
+
+#algolia-autocomplete-tt .aa-dropdown-menu .aa-no-results-products .title {
+  font-weight: bold;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
+#algolia-autocomplete-tt .aa-dropdown-menu .aa-no-results-products .suggestions {
+  margin-bottom: 30px;
+}
+
+#algolia-autocomplete-tt .aa-dropdown-menu .aa-no-results-products .see-all a {
+  color: #636363;
+  font-weight: bold;
+}
+
 #algolia-autocomplete-tt .aa-dropdown-menu .aa-no-results {
   padding: 10px;
   font-style: italic;
@@ -286,8 +374,20 @@
   text-decoration: none;
 }
 
+#algolia-autocomplete-tt .aa-dropdown-menu .other-sections .aa-dataset-suggestions .algoliasearch-autocomplete-hit {
+  padding-left: 30px;
+}
+
+#algolia-autocomplete-tt .aa-dropdown-menu.aa-without-products .col9 {
+  background-color: #F9F9F9;
+}
+
+#algolia-autocomplete-tt .aa-dropdown-menu.aa-without-products #autocomplete-products-footer {
+  display: none;
+}
+
 #algolia-autocomplete-tt .aa-dropdown-menu .aa-dataset-products .aa-suggestion {
-  float: left;
+  display: inline-block;
   width: 50%;
 }
 
@@ -295,18 +395,19 @@
   padding: 15px 10px;
 }
 
-#algolia-autocomplete-tt .aa-dropdown-menu .aa-dataset-products .aa-suggestion:nth-child(odd) {
-  clear: both;
+.autocomplete-wrapper {
+  display: table;
+  width: 100%;
 }
-
 .col3 {
-  float: right;
+  vertical-align: top;
+  display: table-cell;
   width: 30%;
 }
 
 .col9 {
   border-left: solid 1px #eeeeee;
-  float: right;
+  display: table-cell;
   width: 70%;
 }
 
@@ -316,8 +417,7 @@
 }
 
 .aa-dataset-products .aa-suggestions {
-  margin: 20px auto;
-  margin-bottom: 70px;
+  margin: 10px auto 50px auto;
 }
 
 .aa-dataset-products .aa-suggestions:after {
@@ -327,7 +427,7 @@
 }
 
 #algolia-autocomplete-tt .aa-dropdown-menu .other-sections .algoliasearch-autocomplete-hit {
-  padding-left: 30px;
+  padding-left: 10px;
 }
 
 #algolia-autocomplete-tt .aa-dropdown-menu .other-sections .aa-suggestions {
@@ -344,9 +444,9 @@
 }
 
 #algolia-autocomplete-tt .aa-dropdown-menu .algoliasearch-autocomplete-price {
-  float: right;
-  font-size: 1.3em;
+  font-size: 1.1em;
   color: #54A5CD;
+  height: 22px;
 }
 
 #algolia-autocomplete-tt .aa-dropdown-menu .algoliasearch-autocomplete-hit .thumb {
@@ -359,6 +459,9 @@
 
 #algolia-autocomplete-tt .aa-dropdown-menu .algoliasearch-autocomplete-hit .info {
   margin-left: 60px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 #autocomplete-products-footer
@@ -423,12 +526,12 @@
   stroke: #54A5CD;
 }
 
-#algolia-searchbox svg.magnifying-glass.algolia-glass-suggestion {
-  top: 7px;
-  left: 4px;
-  right: auto;
+.search-page #algolia-searchbox svg.magnifying-glass {
   fill: #A6A6A6;
   stroke: #A6A6A6;
+  right: auto;
+  left: 3px;
+  top: 7px;
 }
 
 #algolia-searchbox .algolia-search-input {
@@ -482,6 +585,7 @@
 #instant-search-bar-container {
     width: 100%;
     position: relative;
+    margin-bottom: 15px;
 }
 
 #algolia_instant_selector #instant-search-bar {
@@ -494,11 +598,11 @@
 }
 
 #algolia_instant_selector.with-facets #algolia-left-container {
-    min-height: 1px;
+  min-height: 1px;
 }
 
 #algolia_instant_selector .hits .infos {
-  margin: 0 25px 20px;
+  margin: 0 15px 20px;
   padding: 6px 10px;
   border-bottom: solid 1px #CCCCCC;
   color: #aaa;
@@ -513,6 +617,11 @@
     color: #aaa;
     text-align: center;
 }
+
+#algolia_instant_selector a:hover {
+  color: #666666;
+}
+
 #algolia_instant_selector .hits .no-results strong {
     color: #555;
 }
@@ -544,20 +653,31 @@
   }
 }
 
+#algolia_instant_selector .ais-current-refined-values.facet .ais-current-refined-values--body {
+  padding-bottom: 8px;
+  padding-left: 8px;
+}
+
 #algolia_instant_selector .facet {
   margin-bottom: 30px;
   background-color: white;
+  border: solid 1px #efefef;
 }
 
 #algolia_instant_selector .facet:not(:first-child) {
   margin-top: 10px;
 }
 
+#algolia_instant_selector .ais-header {
+  margin-bottom: 8px;
+}
+
 #algolia_instant_selector .facet .name {
-  padding: 6px 0;
-  border-bottom: 1px solid #CCC;
-  color: #54A5CD;
-  text-align: center;
+  padding: 8px;
+  font-weight: bold;
+  background-color: #f4f4f4;
+  color: #666666;
+  text-align: left;
   text-transform: uppercase;
 }
 
@@ -604,17 +724,12 @@
   margin: 0;
 }
 
-#algolia_instant_selector .result-wrapper {
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
 #algolia_instant_selector .result {
   display: block;
-  margin: 20px 0px 20px 0px;
+  margin: 15px 0;
+  padding: 16px 24px;
   border: solid 1px #EDEDED;
   background-color: white;
-  height: 300px;
 }
 
 #algolia_instant_selector .price-wrapper {
@@ -622,16 +737,11 @@
 }
 
 #algolia_instant_selector .result:hover {
-  border-color: #54A5CD;
+  border-color: #b9b9b9;
   text-decoration: none;
 }
 
-#algolia_instant_selector .result .result-sub-content {
-  padding: 0px 10px;
-}
-
 #algolia_instant_selector .result .result-thumbnail {
-  padding: 10px;
   text-align: center;
 }
 
@@ -681,7 +791,6 @@
 /** INSTANT SEARCH BAR **/
 
 #algolia_instant_selector #instant-search-bar-container {
-  padding: 10px;
   padding-top: 0px;
 }
 
@@ -736,14 +845,13 @@
 }
 
 #algolia_instant_selector button:not(.ais-price-ranges--button) {
-  background: #39C none repeat scroll 0% 0%;
+  background: #f4f4f4 none repeat scroll 0% 0%;
   display: block;
   margin: auto;
-  margin-bottom: 10px;
   margin-top: 0px;
   padding: 7px 15px;
   border: 0px none;
-  color: #FFF;
+  color: #666666;
   font-size: 13px;
   font-weight: normal;
   font-family: "Raleway","Helvetica Neue",Verdana,Arial,sans-serif;
@@ -752,6 +860,11 @@
   text-transform: uppercase;
   vertical-align: middle;
   white-space: nowrap;
+}
+
+#algolia_instant_selector button:not(.ais-price-ranges--button):hover {
+  background: rgb(53, 153, 204) none repeat scroll 0% 0%;
+  color: white;
 }
 
 #algolia_instant_selector .pull-left {

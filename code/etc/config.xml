@@ -151,7 +151,7 @@
                 <product_additional_attributes>a:14:{s:18:"_1427959997377_377";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960012597_597";a:4:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960251221_221";a:4:{s:9:"attribute";s:17:"short_description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961262735_735";a:4:{s:9:"attribute";s:10:"categories";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961263735_735";a:4:{s:9:"attribute";s:10:"meta_title";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961264377_377";a:4:{s:9:"attribute";s:12:"meta_keyword";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961289908_908";a:4:{s:9:"attribute";s:16:"meta_description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1447846016385_385";a:4:{s:9:"attribute";s:5:"color";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961324936_936";a:4:{s:9:"attribute";s:3:"sku";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427962021621_621";a:4:{s:9:"attribute";s:5:"price";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427977839554_554";a:4:{s:9:"attribute";s:11:"ordered_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}s:18:"_1428566173508_508";a:4:{s:9:"attribute";s:9:"stock_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}s:17:"_1433929490023_23";a:4:{s:9:"attribute";s:14:"rating_summary";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1436178594492_492";a:4:{s:9:"attribute";s:10:"created_at";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}}</product_additional_attributes>
                 <custom_ranking_product_attributes>a:1:{s:18:"_1427960305274_274";a:2:{s:9:"attribute";s:11:"ordered_qty";s:5:"order";s:4:"desc";}}</custom_ranking_product_attributes>
                 <results_limit>1000</results_limit>
-                <show_suggestions_on_no_result_page>0</show_suggestions_on_no_result_page>
+                <show_suggestions_on_no_result_page>1</show_suggestions_on_no_result_page>
             </products>
             <instant>
                 <replace_categories>1</replace_categories>
@@ -162,7 +162,7 @@
                 <add_to_cart_enable>1</add_to_cart_enable>
             </instant>
             <autocomplete>
-                <sections>a:5:{s:18:"_1445982900781_781";a:3:{s:4:"name";s:11:"suggestions";s:5:"label";s:11:"Suggestions";s:11:"hitsPerPage";s:1:"3";}s:18:"_1445982897171_171";a:3:{s:4:"name";s:8:"products";s:5:"label";s:7:"Product";s:11:"hitsPerPage";s:1:"3";}s:17:"_1445982899068_68";a:3:{s:4:"name";s:10:"categories";s:5:"label";s:10:"Categories";s:11:"hitsPerPage";s:1:"5";}s:18:"_1445982899855_855";a:3:{s:4:"name";s:5:"pages";s:5:"label";s:5:"Pages";s:11:"hitsPerPage";s:1:"3";}s:18:"_1445982901739_739";a:3:{s:4:"name";s:5:"color";s:5:"label";s:6:"Colors";s:11:"hitsPerPage";s:1:"3";}}</sections>
+                <sections>a:5:{s:18:"_1445982897171_171";a:3:{s:4:"name";s:8:"products";s:5:"label";s:7:"Product";s:11:"hitsPerPage";s:1:"6";}s:18:"_1445982900781_781";a:3:{s:4:"name";s:11:"suggestions";s:5:"label";s:11:"Suggestions";s:11:"hitsPerPage";s:1:"1";}s:17:"_1445982899068_68";a:3:{s:4:"name";s:10:"categories";s:5:"label";s:10:"Categories";s:11:"hitsPerPage";s:1:"2";}s:18:"_1445982899855_855";a:3:{s:4:"name";s:5:"pages";s:5:"label";s:5:"Pages";s:11:"hitsPerPage";s:1:"2";}s:18:"_1445982901739_739";a:3:{s:4:"name";s:5:"color";s:5:"label";s:6:"Colors";s:11:"hitsPerPage";s:1:"2";}}</sections>
                 <min_popularity>100000</min_popularity>
                 <min_number_of_results>2</min_number_of_results>
             </autocomplete>
@@ -172,7 +172,7 @@
                 <custom_ranking_category_attributes>a:1:{s:18:"_1427961035192_192";a:2:{s:9:"attribute";s:13:"product_count";s:5:"order";s:4:"desc";}}</custom_ranking_category_attributes>
             </categories>
             <relevance>
-                <remove_words_if_no_result>lastWords</remove_words_if_no_result>
+                <remove_words_if_no_result>allOptional</remove_words_if_no_result>
             </relevance>
             <queue>
                 <active>0</active>
