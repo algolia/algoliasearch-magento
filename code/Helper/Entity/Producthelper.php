@@ -645,12 +645,16 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     {
                         $values = array();
 
+                        $all_sub_products_out_of_stock = true;
+
                         foreach ($sub_products as $sub_product)
                         {
-                            $stock = (int) $sub_product->getStockItem()->getIsInStock();
+                            $isInStock = (int) $sub_product->getStockItem()->getIsInStock();
 
-                            if ($stock == false)
+                            if ($isInStock == false)
                                 continue;
+
+                            $all_sub_products_out_of_stock = false;
 
                             $value = $sub_product->getData($attribute['attribute']);
 
@@ -668,6 +672,12 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         if (is_array($values) && count($values) > 0)
                         {
                             $customData[$attribute['attribute']] = array_values(array_unique($values));
+                        }
+
+                        if ($customData['in_stock'] && $all_sub_products_out_of_stock) {
+                            // Set main product out of stock if all
+                            // sub-products is out of stock.
+                            $customData['in_stock'] = 0;
                         }
                     }
                 }
