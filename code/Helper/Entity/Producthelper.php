@@ -651,7 +651,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                             $customData[$attribute['attribute']] = array_values(array_unique($values));
                         }
 
-                        if ($all_sub_products_out_of_stock) {
+                        if ($customData['in_stock'] && $all_sub_products_out_of_stock) {
                             // Set main product out of stock if all
                             // sub-products is out of stock.
                             $customData['in_stock'] = 0;
