@@ -622,7 +622,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     {
                         $values = array();
 
-                        $all_sub_product_out_of_stock = true;
+                        $all_sub_products_out_of_stock = true;
 
                         foreach ($sub_products as $sub_product)
                         {
@@ -631,7 +631,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                             if ($stock == false)
                                 continue;
 
-                            $all_sub_product_out_of_stock = false;
+                            $all_sub_products_out_of_stock = false;
 
                             $value = $sub_product->getData($attribute['attribute']);
 
