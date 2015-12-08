@@ -649,9 +649,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         foreach ($sub_products as $sub_product)
                         {
-                            $stock = (int) $sub_product->getStockItem()->getIsInStock();
+                            $isInStock = (int) $sub_product->getStockItem()->getIsInStock();
 
-                            if ($stock == false)
+                            if ($isInStock == false)
                                 continue;
 
                             $all_sub_products_out_of_stock = false;
