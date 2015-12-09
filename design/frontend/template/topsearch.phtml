@@ -559,10 +559,10 @@ $class = $isSearchPage ? 'search-page' : '';
                         additionnalSection: algoliaBundle.Hogan.compile($('#autocomplete_extra_template').html()),
                     },
                     titles: {
-                        products: '<?php echo $this->__('Products'); ?>',
-                        categories: '<?php echo $this->__('Categories') ?>',
-                        pages: '<?php echo $this->__('Pages') ?>',
-                        suggestions: '<?php echo $this->__('Suggestions') ?>'
+                        products: <?php echo json_encode($this->__('Products')); ?>,
+                        categories: <?php echo json_encode($this->__('Categories')); ?>,
+                        pages: <?php echo json_encode($this->__('Pages')); ?>,
+                        suggestions: <?php echo json_encode($this->__('Suggestions')); ?>
                     },
                     additionnalSection: <?php echo json_encode($config->getAutocompleteAdditionnalSections()); ?>
                 },
