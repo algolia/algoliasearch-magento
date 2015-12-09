@@ -84,6 +84,15 @@ To asynchronously process those queued indexing jobs, make sure you've configure
 */5 * * * * php -f /absolute/path/to/magento/shell/indexer.php --reindex algolia_queue_runner
 ```
 
+This will run n jobs every 5 minutes depending or your queue configuration
+
+
+If you want to empty the queue in one time you can run:
+
+```
+EMPTY_QUEUE=1 php -f /absolute/path/to/magento/shell/indexer.php --reindex algolia_queue_runner
+```
+
 ##### Cron disabled (development & small stores purpose)
 
 Every indexing job (global reindexing, update of products, deletion of products, update of categories, ...) will happen synchronously. **Be careful this can cause php timeout**.

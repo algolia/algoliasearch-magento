@@ -49,7 +49,13 @@ class Algolia_Algoliasearch_Model_Queue
         if ($this->config->noProcess())
             return;
 
-        $this->run($this->config->getNumberOfJobToRun());
+        $nbJobs = $this->config->getNumberOfJobToRun();
+
+        if (getenv('EMPTY_QUEUE') && getenv('EMPTY_QUEUE') == '1')
+            $nbJobs = -1;
+
+
+        $this->run($nbJobs);
     }
 
     private function mergeable($j1, $j2)
@@ -129,6 +135,9 @@ class Algolia_Algoliasearch_Model_Queue
 
     public function run($limit)
     {
+        $full_reindex = ($limit === -1);
+        $limit = $full_reindex ? 1 : $limit;
+
         $element_count = 0;
         $jobs = array();
         $offset = 0;
@@ -194,5 +203,11 @@ class Algolia_Algoliasearch_Model_Queue
         // Delete only when finished to be able to debug the queue if needed
         $where = $this->db->quoteInto('pid = ?', $pid);
         $this->db->delete($this->table, $where);
+
+
+        if ($full_reindex)
+        {
+            $this->run(-1);
+        }
     }
 }

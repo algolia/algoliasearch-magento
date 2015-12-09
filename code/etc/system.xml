@@ -171,8 +171,9 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Choose here the product attributes your users can search on, the ones you want to use as filters and sorts options and the ones required to display the search results. The order of the searchable attributes matters: a query matching the first searchable attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matching word(s) inside the attribute to matter. A match at the beginning of an attribute will be considered more important: for the query "iPhone", "iPhone 5s" will be ranked before "case for iPhone".<br />
-                                <span style="color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
+                                Choose here the product attributes your users can search on, the ones you want to use as filters and sorts options and the ones required to display the search results.<br><br>
+                                 The order of the searchable attributes matters: a query matching the first searchable attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matching word(s) inside the attribute to matter. A match at the beginning of an attribute will be considered more important: for the query "iPhone", "iPhone 5s" will be ranked before "case for iPhone".<br />
+                                <br><span style="font-size: 20px; color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
                                 ]]>
                             </comment>
                         </product_additional_attributes>
@@ -462,6 +463,10 @@
                             <comment>
                                 <![CDATA[
                                 If enabled, all indexing operations (add, remove & update operations) will be done asynchronously using the CRON mechanism.<br />
+                                <br>
+                                To schedule the run you need to add this in your crontab:<br>
+                                */5 * * * * php -f /absolute/path/to/magento/shell/indexer.php --reindex algolia_queue_runner
+                                <br><br>
                                 <span style="color: #D83900">&#9888;</span> Enabling this option is recommended in production or if your store has a lot of products.
                                 ]]>
 
