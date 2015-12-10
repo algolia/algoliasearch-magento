@@ -158,7 +158,15 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     })
                 }
 
+                var listItemTemplate = '<label class="{{cssClasses.label}}">' +
+                    '<input type="checkbox" class="{{cssClasses.checkbox}}" value="{{name}}" {{#isRefined}}checked{{/isRefined}} />{{name}}' +
+                    '{{#isRefined}}<img class="cross-circle" src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/cross-circle.png"/>{{/isRefined}}' +
+                    '<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>' +
+                    '</label>';
+
                 if (facet.type === 'conjunctive') {
+
+                    templates.item = listItemTemplate;
                     return algoliaBundle.instantsearch.widgets.refinementList({
                         container: facet.wrapper.appendChild(document.createElement('div')),
                         attributeName: facet.attribute,
@@ -171,6 +179,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 }
 
                 if (facet.type === 'disjunctive') {
+                    templates.item = listItemTemplate;
+
                     return algoliaBundle.instantsearch.widgets.refinementList({
                         container: facet.wrapper.appendChild(document.createElement('div')),
                         attributeName: facet.attribute,

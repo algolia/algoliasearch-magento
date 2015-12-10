@@ -44,12 +44,57 @@
 }
 
 /* REFINEMENT LIST */
-.ais-hierarchical-menu--item__active > div > .ais-hierarchical-menu--link,
+
+.ais-menu--link,
+.ais-hierarchical-menu--link,
+.ais-price-ranges--link,
+.ais-refinement-list--label {
+  padding: 4px 10px;
+  cursor: pointer;
+  color: #636363;
+  text-decoration: none;
+  display: block;
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+.ais-hierarchical-menu--item__active > div > .ais-hierearchical-link-wrapper > .ais-hierarchical-menu--link,
 .ais-refinement-list--item__active > div > .ais-hierarchical-list--link,
 .ais-refinement-list--item__active > div > .ais-refinement-list--label,
 .ais-price-ranges--item__active > .ais-price-ranges--link{
   font-weight: bold;
-  box-shadow: inset 4px 0 0 #999999;
+  box-shadow: inset 3px 0 0 #3399cc;
+}
+
+.ais-hierearchical-link-wrapper, .ais-refinement-list--item {
+  padding: 7px 0px;
+}
+
+.ais-refinement-list--label, .ais-hierarchical-menu--link {
+  line-height: 1.0em;
+  padding: 0px 10px;
+}
+
+.ais-refinement-list--label img {
+  display: inline;
+}
+
+.ais-hierarchical-menu--item__active .ais-hierearchical-link-wrapper .cross-circle,
+.ais-refinement-list--item__active .cross-circle {
+  display: none;
+}
+
+.ais-hierarchical-menu--item__active .ais-hierearchical-link-wrapper:hover .cross-circle,
+.ais-refinement-list--item__active:hover .cross-circle {
+  display: inline;
+  text-decoration: underline;
+  vertical-align: bottom;
+  margin-left: 6px;
+}
+
+.ais-refinement-list--item:hover {
+  text-decoration: underline;
 }
 
 .ais-price-ranges--input
@@ -72,32 +117,26 @@
   position: relative;
 }
 
-.ais-menu--link,
-.ais-hierarchical-menu--link,
-.ais-price-ranges--link,
-.ais-refinement-list--label {
-  padding: 4px 10px;
-  cursor: pointer;
-  color: #636363;
-  text-decoration: none;
-  display: block;
-  font-family: inherit;
-  font-weight: inherit;
-  font-size: inherit;
-}
-
 .ais-current-refined-values--link
 {
   cursor: pointer;
   color: #636363;
   border-radius: 2px;
   border: solid 1px #DDDDDD;
+  background-color: #f4f4f4;
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  padding: 0 8px 0 0;
+  height: 28px;
+  overflow: hidden;
 }
+
 .ais-current-refined-values--clear-all
 {
   position: absolute;
-  right: 23px;
-  top: 8px;
+  right: 6px;
+  top: 3px;
   color: #666666;
   font-weight: 500;
 }
@@ -106,17 +145,6 @@ a.ais-current-refined-values--link:hover
 {
   text-decoration: none;
 }
-
-.ais-current-refined-values--link
-{
-  background-color: #f4f4f4;
-  display: inline-block;
-}
-
-.ais-current-refined-values--link:hover .current-refinement-wrapper {
-  text-decoration: line-through;
-}
-
 
 .ais-current-refined-values--item {
   margin-top: 8px;
@@ -132,15 +160,15 @@ a.ais-current-refined-values--link:hover
   font-weight: bold;
 }
 
-.ais-current-refined-values--item .current-refinement-name {
-}
-
 .ais-current-refined-values--item .cross-wrapper {
   font-weight: bold;
   background-color: #DDDDDD;
-  padding: 4px 8px;
-  padding-bottom: 5px;
-  display: inline-block;
+  border-radius: 1px 0 0 1px;
+  float: left;
+  width: 26px;
+  height: 26px;
+  text-align: center;
+  line-height: 26px;
 }
 
 .ais-current-refined-values--link:hover .cross-wrapper {
@@ -148,21 +176,29 @@ a.ais-current-refined-values--link:hover
   background-color: #888888;
 }
 
-.ais-current-refined-values--link:hover .cross-wrapper svg {
-  fill: white;
-  stoke: white;
+.ais-current-refined-values--link .cross-wrapper img {
+  display: inline;
+  margin-top: 6px;
 }
 
 
 .ais-current-refined-values--item .current-refinement-wrapper {
-  display: inline-block;
-  padding: 4px 16px 4px 8px;
+  float: left;
+  width: calc(100% - 26px);
+  height: 26px;
+  padding-left: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 26px;
+}
+
+.ais-current-refined-values--link:hover .current-refinement-wrapper {
+  text-decoration: line-through;
 }
 
 .ais-menu--link:hover,
 .ais-price-ranges--link:hover,
 .ais-hierarchical-menu--link:hover {
-
   color: #636363;
 }
 .ais-menu--count, .ais-hierarchical-menu--count, .ais-refinement-list--count {
@@ -302,14 +338,27 @@ a.ais-current-refined-values--link:hover
 #algolia-autocomplete-tt .aa-dropdown-menu {
   position: absolute;
   margin-top: -1px;
-  width: 71.1%;
+  width: 100%;
   right: 0px !important;
   left: auto !important;
   z-index: 1000 !important;
-  border: 1px solid #BBB;
+  border: none;
   border-top: 3px solid #8EB4D0;
   border-radius: 1px;
   background: white;
+}
+
+@media (min-width: 768px) {
+  #algolia-autocomplete-tt .aa-dropdown-menu {
+    border: 1px solid #BBB;
+    border-top: 3px solid #8EB4D0;
+  }
+}
+
+@media (min-width: 992px) {
+  #algolia-autocomplete-tt .aa-dropdown-menu {
+    width: 71.1%;
+  }
 }
 
 #algolia-autocomplete-tt .aa-dropdown-menu .col-2 {
@@ -326,6 +375,7 @@ a.ais-current-refined-values--link:hover
 
 #algolia-autocomplete-tt .aa-dropdown-menu .aa-no-results-products {
   padding: 40px 40px;
+  min-height: 250px;
 }
 
 #algolia-autocomplete-tt .aa-dropdown-menu .aa-no-results-products .title {
@@ -388,27 +438,51 @@ a.ais-current-refined-values--link:hover
 
 #algolia-autocomplete-tt .aa-dropdown-menu .aa-dataset-products .aa-suggestion {
   display: inline-block;
-  width: 50%;
+  width: 100%;
 }
+
+@media (min-width: 768px) {
+  #algolia-autocomplete-tt .aa-dropdown-menu .aa-dataset-products .aa-suggestion {
+    display: inline-block;
+    width: 50%;
+  }
+}
+
 
 #algolia-autocomplete-tt .aa-dropdown-menu .aa-dataset-products .algoliasearch-autocomplete-hit {
   padding: 15px 10px;
 }
 
 .autocomplete-wrapper {
-  display: table;
   width: 100%;
 }
-.col3 {
-  vertical-align: top;
-  display: table-cell;
-  width: 30%;
+
+.autocomplete-wrapper:after {
+  clear: both;
+  content: '';
 }
 
 .col9 {
-  border-left: solid 1px #eeeeee;
-  display: table-cell;
-  width: 70%;
+  float: right;
+  width: 100%;
+}
+
+.col3 {
+  float: right;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .col9 {
+    border-left: solid 1px #eeeeee;
+    float: right;
+    width: 70%;
+  }
+
+  .col3 {
+    float: right;
+    width: 30%;
+  }
 }
 
 .other-sections {
@@ -416,9 +490,28 @@ a.ais-current-refined-values--link:hover
   margin-bottom: 70px;
 }
 
+
 .aa-dataset-products .aa-suggestions {
-  margin: 10px auto 50px auto;
+  margin: 10px auto 10px auto;
 }
+
+.aa-dataset-suggestions {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .aa-dataset-suggestions {
+    display: block;
+  }
+}
+
+
+@media (min-width: 768px) {
+  .aa-dataset-products .aa-suggestions {
+    margin: 10px auto 50px auto;
+  }
+}
+
 
 .aa-dataset-products .aa-suggestions:after {
   content:'';
@@ -473,6 +566,13 @@ a.ais-current-refined-values--link:hover
   background-color: #F9F9F9;
   padding: 15px;
   text-align: center;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  #autocomplete-products-footer {
+    display: block;
+  }
 }
 
 #autocomplete-products-footer span {
@@ -491,12 +591,18 @@ a.ais-current-refined-values--link:hover
 
 #algolia-autocomplete-tt .aa-dropdown-menu .footer_algolia {
   position: absolute;
-  width: 30%;
+  width: 100%;
   padding: 10px;
   text-align: center;
   bottom: 4px;
   left: 4px;
   font-size: 13px;
+}
+
+@media (min-width: 768px) {
+  #algolia-autocomplete-tt .aa-dropdown-menu .footer_algolia {
+    width: 30%;
+  }
 }
 
 #algolia-autocomplete-tt .aa-dropdown-menu .footer_algolia span {
@@ -588,13 +694,15 @@ a.ais-current-refined-values--link:hover
 #instant-search-bar-container {
     width: 100%;
     position: relative;
-    margin-bottom: 15px;
 }
 
 #algolia_instant_selector #instant-search-bar {
   width: 100%;
   height: 40px;
   font-family: "Raleway", "Helvetica Neue", Verdana, Arial, sans-serif;
+  border: none;
+  border-bottom: solid 2px #54A5CD;
+  padding-left: 36px;
 }
 
 #algolia_instant_selector.with-facets #algolia-right-container {
@@ -605,11 +713,13 @@ a.ais-current-refined-values--link:hover
 }
 
 #algolia_instant_selector .hits .infos {
-  margin: 0 15px 20px;
+  margin: 15px 15px 0;
   padding: 6px 10px;
-  border-bottom: solid 1px #CCCCCC;
   color: #aaa;
   text-align: center;
+  background: #F4F4F4;
+  font-size: 12px;
+  clear: both;
 }
 #algolia_instant_selector .hits .infos strong {
   color: #555;
@@ -657,12 +767,12 @@ a.ais-current-refined-values--link:hover
 }
 
 #algolia_instant_selector .ais-current-refined-values.facet .ais-current-refined-values--body {
-  padding-bottom: 8px;
   padding-left: 8px;
 }
 
 #algolia_instant_selector .facet {
   margin-bottom: 30px;
+  padding-bottom: 6px;
   background-color: white;
   border: solid 1px #efefef;
 }
@@ -672,26 +782,29 @@ a.ais-current-refined-values--link:hover
 }
 
 #algolia_instant_selector .ais-header {
-  margin-bottom: 8px;
+  margin-bottom: 7px;
+}
+
+#algolia_instant_selector .ais-header.ais-current-refined-values--header {
+  margin-bottom: 13px;
 }
 
 #algolia_instant_selector .facet .name {
-  padding: 8px;
-  font-weight: bold;
+  padding: 4px 8px;
+  font-weight: 500;
   background-color: #f4f4f4;
-  color: #666666;
+  color: #757575;
   text-align: left;
   text-transform: uppercase;
+}
+
+.ais-current-refined-values.facet {
+  position: relative;
 }
 
 #algolia_instant_selector .as-range-slider--base
 {
     margin-top: 45px;
-}
-
-#algolia_instant_selector .facet.slider
-{
-  margin-bottom: 40px;
 }
 
 #algolia_instant_selector .hierarchical .ais-hierarchical-menu--list
@@ -702,12 +815,6 @@ a.ais-current-refined-values--link:hover
 #algolia_instant_selector .hierarchical .ais-hierarchical-menu--list.ais-hierarchical-menu--list__lvl0
 {
   padding-left: 0px;
-}
-
-
-#algolia_instant_selector .facet.hierarchical .sub_facet.checked {
-  font-weight: bold;
-  box-shadow: inset 4px 0 0 #54A5CD;
 }
 
 #algolia_instant_selector .facet .sub_facet:not(:last-child) {
@@ -806,7 +913,6 @@ a.ais-current-refined-values--link:hover
 #algolia_instant_selector #instant-search-bar:focus {
     outline: 0;
     box-shadow: none;
-    border: solid 1px #54A5CD;
 }
 
 #algolia_instant_selector #instant-search-box label {
@@ -816,7 +922,7 @@ a.ais-current-refined-values--link:hover
 #algolia_instant_selector #instant-search-box svg.magnifying-glass {
   position: absolute;
   top: 8px;
-  right: 16px;
+  left: 0px;
   fill: #54A5CD;
   stroke: #54A5CD;
 }
@@ -885,7 +991,7 @@ a.ais-current-refined-values--link:hover
   height: 40px;
   line-height: 40px;
   border: solid 1px #EDEDED;
-  margin: 10px;
+  margin: 10px 0 20px 0;
   font-weight: bold;
   cursor: pointer;
 }
