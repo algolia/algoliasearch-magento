@@ -96,7 +96,9 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 autocomplete: {
                     enabled: <?php echo $config->isAutoCompleteEnabled() ? "true" : "false"; ?>,
                     selector: '.algolia-search-input',
-                    sections: <?php echo json_encode($config->getAutocompleteSections()); ?>
+                    sections: <?php echo json_encode($config->getAutocompleteSections()); ?>,
+                    nbOfProductsSuggestions: '<?php echo $config->getNumberOfProductsSuggestions(); ?>',
+                    nbOfCategoriesSuggestions: '<?php echo $config->getNumberOfCategoriesSuggestions(); ?>'
                 },
                 applicationId: '<?php echo $config->getApplicationID() ?>',
                 indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
@@ -230,7 +232,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                                 if (algoliaConfig.showSuggestionsOnNoResultsPage && algoliaConfig.popularQueries.length > 0) {
                                     $.each(algoliaConfig.popularQueries.slice(0, Math.min(3, algoliaConfig.popularQueries.length)), function (i, query) {
-                                        query = $('<div>').html(query).text(); //xss
+                                        query = $('<div>').html(query).text(); // Avoid xss
                                         suggestions.push('<a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query) + '">' + query + '</a>');
                                     });
 
@@ -358,13 +360,38 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     }
                 }
 
-                if (section.label !== "" && section.name !== 'suggestions' && section.name !== 'products') {
-                    source.templates.header = '<div class="category">' + section.label + '</div>';
+                if (section.name !== 'suggestions' && section.name !== 'products') {
+                    source.templates.header = '<div class="category">' + (section.label ? section.label : section.name) + '</div>';
                 }
 
                 return source;
             };
 
+            window.fixAutocompleteCssHeight = function () {
+                $(".other-sections").css('min-height', '0');
+                $(".aa-dataset-products").css('min-height', '0');
+                var height = Math.max($(".other-sections").outerHeight(), $(".aa-dataset-products").outerHeight());
+                $(".aa-dataset-products").css('min-height', height);
+            };
+
+            window.fixAutocompleteCssSticky = function (menu) {
+                /** Reset computation **/
+                $('#algolia-autocomplete-container .aa-dropdown-menu').css('top', '0px');
+
+                /** Stick menu vertically to the input **/
+                var targetOffset = Math.round(menu.offset().top + menu.outerHeight());
+                var currentOffset = Math.round($('#algolia-autocomplete-container').offset().top);
+                var currentTop = parseInt($('#algolia-autocomplete-container .aa-dropdown-menu').css('top'), 10);
+
+                $('#algolia-autocomplete-container .aa-dropdown-menu').css('top', (currentTop - (currentOffset - targetOffset)) + 'px');
+
+                /** Align menu horizontaly **/
+                var targetOffset = Math.round(menu.offset().top + menu.outerHeight());
+                var currentOffset = Math.round($('#algolia-autocomplete-container').offset().top);
+                var currentTop = parseInt($('#algolia-autocomplete-container .aa-dropdown-menu').css('top'), 10);
+
+                $('#algolia-autocomplete-container .aa-dropdown-menu').css('top', (currentTop - (currentOffset - targetOffset)) + 'px');
+            };
 
             $(algoliaConfig.autocomplete.selector).each(function () {
                 $(this).closest('form').submit(function (e) {

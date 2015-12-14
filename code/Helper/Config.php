@@ -21,12 +21,13 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const SORTING_INDICES                      = 'algoliasearch/instant/sorts';
     const XML_ADD_TO_CART_ENABLE               = 'algoliasearch/instant/add_to_cart_enable';
 
+    const NB_OF_PRODUCTS_SUGGESTIONS           = 'algoliasearch/autocomplete/nb_of_products_suggestions';
+    const NB_OF_CATEGORIES_SUGGESTIONS         = 'algoliasearch/autocomplete/nb_of_categories_suggestions';
     const AUTOCOMPLETE_SECTIONS                = 'algoliasearch/autocomplete/sections';
     const EXCLUDED_PAGES                       = 'algoliasearch/autocomplete/excluded_pages';
     const MIN_POPULARITY                       = 'algoliasearch/autocomplete/min_popularity';
     const MIN_NUMBER_OF_RESULTS                = 'algoliasearch/autocomplete/min_number_of_results';
 
-    const NUMBER_OF_PRODUCT_SUGGESTIONS        = 'algoliasearch/products/number_product_suggestions';
     const NUMBER_OF_PRODUCT_RESULTS            = 'algoliasearch/products/number_product_results';
     const PRODUCT_ATTRIBUTES                   = 'algoliasearch/products/product_additional_attributes';
     const PRODUCT_CUSTOM_RANKING               = 'algoliasearch/products/custom_ranking_product_attributes';
@@ -37,7 +38,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const INDEX_PRODUCT_COUNT                  = 'algoliasearch/categories/index_product_count';
     const CATEGORY_CUSTOM_RANKING              = 'algoliasearch/categories/custom_ranking_category_attributes';
 
-    const REMOVE_IF_NO_RESULT                  = 'algoliasearch/relevance/remove_words_if_no_result';
 
     const IS_ACTIVE                            = 'algoliasearch/queue/active';
     const NUMBER_OF_ELEMENT_BY_PAGE            = 'algoliasearch/queue/number_of_element_by_page';
@@ -48,6 +48,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IMAGE_HEIGHT                = 'algoliasearch/image/height';
     const XML_PATH_IMAGE_TYPE                  = 'algoliasearch/image/type';
 
+    const REMOVE_IF_NO_RESULT                  = 'algoliasearch/advanced/remove_words_if_no_result';
     const PARTIAL_UPDATES                      = 'algoliasearch/advanced/partial_update';
     const CUSTOMER_GROUPS_ENABLE               = 'algoliasearch/advanced/customer_groups_enable';
     const MAKE_SEO_REQUEST                     = 'algoliasearch/advanced/make_seo_request';
@@ -57,6 +58,16 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const LOGGING_ENABLED                      = 'dev/log/active';
 
     protected $_productTypeMap = array();
+
+    public function getNumberOfProductsSuggestions($storeId = null)
+    {
+        return Mage::getStoreConfig(self::NB_OF_PRODUCTS_SUGGESTIONS, $storeId);
+    }
+
+    public function getNumberOfCategoriesSuggestions($storeId = null)
+    {
+        return Mage::getStoreConfig(self::NB_OF_CATEGORIES_SUGGESTIONS, $storeId);
+    }
 
     public function showSuggestionsOnNoResultsPage($storeId = null)
     {

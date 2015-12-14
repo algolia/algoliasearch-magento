@@ -363,9 +363,9 @@ $placeholder = $this->__('Search for products, categories, ...');
         <div class="col3">
             <div class="other-sections">
                 <div class="aa-dataset-suggestions"></div>
-                <div class="aa-dataset-1"></div>
-                <div class="aa-dataset-2"></div>
-                <div class="aa-dataset-3"></div>
+                <?php for ($i = 0; $i < 10; $i++): ?>
+                <div class="aa-dataset-<?php echo $i; ?>"></div>
+                <?php endfor; ?>
             </div>
         </div>
     </div>
@@ -657,15 +657,19 @@ $placeholder = $this->__('Search for products, categories, ...');
             if (algoliaConfig.autocomplete.enabled) {
                 var sources = [];
 
+                /** Add products and categories that are required sections **/
+                algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: algoliaConfig.autocomplete.nbOfCategoriesSuggestions, label: <?php echo json_encode($this->__('Categories')); ?>, name: "categories"});
+                algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: algoliaConfig.autocomplete.nbOfProductsSuggestions, label: <?php echo json_encode($this->__('Products')); ?>, name: "products"});
+
                 var i = 0;
-                // Loop through each section (products, categories, pages, suggestions and additional sections)
                 $.each(algoliaConfig.autocomplete.sections, function (name, section) {
                     var source = getAutocompleteSource(section, algolia_client, $, i);
 
                     if (source)
                         sources.push(source);
 
-                    if (section.name !== 'suggestions')
+                    /* Those sections have already specific placeholder, so do not use the default aa-dataset-{i} class */
+                    if (section.name !== 'suggestions' && section.name !== 'products')
                         i++;
 
                 });
@@ -679,32 +683,22 @@ $placeholder = $this->__('Search for products, categories, ...');
                             dropdownMenu: '#menu-template'
                         },
                         dropdownMenuContainer: "#algolia-autocomplete-container",
-                        debug: true
+                        debug: false
                     };
 
                     if (algoliaConfig.removeBranding === false) {
-                        options.templates.footer = '<div class="footer_algolia"><span>Powered by</span> <a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
+                        options.templates.footer = '<div class="footer_algolia"><span>Search by</span> <a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/algolia-logo.png" /></a></div>';
                     }
 
                     $(this)
                         .autocomplete(options, sources)
                         .parent()
                         .attr('id', 'algolia-autocomplete-tt')
+                        .on('autocomplete:opened', function (e) {
+                            fixAutocompleteCssSticky(menu);
+                        })
                         .on('autocomplete:updated', function (e) {
-                            /** 100% height of floating divs **/
-                            $(".other-sections").css('min-height', '0');
-                            $(".aa-dataset-products").css('min-height', '0');
-                            var height = Math.max($(".other-sections").outerHeight(), $(".aa-dataset-products").outerHeight());
-                            $(".aa-dataset-products").css('min-height', height);
-
-                            /** Stick menu to the input **/
-                            var targetOffset = Math.round(menu.offset().top + menu.outerHeight());
-                            var currentOffset = Math.round($('#algolia-autocomplete-container').offset().top);
-                            var currentTop = parseInt($('#algolia-autocomplete-container .aa-dropdown-menu').css('top'), 10);
-
-                            if (currentTop == 0 && currentTop !== (currentOffset - targetOffset)) {
-                                $('#algolia-autocomplete-container .aa-dropdown-menu').css('top', (currentTop - (currentOffset - targetOffset)) + 'px');
-                            }
+                            fixAutocompleteCssHeight(menu);
                         });
                 });
             }

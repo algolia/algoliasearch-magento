@@ -20,8 +20,6 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sections extends Mage
                 case 'name': // Populate the attribute column with a list of searchable attributes
 
                     $sections = array(
-                        array('name' => 'products', 'label' => 'Products'),
-                        array('name' => 'categories', 'label' => 'Categories'),
                         array('name' => 'pages', 'label' => 'Pages'),
                         array('name' => 'suggestions', 'label' => 'Suggestions'),
                     );
