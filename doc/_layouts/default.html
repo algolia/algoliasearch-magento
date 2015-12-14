@@ -22,10 +22,6 @@
 {%if page.noFooter == null %}
     {% include footer.html %}
 {% endif %}
-    <script src="{{ "/js/bootstrap.min.js" | prepend: site.baseurl }}"></script>
-    <script src="//cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script>
-    <script src="//cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
-
 {% if site.env == 'development' %}
     <script>
       document.write('\x3Cscript src="//' + window.location.hostname +':35731/livereload.js">\x3C/script>');
