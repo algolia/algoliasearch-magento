@@ -3,7 +3,7 @@ all: release
 release:
 	rm -rf _site && \
 	bundle install && \
-	bundle exec jekyll build && \
+	JEKYLL_ENV=production bundle exec jekyll build && \
 	cd _site && \
 	git init . && \
   git add . && \
