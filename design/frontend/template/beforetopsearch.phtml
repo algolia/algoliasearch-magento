@@ -399,6 +399,51 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 });
             });
 
+            function handleInputCrossAutocomplete(input) {
+                if (input.val().length > 0) {
+                    input.closest('#algolia-searchbox').find('.clear-query-autocomplete').show();
+                    input.closest('#algolia-searchbox').find('svg').hide();
+                }
+                else {
+                    input.closest('#algolia-searchbox').find('.clear-query-autocomplete').hide();
+                    input.closest('#algolia-searchbox').find('svg').show();
+                }
+            }
+
+            window.handleInputCrossInstant = function (input) {
+                if (input.val().length > 0) {
+                    input.closest('#instant-search-box').find('.clear-query-instant').show();
+                }
+                else {
+                    input.closest('#instant-search-box').find('.clear-query-instant').hide();
+                }
+            };
+
+            var instant_selector = !algoliaConfig.autocomplete.enabled ? ".algolia-search-input" : "#instant-search-bar";
+
+            $(document).on('input', algoliaConfig.autocomplete.selector, function () {
+                handleInputCrossAutocomplete($(this));
+            });
+
+            $(document).on('input', instant_selector, function () {
+                handleInputCrossInstant($(this));
+            });
+
+            $(document).on('click', '.clear-query-instant', function () {
+                var input = $(this).closest('#instant-search-box').find('input');
+                input.val('');
+                input.get(0).dispatchEvent(new Event('input'));
+                handleInputCrossInstant(input);
+            });
+
+            $(document).on('click', '.clear-query-autocomplete', function () {
+                var input = $(this).closest('#algolia-searchbox').find('input');
+                input.val('');
+                handleInputCrossAutocomplete(input);
+            });
+
+
+
             /** Handle small screen **/
             $('body').on('click', '#refine-toggle', function () {
                 $('#instant-search-facets-container').toggleClass('hidden-sm').toggleClass('hidden-xs');

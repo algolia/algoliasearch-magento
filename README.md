@@ -91,8 +91,11 @@ After the first full reindex you should not have to do a full reindex again beca
 You will need a full reindex when:
 
 - You apply a price rule at the catalog level, otherwise prices will not be up to date
+- A catalog level price rule is not active anymore, otherwise prices will not be up to date
 - You apply a settings that have an impact on what need to be indexed (stocks rules)
 - You flush the image cache
+
+If you are doing sale very often, you probably want to reindex one per day/week
 
 Customization
 ------------

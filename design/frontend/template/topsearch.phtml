@@ -51,6 +51,7 @@ $placeholder = $this->__('Search for products, categories, ...');
     <div id="algolia-searchbox">
         <label for="search"><?php echo $this->__('Search:') ?></label>
         <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" class="input-text algolia-search-input" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="<?php echo $placeholder; ?>" />
+        <img class="clear-query-autocomplete" src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/cross.png" />
         <svg id="algolia-glass" xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128" >
             <g transform="scale(4)">
                 <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
@@ -230,6 +231,7 @@ $placeholder = $this->__('Search for products, categories, ...');
 
                                     <input placeholder="<?php echo $this->__('Search for products'); ?>" id="instant-search-bar" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" />
 
+                                    <img class="clear-query-instant" src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/cross.png" />
                                     <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128">
                                         <g transform="scale(4)">
                                             <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
@@ -627,6 +629,8 @@ $placeholder = $this->__('Search for products, categories, ...');
 
                 search.start();
 
+                handleInputCrossInstant($(instant_selector));
+
                 var instant_search_bar = $(instant_selector);
                 if (instant_search_bar.is(":focus") === false)
                 {
@@ -683,7 +687,7 @@ $placeholder = $this->__('Search for products, categories, ...');
                             dropdownMenu: '#menu-template'
                         },
                         dropdownMenuContainer: "#algolia-autocomplete-container",
-                        debug: false
+                        debug: true
                     };
 
                     if (algoliaConfig.removeBranding === false) {
