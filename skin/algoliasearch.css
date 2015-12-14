@@ -27,8 +27,8 @@
   color: #727272;
 }
 
-.ais-pagination--item__disabled {
-  visibility: hidden;
+.ais-pagination li.ais-pagination--item__disabled {
+  display: none;
 }
 
 .ais-pagination--item__active a {
