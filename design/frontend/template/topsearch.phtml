@@ -85,7 +85,7 @@ $placeholder = $this->__('Search for products, categories, ...');
             </div>
             {{/categories_without_path}}
             <div class="algoliasearch-autocomplete-price">
-                    <span class="after_special">
+                    <span class="after_special {{#price<?php echo $price_key; ?>_original_formated}}promotion{{/price<?php echo $price_key; ?>_original_formated}}">
                         {{price<?php echo $price_key; ?>_formated}}
                     </span>
 
@@ -289,7 +289,7 @@ $placeholder = $this->__('Search for products, categories, ...');
                                 <div class="price">
                                     <div class="price-wrapper">
                                         <div>
-                                            <span class="after_special">
+                                            <span class="after_special {{#price<?php echo $price_key; ?>_original_formated}}promotion{{/price<?php echo $price_key; ?>_original_formated}}">
                                                 {{price<?php echo $price_key; ?>_formated}}
                                             </span>
 
