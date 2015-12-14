@@ -377,6 +377,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             window.fixAutocompleteCssSticky = function (menu) {
                 /** Reset computation **/
                 $('#algolia-autocomplete-container .aa-dropdown-menu').css('top', '0px');
+                $('#algolia-autocomplete-container .aa-dropdown-menu').css('right', '0px');
 
                 /** Stick menu vertically to the input **/
                 var targetOffset = Math.round(menu.offset().top + menu.outerHeight());
@@ -384,6 +385,13 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 var currentTop = parseInt($('#algolia-autocomplete-container .aa-dropdown-menu').css('top'), 10);
 
                 $('#algolia-autocomplete-container .aa-dropdown-menu').css('top', (currentTop - (currentOffset - targetOffset)) + 'px');
+
+                /** Stick menu horizontally to the input **/
+                var targetOffset = Math.round(menu.offset().left + menu.outerWidth());
+                var currentOffset = Math.round($('#algolia-autocomplete-container').offset().left + $('#algolia-autocomplete-container').outerWidth());
+                var currentLeft = parseInt($('#algolia-autocomplete-container .aa-dropdown-menu').css('right'), 10);
+
+                $('#algolia-autocomplete-container .aa-dropdown-menu').css('right', (- (currentLeft - (currentOffset - targetOffset))) + 'px');
             };
 
             $(algoliaConfig.autocomplete.selector).each(function () {

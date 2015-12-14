@@ -337,9 +337,9 @@ a.ais-current-refined-values--link:hover
 #algolia-autocomplete-container .aa-dropdown-menu {
   position: absolute;
   margin-top: -1px;
-  width: 100%;
-  right: 0px !important;
+  right: 0px;
   left: auto !important;
+  width: 100%;
   z-index: 1000 !important;
   border: 1px solid #BBB;
   border-top: 3px solid #8EB4D0;
