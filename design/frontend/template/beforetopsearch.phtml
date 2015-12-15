@@ -114,6 +114,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>,
                 priceKey: '<?php echo $price_key; ?>',
                 currencySymbol: '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>',
+                autofocus: true,
                 request: {
                     query:<?php echo json_encode(array("value" => html_entity_decode($query))); ?>.value,
                     refinement_key: '<?php echo $refinement_key; ?>',
@@ -479,3 +480,9 @@ if ($config->isInstantEnabled() && $isSearchPage) {
         });
     });
 </script>
+
+<!--[if lte IE 9]>
+<script>
+    algoliaConfig.autofocus = false;
+</script>
+<![endif]-->

@@ -5,6 +5,10 @@
   margin-top: 2px;
 }
 
+input::-ms-clear {
+  display: none;
+}
+
 /* PAGINATION */
 #instant-search-pagination-container {
   width: 100%;
