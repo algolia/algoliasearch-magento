@@ -75,8 +75,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $products = $products->setStoreId($storeId)
                         ->addStoreFilter($storeId);
 
+        /**
+         * const VISIBILITY_NOT_VISIBLE    = 1;
+         * const VISIBILITY_IN_CATALOG     = 2;
+         * const VISIBILITY_IN_SEARCH      = 3;
+         * const VISIBILITY_BOTH           = 4;
+         */
         if ($only_visible)
-            $products = $products->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()));
+            $products = $products->addAttributeToFilter('visibility', array('in' => array(2, 3, 4)));
 
         if (false === $this->config->getShowOutOfStock($storeId))
             Mage::getSingleton('cataloginventory/stock')->addInStockFilterToCollection($products);
@@ -433,10 +439,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $defaultData    = is_array($defaultData) ? $defaultData : explode("|",$defaultData);
 
+        $visibility = (int) $product->getVisibility();
+
         $customData = array(
             'objectID'          => $product->getId(),
             'name'              => $product->getName(),
-            'url'               => Mage::getBaseUrl() . $product->getRequestPath()
+            'url'               => Mage::getBaseUrl() . $product->getRequestPath(),
+            'visibility_search'  => (int) ($visibility === 3 || $visibility === 4),
+            'visibility_catalog' => (int) ($visibility === 2 || $visibility === 4)
         );
 
         $additionalAttributes = $this->config->getProductAdditionalAttributes($product->getStoreId());

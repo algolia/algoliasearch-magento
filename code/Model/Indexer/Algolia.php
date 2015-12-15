@@ -136,7 +136,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 {
                     $delete = TRUE;
                 }
-                elseif (! in_array($product->getData('visibility'), Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
+                elseif (! in_array($product->getData('visibility'), array(2, 3, 4)))
                 {
                     $delete = TRUE;
                 }

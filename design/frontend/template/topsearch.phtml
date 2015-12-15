@@ -44,7 +44,6 @@ if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->g
 
 $placeholder = $this->__('Search for products, categories, ...');
 
-
 ?>
 
 <form id="search_mini_form" action="<?php echo $catalogSearchHelper->getResultUrl() ?>" method="get">
@@ -434,6 +433,13 @@ $placeholder = $this->__('Search for products, categories, ...');
                         if (algoliaConfig.request.query.length > 0 && location.hash.length < 1) {
                             data.helper.setQuery(algoliaConfig.request.query);
                         }
+
+                        if (algoliaConfig.isCategoryPage) {
+                            data.helper.addNumericRefinement('visibility_catalog', '=', 1);
+                        }
+                        else {
+                            data.helper.addNumericRefinement('visibility_search', '=', 1);
+                        }
                     }
                 });
 
@@ -524,6 +530,9 @@ $placeholder = $this->__('Search for products, categories, ...');
                     var name = facet.attribute;
 
                     if (name === 'categories') {
+                        if (algoliaConfig.isCategoryPage) {
+                            return;
+                        }
                         name = 'categories.level0';
                     }
 
@@ -537,8 +546,6 @@ $placeholder = $this->__('Search for products, categories, ...');
                     });
                 });
 
-                console.log(attributes);
-
                 search.addWidget(
                     algoliaBundle.instantsearch.widgets.currentRefinedValues({
                         container: '#current-refinements',
@@ -549,7 +556,8 @@ $placeholder = $this->__('Search for products, categories, ...');
                             header: '<div class="name">' + '<?php echo $this->__('Selected Filters'); ?>' + '</div>',
                             item: $('#current-refinements-template').html()
                         },
-                        attributes: attributes
+                        attributes: attributes,
+                        onlyListedAttributes: true
                     })
                 );
 
@@ -687,7 +695,7 @@ $placeholder = $this->__('Search for products, categories, ...');
                             dropdownMenu: '#menu-template'
                         },
                         dropdownMenuContainer: "#algolia-autocomplete-container",
-                        debug: true
+                        debug: false
                     };
 
                     if (algoliaConfig.removeBranding === false) {

@@ -8,6 +8,7 @@ $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 $base_url = Mage::getBaseUrl();
 
 $isSearchPage = false;
+$isCategoryPage = false;
 
 $group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
 $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.group_'.$group_id : '.default';
@@ -41,6 +42,7 @@ if($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->g
         $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId());
         $category_url = $category->getUrl($category);
         $isSearchPage = true;
+        $isCategoryPage = true;
     }
 }
 
@@ -107,6 +109,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 hitsPerPage: <?php echo (int) $config->getNumberOfProductResults() ?>,
                 sortingIndices: <?php echo json_encode(array_values($config->getSortingIndices())); ?>,
                 isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
+                isCategoryPage: <?php echo $isCategoryPage ? "true" : "false" ?>,
                 removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>,
                 priceKey: '<?php echo $price_key; ?>',
                 currencySymbol: '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>',
@@ -219,6 +222,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                 if (section.name === "products") {
                     options.facets = ['categories.level0'];
+                    options.numericFilters = 'visibility_search=1';
 
                     source =  {
                         source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), options),
