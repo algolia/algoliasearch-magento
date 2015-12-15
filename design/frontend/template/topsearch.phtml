@@ -121,7 +121,7 @@ $placeholder = $this->__('Search for products, categories, ...');
                 {{/_highlightResult.path}}
 
                 {{#product_count}}
-                <small>( {{product_count}} )</small>
+                <small>({{product_count}})</small>
                 {{/product_count}}
 
             </div>
@@ -419,7 +419,6 @@ $placeholder = $this->__('Search for products, categories, ...');
                     indexName: algoliaConfig.indexName + '_products',
                     urlSync: {
                         useHash: true,
-                        threshold: 5000,
                         trackedParameters: ['query', 'page', 'attribute:*', 'index']
                     }
                 });
@@ -695,7 +694,7 @@ $placeholder = $this->__('Search for products, categories, ...');
                             dropdownMenu: '#menu-template'
                         },
                         dropdownMenuContainer: "#algolia-autocomplete-container",
-                        debug: false
+                        debug: true
                     };
 
                     if (algoliaConfig.removeBranding === false) {
