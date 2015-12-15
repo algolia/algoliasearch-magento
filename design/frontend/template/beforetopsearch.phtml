@@ -100,7 +100,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     selector: '.algolia-search-input',
                     sections: <?php echo json_encode($config->getAutocompleteSections()); ?>,
                     nbOfProductsSuggestions: '<?php echo $config->getNumberOfProductsSuggestions(); ?>',
-                    nbOfCategoriesSuggestions: '<?php echo $config->getNumberOfCategoriesSuggestions(); ?>'
+                    nbOfCategoriesSuggestions: '<?php echo $config->getNumberOfCategoriesSuggestions(); ?>',
+                    nbOfQueriesSuggestions: '<?php echo $config->getNumberOfQueriesSuggestions(); ?>'
                 },
                 applicationId: '<?php echo $config->getApplicationID() ?>',
                 indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',

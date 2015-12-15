@@ -669,8 +669,16 @@ $placeholder = $this->__('Search for products, categories, ...');
                 var sources = [];
 
                 /** Add products and categories that are required sections **/
-                algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: algoliaConfig.autocomplete.nbOfCategoriesSuggestions, label: <?php echo json_encode($this->__('Categories')); ?>, name: "categories"});
-                algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: algoliaConfig.autocomplete.nbOfProductsSuggestions, label: <?php echo json_encode($this->__('Products')); ?>, name: "products"});
+                var nb_cat = algoliaConfig.autocomplete.nbOfCategoriesSuggestions > 0 ? algoliaConfig.autocomplete.nbOfCategoriesSuggestions: 2;
+                var nb_pro = algoliaConfig.autocomplete.nbOfProductsSuggestions > 0 ? algoliaConfig.autocomplete.nbOfProductsSuggestions : 0;
+                var nb_que = algoliaConfig.autocomplete.nbOfQueriesSuggestions > 0 ? algoliaConfig.autocomplete.nbOfQueriesSuggestions : 0;
+
+                if (nb_que > 0) {
+                    algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_que, label: '', name: "suggestions"});
+                }
+
+                algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_cat, label: <?php echo json_encode($this->__('Categories')); ?>, name: "categories"});
+                algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_pro, label: <?php echo json_encode($this->__('Products')); ?>, name: "products"});
 
                 var i = 0;
                 $.each(algoliaConfig.autocomplete.sections, function (name, section) {

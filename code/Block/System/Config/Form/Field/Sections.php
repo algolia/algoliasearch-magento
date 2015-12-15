@@ -21,7 +21,6 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sections extends Mage
 
                     $sections = array(
                         array('name' => 'pages', 'label' => 'Pages'),
-                        array('name' => 'suggestions', 'label' => 'Suggestions'),
                     );
 
                     $attributes = $config->getFacets();
@@ -30,7 +29,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sections extends Mage
                         if ($attribute['attribute'] == 'price')
                             continue;
 
-                        if ($attribute['attribute'] == 'category')
+                        if ($attribute['attribute'] == 'category' || $attribute['attribute'] == 'categories')
                             continue;
 
                         $sections[] = array('name' => $attribute['attribute'], 'label' => $attribute['label'] ? $attribute['label'] : $attribute['attribute']);

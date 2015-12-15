@@ -23,6 +23,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const NB_OF_PRODUCTS_SUGGESTIONS           = 'algoliasearch/autocomplete/nb_of_products_suggestions';
     const NB_OF_CATEGORIES_SUGGESTIONS         = 'algoliasearch/autocomplete/nb_of_categories_suggestions';
+    const NB_OF_QUERIES_SUGGESTIONS            = 'algoliasearch/autocomplete/nb_of_queries_suggestions';
     const AUTOCOMPLETE_SECTIONS                = 'algoliasearch/autocomplete/sections';
     const EXCLUDED_PAGES                       = 'algoliasearch/autocomplete/excluded_pages';
     const MIN_POPULARITY                       = 'algoliasearch/autocomplete/min_popularity';
@@ -58,6 +59,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const LOGGING_ENABLED                      = 'dev/log/active';
 
     protected $_productTypeMap = array();
+
+    public function getNumberOfQueriesSuggestions($storeId = null)
+    {
+        return Mage::getStoreConfig(self::NB_OF_QUERIES_SUGGESTIONS, $storeId);
+    }
 
     public function getNumberOfProductsSuggestions($storeId = null)
     {
