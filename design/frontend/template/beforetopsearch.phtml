@@ -205,6 +205,11 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         templates: templates,
                         cssClasses: {
                             root: 'facet slider'
+                        },
+                        tooltips: {
+                            format: function(formattedValue) {
+                                return parseInt(formattedValue);
+                            }
                         }
                     });
                 }

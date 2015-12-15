@@ -669,9 +669,9 @@ $placeholder = $this->__('Search for products, categories, ...');
                 var sources = [];
 
                 /** Add products and categories that are required sections **/
-                var nb_cat = algoliaConfig.autocomplete.nbOfCategoriesSuggestions > 0 ? algoliaConfig.autocomplete.nbOfCategoriesSuggestions: 2;
-                var nb_pro = algoliaConfig.autocomplete.nbOfProductsSuggestions > 0 ? algoliaConfig.autocomplete.nbOfProductsSuggestions : 0;
-                var nb_que = algoliaConfig.autocomplete.nbOfQueriesSuggestions > 0 ? algoliaConfig.autocomplete.nbOfQueriesSuggestions : 0;
+                var nb_cat = algoliaConfig.autocomplete.nbOfCategoriesSuggestions >= 1 ? algoliaConfig.autocomplete.nbOfCategoriesSuggestions: 2;
+                var nb_pro = algoliaConfig.autocomplete.nbOfProductsSuggestions >= 1 ? algoliaConfig.autocomplete.nbOfProductsSuggestions : 6;
+                var nb_que = algoliaConfig.autocomplete.nbOfQueriesSuggestions >= 0 ? algoliaConfig.autocomplete.nbOfQueriesSuggestions : 0;
 
                 if (nb_que > 0) {
                     algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_que, label: '', name: "suggestions"});
