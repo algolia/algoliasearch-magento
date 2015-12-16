@@ -163,7 +163,7 @@
                 <nb_of_products_suggestions>6</nb_of_products_suggestions>
                 <nb_of_categories_suggestions>2</nb_of_categories_suggestions>
                 <nb_of_queries_suggestions>0</nb_of_queries_suggestions>
-                <sections>a:2:{s:18:"_1450089283397_397";a:3:{s:4:"name";s:5:"pages";s:5:"label";s:5:"Pages";s:11:"hitsPerPage";s:1:"2";}s:18:"_1450089352638_638";a:3:{s:4:"name";s:5:"color";s:5:"label";s:6:"Colors";s:11:"hitsPerPage";s:1:"2";}}</sections>
+                <sections>a:1:{s:18:"_1450089283397_397";a:3:{s:4:"name";s:5:"pages";s:5:"label";s:5:"Pages";s:11:"hitsPerPage";s:1:"2";}}</sections>
                 <min_popularity>100000</min_popularity>
                 <min_number_of_results>2</min_number_of_results>
             </autocomplete>
