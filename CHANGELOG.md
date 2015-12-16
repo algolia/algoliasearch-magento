@@ -7,7 +7,7 @@
 - The queue is now runned outside of the Magento default cron system. To run the jobs you will need to run
   the `algolia_queue_runner` indexer via the following command `php -f shell/indexer.php --reindex algolia_queue_runner`
   You can add it to your crontab just add this line:
-  `*/5 * * * * php -f /absolute/path/to/magento/shell/indexer.php --reindex algolia_queue_runner`
+  `*/5 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner`
 
 =========================
 
