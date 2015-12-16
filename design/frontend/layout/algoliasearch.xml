@@ -2,12 +2,27 @@
 <layout>
     <algolia_search_handle>
         <reference name="head">
-            <action method="addCss"><stylesheet>algoliasearch/bundle.css</stylesheet></action>
             <action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>
-            <action method="addJs"><script>algoliasearch/bundle.min.js</script></action>
+            <block type="core/text" name="algolia-polyfill">
+                <action method="setText">
+                    <text>
+                        <![CDATA[<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+                            <!--[if lte IE 9]>
+                                <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+                        <![endif]-->]]>
+                    </text>
+                </action>
+            </block>
+            <block type="core/template" template="algoliasearch/beforetopsearch.phtml"/>
+        </reference>
+        <reference name="before_body_end">
+            <block type="core/template" template="algoliasearch/frontjs.phtml"/>
         </reference>
         <reference name="top.search">
             <action method="setTemplate"><template>algoliasearch/topsearch.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="core/template" before="content" template="algoliasearch/beforecontent.phtml"/>
         </reference>
     </algolia_search_handle>
 </layout>

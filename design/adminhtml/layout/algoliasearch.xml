@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout>
+    <algolia_bundle_handle>
+        <reference name="before_body_end">
+            <block type="core/template" template="algoliasearch/adminjs.phtml"/>
+        </reference>
+    </algolia_bundle_handle>
+</layout>

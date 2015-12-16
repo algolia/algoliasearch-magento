@@ -3,7 +3,7 @@
 /**
  * Algolia custom sort order field
  */
-class Algolia_Algoliasearch_Block_System_Config_Form_Field_Additionalsections extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
+class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sections extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
 {
     protected $selectFields = array();
 
@@ -17,17 +17,26 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Additionalsections ex
             $config = Mage::helper('algoliasearch/config');
 
             switch($columnId) {
-                case 'attribute': // Populate the attribute column with a list of searchable attributes
+                case 'name': // Populate the attribute column with a list of searchable attributes
+
+                    $sections = array(
+                        array('name' => 'pages', 'label' => 'Pages'),
+                    );
 
                     $attributes = $config->getFacets();
 
                     foreach ($attributes as $attribute) {
-                        if ($attribute['attribute'] == 'categories')
-                            continue;
                         if ($attribute['attribute'] == 'price')
                             continue;
-                        $aOptions[$attribute['attribute']] = $attribute['label'] ? $attribute['label'] : $attribute['attribute'];
+
+                        if ($attribute['attribute'] == 'category' || $attribute['attribute'] == 'categories')
+                            continue;
+
+                        $sections[] = array('name' => $attribute['attribute'], 'label' => $attribute['label'] ? $attribute['label'] : $attribute['attribute']);
                     }
+
+                    foreach ($sections as $section)
+                        $aOptions[$section['name']] = $section['label'];
 
                     $selectField->setExtraParams('style="width:130px;"');
 
@@ -44,14 +53,20 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Additionalsections ex
 
     public function __construct()
     {
-        $this->addColumn('attribute', array(
-            'label' => Mage::helper('adminhtml')->__('Attribute'),
-            'renderer'=> $this->getRenderer('attribute'),
+        $this->addColumn('name', array(
+            'label' => Mage::helper('adminhtml')->__('Section'),
+            'renderer' => $this->getRenderer('name'),
         ));
 
         $this->addColumn('label', array(
             'label' => Mage::helper('adminhtml')->__('Label'),
             'style' => 'width: 100px;'
+        ));
+
+        $this->addColumn('hitsPerPage', array(
+            'label' => Mage::helper('adminhtml')->__('Hits per page'),
+            'style' => 'width: 100px;',
+            'class' => 'required-entry input-text validate-number'
         ));
 
         $this->_addAfter = false;
@@ -62,8 +77,8 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Additionalsections ex
     protected function _prepareArrayRow(Varien_Object $row)
     {
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('attribute')->calcOptionHash(
-                $row->getAttribute()),
+            'option_extra_attr_' . $this->getRenderer('name')->calcOptionHash(
+                $row->getName()),
             'selected="selected"'
         );
     }

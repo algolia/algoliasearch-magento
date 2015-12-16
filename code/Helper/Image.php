@@ -3,7 +3,7 @@
 class Algolia_Algoliasearch_Helper_Image extends Mage_Catalog_Helper_Image
 {
     /*
-     * Override to be able to catch the error
+     * Subclass to be able to catch the error
      */
     public function toString()
     {
@@ -17,7 +17,6 @@ class Algolia_Algoliasearch_Helper_Image extends Mage_Catalog_Helper_Image
         if ($model->isCached())
             return $model->getUrl();
 
-
         if ($this->_scheduleRotate)
             $model->rotate($this->getAngle());
 
@@ -27,8 +26,6 @@ class Algolia_Algoliasearch_Helper_Image extends Mage_Catalog_Helper_Image
         if ($this->getWatermark())
             $model->setWatermark($this->getWatermark());
 
-        $url = $model->saveFile()->getUrl();
-
-        return $url;
+        return $model->saveFile()->getUrl();
     }
 }
