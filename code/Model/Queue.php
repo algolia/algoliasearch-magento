@@ -12,10 +12,6 @@ class Algolia_Algoliasearch_Model_Queue
     /** @var Algolia_Algoliasearch_Helper_Logger */
     protected $logger;
 
-    private $methods = array('removeProducts', 'removeCategories', 'deleteProductsStoreIndices', 'deleteCategoriesStoreIndices',
-                        'rebuildPageIndex', 'rebuildAdditionalSectionsIndex', 'rebuildSuggestionIndex',
-                        'rebuildCategoryIndex', 'rebuildProductIndex', 'moveStoreSuggestionIndex');
-
     private $by_page;
 
     public function __construct()
@@ -91,10 +87,6 @@ class Algolia_Algoliasearch_Model_Queue
         usort($old_jobs, function ($a, $b) {
             if (strcmp($a['class'], $b['class']) !== 0)
                 return strcmp($a['class'], $b['class']);
-
-            /** Put deletions jobs before */
-            if ($a['method'] !== $b['method'])
-                return array_search($a['method'], $this->methods) > array_search($b['method'], $this->methods);
 
             if ($a['data']['store_id'] !== $b['data']['store_id'])
                 return $a['data']['store_id'] > $b['data']['store_id'];
