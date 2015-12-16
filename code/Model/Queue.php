@@ -42,9 +42,6 @@ class Algolia_Algoliasearch_Model_Queue
         if ( ! $this->config->isQueueActive())
             return;
 
-        if ($this->config->noProcess())
-            return;
-
         $nbJobs = $this->config->getNumberOfJobToRun();
 
         if (getenv('EMPTY_QUEUE') && getenv('EMPTY_QUEUE') == '1')

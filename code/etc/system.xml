@@ -469,7 +469,7 @@
                                 If enabled, all inxdexing operations (add, remove & update operations) will be done asynchronously using the CRON mechanism.<br />
                                 <br>
                                 To schedule the run you need to add this in your crontab:<br>
-                                */5 * * * * php -f /absolute/path/to/magento/shell/indexer.php --reindex algolia_queue_runner
+                                */5 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner
                                 <br><br>
                                 <span style="color: #D83900">&#9888;</span> Enabling this option is recommended in production or if your store has a lot of products.
                                 ]]>
@@ -494,20 +494,9 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Number of jobs to run each time the cron is run. Default value is 300.</comment>
+                            <comment>Number of jobs to run each time the cron is run. Default value is 6.</comment>
                             <depends><active>1</active></depends>
                         </number_of_job_to_run>
-                        <noprocess>
-                            <label>Disable indexing</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>50</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Job will stack onto the queue but no indexing will be done. Default value is false.</comment>
-                            <depends><active>1</active></depends>
-                        </noprocess>
                     </fields>
                 </queue>
                 <image translate="label">

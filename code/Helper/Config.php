@@ -43,7 +43,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const IS_ACTIVE                            = 'algoliasearch/queue/active';
     const NUMBER_OF_ELEMENT_BY_PAGE            = 'algoliasearch/queue/number_of_element_by_page';
     const NUMBER_OF_JOB_TO_RUN                 = 'algoliasearch/queue/number_of_job_to_run';
-    const NO_PROCESS                           = 'algoliasearch/queue/noprocess';
 
     const XML_PATH_IMAGE_WIDTH                 = 'algoliasearch/image/width';
     const XML_PATH_IMAGE_HEIGHT                = 'algoliasearch/image/height';
