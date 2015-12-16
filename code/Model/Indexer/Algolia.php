@@ -131,12 +131,13 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 /** @var $product Mage_Catalog_Model_Product */
                 $product = $event->getDataObject();
                 $delete = FALSE;
+                $visibleInSite = Mage::getSingleton('catalog/product_visibility')->getVisibleInSiteIds();
 
                 if ($product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED)
                 {
                     $delete = TRUE;
                 }
-                elseif (! in_array($product->getData('visibility'), array(2, 3, 4)))
+                elseif (! in_array($product->getData('visibility'), $visibleInSite))
                 {
                     $delete = TRUE;
                 }
