@@ -386,23 +386,38 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             };
 
             window.fixAutocompleteCssSticky = function (menu) {
+                var dropdown_menu = $('#algolia-autocomplete-container .aa-dropdown-menu');
+                var autocomplete_container = $('#algolia-autocomplete-container');
+
                 /** Reset computation **/
-                $('#algolia-autocomplete-container .aa-dropdown-menu').css('top', '0px');
-                $('#algolia-autocomplete-container .aa-dropdown-menu').css('right', '0px');
+                dropdown_menu.css('top', '0px');
 
                 /** Stick menu vertically to the input **/
                 var targetOffset = Math.round(menu.offset().top + menu.outerHeight());
-                var currentOffset = Math.round($('#algolia-autocomplete-container').offset().top);
-                var currentTop = parseInt($('#algolia-autocomplete-container .aa-dropdown-menu').css('top'), 10);
+                var currentOffset = Math.round(autocomplete_container.offset().top);
 
-                $('#algolia-autocomplete-container .aa-dropdown-menu').css('top', (currentTop - (currentOffset - targetOffset)) + 'px');
+                dropdown_menu.css('top', (targetOffset - currentOffset) + 'px');
 
-                /** Stick menu horizontally to the input **/
-                var targetOffset = Math.round(menu.offset().left + menu.outerWidth());
-                var currentOffset = Math.round($('#algolia-autocomplete-container').offset().left + $('#algolia-autocomplete-container').outerWidth());
-                var currentLeft = parseInt($('#algolia-autocomplete-container .aa-dropdown-menu').css('right'), 10);
+                if (menu.offset().left + menu.outerWidth() / 2 > $(document).width() / 2) {
+                    /** Stick menu horizontally align on left to the input **/
+                    dropdown_menu.css('right', '0px');
+                    dropdown_menu.css('left', 'auto');
 
-                $('#algolia-autocomplete-container .aa-dropdown-menu').css('right', (- (currentLeft - (currentOffset - targetOffset))) + 'px');
+                    var targetOffset = Math.round(menu.offset().left + menu.outerWidth());
+                    var currentOffset = Math.round(autocomplete_container.offset().left + autocomplete_container.outerWidth());
+
+                    dropdown_menu.css('right', (targetOffset - currentOffset) + 'px');
+                }
+                else {
+                    /** Stick menu horizontally align on right to the input **/
+                    dropdown_menu.css('left', 'auto');
+                    dropdown_menu.css('right', 'auto');
+
+                    var targetOffset = Math.round(menu.offset().left);
+                    var currentOffset = Math.round(autocomplete_container.offset().left);
+
+                    dropdown_menu.css('left', (targetOffset - currentOffset) + 'px');
+                }
             };
 
             $(algoliaConfig.autocomplete.selector).each(function () {

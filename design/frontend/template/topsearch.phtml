@@ -719,7 +719,7 @@ $placeholder = $this->__('Search for products, categories, ...');
                         .autocomplete(options, sources)
                         .parent()
                         .attr('id', 'algolia-autocomplete-tt')
-                        .on('autocomplete:opened', function (e) {
+                        .on('autocomplete:updated', function (e) {
                             fixAutocompleteCssSticky(menu);
                         })
                         .on('autocomplete:updated', function (e) {
