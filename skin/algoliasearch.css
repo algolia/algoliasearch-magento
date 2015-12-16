@@ -741,9 +741,9 @@ a.ais-current-refined-values--link:hover
 }
 
 #algolia_instant_selector .hits .no-results {
-    margin: 40px 25px;
-    color: #aaa;
-    text-align: center;
+  margin: 40px 25px;
+  color: #636363;
+  font-size: 16px;
 }
 
 #algolia_instant_selector a:hover {
@@ -751,16 +751,17 @@ a.ais-current-refined-values--link:hover
 }
 
 #algolia_instant_selector .hits .no-results strong {
-    color: #555;
+  color: #555;
 }
 
 #algolia_instant_selector .hits .no-results .clear-button {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 #algolia_instant_selector .hits .no-results .popular-searches {
   text-align: left;
   margin-top: 20px;
+  margin-bottom: 30px;
 }
 
 /**

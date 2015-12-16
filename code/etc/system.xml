@@ -116,7 +116,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If set to Yes, the seach box will display a search-as-you-type drop-down menu. It requires your theme to expose a <code>top.search</code> template.
+                                If set to Yes, the seach box will display a search-as-you-type drop-down menu. It requires your theme to expose a <code>top.search</code> and <code>content</code> block.
                                 ]]>
                             </comment>
                         </is_popup_enabled>
@@ -130,7 +130,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If set to Yes, the products inside the results pages will be searchable the refined results updated as-you-type. It requires your theme to expose a <code>top.search</code> template.
+                                If set to Yes, the products inside the results pages will be searchable the refined results updated as-you-type. It requires your theme to expose a <code>top.search</code> and <code>content</code> block.
                                 ]]>
                             </comment>
                         </is_instant_enabled>
@@ -173,8 +173,32 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of categories (0 to disabled it) suggested in the autocomplete dropdown. Default value is 0</comment>
+                            <comment>The number of queries suggestions (0 to disabled it) suggested in the autocomplete dropdown. Default value is 0</comment>
                         </nb_of_queries_suggestions>
+                        <min_popularity translate="label comment">
+                            <label>Min query popularity</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The min number of times a query has been performed in order to be suggested. Default value is 1000.</comment>
+                        </min_popularity>
+                        <min_number_of_results translate="label comment">
+                            <label>Min number of products per query</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                The min number of results a query needs to return to be suggested. Default value is 2. <br /n>
+                                ]]>
+                            </comment>
+                        </min_number_of_results>
                         <sections>
                             <label>Additional Sections</label>
                             <frontend_model>algoliasearch/system_config_form_field_sections</frontend_model>
@@ -186,7 +210,7 @@
                             <depends><active>1</active></depends>
                             <comment>
                                 <![CDATA[
-                                Configure here the additional auto-completion menu sections you want include in the dropdown menu (Ex. Suggestions, Pages, Manufacturer, Colors).<br />
+                                Configure here the additional auto-completion menu sections you want include in the dropdown menu (Ex. Suggestions, Pages, Manufacturer, Colors).<br /><br>
                                 <span style="color: #D83900">&#9888;</span> All attributes used here must have been initially included in the <strong>Attributes Configuration</strong> panel and configured as a facet in the <strong>Instant Search Results Page Configuration</strong> panel to be able to refine on the specific attribute.
                                 ]]>
                             </comment>
@@ -201,36 +225,11 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the pages you don't want to search in.<br /n>
-                                <span style="color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search Pages index whenever you modify this setting.
+                                Configure here the pages you don't want to search in.<br><br>
+                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Do not forget to trigger the Algolia Search indexers whenever you modify those settings.
                                 ]]>
                             </comment>
                         </excluded_pages>
-                        <min_popularity translate="label comment">
-                            <label>Min popularity</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The min number of times a query has been performed in order to be suggested. Default value is 100000.</comment>
-                        </min_popularity>
-                        <min_number_of_results translate="label comment">
-                            <label>Min number of products</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>50</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>
-                                <![CDATA[
-                                The min number of results a query needs to return to be suggested. Default value is 2. <br /n>
-                                <span style="color: #D83900">&#9888;</span> Updating your suggested queries requires that you reindex your Algolia Search Suggestions index.
-                                ]]>
-                            </comment>
-                        </min_number_of_results>
                     </fields>
                 </autocomplete>
                 <instant>
@@ -385,7 +384,7 @@
                             </comment>
                         </custom_ranking_product_attributes>
                         <show_suggestions_on_no_result_page translate="label comment">
-                            <label>Show most popular suggestions on no results</label>
+                            <label>Show most popular queries suggestions when there are no results</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>50</sort_order>
@@ -394,7 +393,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                    Choose here if you want to show most popular suggestions on no result page.
+                                    Choose here if you want to show most popular queries suggestions when there are no results/
                                 ]]>
                             </comment>
                         </show_suggestions_on_no_result_page>
@@ -447,63 +446,11 @@
                         </custom_ranking_category_attributes>
                     </fields>
                 </categories>
-                <queue translate="label">
-                    <label>Queue</label>
-                    <expanded>0</expanded>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>70</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <active translate="label">
-                            <label>Queue Enabled</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>
-                                <![CDATA[
-                                If enabled, all inxdexing operations (add, remove & update operations) will be done asynchronously using the CRON mechanism.<br />
-                                <br>
-                                To schedule the run you need to add this in your crontab:<br>
-                                */5 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner
-                                <br><br>
-                                <span style="color: #D83900">&#9888;</span> Enabling this option is recommended in production or if your store has a lot of products.
-                                ]]>
-
-                            </comment>
-                        </active>
-                        <number_of_element_by_page translate="label comment">
-                            <label>Max number of element by indexing job</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The max number of element by indexing job. Default value is 100.</comment>
-                        </number_of_element_by_page>
-                        <number_of_job_to_run translate="label comment">
-                            <label>Number of jobs to run each time the cron is run</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Number of jobs to run each time the cron is run. Default value is 6.</comment>
-                            <depends><active>1</active></depends>
-                        </number_of_job_to_run>
-                    </fields>
-                </queue>
                 <image translate="label">
                     <label>Images</label>
                     <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
-                    <sort_order>80</sort_order>
+                    <sort_order>60</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -540,6 +487,64 @@
                         </type>
                     </fields>
                 </image>
+                <queue translate="label">
+                    <label>Indexing Queue / Cron</label>
+                    <expanded>0</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>70</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Queue Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                If enabled, all inxdexing operations (add, remove & update operations) will be done asynchronously using the CRON mechanism.<br />
+                                <br>
+                                To schedule the run you need to add this in your crontab:<br>
+                                */5 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner
+                                <br><br>
+                                <span style="color: #D83900">&#9888;</span> Enabling this option is recommended in production or if your store has a lot of products.
+                                ]]>
+                            </comment>
+                        </active>
+                        <number_of_element_by_page translate="label comment">
+                            <label>Max number of element per indexing job</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The max number of element by indexing job. Default value is 100.</comment>
+                        </number_of_element_by_page>
+                        <number_of_job_to_run translate="label comment">
+                            <label>Number of jobs to run each time the cron is run</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                Number of jobs to run each time the cron is run. Default value is 10.
+                                <br><br>
+                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Eacb time the cron runs it will process ("Max number of element per indexing job" * "Number of jobs to run each time the cron is run")
+                                products.
+                                ]]>
+                            </comment>
+                            <depends><active>1</active></depends>
+                        </number_of_job_to_run>
+                    </fields>
+                </queue>
                 <advanced translate="label">
                     <label>Advanced</label>
                     <expanded>0</expanded>

@@ -407,14 +407,11 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     var currentOffset = Math.round(autocomplete_container.offset().left + autocomplete_container.outerWidth());
 
                     dropdown_menu.css('right', (currentOffset - targetOffset) + 'px');
-                    console.log('right');
                 }
                 else {
                     /** Stick menu horizontally align on left to the input **/
                     dropdown_menu.css('left', 'auto');
                     dropdown_menu.css('right', '0px');
-
-                    console.log('left');
 
                     var targetOffset = Math.round(menu.offset().left);
                     var currentOffset = Math.round(autocomplete_container.offset().left);

@@ -496,23 +496,24 @@ $placeholder = $this->__('Search for products, categories, ...');
                 );
 
                 search.addWidget({
-                    suggestions: "",
+                    suggestions: [],
                     init: function () {
                         if (algoliaConfig.showSuggestionsOnNoResultsPage) {
                             var $this = this;
-                            $.each(algoliaConfig.popularQueries, function (i, query) {
+                            $.each(algoliaConfig.popularQueries.slice(0, Math.min(4, algoliaConfig.popularQueries.length)), function (i, query) {
                                 query = $('<div>').html(query).text(); //xss
-                                $this.suggestions += '<div><a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query) + '">' + query + '</a></div>';
+                                $this.suggestions.push('<a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query) + '">' + query + '</a>');
                             });
                         }
                     },
                     render: function (data) {
                         if (data.results.hits.length === 0) {
                             var content = '<div class="no-results">';
-                            content += '<div><?php echo $this->__('No results found matching'); ?> "<strong>' + $("<div>").text(data.results.query).html() + '</strong>".</div>';
+                            content += '<div><b><?php echo $this->__('No products for query'); ?> "' + $("<div>").text(data.results.query).html() + '</b>"</div>';
 
                             if (algoliaConfig.showSuggestionsOnNoResultsPage && this.suggestions.length > 0) {
-                                content += '<div class="popular-searches"><div><h2><?php echo $this->__('Popular searches'); ?></h2></div>' + this.suggestions + '</div>';
+                                content += '<div class="popular-searches"><div><?php echo $this->__('You can can try one of he popular seearch queries'); ?></div>' + this.suggestions.join(', ') + '</div>';
+                                content += '<?php echo $this->__('or'); ?> <a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__"><?php echo $this->__('See all products'); ?></a>'
                             }
 
                             content += '</div>';

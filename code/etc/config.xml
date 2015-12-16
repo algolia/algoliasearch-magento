@@ -164,7 +164,7 @@
                 <nb_of_categories_suggestions>2</nb_of_categories_suggestions>
                 <nb_of_queries_suggestions>0</nb_of_queries_suggestions>
                 <sections>a:1:{s:18:"_1450089283397_397";a:3:{s:4:"name";s:5:"pages";s:5:"label";s:5:"Pages";s:11:"hitsPerPage";s:1:"2";}}</sections>
-                <min_popularity>100000</min_popularity>
+                <min_popularity>1000</min_popularity>
                 <min_number_of_results>2</min_number_of_results>
             </autocomplete>
             <categories>
@@ -175,7 +175,7 @@
             <queue>
                 <active>0</active>
                 <number_of_element_by_page>100</number_of_element_by_page>
-                <number_of_job_to_run>6</number_of_job_to_run>
+                <number_of_job_to_run>10</number_of_job_to_run>
             </queue>
             <image>
                 <width>265</width>
