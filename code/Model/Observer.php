@@ -49,9 +49,12 @@ class Algolia_Algoliasearch_Model_Observer
     {
         if ($this->config->isEnabledFrontEnd())
         {
-            if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled())
+            if ($this->config->getApplicationID() && $this->config->getAPIKey())
             {
-                $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
+                if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled())
+                {
+                    $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
+                }
             }
         }
 
