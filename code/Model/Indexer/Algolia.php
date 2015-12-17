@@ -74,6 +74,8 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
         $result = $process->getMode() !== Mage_Index_Model_Process::MODE_MANUAL;
 
+        $result = $result && $event->getEntity() !== 'core_config_data';
+
         $event->addNewData(self::EVENT_MATCH_RESULT_KEY, $result);
 
         return $result;

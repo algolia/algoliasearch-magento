@@ -43,7 +43,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
 
     public function matchEvent(Mage_Index_Model_Event $event)
     {
-        $result = true;
+        $result = $event->getEntity() !== 'core_config_data';;
 
         $event->addNewData(self::EVENT_MATCH_RESULT_KEY, $result);
 
