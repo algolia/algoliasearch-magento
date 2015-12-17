@@ -81,7 +81,7 @@ Every indexing job (whole re-indexing, update/deletion/update of products or cat
 
 
 
-# Customization
+# UI/UX
 {: .headline}
 
 ## Auto-completion menu
@@ -91,7 +91,7 @@ The extension is making use of [autocomplete.js](https://github.com/algolia/auto
  * products,
  * categories,
  * pages,
- * and popular queries.
+ * and optionally popular queries.
 
 You can add new sections through the administration panel. If you want to do more customization, you'll need to update the underlying JavaScript code.
 
@@ -106,7 +106,7 @@ The extension is making use of [instantsearch.js](https://github.com/algolia/ins
 
 You can add custom widgets or update those ones by updating the underlying JavaScript code.
 
-## Advanced
+## Customization
 
 ### Introduction
 
