@@ -427,15 +427,18 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             };
 
             window.fixAutocompleteCssHeight = function () {
-                $(".other-sections").css('min-height', '0');
-                $(".aa-dataset-products").css('min-height', '0');
-                var height = Math.max($(".other-sections").outerHeight(), $(".aa-dataset-products").outerHeight());
-                $(".aa-dataset-products").css('min-height', height);
+                if ($(document).width() > 768) {
+                    $(".other-sections").css('min-height', '0');
+                    $(".aa-dataset-products").css('min-height', '0');
+                    var height = Math.max($(".other-sections").outerHeight(), $(".aa-dataset-products").outerHeight());
+                    $(".aa-dataset-products").css('min-height', height);
+                }
             };
 
             window.fixAutocompleteCssSticky = function (menu) {
                 var dropdown_menu = $('#algolia-autocomplete-container .aa-dropdown-menu');
                 var autocomplete_container = $('#algolia-autocomplete-container');
+                autocomplete_container.removeClass('reverse');
 
                 /** Reset computation **/
                 dropdown_menu.css('top', '0px');
@@ -460,6 +463,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     /** Stick menu horizontally align on left to the input **/
                     dropdown_menu.css('left', 'auto');
                     dropdown_menu.css('right', '0px');
+                    autocomplete_container.addClass('reverse');
 
                     var targetOffset = Math.round(menu.offset().left);
                     var currentOffset = Math.round(autocomplete_container.offset().left);
