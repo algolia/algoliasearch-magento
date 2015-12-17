@@ -338,11 +338,9 @@ $placeholder = $this->__('Search for products, categories, ...');
 </script>
 
 <script type="text/template" id="instant-stats-template">
-    {{#hasNoResults}}<?php echo $this->__('No results'); ?>{{/hasNoResults}}
-    {{#hasOneResult}}1 <?php echo $this->__('result'); ?>{{/hasOneResult}}
-    {{#hasManyResults}}{{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}} <?php echo $this->__('results'); ?>{{/hasManyResults}}
-    {{#query}}<?php echo $this->__('matching'); ?> "<strong>{{query}}</strong>" {{/query}}
-    <?php echo $this->__('in'); ?> {{processingTimeMS}}<?php echo $this->__('ms'); ?>
+    {{#hasOneResult}}<strong>1</strong> <?php echo $this->__('result'); ?> found{{/hasOneResult}}
+    {{#hasManyResults}}{{^hasNoResults}}{{first}}-{{last}} out of{{/hasNoResults}} <strong>{{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}} <?php echo $this->__('results found'); ?></strong>{{/hasManyResults}}
+    <?php echo $this->__('in'); ?> {{seconds}} <?php echo $this->__('seconds'); ?>
 </script>
 
 <script type="text/template" id="facet-template">
@@ -472,6 +470,13 @@ $placeholder = $this->__('Search for products, categories, ...');
                         container: '#algolia-stats',
                         templates: {
                             body: $('#instant-stats-template').html()
+                        },
+                        transformData: function (data) {
+                            data.first = data.page * data.hitsPerPage + 1;
+                            data.last = Math.min(data.page * data.hitsPerPage + data.hitsPerPage, data.nbHits);
+                            data.seconds = data.processingTimeMS / 1000;
+
+                            return data;
                         }
                     })
                 );
@@ -524,11 +529,14 @@ $placeholder = $this->__('Search for products, categories, ...');
                         if (data.results.hits.length === 0) {
                             var content = '<div class="no-results">';
                             content += '<div><b><?php echo $this->__('No products for query'); ?> "' + $("<div>").text(data.results.query).html() + '</b>"</div>';
+                            content += '<div class="popular-searches">';
 
                             if (algoliaConfig.showSuggestionsOnNoResultsPage && this.suggestions.length > 0) {
-                                content += '<div class="popular-searches"><div><?php echo $this->__('You can can try one of he popular seearch queries'); ?></div>' + this.suggestions.join(', ') + '</div>';
-                                content += '<?php echo $this->__('or'); ?> <a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__"><?php echo $this->__('See all products'); ?></a>'
+                                content += '<div><?php echo $this->__('You can can try one of he popular seearch queries'); ?></div>' + this.suggestions.join(', ');
                             }
+
+                            content += '</div>';
+                            content += '<?php echo $this->__('or'); ?> <a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__"><?php echo $this->__('See all products'); ?></a>'
 
                             content += '</div>';
 

@@ -36,8 +36,23 @@
                     <expanded>1</expanded>
                     <comment>
                      <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=213" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
-                    </font>
+                        <table>
+                            <tr>
+                                <td>Documentation:</td>
+                                <td><a target="_BLANK" href="https://community.algolia.com/magento/documentation">https://community.algolia.com/magento/documentation</a></td>
+                            </tr>
+                            <tr>
+                                <td>FAQ: </td>
+                                <td><a target="_BLANK" href="https://www.algolia.com/doc/faq">https://www.algolia.com/doc/faq</a></td>
+                            </tr>
+                            <tr>
+                                <td>Issues: </td>
+                                <td><a target="_BLANK" href="https://github.com/algolia/algoliasearch-magento/issues">https://github.com/algoliasearch-magento/issues</a></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <hr>
+                        <br>
                      ]]>
                     </comment>
                     <fields>
@@ -242,8 +257,7 @@
                     <expanded>0</expanded>
                     <comment>
                      <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=666" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
-                    </font>
+
                      ]]>
                     </comment>
                     <fields>
@@ -337,8 +351,7 @@
                     <expanded>0</expanded>
                     <comment>
                         <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=398" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n>
-                    </font>
+
                      ]]>
                     </comment>
                     <fields>
@@ -409,8 +422,7 @@
                     <expanded>0</expanded>
                     <comment>
                      <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=805" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
-                    </font>
+
                      ]]>
                     </comment>
                     <fields>
