@@ -79,11 +79,20 @@ $placeholder = $this->__('Search for products, categories, ...');
         <div class="info">
             {{{_highlightResult.name.value}}}
 
-            {{#categories_without_path}}
             <div class="algoliasearch-autocomplete-category">
-                <?php echo $this->__('in'); ?> {{categories_without_path}}
+                {{#categories_without_path}}
+                    <?php echo $this->__('in'); ?> {{{categories_without_path}}}
+                {{/categories_without_path}}
+
+                {{#_highlightResult.color}}
+                {{#_highlightResult.color.value}}
+                <span>
+                   {{#categories_without_path}} | {{/categories_without_path}} Color:  {{{_highlightResult.color.value}}}
+                </span>
+                {{/_highlightResult.color.value}}
+                {{/_highlightResult.color}}
             </div>
-            {{/categories_without_path}}
+
             <div class="algoliasearch-autocomplete-price">
                     <span class="after_special {{#price<?php echo $price_key; ?>_original_formated}}promotion{{/price<?php echo $price_key; ?>_original_formated}}">
                         {{price<?php echo $price_key; ?>_formated}}
@@ -136,6 +145,11 @@ $placeholder = $this->__('Search for products, categories, ...');
     <a class="algoliasearch-autocomplete-hit" href="{{url}}">
         <div class="info-without-thumb">
             {{{_highlightResult.name.value}}}
+            {{#content}}
+                <div class="details">
+                    {{{content}}}
+                </div>
+            {{/content}}
         </div>
         <div class="clearfix"></div>
     </a>

@@ -119,6 +119,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             if ($attribute['retrievable'] != '1')
                 $unretrievableAttributes[] = $attribute['attribute'];
+
+            if ($attribute['attribute'] == 'categories')
+            {
+                $attributesToIndex[] = $attribute['order'] == 'ordered' ? 'categories_without_path' : 'unordered(categories_without_path)';
+            }
         }
 
         $customRankings = $this->config->getProductCustomRanking($storeId);

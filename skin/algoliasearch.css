@@ -335,6 +335,18 @@ a.ais-current-refined-values--link:hover
     color: #3284b6;
 }
 
+#algolia-autocomplete-container .aa-dropdown-menu .info-without-thumb .details {
+  font-size: 10px;
+  color: #666;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+#algolia-autocomplete-container .aa-dropdown-menu .info-without-thumb .details em {
+  color: #222222;
+}
+
 #algolia-autocomplete-tt.algolia-autocomplete {
   width: 100%;
   display: inline-block !important;
@@ -584,6 +596,10 @@ a.ais-current-refined-values--link:hover
   overflow: hidden;
   max-width: 100%;
   text-overflow: ellipsis;
+}
+
+#algolia-autocomplete-container .aa-dropdown-menu .algoliasearch-autocomplete-hit .info .algoliasearch-autocomplete-category em {
+  color: #222;
 }
 
 #algolia-autocomplete-container .aa-dropdown-menu .footer_algolia {

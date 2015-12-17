@@ -131,8 +131,39 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     hit.categories = hit.categories.join(', ');
 
                 if (Array.isArray(hit.categories_without_path)) {
+                    hit.categories_without_path = $.map(hit._highlightResult.categories_without_path, function (category) {
+                        return category.value;
+                    });
+
                     hit.categories_without_path = hit.categories_without_path.join(', ');
                 }
+
+                if (Array.isArray(hit.color)) {
+                    var colors = [];
+
+                    $.each(hit._highlightResult.color, function (i, color) {
+                        if (color.matchLevel === 'none') {
+                            return;
+                        }
+                        colors.push(color.value);
+                    });
+
+                    colors = colors.join(', ');
+
+                    hit._highlightResult.color = {value: colors};
+                }
+                else {
+                    if (hit._highlightResult.color && hit._highlightResult.color.matchLevel === 'none') {
+                        hit._highlightResult.color = {value: ''};
+                    }
+                }
+
+                if (hit._highlightResult.color && hit._highlightResult.color.value && hit.categories_without_path) {
+                    if (hit.categories_without_path.indexOf('<em>') === -1 && hit._highlightResult.color.value.indexOf('<em>') !== -1) {
+                        hit.categories_without_path = '';
+                    }
+                }
+
 
                 if (Array.isArray(hit._highlightResult.name))
                     hit._highlightResult.name = hit._highlightResult.name[0];
@@ -276,6 +307,23 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                                 if (section.name === 'categories') {
                                     hit.displayKey = hit.path;
                                 }
+
+                                if (hit._snippetResult && hit._snippetResult.content && hit._snippetResult.content.value.length > 0) {
+                                    hit.content = hit._snippetResult.content.value;
+
+                                    if (hit.content.charAt(0).toUpperCase() !== hit.content.charAt(0)) {
+                                        hit.content = '... ' + hit.content;
+                                    }
+
+                                    if ($.inArray(hit.content.charAt(hit.content.length - 1), ['.', '!', '?'])) {
+                                        hit.content = hit.content + ' ...';
+                                    }
+
+                                    if (hit.content.indexOf('<em>') === -1) {
+                                        hit.content = '';
+                                    }
+                                }
+
                                 hit.displayKey = hit.displayKey || hit.name;
                                 return algoliaConfig.autocomplete.templates[section.name].render(hit);
                             }
