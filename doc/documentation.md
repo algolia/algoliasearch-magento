@@ -120,7 +120,7 @@ If you want to customize the look and feel of the auto-completion menu and/or th
 
 If you want to use a widget that is not expose in the administration panel for a particular faceted attribute you can configure it using the `customAttributeFacet` variable of the `topsearch.phtml` file. For example if you want to have a toggle widget for the `in_stock` attribute, your `customAttributeFacet` variable should look like:
 
-```js
+{% highlight js %}
 var customAttributeFacet = {
   in_stock: function (facet, templates) {
     instantsearch.widgets.toggle({
@@ -138,7 +138,7 @@ var customAttributeFacet = {
     [...]
   }
 };
-```
+{% endhighlight %}
 
 # Upgrade
 {: .headline}
@@ -150,7 +150,9 @@ To upgrade from version `X.Y` to version `X.Z`, do the following steps:
  1. Force the re-indexing of all indexers
  1. Follow any other guidelines specified in the [ChangeLog](https://github.com/algolia/algoliasearch-magento/blob/master/CHANGELOG.md)
 
-# Warning
+# Caveats
 {: .headline}
 
- - The extension is using the default hooks of magento, if you are doing insertion and or deletion of products outside of Magento code/interface the extension won't see it and you will be out of sync. The best way to avoid that is to use Magento methods but if this not something possible you still have the possibility to call the extension indexing methods stay in sync
+### Magento hooks
+
+ The extension is using the default hooks of Magento, if you are doing insertion or deletion of products outside of the Magento code/interface the extension won't see it and your Algolia index will be out of sync. The best way to avoid that is to use Magento's methods. If this is not possible you still have the possibility to call the extension indexing methods manually as soon you as do the update.
