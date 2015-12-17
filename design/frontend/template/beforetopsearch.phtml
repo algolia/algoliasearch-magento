@@ -312,11 +312,11 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                                     hit.content = hit._snippetResult.content.value;
 
                                     if (hit.content.charAt(0).toUpperCase() !== hit.content.charAt(0)) {
-                                        hit.content = '... ' + hit.content;
+                                        hit.content = '&#8230; ' + hit.content;
                                     }
 
                                     if ($.inArray(hit.content.charAt(hit.content.length - 1), ['.', '!', '?'])) {
-                                        hit.content = hit.content + ' ...';
+                                        hit.content = hit.content + ' &#8230;';
                                     }
 
                                     if (hit.content.indexOf('<em>') === -1) {
