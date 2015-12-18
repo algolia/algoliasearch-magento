@@ -20,6 +20,7 @@ h1[id]:before, h2[id]:before, h3[id]:before, h4[id]:before {
     display: block;
     padding: 2px 5px;
     border-bottom: 1px solid #ccc;
+    color: $brand-primary;
   }
 
   ul {
