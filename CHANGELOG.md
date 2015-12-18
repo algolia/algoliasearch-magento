@@ -2,26 +2,24 @@
 
 ### 1.5.0
 
-==== BREAKING CHANGE ====
+==== BREAKING CHANGES ====
 
-- The queue is now runned outside of the Magento default cron system. To run the jobs you will need to run
+- The queue is now running outside of the Magento default cron system. To run the jobs you will need to run
   the `algolia_queue_runner` indexer via the following command `php -f shell/indexer.php --reindex algolia_queue_runner`
   You can add it to your crontab just add this line:
   `*/5 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner`
-
-- The version is fixing bug with deleted products in Magento that are not deleted from Algolia. To be sure to be in sync you should clear at least your products indices from the Algolia dashboard
-
+- The version is fixing a bug around deleted products that were not deleted from Algolia. To be sure you're in sync you should clear your products indices from the Algolia dashboard.
 - As this is a major update you will loose your settings and will need to reconfigure the extension
 
 =========================
 
-- NEW: replace custom logic by autocomplete.js and instantsearch.js
-- NEW: add total_ordered because ordered_qty does not always make sense
-- NEW: add drag and drop for grid in the config page
-- UPDATED: More intelligent queue that is able to batch jobs
-- UPDATED: Option to have most popular suggestions when no result page
-- FIX: issue with configurable and gouped sub_products query
-- FIX: replace image helper override by subclass
+- NEW: replace custom logic with autocomplete.js and instantsearch.js
+- NEW: add `total_ordered` because `ordered_qty` does not always make sense
+- NEW: add a drag and drop feature to reorder the tables in the administration panel
+- UPDATED: smarter queue logic that is able to batch jobs
+- UPDATED: option to have most popular suggestions when no results page
+- FIX: fix an issue with configurable and grouped sub_products query
+- FIX: replace image helper overridden by subclass
 
 ### 1.4.8
 - NEW: allow to have custom product types
