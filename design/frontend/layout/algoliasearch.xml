@@ -21,10 +21,13 @@
         <reference name="content">
             <block type="core/template" before="content" template="algoliasearch/beforecontent.phtml"/>
         </reference>
+
+    </algolia_search_handle>
+    <algolia_search_handle_with_topsearch>
         <reference name="top.search">
             <action method="setTemplate"><template>algoliasearch/topsearch.phtml</template></action>
         </reference>
-    </algolia_search_handle>
+    </algolia_search_handle_with_topsearch>
     <algolia_search_handle_no_topsearch>
         <reference name="head">
             <block type="core/template" template="algoliasearch/topsearch.phtml"/>
