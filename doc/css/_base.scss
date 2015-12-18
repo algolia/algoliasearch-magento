@@ -1,11 +1,15 @@
+$magento-orange: #F06721;
+
 $font-family-sans-serif: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-$font-size-base: 18px;
-$line-height-computed: 20px;
+$font-size-base: 16px;
+$line-height-base: 26px;
+$line-height-computed: 26px;
 
 $headings-font-family: "Raleway";
 $headings-font-weight: 300;
 
-$brand-primary: #31302B;
+$brand-primary: transparent;
+$btn-primary-border: $magento-orange;
 
 $text-color: rgba(black, 0.75);
 
@@ -20,5 +24,4 @@ $secondary-color: green;
 
 $navbar-height: 50px;
 
-$magento-orange: #F06721;
 $link-color: $magento-orange;

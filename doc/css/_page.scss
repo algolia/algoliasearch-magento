@@ -1,7 +1,3 @@
-body, p, h1, h2, h3 {
-  line-height: 1.5em;
-}
-
 h1[id]:before, h2[id]:before, h3[id]:before, h4[id]:before {
   content: " ";
   display: block;
@@ -20,7 +16,6 @@ h1[id]:before, h2[id]:before, h3[id]:before, h4[id]:before {
     display: block;
     padding: 2px 5px;
     border-bottom: 1px solid #ccc;
-    color: $brand-primary;
   }
 
   ul {

@@ -5,16 +5,21 @@ layout: default
 .main-content
   .jumbotron
     .container
-      %h1 {{ site.title }}
+      %h1
+        %img{src: '{{site.baseurl}}/img/algolia-logo.svg'}
+        for
+        %img{src: '{{site.baseurl}}/img/magento-logo.png'}
+        Magento
 
       .row
-        .col-sm-8
+        .col-sm-6.col-sm-offset-3.text-center
           %p As-You-Type Auto-Complete and Instant Search Results Page, all Customizable & Open-Source.
 
-      .spacer50
-      %p.text-center
+      .latest-version Latest version: <b>{{ site.version }}</b>
+
+      .buttons
         %a.btn.btn-primary{href: 'https://www.algolia.com/schedule-demo?hi=magento'}
-          %i.fa.fa-skype
+          %i.fa.fa-headphones
           Request a demo
         %a.btn.btn-primary{href: 'https://magento.algolia.com'}
           %i.fa.fa-desktop
@@ -23,9 +28,6 @@ layout: default
           %i.fa.fa-download
           Install the extension now
 
-      .text-center.text-md Latest version: <b>{{ site.version }}</b>
-
-  .container
     .badges
       <iframe src="https://ghbtns.com/github-btn.html?user=algolia&repo=algoliasearch-magento&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
       %img{src: 'https://img.shields.io/badge/magento-1.6.2-blue.svg'}
@@ -33,86 +35,96 @@ layout: default
       %img{src: 'https://img.shields.io/badge/magento-1.8.1-blue.svg'}
       %img{src: 'https://img.shields.io/badge/magento-1.9.2-blue.svg'}
 
+  .container
     .spacer50
-    %h2 Integrate in minutes the Magento default search with Algolia's instant search and increase the conversion rates of your e-commerce site.
-    %h2 Algolia’s Search Magento Extension makes it easy to deliver a lightning fast search experience to your End-Users.
-
-    .spacer100
     %h1.headline Build Unique Shopping Experiences
-    %p With Algolia's as-you-type search customers think less about how to search and more about what they find. Serve relevant content from the first keystroke.
-
     .row
+      .col-sm-8.col-sm-offset-2.text-center
+        %p With Algolia's as-you-type search customers think less about how to search and more about what they find. Serve relevant content from the first keystroke.
+
+    .row.integrate
+      .col-sm-4.col-sm-offset-1
+        %img.img-responsive.m-l-r-auto{src: '{{site.baseurl}}/img/ecommerce-search.png'}
       .col-sm-6
+        %p <b>Integrate in minutes</b> the Magento default search with Algolia's instant search and increase the conversion rates of your e-commerce site.
+        %p Algolia’s Search Magento Extension makes it easy to deliver a <b>lightning fast search experience</b> to your End-Users.
+
+
+    .row.demo
+      .col-sm-7
+        %img.img-responsive.m-l-r-auto{src: '{{site.baseurl}}/auto-complete.gif'}
+      .col-sm-5
+        %img.icon{src: '{{site.baseurl}}/img/autocomplete.png'}
         %h3 Product & Category Autocomplete
         %p Offer End-Users immediate access to your whole catalog from the dropdown menu, whatever your number of categories or attributes.
-      .col-sm-6
-        %img.img-responsive.m-l-r-auto{src: '{{site.baseurl}}/auto-complete.gif'}
 
-    .spacer30
-    .row
-      .col-sm-6
-        %img.img-responsive.m-l-r-auto{src: '{{site.baseurl}}/instant-search.gif'}
-      .col-sm-6
+    .row.demo
+      .col-sm-5.text-right
+        %img.icon{src: '{{site.baseurl}}/img/faceted.png'}
         %h3 Instant & Faceted search
         %p Have your search results page, navigation and pagination updated in realtime, after each keystroke.
+      .col-sm-7
+        %img.img-responsive.m-l-r-auto{src: '{{site.baseurl}}/instant-search.gif'}
 
-    .spacer100
     %h1.headline Features
     .features
       .row
-        .col-sm-4.col-sm-offset-3
+        .col-sm-5
+          .bubble-outer
+            .bubble
+              .bubble-inner
+                %img{src: '{{site.baseurl}}/img/relevant.png'}
+          %img{src: '{{site.baseurl}}/img/icon-relevance.png'}
           %h3 Relevance
           %p Increase customer satisfaction by serving relevant results. If a user can't find a product, they won't buy it!
-        .col-sm-3.hidden-xs
-          .bubble
-            %img{src: '{{site.baseurl}}/img/relevant.png'}
-      .row
-        .col-sm-3.col-sm-offset-3.hidden-xs
-          .bubble
-            %img{src: '{{site.baseurl}}/img/faceting.png'}
-        .col-sm-4
-          %h3 Instant Faceting
-          %p Have your search results page, navigation and pagination updated in realtime, after each keystroke.
-      .row
-        .col-sm-4.col-sm-offset-3
+        .col-sm-5.col-sm-offset-2
+          .bubble-outer
+            .bubble
+              .bubble-inner
+                %img{src: '{{site.baseurl}}/img/speed.png'}
+          %img{src: '{{site.baseurl}}/img/icon-speed.png'}
           %h3 Speed
           %p Deliver lightning fast results to your customers, anywhere in the world thanks to our distributed search network.
-        .col-sm-3.hidden-xs
-          .bubble
-            %img{src: '{{site.baseurl}}/img/speed.png'}
+
       .row
-        .col-sm-3.col-sm-offset-3.hidden-xs
-          .bubble
-            %img{src: '{{site.baseurl}}/img/typos.png'}
-        .col-sm-4
+        .col-sm-5
+          .bubble-outer
+            .bubble
+              .bubble-inner
+                %img{src: '{{site.baseurl}}/img/typos.png'}
+          %img{src: '{{site.baseurl}}/img/icon-typo-tolerance.png'}
           %h3 Typo Tolerance
           %p Don't let spelling mistakes prevent your users from finding the products they are looking for.
+        .col-sm-5.col-sm-offset-2
+          .bubble-outer
+            .bubble
+              .bubble-inner
+                %img{src: '{{site.baseurl}}/img/faceting.png'}
+          %img{src: '{{site.baseurl}}/img/icon-instant.png'}
+          %h3 Instant Faceting
+          %p Have your search results page, navigation and pagination updated in realtime, after each keystroke.
+
       .row
-        .col-sm-4.col-sm-offset-3
-          %h3 Catalog Auto-Sync
-          %p Benefit from realtime indexing that instantly captures product additions, price changes, etc. No matter server performance.
-        .col-sm-3.hidden-xs
-          .bubble
-            %img{src: '{{site.baseurl}}/img/auto-sync.png'}
-      .row
-        .col-sm-3.col-sm-offset-3.hidden-xs
-          .bubble
-            %img{src: '{{site.baseurl}}/img/menu.png'}
-        .col-sm-4
-          %h3 Auto-completion menu
-          %p Implement a rich Amazon-like auto-completion menu in no time.
-      .row
-        .col-sm-4.col-sm-offset-3
+        .col-sm-5
+          .bubble-outer
+            .bubble
+              .bubble-inner
+                %img{src: '{{site.baseurl}}/img/analytics.png'}
+          %img{src: '{{site.baseurl}}/img/icon-analytics.png'}
           %h3 Analytics
           %p From a simple dashboard, get valuable information on how your customers are searching and what they're searching for.
-        .col-sm-3.hidden-xs
-          .bubble
-            %img{src: '{{site.baseurl}}/img/analytics.png'}
+        .col-sm-5.col-sm-offset-2
+          .bubble-outer
+            .bubble
+              .bubble-inner
+                %img{src: '{{site.baseurl}}/img/auto-sync.png'}
+          %img{src: '{{site.baseurl}}/img/icon-sync.png'}
+          %h3 Catalog Auto-Sync
+          %p Benefit from realtime indexing that instantly captures product additions, price changes, etc. No matter server performance.
+
       .row
-        .col-sm-3.col-sm-offset-3.hidden-xs
-          .bubble
-            %img{src: '{{site.baseurl}}/img/github.png'}
-        .col-sm-4
+        .col-sm-4.col-sm-offset-4.github
+          %i.fa.fa-github
           %h3 Open source
           %p Make it look like anything you want! Open-source, available on GitHub.
 
@@ -122,7 +134,7 @@ layout: default
       .row
         .col-sm-4
           %a.showcase{href: 'http://www.whisky.fr'}
-            %img.img-responsive{src: 'img/whisky.png'}
+            %img.img-responsive{src: '{{site.baseurl}}/img/showcase-1.png'}
           %p Whisky.fr
         .col-sm-4
           %a.showcase{href: 'http://www.beyondretro.com/'}
