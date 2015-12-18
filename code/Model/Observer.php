@@ -54,6 +54,15 @@ class Algolia_Algoliasearch_Model_Observer
                 if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled())
                 {
                     $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
+
+                    if ($this->config->isDefaultSelector())
+                    {
+                        $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle_with_topsearch');
+                    }
+                    else
+                    {
+                        $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle_no_topsearch');
+                    }
                 }
             }
         }

@@ -629,6 +629,15 @@
                             <show_in_store>1</show_in_store>
                             <comment>Choose here if the algolia logo is added to the drop-down template.</comment>
                         </remove_branding>
+                        <autocomplete_selector translate="label comment">
+                            <label>Search input DOM Selector</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>If you don't have the top.search block you can specify the selector of your search input here to use it. Default value is .algolia-search-input</comment>
+                        </autocomplete_selector>
                     </fields>
                 </advanced>
             </groups>

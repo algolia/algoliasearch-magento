@@ -97,7 +97,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 },
                 autocomplete: {
                     enabled: <?php echo $config->isAutoCompleteEnabled() ? "true" : "false"; ?>,
-                    selector: '.algolia-search-input',
+                    selector: '<?php echo $config->getAutocompleteSelector(); ?>',
                     sections: <?php echo json_encode($config->getAutocompleteSections()); ?>,
                     nbOfProductsSuggestions: '<?php echo $config->getNumberOfProductsSuggestions(); ?>',
                     nbOfCategoriesSuggestions: '<?php echo $config->getNumberOfCategoriesSuggestions(); ?>',
