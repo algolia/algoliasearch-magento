@@ -46,6 +46,7 @@ $placeholder = $this->__('Search for products, categories, ...');
 
 ?>
 
+<?php if ($config->isDefaultSelector()): ?>
 <form id="search_mini_form" action="<?php echo $catalogSearchHelper->getResultUrl() ?>" method="get">
     <div id="algolia-searchbox">
         <label for="search"><?php echo $this->__('Search:') ?></label>
@@ -60,6 +61,7 @@ $placeholder = $this->__('Search for products, categories, ...');
         </svg>
     </div>
 </form>
+<?php endif; ?>
 
 <!--
 //================================

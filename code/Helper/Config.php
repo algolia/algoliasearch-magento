@@ -53,11 +53,22 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const CUSTOMER_GROUPS_ENABLE               = 'algoliasearch/advanced/customer_groups_enable';
     const MAKE_SEO_REQUEST                     = 'algoliasearch/advanced/make_seo_request';
     const REMOVE_BRANDING                      = 'algoliasearch/advanced/remove_branding';
+    const AUTOCOMPLETE_SELECTOR                = 'algoliasearch/advanced/autocomplete_selector';
 
     const SHOW_OUT_OF_STOCK                    = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED                      = 'dev/log/active';
 
     protected $_productTypeMap = array();
+
+    public function isDefaultSelector($storeId = null)
+    {
+        return '.algolia-search-input' === $this->getAutocompleteSelector($storeId);
+    }
+
+    public function getAutocompleteSelector($storeId = null)
+    {
+        return Mage::getStoreConfig(self::AUTOCOMPLETE_SELECTOR, $storeId);
+    }
 
     public function getNumberOfQueriesSuggestions($storeId = null)
     {
