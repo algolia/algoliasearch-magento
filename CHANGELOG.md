@@ -1,5 +1,9 @@
 ## Change Log
 
+### 1.5.1
+
+- FIX: xss issue
+
 ### 1.5.0
 
 ==== BREAKING CHANGES ====
