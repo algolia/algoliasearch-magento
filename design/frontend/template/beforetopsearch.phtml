@@ -268,7 +268,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         templates: {
                             empty: function (query) {
                                 var template = '<div class="aa-no-results-products">' +
-                                                    '<div class="title"><?php echo $this->__('No products for query'); ?> "' + query.query + '"</div>';
+                                                    '<div class="title"><?php echo $this->__('No products for query'); ?> "' + $("<div>").text(query.query).html() + '"</div>';
 
                                 var suggestions = [];
 
