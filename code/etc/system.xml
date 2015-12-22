@@ -66,7 +66,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If set to No, Algolia extension will be simply disabled.
+                                If set to No, Algolia extension will simply be disabled.
                                 ]]>
                             </comment>
                         </enable_backend>
