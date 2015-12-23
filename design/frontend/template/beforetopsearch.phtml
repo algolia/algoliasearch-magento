@@ -130,7 +130,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 if (Array.isArray(hit.categories))
                     hit.categories = hit.categories.join(', ');
 
-                if (Array.isArray(hit.categories_without_path)) {
+                if (hit._highlightResult.categories_without_path && Array.isArray(hit.categories_without_path)) {
                     hit.categories_without_path = $.map(hit._highlightResult.categories_without_path, function (category) {
                         return category.value;
                     });
