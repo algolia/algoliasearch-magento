@@ -21,7 +21,6 @@
         <reference name="content">
             <block type="core/template" before="content" template="algoliasearch/beforecontent.phtml"/>
         </reference>
-
     </algolia_search_handle>
     <algolia_search_handle_with_topsearch>
         <reference name="top.search">

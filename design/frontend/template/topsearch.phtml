@@ -204,7 +204,7 @@ $placeholder = $this->__('Search for products, categories, ...');
     {{#findAutocomplete}}
         <div id="algolia-autocomplete-container"></div>
     {{/findAutocomplete}}
-    <div id="algolia_instant_selector"<?php echo count($config->getFacets()) > 0 ? ' class="with-facets"' : '' ?>>
+    <div id="algolia_instant_selector" class="<?php echo count($config->getFacets()) > 0 ? ' with-facets' : '' ?>">
 
         <?php if ($title || $imgHtml || $description || $content): ?>
             <div class="row">
@@ -424,7 +424,18 @@ $placeholder = $this->__('Search for products, categories, ...');
                 var wrapperTemplate = algoliaBundle.Hogan.compile($('#instant_wrapper_template').html());
 
                 var findAutocomplete = algoliaConfig.autocomplete.enabled && $(algoliaConfig.instant.selector).find('#algolia-autocomplete-container').length > 0;
-                $(algoliaConfig.instant.selector).html(wrapperTemplate.render({second_bar: algoliaConfig.autocomplete.enabled, findAutocomplete: findAutocomplete})).show();
+
+                if (findAutocomplete) {
+                    $(algoliaConfig.instant.selector).find('#algolia-autocomplete-container').remove();
+                }
+
+                var div = document.createElement('div');
+                $(div).addClass('algolia-instant-results-wrapper');
+                $(algoliaConfig.instant.selector).addClass('algolia-instant-replaced-content');
+                $(algoliaConfig.instant.selector).wrap(div);
+                $('.algolia-instant-results-wrapper').append('<div class="algolia-instant-selector-results"></div>');
+
+                $('.algolia-instant-selector-results').html(wrapperTemplate.render({second_bar: algoliaConfig.autocomplete.enabled, findAutocomplete: findAutocomplete})).show();
 
                 /** Initialise instant search **/
                 var search = algoliaBundle.instantsearch({
@@ -454,6 +465,18 @@ $placeholder = $this->__('Search for products, categories, ...');
                         }
                         else {
                             data.helper.addNumericRefinement('visibility_search', '=', 1);
+                        }
+                    },
+                    render: function (data) {
+                        if (! algoliaConfig.isSearchPage) {
+                            if (data.results.query.length === 0) {
+                                $('.algolia-instant-replaced-content').show();
+                                $('.algolia-instant-selector-results').hide();
+                            }
+                            else {
+                                $('.algolia-instant-replaced-content').hide();
+                                $('.algolia-instant-selector-results').show();
+                            }
                         }
                     }
                 });
@@ -587,14 +610,6 @@ $placeholder = $this->__('Search for products, categories, ...');
                     })
                 );
 
-                search.addWidget({
-                    render: function (data) {
-                        if (data.results.hits.length === 0) {
-
-                        }
-                    }
-                });
-
                 var customAttributeFacet = {
                     categories: function(facet, templates) {
                         var hierarchical_levels = [];
@@ -661,32 +676,40 @@ $placeholder = $this->__('Search for products, categories, ...');
                     })
                 );
 
-                search.start();
+                function startInstantSearch() {
+                    search.start();
 
-                handleInputCrossInstant($(instant_selector));
+                    handleInputCrossInstant($(instant_selector));
 
-                var instant_search_bar = $(instant_selector);
-                if (instant_search_bar.is(":focus") === false)
-                {
-                    if ($(window).width() > 992) {
-                        if (algoliaConfig.autofocus === false) {
-                            instant_search_bar.focus().val('');
-                        }
+                    var instant_search_bar = $(instant_selector);
+                    if (instant_search_bar.is(":focus") === false) {
+                        focusInstantSearchBar(search, instant_search_bar);
                     }
-                    instant_search_bar.val(search.helper.state.query);
+
+                    if (algoliaConfig.autocomplete.enabled) {
+                        $('#search_mini_form').addClass('search-page');
+                    }
+
+                    $(document).on('click', '.ais-hierarchical-menu--link, .ais-refinement-list--checkbox', function () {
+                        focusInstantSearchBar(search, instant_search_bar);
+                    });
                 }
 
-                $('#search_mini_form').addClass('search-page');
+                if (algoliaConfig.isSearchPage) {
+                    startInstantSearch();
+                }
+                else {
+                    (function () {
+                        var isStarted = false;
 
-                $(document).on('click', '.ais-hierarchical-menu--link, .ais-refinement-list--checkbox', function () {
-                    if ($(window).width() > 992) {
-                        instant_search_bar.focusWithoutScrolling();
-                        if (algoliaConfig.autofocus === false) {
-                            instant_search_bar.val('');
-                        }
-                    }
-                    instant_search_bar.val(search.helper.state.query);
-                });
+                        $(instant_selector).one('focus', (function () {
+                            if (!isStarted) {
+                                startInstantSearch();
+                            }
+                            isStarted = true;
+                        }));
+                    })();
+                }
             }
 
             /*****************

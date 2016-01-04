@@ -1,5 +1,9 @@
 ## Change Log
 
+### 1.5.2
+
+- FIX: ability to have only instant search
+
 ### 1.5.1
 
 - FIX: xss issue

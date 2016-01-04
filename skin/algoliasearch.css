@@ -774,7 +774,7 @@ a.ais-current-refined-values--link:hover
 }
 
 #algolia_instant_selector .hits .infos {
-  margin: 15px 15px 0;
+  margin: 0 15px;
   padding: 6px 10px;
   color: #aaa;
   text-align: center;
@@ -964,6 +964,7 @@ a.ais-current-refined-values--link:hover
 
 #algolia_instant_selector #instant-search-bar-container {
   padding-top: 0px;
+  margin-bottom: 15px;
 }
 
 #algolia_instant_selector .as-search-box--input {

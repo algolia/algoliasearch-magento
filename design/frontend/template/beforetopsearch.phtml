@@ -496,6 +496,16 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 }
             }
 
+            window.focusInstantSearchBar = function (search, instant_search_bar) {
+                if ($(window).width() > 992) {
+                    instant_search_bar.focusWithoutScrolling();
+                    if (algoliaConfig.autofocus === false) {
+                        instant_search_bar.focus().val('');
+                    }
+                }
+                instant_search_bar.val(search.helper.state.query);
+            };
+
             window.handleInputCrossInstant = function (input) {
                 if (input.val().length > 0) {
                     input.closest('#instant-search-box').find('.clear-query-instant').show();
