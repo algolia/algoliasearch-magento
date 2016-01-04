@@ -3,6 +3,7 @@
 class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algoliasearch_Helper_Entity_Helper
 {
     protected static $_productAttributes;
+    protected static $_currencies;
 
     protected static $_predefinedProductAttributes = array(
         'name',
@@ -132,24 +133,34 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $facets = $this->config->getFacets();
 
+        $currencies = Mage::getModel('directory/currency')->getConfigAllowCurrencies();
+
         foreach($facets as $facet)
         {
             if ($facet['attribute'] === 'price')
             {
-                $facet['attribute'] = 'price.default';
-
-                if ($this->config->isCustomerGroupsEnabled($storeId))
+                foreach ($currencies as $currency_code)
                 {
-                    foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
-                    {
-                        $group_id = (int)$group->getData('customer_group_id');
+                    $facet['attribute'] = 'price.'.$currency_code.'.default';
 
-                        $attributesForFaceting[] = 'price.group_' . $group_id;
+                    if ($this->config->isCustomerGroupsEnabled($storeId))
+                    {
+                        foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
+                        {
+                            $group_id = (int)$group->getData('customer_group_id');
+
+                            $attributesForFaceting[] = 'price.'.$currency_code.'.group_' . $group_id;
+                        }
                     }
+
+                    $attributesForFaceting[] = $facet['attribute'];
                 }
             }
+            else
+            {
+                $attributesForFaceting[] = $facet['attribute'];
+            }
 
-            $attributesForFaceting[] = $facet['attribute'];
         }
 
 
@@ -260,12 +271,29 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return array('price' => false, 'price_with_tax' => true);
     }
 
+    private function formatPrice($price, $includeContainer, $currency_code)
+    {
+        if (!isset(static::$_currencies[$currency_code]))
+        {
+            static::$_currencies[$currency_code] = Mage::getModel('directory/currency')->load($currency_code);
+        }
+
+        $currency = static::$_currencies[$currency_code];
+
+        if ($currency) {
+            return $currency->format($price, array(), $includeContainer);
+        }
+        return $price;
+    }
+
     private function handlePrice(&$product, $sub_products, &$customData)
     {
         $fields                     = $this->getFields($product->getStore());
         $customer_groups_enabled    = $this->config->isCustomerGroupsEnabled($product->getStoreId());
         $store                      = $product->getStore();
         $type                       = $this->config->getMappedProductType($product->getTypeId());
+        $currencies                 = Mage::getModel('directory/currency')->getConfigAllowCurrencies();
+        $baseCurrencyCode           = $store->getBaseCurrencyCode();
 
         $groups                     = array();
 
@@ -274,110 +302,146 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         foreach ($fields as $field => $with_tax)
         {
-            $price = (double) Mage::helper('tax')->getPrice($product, $product->getPrice(), $with_tax, null, null, null, $product->getStore(), null);
-
             $customData[$field] = array();
 
-            $customData[$field]['default'] = $price;
-            $customData[$field]['default_formated'] = $product->getStore()->formatPrice($price, false);
-
-            $special_price = (double) Mage::helper('tax')->getPrice($product, $product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
-
-            if ($customer_groups_enabled) // If fetch special price for groups
+            foreach ($currencies as $currency_code)
             {
-                foreach ($groups as $group)
+                $customData[$field][$currency_code] = array();
+
+                $price = (double) Mage::helper('tax')->getPrice($product, $product->getPrice(), $with_tax, null, null, null, $product->getStore(), null);
+                $price = Mage::helper('directory')->currencyConvert($price, $baseCurrencyCode, $currency_code);
+
+
+                $customData[$field][$currency_code]['default'] = $price;
+                $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($price, false, $currency_code);
+
+                $special_price = (double) Mage::helper('tax')->getPrice($product, $product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
+                $special_price = Mage::helper('directory')->currencyConvert($special_price, $baseCurrencyCode, $currency_code);
+
+                if ($customer_groups_enabled) // If fetch special price for groups
                 {
-                    $group_id = (int)$group->getData('customer_group_id');
-                    $product->setCustomerGroupId($group_id);
-
-                    $discounted_price = $product->getPriceModel()->getFinalPrice(1, $product);
-
-                    if ($discounted_price !== false)
+                    foreach ($groups as $group)
                     {
-                        $customData[$field]['group_' . $group_id] = (double) Mage::helper('tax')->getPrice($product, $discounted_price, $with_tax, null, null, null, $product->getStore(), null);
-                        $customData[$field]['group_' . $group_id . '_formated'] = $store->formatPrice($customData[$field]['group_' . $group_id], false);
-                    }
-                    else
-                    {
-                        $customData[$field]['group_' . $group_id] = $customData[$field]['default'];
-                        $customData[$field]['group_' . $group_id . '_formated'] = $customData[$field]['default_formated'];
-                    }
-                }
+                        $group_id = (int)$group->getData('customer_group_id');
+                        $product->setCustomerGroupId($group_id);
 
-                $product->setCustomerGroupId(null);
-            }
+                        $discounted_price = $product->getPriceModel()->getFinalPrice(1, $product);
+                        $discounted_price = Mage::helper('directory')->currencyConvert($discounted_price, $baseCurrencyCode, $currency_code);
 
-            $customData[$field]['special_from_date'] = strtotime($product->getSpecialFromDate());
-            $customData[$field]['special_to_date'] = strtotime($product->getSpecialToDate());
-
-            if ($customer_groups_enabled)
-            {
-                foreach ($groups as $group)
-                {
-                    $group_id = (int)$group->getData('customer_group_id');
-
-                    if ($special_price && $special_price < $customData[$field]['group_' . $group_id])
-                    {
-                        $customData[$field]['group_' . $group_id] = $special_price;
-                        $customData[$field]['group_' . $group_id . '_formated'] = $product->getStore()->formatPrice($special_price, false);
-                    }
-                }
-            }
-            else
-            {
-                if ($special_price && $special_price < $customData[$field]['default'])
-                {
-                    $customData[$field]['default_original_formated'] = $customData[$field]['default_formated'];
-
-                    $customData[$field]['default'] = $special_price;
-                    $customData[$field]['default_formated'] = $product->getStore()->formatPrice($special_price, false);
-                }
-            }
-
-            if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
-            {
-                $min = PHP_INT_MAX;
-                $max = 0;
-
-                if ($type == 'bundle')
-                {
-                    $_priceModel = $product->getPriceModel();
-
-                    list($min, $max) = $_priceModel->getTotalPrices($product, null, $with_tax, true);
-                }
-
-                if ($type == 'grouped' || $type == 'configurable')
-                {
-                    if (count($sub_products) > 0)
-                    {
-                        foreach ($sub_products as $sub_product)
+                        if ($discounted_price !== false)
                         {
-                            $price = (double) Mage::helper('tax')->getPrice($product, $sub_product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
-
-                            $min = min($min, $price);
-                            $max = max($max, $price);
+                            $customData[$field][$currency_code]['group_' . $group_id] = (double) Mage::helper('tax')->getPrice($product, $discounted_price, $with_tax, null, null, null, $product->getStore(), null);
+                            $customData[$field][$currency_code]['group_' . $group_id] = Mage::helper('directory')->currencyConvert($customData[$field][$currency_code]['group_' . $group_id], $baseCurrencyCode, $currency_code);
+                            $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $store->formatPrice($customData[$field][$currency_code]['group_' . $group_id], false, $currency_code);
+                        }
+                        else
+                        {
+                            $customData[$field][$currency_code]['group_' . $group_id] = $customData[$field][$currency_code]['default'];
+                            $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $customData[$field][$currency_code]['default_formated'];
                         }
                     }
-                    else
-                        $min = $max; // avoid to have PHP_INT_MAX in case of no subproducts (Corner case of visibility and stock options)
+
+                    $product->setCustomerGroupId(null);
                 }
 
+                $customData[$field][$currency_code]['special_from_date'] = strtotime($product->getSpecialFromDate());
+                $customData[$field][$currency_code]['special_to_date'] = strtotime($product->getSpecialToDate());
 
-                if ($min != $max)
+                if ($customer_groups_enabled)
                 {
-                    $dashed_format = $product->getStore()->formatPrice($min, false) . ' - ' . $product->getStore()->formatPrice($max, false);
-
-                    if (isset($customData[$field]['default_original_formated']) === false || $min <= $customData[$field]['default'])
+                    foreach ($groups as $group)
                     {
+                        $group_id = (int)$group->getData('customer_group_id');
 
-                        $customData[$field]['default_formated'] = $dashed_format;
+                        if ($special_price && $special_price < $customData[$field][$currency_code]['group_' . $group_id])
+                        {
+                            $customData[$field][$currency_code]['group_' . $group_id] = $special_price;
+                            $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $this->formatPrice($special_price, false, $currency_code);
+                        }
+                    }
+                }
+                else
+                {
+                    if ($special_price && $special_price < $customData[$field][$currency_code]['default'])
+                    {
+                        $customData[$field][$currency_code]['default_original_formated'] = $customData[$field][$currency_code]['default_formated'];
 
-                        //// Do not keep special price that is already taken into account in min max
-                        unset($customData['price']['special_from_date']);
-                        unset($customData['price']['special_to_date']);
-                        unset($customData['price']['default_original_formated']);
+                        $customData[$field][$currency_code]['default'] = $special_price;
+                        $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($special_price, false, $currency_code);
+                    }
+                }
 
-                        $customData[$field]['default'] = 0; // will be reset just after
+                if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
+                {
+                    $min = PHP_INT_MAX;
+                    $max = 0;
+
+                    if ($type == 'bundle')
+                    {
+                        $_priceModel = $product->getPriceModel();
+
+                        list($min, $max) = $_priceModel->getTotalPrices($product, null, $with_tax, true);
+                    }
+
+                    if ($type == 'grouped' || $type == 'configurable')
+                    {
+                        if (count($sub_products) > 0)
+                        {
+                            foreach ($sub_products as $sub_product)
+                            {
+                                $price = (double) Mage::helper('tax')->getPrice($product, $sub_product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
+
+                                $min = min($min, $price);
+                                $max = max($max, $price);
+                            }
+                        }
+                        else
+                            $min = $max; // avoid to have PHP_INT_MAX in case of no subproducts (Corner case of visibility and stock options)
+                    }
+
+
+                    if ($min != $max)
+                    {
+                        $min = Mage::helper('directory')->currencyConvert($min, $baseCurrencyCode, $currency_code);
+                        $max = Mage::helper('directory')->currencyConvert($max, $baseCurrencyCode, $currency_code);
+
+                        $dashed_format = $this->formatPrice($min, false, $currency_code) . ' - ' . $this->formatPrice($max, false, $currency_code);
+
+                        if (isset($customData[$field][$currency_code]['default_original_formated']) === false || $min <= $customData[$field][$currency_code]['default'])
+                        {
+
+                            $customData[$field][$currency_code]['default_formated'] = $dashed_format;
+
+                            //// Do not keep special price that is already taken into account in min max
+                            unset($customData['price']['special_from_date']);
+                            unset($customData['price']['special_to_date']);
+                            unset($customData['price']['default_original_formated']);
+
+                            $customData[$field][$currency_code]['default'] = 0; // will be reset just after
+                        }
+
+                        if ($customer_groups_enabled)
+                        {
+                            foreach ($groups as $group)
+                            {
+                                $group_id = (int)$group->getData('customer_group_id');
+
+                                if ($min != $max && $min <= $customData[$field][$currency_code]['group_' . $group_id])
+                                {
+                                    $customData[$field][$currency_code]['group_' . $group_id] = 0;
+                                    $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $dashed_format;
+                                }
+                            }
+                        }
+                    }
+
+
+                    if ($customData[$field][$currency_code]['default'] == 0)
+                    {
+                        $customData[$field][$currency_code]['default'] = $min;
+
+                        if ($min === $max)
+                            $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($min, false, $currency_code);
                     }
 
                     if ($customer_groups_enabled)
@@ -386,36 +450,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         {
                             $group_id = (int)$group->getData('customer_group_id');
 
-                            if ($min != $max && $min <= $customData[$field]['group_' . $group_id])
+                            if ($customData[$field][$currency_code]['group_' . $group_id] == 0)
                             {
-                                $customData[$field]['group_' . $group_id] = 0;
-                                $customData[$field]['group_' . $group_id . '_formated'] = $dashed_format;
+                                $customData[$field][$currency_code]['group_' . $group_id] = $min;
+
+                                if ($min === $max)
+                                    $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $customData[$field][$currency_code]['default_formated'];
                             }
-                        }
-                    }
-                }
-
-
-                if ($customData[$field]['default'] == 0)
-                {
-                    $customData[$field]['default'] = $min;
-
-                    if ($min === $max)
-                        $customData[$field]['default_formated'] = $product->getStore()->formatPrice($min, false);
-                }
-
-                if ($customer_groups_enabled)
-                {
-                    foreach ($groups as $group)
-                    {
-                        $group_id = (int)$group->getData('customer_group_id');
-
-                        if ($customData[$field]['group_' . $group_id] == 0)
-                        {
-                            $customData[$field]['group_' . $group_id] = $min;
-
-                            if ($min === $max)
-                                $customData[$field]['group_' . $group_id . '_formated'] = $customData[$field]['default_formated'];
                         }
                     }
                 }
