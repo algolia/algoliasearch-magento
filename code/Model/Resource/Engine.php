@@ -105,6 +105,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         {
             if ($this->config->isEnabledBackEnd($store->getId()) === false)
             {
+                if (php_sapi_name() === 'cli')
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId())."\n";
+
+                Mage::getSingleton('adminhtml/session')->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
                 $this->logger->log('INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
                 continue;
             }
@@ -120,9 +124,9 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             if ($this->config->isEnabledBackEnd($store->getId()) === false)
             {
                 if (php_sapi_name() === 'cli')
-                    echo 'INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId())."\n";
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId())."\n";
 
-                Mage::getSingleton('adminhtml/session')->addWarning('INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
+                Mage::getSingleton('adminhtml/session')->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
                 $this->logger->log('INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
                 continue;
             }
@@ -138,9 +142,9 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             if ($this->config->isEnabledBackEnd($store->getId()) === false)
             {
                 if (php_sapi_name() === 'cli')
-                    echo 'INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId())."\n";
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId())."\n";
 
-                Mage::getSingleton('adminhtml/session')->addWarning('INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
+                Mage::getSingleton('adminhtml/session')->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
                 $this->logger->log('INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
                 continue;
             }
@@ -169,9 +173,9 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             if ($this->config->isEnabledBackEnd($store->getId()) === false)
             {
                 if (php_sapi_name() === 'cli')
-                    echo 'INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId())."\n";
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId())."\n";
 
-                Mage::getSingleton('adminhtml/session')->addWarning('INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
+                Mage::getSingleton('adminhtml/session')->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
                 $this->logger->log('INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
                 continue;
             }
@@ -194,9 +198,9 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             if ($this->config->isEnabledBackEnd($store->getId()) === false)
             {
                 if (php_sapi_name() === 'cli')
-                    echo 'INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId())."\n";
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId())."\n";
 
-                Mage::getSingleton('adminhtml/session')->addWarning('INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
+                Mage::getSingleton('adminhtml/session')->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
                 $this->logger->log('INDEXING IS DISABLED FOR '. $this->logger->getStoreName($store->getId()));
                 continue;
             }
