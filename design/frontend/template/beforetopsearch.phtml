@@ -10,8 +10,9 @@ $base_url = Mage::getBaseUrl();
 $isSearchPage = false;
 $isCategoryPage = false;
 
+$currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
 $group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
-$price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.group_'.$group_id : '.default';
+$price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
 
 $allDepartments = "All departments";
 
@@ -114,6 +115,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>,
                 priceKey: '<?php echo $price_key; ?>',
                 currencySymbol: '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>',
+                currency_code: '<?php echo $currency_code; ?>',
                 autofocus: true,
                 request: {
                     query:<?php echo json_encode(array("value" => html_entity_decode($query))); ?>.value,
@@ -171,8 +173,9 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 if (Array.isArray(hit.price))
                     hit.price = hit.price[0];
 
-                if (price_key !== '.default' && hit['price'][price_key.substr(1) + '_formated'] !== hit['price']['default_formated']) {
-                    hit['price'][price_key.substr(1) + '_original_formated'] = hit['price']['default_formated'];
+                if (price_key !== '.' + algoliaConfig.currency_code + '.default' &&
+                        hit['price'][algoliaConfig.currency_code][price_key.substr(1) + '_formated'] !== hit['price'][algoliaConfig.currency_code]['default_formated']) {
+                    hit['price'][algoliaConfig.currency_code][price_key.substr(1) + '_original_formated'] = hit['price'][algoliaConfig.currency_code]['default_formated'];
                 }
 
                 return hit;
