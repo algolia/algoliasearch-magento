@@ -10,7 +10,8 @@
 $config = Mage::helper('algoliasearch/config');
 $catalogSearchHelper = $this->helper('catalogsearch');
 $group_id = Mage::getSingleton('customer/session')->getCustomer()->getGroupId();
-$price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.group_'.$group_id : '.default';
+$currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
+$price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
 
 $title = '';
 $description = '';

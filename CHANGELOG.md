@@ -2,6 +2,7 @@
 
 ### 1.5.2
 
+- NEW: handle multiple currencies
 - FIX: ability to have only instant search
 
 ### 1.5.1
