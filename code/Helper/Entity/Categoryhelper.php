@@ -145,7 +145,7 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
             'name'          => $category->getName(),
             'path'          => $path,
             'level'         => $category->getLevel(),
-            'url'           => Mage::getBaseUrl() . $category->getRequestPath(),
+            'url'           => $category->getUrl(),
             '_tags'         => array('category'),
             'popularity'    => 1,
             'product_count' => $category->getProductCount()
