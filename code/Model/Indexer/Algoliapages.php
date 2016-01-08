@@ -5,8 +5,8 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliapages extends Mage_Index_Model_
     const EVENT_MATCH_RESULT_KEY = 'algoliasearch_match_result';
 
     /** @var Algolia_Algoliasearch_Model_Resource_Engine */
-    private $engine;
-    private $config;
+    protected $engine;
+    protected $config;
 
     public function __construct()
     {
