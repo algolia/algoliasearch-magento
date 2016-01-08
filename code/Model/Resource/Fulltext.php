@@ -5,11 +5,11 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
 
     /** Empty because we need it to do nothing (no mysql stuff), Indexing is handled by Model/Indexer/Algolia */
 
-    private $engine;
-    private $config;
+    protected $engine;
+    protected $config;
 
     /** @var Algolia_Algoliasearch_Helper_Logger */
-    private $logger;
+    protected $logger;
 
     public function __construct()
     {
