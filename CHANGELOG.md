@@ -2,6 +2,12 @@
 
 ### 1.5.2
 
+==== BREAKING CHANGES ====
+
+- A full reindex of the product indexer is needed
+
+==========================
+
 - NEW: handle multiple currencies
 - UPDATED: improve errors/warnings for reindexing 
 - FIX: handle both secure and unsecure base url for images
