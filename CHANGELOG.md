@@ -3,7 +3,10 @@
 ### 1.5.2
 
 - NEW: handle multiple currencies
+- UPDATED: improve errors/warnings for reindexing 
+- FIX: handle both secure and unsecure base url for images
 - FIX: ability to have only instant search
+- FIX: method to get product and categories url
 
 ### 1.5.1
 
