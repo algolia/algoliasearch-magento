@@ -586,8 +586,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             try
             {
                 $customData['thumbnail_url'] = $thumb->toString();
-                $customData['thumbnail_url'] = str_replace(array('https://', 'http://'
-                ), '//', $customData['thumbnail_url']);
             }
             catch (\Exception $e)
             {
@@ -605,7 +603,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             try
             {
                 $customData['image_url'] = $image->toString();
-                $customData['image_url'] = str_replace(array('https://', 'http://'), '//', $customData['image_url']);
             }
             catch (\Exception $e)
             {
@@ -622,7 +619,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $customData['media_gallery'] = array();
 
                 foreach ($product->getMediaGalleryImages() as $image)
+                {
                     $customData['media_gallery'][] = str_replace(array('https://', 'http://'), '//', $image->getUrl());
+                }
             }
         }
 

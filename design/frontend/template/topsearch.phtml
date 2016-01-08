@@ -13,6 +13,8 @@ $group_id = Mage::getSingleton('customer/session')->getCustomer()->getGroupId();
 $currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
 $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
 
+$image_base_url = Mage::getBaseUrl('media');
+
 $title = '';
 $description = '';
 $content = '';
@@ -77,7 +79,7 @@ $placeholder = $this->__('Search for products, categories, ...');
 <script type="text/template" id="autocomplete_products_template">
     <a class="algoliasearch-autocomplete-hit" href="{{url}}">
         {{#thumbnail_url}}
-        <div class="thumb"><img src="{{thumbnail_url}}" /></div>
+        <div class="thumb"><img src="<?php echo $image_base_url; ?>{{thumbnail_url}}" /></div>
         {{/thumbnail_url}}
 
         <div class="info">
@@ -117,7 +119,7 @@ $placeholder = $this->__('Search for products, categories, ...');
     <a class="algoliasearch-autocomplete-hit" href="{{url}}">
         {{#image_url}}
         <div class="thumb">
-            <img src="{{image_url}}" />
+            <img src="<?php echo $image_base_url; ?>{{image_url}}" />
         </div>
         {{/image_url}}
 
@@ -291,7 +293,7 @@ $placeholder = $this->__('Search for products, categories, ...');
             <a href="{{url}}" class="result">
                 <div class="result-content">
                     <div class="result-thumbnail">
-                        {{#image_url}}<img src="{{{ image_url }}}" />{{/image_url}}
+                        {{#image_url}}<img src="<?php echo $image_base_url; ?>{{{ image_url }}}" />{{/image_url}}
                         {{^image_url}}<span class="no-image"></span>{{/image_url}}
                     </div>
                     <div class="result-sub-content">
