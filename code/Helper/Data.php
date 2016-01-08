@@ -427,7 +427,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $this->stopEmulation($emulationInfoPage);
     }
 
-    private function getProductsRecords($storeId, $collection)
+    protected function getProductsRecords($storeId, $collection)
     {
         $indexData = array();
 

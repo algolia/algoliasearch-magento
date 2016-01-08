@@ -3,9 +3,9 @@
 class Algolia_Algoliasearch_Model_Indexer_Algoliaqueuerunner extends Mage_Index_Model_Indexer_Abstract
 {
     const EVENT_MATCH_RESULT_KEY = 'algoliasearch_match_result';
-    private $config;
+    protected $config;
     /** @var Algolia_Algoliasearch_Model_Queue */
-    private $queue;
+    protected $queue;
 
     public function __construct()
     {

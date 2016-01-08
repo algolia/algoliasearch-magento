@@ -247,7 +247,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
     }
 
-    private function getFields($store)
+    protected function getFields($store)
     {
         $tax_helper = Mage::helper('tax');
 
@@ -260,7 +260,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return array('price' => false, 'price_with_tax' => true);
     }
 
-    private function handlePrice(&$product, $sub_products, &$customData)
+    protected function handlePrice(&$product, $sub_products, &$customData)
     {
         $fields                     = $this->getFields($product->getStore());
         $customer_groups_enabled    = $this->config->isCustomerGroupsEnabled($product->getStoreId());
