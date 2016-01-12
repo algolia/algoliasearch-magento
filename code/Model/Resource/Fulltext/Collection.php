@@ -7,11 +7,13 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext_Collection extends Mage_Cata
      */
     public function addSearchFilter($query)
     {
-        $storeId = Mage::app()->getStore()->getId();
         $config = Mage::helper('algoliasearch/config');
+        $storeId = Mage::app()->getStore()->getId();
 
-        if ($config->isEnabledFrontEnd($storeId) === false)
+        if (! $config->getApplicationID() || ! $config->getAPIKey() || $config->isEnabledFrontEnd($storeId) === false)
+        {
             return parent::addSearchFilter($query);
+        }
 
         $data = array();
 

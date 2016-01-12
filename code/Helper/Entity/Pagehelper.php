@@ -11,6 +11,7 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
     {
         return array(
             'attributesToIndex'         => array('slug', 'name', 'unordered(content)'),
+            'attributesToSnippet'       => array('content:7')
         );
     }
 

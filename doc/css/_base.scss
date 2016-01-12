@@ -1,0 +1,34 @@
+$magento-orange: #F06721;
+
+$font-family-sans-serif: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-size-base: 16px;
+$line-height-base: 26px;
+$line-height-computed: 26px;
+
+$headings-font-family: "Raleway";
+$headings-font-weight: 300;
+
+$brand-primary: transparent;
+$btn-primary-border: $magento-orange;
+
+$brand-info: #7183a7;
+
+$btn-info-border: #becce0;
+$btn-info-bg: #eceff3;
+$btn-info-color: #7183a7;
+
+$text-color: rgba(black, 0.75);
+
+$anchor-offset: 100px;
+$community-color: #674492;
+$success-color: #58d158;
+$gray-light: #f3f3f3;
+$gray-lighter: #e5e5e5;
+$dark-blue: #0d1d30;
+$light-blue: lighten($dark-blue, 70%);
+
+$secondary-color: green;
+
+$navbar-height: 50px;
+
+$link-color: $magento-orange;

@@ -1,0 +1,25 @@
+---
+layout: default
+---
+
+<div class="container main-content">
+  <div class="row">
+    <div class="col-md-9 col-md-offset-3">
+      <header class="page-header">
+        <h1 class="page-title">{{ page.title }}</h1>
+      </header>
+    </div>
+  </div>
+ <article class="page-content row">
+    <div class="col-md-3 hidden-sm hidden-xs">
+      <div class="menu">
+        {{ content | toc_generate }}
+        <div class="spacer30"></div>
+        <p class="text-center">Latest version: <b>{{ site.version }}</b></p>
+      </div>
+    </div>
+    <div class="col-md-9 documentation-content">
+      {{ content }}
+    </div>
+  </article>
+</div>

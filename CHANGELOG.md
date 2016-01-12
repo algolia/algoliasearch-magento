@@ -1,5 +1,44 @@
 ## Change Log
 
+### 1.5.2
+
+==== BREAKING CHANGES ====
+
+- A full reindex of the product indexer is needed
+
+==========================
+
+- NEW: handle multiple currencies
+- UPDATED: improve errors/warnings for reindexing 
+- FIX: handle both secure and unsecure base url for images
+- FIX: ability to have only instant search
+- FIX: method to get product and categories url
+
+### 1.5.1
+
+- FIX: xss issue
+
+### 1.5.0
+
+==== BREAKING CHANGES ====
+
+- The queue is now running outside of the Magento default cron system. To run the jobs you will need to run
+  the `algolia_queue_runner` indexer via the following command `php -f shell/indexer.php --reindex algolia_queue_runner`
+  You can add it to your crontab just add this line:
+  `*/5 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner`
+- The version is fixing a bug around deleted products that were not deleted from Algolia. To be sure you're in sync you should clear your products indices from the Algolia dashboard.
+- As this is a major update you will loose your settings and will need to reconfigure the extension
+
+=========================
+
+- NEW: replace custom logic with autocomplete.js and instantsearch.js
+- NEW: add `total_ordered` because `ordered_qty` does not always make sense
+- NEW: add a drag and drop feature to reorder the tables in the administration panel
+- UPDATED: smarter queue logic that is able to batch jobs
+- UPDATED: option to have most popular suggestions when no results page
+- FIX: fix an issue with configurable and grouped sub_products query
+- FIX: replace image helper overridden by subclass
+
 ### 1.4.8
 - NEW: allow to have custom product types
 - NEW: make image generation size parameter customizable to be able to save ressources when already in cache

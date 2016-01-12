@@ -74,6 +74,8 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
         $result = $process->getMode() !== Mage_Index_Model_Process::MODE_MANUAL;
 
+        $result = $result && $event->getEntity() !== 'core_config_data';
+
         $event->addNewData(self::EVENT_MATCH_RESULT_KEY, $result);
 
         return $result;
@@ -107,7 +109,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
             $product = Mage::getModel('catalog/product')->load($object->getProductId());
 
-            if ($object->getData('is_in_stock') == false|| $product->getQty() <= 0)
+            if ($object->getData('is_in_stock') == false || (int) $product->getStockItem()->getQty() <= 0)
             {
                 try // In case of wrong credentials or overquota or block account. To avoid checkout process to fail
                 {
@@ -131,12 +133,13 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 /** @var $product Mage_Catalog_Model_Product */
                 $product = $event->getDataObject();
                 $delete = FALSE;
+                $visibleInSite = Mage::getSingleton('catalog/product_visibility')->getVisibleInSiteIds();
 
                 if ($product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED)
                 {
                     $delete = TRUE;
                 }
-                elseif (! in_array($product->getData('visibility'), Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
+                elseif (! in_array($product->getData('visibility'), $visibleInSite))
                 {
                     $delete = TRUE;
                 }
@@ -257,34 +260,43 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
         // Mass action
         else if ( ! empty($data['catalogsearch_product_ids'])) {
             $productIds = $data['catalogsearch_product_ids'];
-            if ( ! empty($data['catalogsearch_website_ids'])) {
-                $websiteIds = $data['catalogsearch_website_ids'];
-                $actionType = $data['catalogsearch_action_type'];
-                foreach ($websiteIds as $websiteId) {
-                    foreach (Mage::app()->getWebsite($websiteId)->getStoreIds() as $storeId) {
-                        if ($actionType == 'remove') {
-                            $this->engine
-                                ->removeProducts($storeId, $productIds);
-                        } else if ($actionType == 'add') {
-                            $this->engine
-                                ->rebuildProductIndex($storeId, $productIds);
+
+            if (!empty($productIds))
+            {
+                if ( ! empty($data['catalogsearch_website_ids']))
+                {
+                    $websiteIds = $data['catalogsearch_website_ids'];
+                    $actionType = $data['catalogsearch_action_type'];
+                    foreach ($websiteIds as $websiteId)
+                    {
+                        foreach (Mage::app()->getWebsite($websiteId)->getStoreIds() as $storeId) {
+                            if ($actionType == 'remove')
+                            {
+                                $this->engine->removeProducts($storeId, $productIds);
+                            }
+                            else if ($actionType == 'add')
+                            {
+                                $this->engine->rebuildProductIndex($storeId, $productIds);
+                            }
                         }
                     }
                 }
-            }
-            else if (isset($data['catalogsearch_status'])) {
-                $status = $data['catalogsearch_status'];
-                if ($status == Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
+                else if (isset($data['catalogsearch_status']))
+                {
+                    $status = $data['catalogsearch_status'];
+                    if ($status == Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
+                        $this->engine->rebuildProductIndex(null, $productIds);
+                    }
+                    else
+                    {
+                        $this->engine->removeProducts(null, $productIds);
+                    }
+                }
+                else if (isset($data['catalogsearch_force_reindex']))
+                {
                     $this->engine
                         ->rebuildProductIndex(null, $productIds);
-                } else {
-                    $this->engine
-                        ->removeProducts(null, $productIds);
                 }
-            }
-            else if (isset($data['catalogsearch_force_reindex'])) {
-                $this->engine
-                    ->rebuildProductIndex(null, $productIds);
             }
         }
 
@@ -307,21 +319,28 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
         /*
          * Reindex products.
          */
-        if ( ! empty($data['catalogsearch_update_product_id'])) {
+        if ( ! empty($data['catalogsearch_update_product_id']))
+        {
             $updateProductIds = $data['catalogsearch_update_product_id'];
             $updateProductIds = is_array($updateProductIds) ? $updateProductIds : array($updateProductIds);
             $productIds = $updateProductIds;
-            foreach ($updateProductIds as $updateProductId) {
-                if ( ! $this->_isProductComposite($updateProductId)) {
+
+            foreach ($updateProductIds as $updateProductId)
+            {
+                if (! $this->_isProductComposite($updateProductId))
+                {
                     $parentIds = $this->_getResource()->getRelationsByChild($updateProductId);
-                    if ( ! empty($parentIds)) {
+
+                    if (! empty($parentIds))
+                    {
                         $productIds = array_merge($productIds, $parentIds);
                     }
                 }
             }
 
-            $this->engine
-                ->rebuildProductIndex(null, $productIds);
+            if (!empty($productIds)) {
+                $this->engine->rebuildProductIndex(null, $productIds);
+            }
         }
     }
 

@@ -25,7 +25,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function __construct()
     {
-        \AlgoliaSearch\Version::$custom_value = " Magento (1.4.8)";
+        \AlgoliaSearch\Version::$custom_value = " Magento (1.5.2)";
 
         $this->algolia_helper               = Mage::helper('algoliasearch/algoliahelper');
 
@@ -85,8 +85,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->algolia_helper->setSettings($this->page_helper->getIndexName($storeId), $this->page_helper->getIndexSettings($storeId));
         $this->algolia_helper->setSettings($this->suggestion_helper->getIndexName($storeId), $this->suggestion_helper->getIndexSettings($storeId));
 
-        foreach ($this->config->getAutocompleteAdditionnalSections() as $section)
-            $this->algolia_helper->setSettings($this->additionalsections_helper->getIndexName($storeId).'_'.$section['attribute'], $this->additionalsections_helper->getIndexSettings($storeId));
+        foreach ($this->config->getAutocompleteSections() as $section)
+        {
+            if ($section['name'] === 'products' || $section['name'] === 'categories' || $section['name'] === 'pages' || $section['name'] === 'suggestions')
+                continue;
+
+            $this->algolia_helper->setSettings($this->additionalsections_helper->getIndexName($storeId).'_'.$section['name'], $this->additionalsections_helper->getIndexSettings($storeId));
+        }
 
         $this->product_helper->setSettings($storeId);
     }
@@ -107,7 +112,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'attributesToRetrieve' => 'objectID',
             'attributesToHighlight' => '',
             'attributesToSnippet' => '',
-            'removeWordsIfNoResult'=> $this->config->getRemoveWordsIfNoResult($storeId),
+            'numericFilters' => 'visibility_search=1',
+            'removeWordsIfNoResults'=> $this->config->getRemoveWordsIfNoResult($storeId),
             'analyticsTags' => 'backend-search'
         ));
 
@@ -139,21 +145,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $index_name = $this->product_helper->getIndexName($store_id);
 
             $this->algolia_helper->deleteObjects($ids, $index_name);
-
-            /**
-             * Group Deleting
-             */
-            if ($this->config->isCustomerGroupsEnabled($store_id))
-            {
-                foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
-                {
-                    $group_id = (int) $group->getData('customer_group_id');
-
-                    $index_name = $this->product_helper->getIndexName($store_id).'_group_'.$group_id;
-
-                    $this->algolia_helper->deleteObjects($ids, $index_name);
-                }
-            }
         }
     }
 
@@ -183,11 +174,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             return;
         }
 
-        $additionnal_sections = $this->config->getAutocompleteAdditionnalSections();
+        $additionnal_sections = $this->config->getAutocompleteSections();
 
         foreach ($additionnal_sections as $section)
         {
-            $index_name = $this->additionalsections_helper->getIndexName($storeId).'_'.$section['attribute'];
+            if ($section['name'] === 'products' || $section['name'] === 'categories' || $section['name'] === 'pages' || $section['name'] === 'suggestions')
+                continue;
+
+            $index_name = $this->additionalsections_helper->getIndexName($storeId).'_'.$section['name'];
 
             $attribute_values = $this->additionalsections_helper->getAttributeValues($storeId, $section);
 
@@ -369,7 +363,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $suggestion_obj = $this->suggestion_helper->getObject($suggestion);
 
-            if ($suggestion_obj['popularity'] >= $this->config->getMinPopularity() && $suggestion_obj['number_of_results'] >= $this->config->getMinNumberOfResults())
+            if (strlen($suggestion_obj['query']) >= 3)
                 array_push($indexData, $suggestion_obj);
         }
 
@@ -480,7 +474,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $collection->joinField('stock_qty', $index_prefix.'cataloginventory_stock_item', 'qty', 'product_id=entity_id', '{{table}}.stock_id=1', 'left');
 
         if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'ordered_qty'))
-            $collection->getSelect()->columns('(SELECT SUM(qty_ordered) FROM '.$index_prefix.'sales_flat_order_item WHERE sales_flat_order_item.product_id = e.entity_id) as ordered_qty');
+            $collection->getSelect()->columns('(SELECT SUM(qty_ordered) FROM '.$index_prefix.'sales_flat_order_item WHERE '.$index_prefix.'sales_flat_order_item.product_id = e.entity_id) as ordered_qty');
+
+        if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'total_ordered'))
+            $collection->getSelect()->columns('(SELECT SUM(row_total) FROM '.$index_prefix.'sales_flat_order_item WHERE '.$index_prefix.'sales_flat_order_item.product_id = e.entity_id) as total_ordered');
 
         if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'rating_summary'))
             $collection->joinField('rating_summary', $index_prefix.'review_entity_summary', 'rating_summary', 'entity_pk_value=entity_id', '{{table}}.store_id='.$storeId, 'left');

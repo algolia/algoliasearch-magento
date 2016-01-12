@@ -34,6 +34,14 @@ class Algolia_Algoliasearch_Model_Observer
                 $this->helper->saveConfigurationToAlgolia($store->getId());
     }
 
+    public function addBundleToAdmin(Varien_Event_Observer $observer)
+    {
+        $req  = Mage::app()->getRequest();
+
+        if (strpos($req->getPathInfo(), 'system_config/edit/section/algoliasearch') !== false)
+            $observer->getLayout()->getUpdate()->addHandle('algolia_bundle_handle');
+    }
+
     /**
      * Call algoliasearch.xml To load js / css / phtml
      */
@@ -41,9 +49,21 @@ class Algolia_Algoliasearch_Model_Observer
     {
         if ($this->config->isEnabledFrontEnd())
         {
-            if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled())
+            if ($this->config->getApplicationID() && $this->config->getAPIKey())
             {
-                $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
+                if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled())
+                {
+                    $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
+
+                    if ($this->config->isDefaultSelector())
+                    {
+                        $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle_with_topsearch');
+                    }
+                    else
+                    {
+                        $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle_no_topsearch');
+                    }
+                }
             }
         }
 

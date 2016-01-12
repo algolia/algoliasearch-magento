@@ -21,7 +21,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
 
     public function prepareResult($object, $queryText, $query)
     {
-        if ($this->config->isEnabledFrontEnd(Mage::app()->getStore()->getId()) === false)
+        if (! $this->config->getApplicationID() || ! $this->config->getAPIKey() || $this->config->isEnabledFrontEnd() === false)
             return parent::prepareResult($object, $queryText, $query);
 
         return $this;

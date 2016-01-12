@@ -4,7 +4,7 @@
         <algoliasearch translate="label" module="algoliasearch">
             <label>
                 <![CDATA[
-                Algolia Search 1.4.8
+                Algolia Search 1.5.2
                 <style>
                     .algoliasearch-admin-menu span {
                         padding-left: 38px !important;
@@ -25,7 +25,6 @@
             <show_in_default>1</show_in_default>
             <show_in_website>1</show_in_website>
             <show_in_store>1</show_in_store>
-            <expanded>1</expanded>
             <groups>
                 <credentials translate="label">
                     <label>Credentials &amp; Setup</label>
@@ -37,8 +36,23 @@
                     <expanded>1</expanded>
                     <comment>
                      <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=213" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
-                    </font>
+                        <table>
+                            <tr>
+                                <td>Documentation:</td>
+                                <td><a target="_BLANK" href="https://community.algolia.com/magento/documentation">https://community.algolia.com/magento/documentation</a></td>
+                            </tr>
+                            <tr>
+                                <td>FAQ: </td>
+                                <td><a target="_BLANK" href="https://www.algolia.com/doc/faq">https://www.algolia.com/doc/faq</a></td>
+                            </tr>
+                            <tr>
+                                <td>Issues: </td>
+                                <td><a target="_BLANK" href="https://github.com/algolia/algoliasearch-magento/issues">https://github.com/algoliasearch-magento/issues</a></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <hr>
+                        <br>
                      ]]>
                     </comment>
                     <fields>
@@ -52,7 +66,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If set to No, Algolia extension will be simply disabled.
+                                If set to No, Algolia extension will simply be disabled.
                                 ]]>
                             </comment>
                         </enable_backend>
@@ -117,7 +131,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If set to Yes, the seach box will display a search-as-you-type drop-down menu. It requires your theme to expose a <code>top.search</code> template.
+                                If set to Yes, the seach box will display a search-as-you-type drop-down menu. It requires your theme to expose a <code>top.search</code> and <code>content</code> block.
                                 ]]>
                             </comment>
                         </is_popup_enabled>
@@ -131,91 +145,119 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If set to Yes, the products inside the results pages will be searchable the refined results updated as-you-type. It requires your theme to expose a <code>top.search</code> template.
+                                If set to Yes, the products inside the results pages will be searchable the refined results updated as-you-type. It requires your theme to expose a <code>top.search</code> and <code>content</code> block.
                                 ]]>
                             </comment>
                         </is_instant_enabled>
                     </fields>
                 </credentials>
-                <products translate="label">
-                    <label>Product Configuration</label>
+                <autocomplete>
+                    <label>Autocomplete</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>0</expanded>
+                    <fields>
+                        <nb_of_products_suggestions translate="label comment">
+                            <label>Number of products</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The number of products (>=1) suggested in the autocomplete dropdown. Default value is 6</comment>
+                        </nb_of_products_suggestions>
+                        <nb_of_categories_suggestions translate="label comment">
+                            <label>Number of categories</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The number of categories (>=1) suggested in the autocomplete dropdown. Default value is 2</comment>
+                        </nb_of_categories_suggestions>
+                        <nb_of_queries_suggestions>
+                            <label>Number of queries</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The number of queries suggestions (0 to disabled it) suggested in the autocomplete dropdown. Default value is 0</comment>
+                        </nb_of_queries_suggestions>
+                        <min_popularity translate="label comment">
+                            <label>Min query popularity</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The min number of times a query has been performed in order to be suggested. Default value is 1000.</comment>
+                        </min_popularity>
+                        <min_number_of_results translate="label comment">
+                            <label>Min number of products per query</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                The min number of results a query needs to return to be suggested. Default value is 2. <br /n>
+                                ]]>
+                            </comment>
+                        </min_number_of_results>
+                        <sections>
+                            <label>Additional Sections</label>
+                            <frontend_model>algoliasearch/system_config_form_field_sections</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><active>1</active></depends>
+                            <comment>
+                                <![CDATA[
+                                Configure here the additional auto-completion menu sections you want include in the dropdown menu (Ex. Suggestions, Pages, Manufacturer, Colors).<br /><br>
+                                <span style="color: #D83900">&#9888;</span> All attributes used here must have been initially included in the <strong>Attributes Configuration</strong> panel and configured as a facet in the <strong>Instant Search Results Page Configuration</strong> panel to be able to refine on the specific attribute.
+                                ]]>
+                            </comment>
+                        </sections>
+                        <excluded_pages translate="label comment">
+                            <label>Excluded Pages</label>
+                            <frontend_model>algoliasearch/system_config_form_field_custompages</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                Configure here the pages you don't want to search in.<br><br>
+                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Do not forget to trigger the Algolia Search indexers whenever you modify those settings.
+                                ]]>
+                            </comment>
+                        </excluded_pages>
+                    </fields>
+                </autocomplete>
+                <instant>
+                    <label>Instant Search Results Page</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>30</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
+                    <expanded>0</expanded>
                     <comment>
                      <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=398" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
-                    </font>
-                     ]]>
-                    </comment>
-                    <fields>
-                        <number_product_suggestions translate="label comment">
-                            <label>Number of product suggestions in the dropdown menu</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>0</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The number of product results displayed in the drop-down menu. Default value is 3. Set the value to 0 if you do not want to display the products section in the menu.</comment>
-                        </number_product_suggestions>
-                        <number_product_results translate="label comment">
-                            <label>Number of products per page in the instant result page</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The number of products displayed on the instant search results page. Default value is 9.</comment>
-                        </number_product_results>
-                        <product_additional_attributes translate="label comment">
-                            <label>Attributes</label>
-                            <frontend_model>algoliasearch/system_config_form_field_customsortorderproduct</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>
-                                <![CDATA[
-                                Choose here the product attributes your users can search on, the ones you want to use as filters and sorts options and the ones required to display the search results. The order of the searchable attributes matters: a query matching the first searchable attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matching word(s) inside the attribute to matter. A match at the beginning of an attribute will be considered more important: for the query "iPhone", "iPhone 5s" will be ranked before "case for iPhone".<br />
-                                <span style="color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
-                                ]]>
-                            </comment>
-                        </product_additional_attributes>
-                        <custom_ranking_product_attributes translate="label comment">
-                            <label>Ranking</label>
-                            <frontend_model>algoliasearch/system_config_form_field_customrankingproduct</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>
-                                <![CDATA[
-                                Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
-                                <span style="color: #D83900">&#9888;</span> All attributes used here must have been initially included in the Attributes configuration panel.
-                                ]]>
-                            </comment>
-                        </custom_ranking_product_attributes>
-                    </fields>
-                </products>
-                <instant>
-                    <label>Instant Search Results Page Configuration</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>31</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
-                    <comment>
-                     <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=666" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
-                    </font>
+
                      ]]>
                     </comment>
                     <fields>
@@ -299,31 +341,91 @@
                         </add_to_cart_enable>
                     </fields>
                 </instant>
-                <categories translate="label">
-                    <label>Category Autocomplete Configuration</label>
+                <products translate="label">
+                    <label>Products</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>40</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
+                    <expanded>0</expanded>
                     <comment>
-                     <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=805" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
-                    </font>
+                        <![CDATA[
+
                      ]]>
                     </comment>
                     <fields>
-                        <number_category_suggestions translate="label comment">
-                            <label>Number of category suggestions</label>
+                        <number_product_results translate="label comment">
+                            <label>Number of products per page in the instant result page</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
-                            <sort_order>0</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of category results displayed in the drop-down menu. Default value is 5. Set the value to 0 if you do not want to display the categories section in the menu.</comment>
-                        </number_category_suggestions>
+                            <comment>The number of products displayed on the instant search results page. Default value is 9.</comment>
+                        </number_product_results>
+                        <product_additional_attributes translate="label comment">
+                            <label>Attributes</label>
+                            <frontend_model>algoliasearch/system_config_form_field_customsortorderproduct</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                Choose here the product attributes your users can search on, the ones you want to use as filters and sorts options and the ones required to display the search results.<br><br>
+                                 The order of the searchable attributes matters: a query matching the first searchable attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matching word(s) inside the attribute to matter. A match at the beginning of an attribute will be considered more important: for the query "iPhone", "iPhone 5s" will be ranked before "case for iPhone".<br />
+                                <br><span style="font-size: 20px; color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
+                                ]]>
+                            </comment>
+                        </product_additional_attributes>
+                        <custom_ranking_product_attributes translate="label comment">
+                            <label>Ranking</label>
+                            <frontend_model>algoliasearch/system_config_form_field_customrankingproduct</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
+                                <span style="color: #D83900">&#9888;</span> All attributes used here must have been initially included in the Attributes configuration panel.
+                                ]]>
+                            </comment>
+                        </custom_ranking_product_attributes>
+                        <show_suggestions_on_no_result_page translate="label comment">
+                            <label>Show most popular queries suggestions when there are no results</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    Choose here if you want to show most popular queries suggestions when there are no results/
+                                ]]>
+                            </comment>
+                        </show_suggestions_on_no_result_page>
+                    </fields>
+                </products>
+                <categories translate="label">
+                    <label>Categories</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>50</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>0</expanded>
+                    <comment>
+                     <![CDATA[
+
+                     ]]>
+                    </comment>
+                    <fields>
                         <category_additional_attributes2 translate="label comment">
                             <label>Attributes</label>
                             <frontend_model>algoliasearch/system_config_form_field_customsortordercategory</frontend_model>
@@ -356,227 +458,11 @@
                         </custom_ranking_category_attributes>
                     </fields>
                 </categories>
-                <pages>
-                    <label>Page Autocomplete Configuration</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>45</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
-                    <comment>
-                     <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=841" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
-                    </font>
-                     ]]>
-                    </comment>
-                    <fields>
-                        <number_page_suggestions translate="label comment">
-                            <label>Number of page suggestions</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>0</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The number of page suggestions displayed in the drop-down menu. Default value is 3. Set the value to 0 if you do not want to display the pages section in the menu.</comment>
-                        </number_page_suggestions>
-                        <excluded_pages translate="label comment">
-                            <label>Excluded Pages</label>
-                            <frontend_model>algoliasearch/system_config_form_field_custompages</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>
-                                <![CDATA[
-                                Configure here the pages you don't want to search in.<br /n>
-                                <span style="color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search Pages index whenever you modify this setting.
-                                ]]>
-                            </comment>
-                        </excluded_pages>
-                    </fields>
-                </pages>
-                <suggestions>
-                    <label>Query Suggestions Autocomplete Configuration</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>46</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
-                    <comment>
-                     <![CDATA[
-                     <font size="2"> Watch the <a href="https://youtu.be/DUuv9ALS5cM?t=881" target="_blank"><font color="#0066cc">Tutorial</font></a><br /n> 
-                    </font>
-                     ]]>
-                    </comment>
-                    <fields>
-                        <number_query_suggestions translate="label comment">
-                            <label>Number of query suggestions</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>0</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The number of query suggestions displayed in the drop-down menu. Default value is 0.</comment>
-                        </number_query_suggestions>
-                        <min_popularity translate="label comment">
-                            <label>Min popularity</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The min number of times a query has been performed in order to be suggested. Default value is 100000.</comment>
-                        </min_popularity>
-                        <min_number_of_results translate="label comment">
-                            <label>Min number of products</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>
-                                <![CDATA[
-                                The min number of results a query needs to return to be suggested. Default value is 2. <br /n>
-                                <span style="color: #D83900">&#9888;</span> Updating your suggested queries requires that you reindex your Algolia Search Suggestions index.
-                                ]]>
-                            </comment>
-                        </min_number_of_results>
-                    </fields>
-                </suggestions>
-                <autocomplete>
-                    <label>Additional Autocomplete Sections Configuration</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>47</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
-                    <fields>
-                        <additional_sections>
-                            <label>Additionnal Sections</label>
-                            <frontend_model>algoliasearch/system_config_form_field_additionalsections</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <depends><active>1</active></depends>
-                            <comment>
-                                <![CDATA[
-                                Configure here the additional auto-completion menu sections you want include in the dropdown menu (Ex. Manufacturer).<br />
-                                <span style="color: #D83900">&#9888;</span> All attributes used here must have been initially included in the <strong>Attributes Configuration</strong> panel and configured as a facet in the <strong>Instant Search Results Page Configuration</strong> panel to be able to refine on the specific attribute.
-                                ]]>
-                            </comment>
-                        </additional_sections>
-                    </fields>
-                </autocomplete>
-                <relevance translate="label">
-                    <label>Query Expansion Configuration</label>
-                    <frontend_type>text</frontend_type>
-                    <expanded>1</expanded>
-                    <sort_order>50</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <remove_words_if_no_result translate="label comment">
-                            <label>Remove Words If No Result?</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>algoliasearch/system_removewords</source_model>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment><![CDATA[Optional property to avoid empty result pages.<br/>
-                             By default, Algolia performs "AND" queries, which can lead to no results pages when queries are too long or too detailed. To avoid this, you can select among the following options:<br/>
-                             LastWords: when a query does not return any result, the last word will be considered as optional and the query will be automatically performed again (the process is repeated with the n-1 word, n-2 word, ... until there is results).<br/>
-                             FirstWords: when a query does not return any result, the first word will be considered as optional and the query will be automatically performed again (the process is repeated with the second word, third word, ... until there is results).<br/>
-                             allOptional: when a query does not return any result, all words will be optional.<br/>
-                             None: No specific processing is done when a query does not return any result. <br/>]]></comment>
-                        </remove_words_if_no_result>
-                    </fields>
-                </relevance>
-                <queue translate="label">
-                    <label>Queue Configuration</label>
-                    <expanded>1</expanded>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>70</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <active translate="label">
-                            <label>Queue Enabled</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>10</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>
-                                <![CDATA[
-                                If enabled, all indexing operations (add, remove & update operations) will be done asynchronously using the CRON mechanism.<br />
-                                <span style="color: #D83900">&#9888;</span> Enabling this option is recommended in production or if your store has a lot of products.
-                                ]]>
-
-                            </comment>
-                        </active>
-                        <retries translate="label comment">
-                            <label>Max Retries</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Number of retries before giving up on unexpected errors.</comment>
-                            <depends><active>1</active></depends>
-                        </retries>
-                        <number_of_element_by_page translate="label comment">
-                            <label>Max number of products by indexing job</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The max number of products by indexing job. Default value is 100.</comment>
-                        </number_of_element_by_page>
-                        <number_of_job_to_run translate="label comment">
-                            <label>Number of jobs to run each time the cron is run</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Number of jobs to run each time the cron is run. Default value is 300.</comment>
-                            <depends><active>1</active></depends>
-                        </number_of_job_to_run>
-                        <noprocess>
-                            <label>Disable indexing</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>50</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>Job will stack onto the queue but no indexing will be done. Default value is false.</comment>
-                            <depends><active>1</active></depends>
-                        </noprocess>
-                    </fields>
-                </queue>
                 <image translate="label">
-                    <label>Image Configuration</label>
-                    <expanded>1</expanded>
+                    <label>Images</label>
+                    <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
-                    <sort_order>80</sort_order>
+                    <sort_order>60</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -613,8 +499,66 @@
                         </type>
                     </fields>
                 </image>
+                <queue translate="label">
+                    <label>Indexing Queue / Cron</label>
+                    <expanded>0</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>70</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Queue Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                If enabled, all inxdexing operations (add, remove & update operations) will be done asynchronously using the CRON mechanism.<br />
+                                <br>
+                                To schedule the run you need to add this in your crontab:<br>
+                                */5 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner
+                                <br><br>
+                                <span style="color: #D83900">&#9888;</span> Enabling this option is recommended in production or if your store has a lot of products.
+                                ]]>
+                            </comment>
+                        </active>
+                        <number_of_element_by_page translate="label comment">
+                            <label>Max number of element per indexing job</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The max number of element by indexing job. Default value is 100.</comment>
+                        </number_of_element_by_page>
+                        <number_of_job_to_run translate="label comment">
+                            <label>Number of jobs to run each time the cron is run</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                Number of jobs to run each time the cron is run. Default value is 10.
+                                <br><br>
+                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Eacb time the cron runs it will process ("Max number of element per indexing job" * "Number of jobs to run each time the cron is run")
+                                products.
+                                ]]>
+                            </comment>
+                            <depends><active>1</active></depends>
+                        </number_of_job_to_run>
+                    </fields>
+                </queue>
                 <advanced translate="label">
-                    <label>Advanced Configuration</label>
+                    <label>Advanced</label>
                     <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
                     <sort_order>90</sort_order>
@@ -622,6 +566,21 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
+                        <remove_words_if_no_result translate="label comment">
+                            <label>Remove Words If No Result?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>algoliasearch/system_removewords</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Optional property to avoid empty result pages.<br/>
+                             By default, Algolia performs "AND" queries, which can lead to no results pages when queries are too long or too detailed. To avoid this, you can select among the following options:<br/>
+                             LastWords: when a query does not return any result, the last word will be considered as optional and the query will be automatically performed again (the process is repeated with the n-1 word, n-2 word, ... until there is results).<br/>
+                             FirstWords: when a query does not return any result, the first word will be considered as optional and the query will be automatically performed again (the process is repeated with the second word, third word, ... until there is results).<br/>
+                             allOptional: when a query does not return any result, all words will be optional.<br/>
+                             None: No specific processing is done when a query does not return any result. <br/>]]></comment>
+                        </remove_words_if_no_result>
                         <partial_update translate="label">
                             <label>Partial Updates</label>
                             <frontend_type>select</frontend_type>
@@ -670,6 +629,15 @@
                             <show_in_store>1</show_in_store>
                             <comment>Choose here if the algolia logo is added to the drop-down template.</comment>
                         </remove_branding>
+                        <autocomplete_selector translate="label comment">
+                            <label>Search input DOM Selector</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>If you don't have the top.search block you can specify the selector of your search input here to use it. Default value is .algolia-search-input</comment>
+                        </autocomplete_selector>
                     </fields>
                 </advanced>
             </groups>

@@ -8,10 +8,10 @@ class Algolia_Algoliasearch_Model_System_Removewords
     public function toOptionArray()
     {
         return array(
-            array('value'=>'None',          'label' => Mage::helper('algoliasearch')->__('None')),
+            array('value'=>'none',          'label' => Mage::helper('algoliasearch')->__('None')),
             array('value'=>'allOptional',   'label' => Mage::helper('algoliasearch')->__('AllOptional')),
-            array('value'=>'LastWords',     'label' => Mage::helper('algoliasearch')->__('LastWords')),
-            array('value'=>'FirstWords',    'label' => Mage::helper('algoliasearch')->__('FirstWords')),
+            array('value'=>'lastWords',     'label' => Mage::helper('algoliasearch')->__('LastWords')),
+            array('value'=>'firstWords',    'label' => Mage::helper('algoliasearch')->__('FirstWords')),
         );
     }
 }
