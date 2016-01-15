@@ -53,7 +53,7 @@ class Algolia_Algoliasearch_Helper_Logger extends Mage_Core_Helper_Abstract
 
     public function log($message)
     {
-        if (Mage::getStoreConfigFlag('algoliasearch/credentials/debug')) {
+        if ($this->config->isLoggingEnabled()) {
             Mage::log($message, null, 'algolia.log');
         }
     }
