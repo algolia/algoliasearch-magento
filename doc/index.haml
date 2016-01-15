@@ -1,15 +1,15 @@
 ---
 layout: default
+navbar-brand-class: auto-hide
 ---
 
 .main-content
   .jumbotron
     .container
       %h1
-        %img{src: '{{site.baseurl}}/img/algolia-logo.svg'}
+        %img{src: '{{site.baseurl}}/img/algolia-logo.svg', class: 'jumbotron-algolia_logo'}
         for
-        %img{src: '{{site.baseurl}}/img/magento-logo.png'}
-        Magento
+        %img{src: '{{site.baseurl}}/img/magento-logo.png', class: 'jumbotron-magento_logo'}
 
       .row
         .col-sm-6.col-sm-offset-3.text-center
@@ -18,14 +18,9 @@ layout: default
       .latest-version Latest version: <b>{{ site.version }}</b>
 
       .buttons
-        %a.btn.btn-primary{href: 'https://www.algolia.com/schedule-demo?hi=magento'}
-          %i.fa.fa-headphones
-          Request a demo
         %a.btn.btn-primary{href: 'https://magento.algolia.com'}
-          %i.fa.fa-desktop
           Try it live
-        %a.btn.btn-primary{href: 'http://www.magentocommerce.com/magento-connect/algolia-search-extension.html'}
-          %i.fa.fa-download
+        %a.btn.btn-primary.btn-primary-full{href: 'http://www.magentocommerce.com/magento-connect/algolia-search-extension.html'}
           Install the extension now
 
     .badges
@@ -35,41 +30,46 @@ layout: default
       %img{src: 'https://img.shields.io/badge/magento-1.8.1-blue.svg'}
       %img{src: 'https://img.shields.io/badge/magento-1.9.2-blue.svg'}
 
-  .container
-    .spacer50
-    %h1.headline Build Unique Shopping Experiences
-    .row
-      .col-sm-8.col-sm-offset-2.text-center
-        %p With Algolia's as-you-type search customers think less about how to search and more about what they find. Serve relevant content from the first keystroke.
-
-    .row.integrate
-      .col-sm-4.col-sm-offset-1
-        %img.img-responsive.m-l-r-auto{src: '{{site.baseurl}}/img/ecommerce-search.png'}
-      .col-sm-6
-        %p <b>Integrate in minutes</b> the Magento default search with Algolia's instant search and increase the conversion rates of your e-commerce site.
-        %p Algolia’s Search Magento Extension makes it easy to deliver a <b>lightning fast search experience</b> to your End-Users.
-
-
-    .row.demo
-      .col-sm-7
-        %img.img-responsive.m-l-r-auto{src: '{{site.baseurl}}/auto-complete.gif'}
-      .col-sm-5
-        %img.icon{src: '{{site.baseurl}}/img/autocomplete.png'}
-        %h3 Product & Category Autocomplete
-        %p Offer End-Users immediate access to your whole catalog from the dropdown menu, whatever your number of categories or attributes.
-
-    .row.demo
-      .col-sm-5.text-right
-        %img.icon{src: '{{site.baseurl}}/img/faceted.png'}
-        %h3 Instant & Faceted search
-        %p Have your search results page, navigation and pagination updated in realtime, after each keystroke.
-      .col-sm-7
-        %img.img-responsive.m-l-r-auto{src: '{{site.baseurl}}/instant-search.gif'}
-
-    %h1.headline Features
-    .features
+  .page-section.the-why
+    .container
+      %h1.headline Build Unique Shopping Experiences
       .row
+        .col-sm-8.col-sm-offset-2.text-center
+          %p With Algolia's as-you-type search customers think less about how to search and more about what they find. Serve relevant content from the first keystroke.
+
+  .page-section.integrate
+    .container
+      .row
+        .col-sm-4.col-sm-offset-1
+          %img.img-responsive.m-l-r-auto{src: '{{site.baseurl}}/img/ecommerce-search.png'}
+        .col-sm-6
+          %p <b>Integrate in minutes</b> the Magento default search with Algolia's instant search and increase the conversion rates of your e-commerce site.
+          %p Algolia’s Search Magento Extension makes it easy to deliver a <b>lightning fast search experience</b> to your End-Users.
+
+
+  .page-section.demos
+    .container
+      .row.demo
+        .col-sm-7
+          %img.img-responsive.m-l-r-auto{src: '{{site.baseurl}}/auto-complete.gif'}
         .col-sm-5
+          %img.icon{src: '{{site.baseurl}}/img/autocomplete.png'}
+          %h3 Product & Category Autocomplete
+          %p Offer End-Users immediate access to your whole catalog from the dropdown menu, whatever your number of categories or attributes.
+
+      .row.demo
+        .col-sm-5.text-right
+          %img.icon{src: '{{site.baseurl}}/img/faceted.png'}
+          %h3 Instant & Faceted search
+          %p Have your search results page, navigation and pagination updated in realtime, after each keystroke.
+        .col-sm-7
+          %img.img-responsive.m-l-r-auto{src: '{{site.baseurl}}/instant-search.gif'}
+
+  .page-section.features
+    .container
+      %h1.headline Features
+      .row
+        .feature.col-sm-5.col-sm-offset-1
           .bubble-outer
             .bubble
               .bubble-inner
@@ -77,7 +77,7 @@ layout: default
           %img{src: '{{site.baseurl}}/img/icon-relevance.png'}
           %h3 Relevance
           %p Increase customer satisfaction by serving relevant results. If a user can't find a product, they won't buy it!
-        .col-sm-5.col-sm-offset-2
+        .feature.col-sm-5
           .bubble-outer
             .bubble
               .bubble-inner
@@ -87,7 +87,7 @@ layout: default
           %p Deliver lightning fast results to your customers, anywhere in the world thanks to our distributed search network.
 
       .row
-        .col-sm-5
+        .feature.col-sm-5.col-sm-offset-1
           .bubble-outer
             .bubble
               .bubble-inner
@@ -95,7 +95,7 @@ layout: default
           %img{src: '{{site.baseurl}}/img/icon-typo-tolerance.png'}
           %h3 Typo Tolerance
           %p Don't let spelling mistakes prevent your users from finding the products they are looking for.
-        .col-sm-5.col-sm-offset-2
+        .feature.col-sm-5
           .bubble-outer
             .bubble
               .bubble-inner
@@ -105,7 +105,7 @@ layout: default
           %p Have your search results page, navigation and pagination updated in realtime, after each keystroke.
 
       .row
-        .col-sm-5
+        .feature.col-sm-5.col-sm-offset-1
           .bubble-outer
             .bubble
               .bubble-inner
@@ -113,7 +113,7 @@ layout: default
           %img{src: '{{site.baseurl}}/img/icon-analytics.png'}
           %h3 Analytics
           %p From a simple dashboard, get valuable information on how your customers are searching and what they're searching for.
-        .col-sm-5.col-sm-offset-2
+        .feature.col-sm-5
           .bubble-outer
             .bubble
               .bubble-inner
@@ -126,20 +126,26 @@ layout: default
         .col-sm-4.col-sm-offset-4.github
           %i.fa.fa-github
           %h3 Open source
-          %p Make it look like anything you want! Open-source, available on GitHub.
+          %p
+            Make it look like anything you want!
+            %br Open-source, available on <a href="https://github.com/algolia/algoliasearch-magento" target="_blank">Github</a>.
 
-    .spacer100
-    %h1.headline Showcase
-    .showcases
+  .page-section.showcases
+    .container
+      %h1.headline Showcase
       .row
         .col-sm-4
           %a.showcase{href: 'http://www.whisky.fr'}
             %img.img-responsive{src: '{{site.baseurl}}/img/showcase-1.png'}
-          %p Whisky.fr
+          %br
+          %a.showcase-link{href: 'http://www.whisky.fr'} Whisky.fr
         .col-sm-4
           %a.showcase{href: 'http://www.beyondretro.com/'}
             %img.img-responsive{src: 'img/beyond.png'}
-          %p Beyond Retro
+          %br
+          %a.showcase-link{href: 'http://www.beyondretro.com/'} Beyond Retro
         .col-sm-4
           .showcase.fixme{href: '#'} You?
-          %p Join us!
+          %br
+          %p.showcase-join Join us!
+
