@@ -56,7 +56,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const AUTOCOMPLETE_SELECTOR                = 'algoliasearch/advanced/autocomplete_selector';
 
     const SHOW_OUT_OF_STOCK                    = 'cataloginventory/options/show_out_of_stock';
-    const LOGGING_ENABLED                      = 'dev/log/active';
+    const LOGGING_ENABLED                      = 'algoliasearch/credentials/debug';
 
     protected $_productTypeMap = array();
 
