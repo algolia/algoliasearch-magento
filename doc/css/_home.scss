@@ -1,9 +1,40 @@
+
+
+
+/* GENERAL
+// ------------------------- */
+h1 {
+  font-size: 3.2em;
+}
 h2 {
   font-size: 1.8em;
   font-weight: normal;
   letter-spacing: 1px;
-  margin-bottom: 1em; }
+  margin-bottom: 1em;
+}
+.page-section {
+  padding-top: 80px;
+  padding-bottom: 70px;
+}
+.headline {
+  text-align: center;
+  font-size: 1.8em;
+  margin-top: 0;
 
+  &:after {
+    display: block;
+    content: ' ';
+    height: 20px;
+    border-bottom: 4px solid $magento-orange;
+    margin: 0 auto 1em auto;
+    width: 50px;
+  }
+}
+
+
+
+/* JUMBOTRON
+// ------------------------- */
 .jumbotron {
   background-image: url(../img/header-bg.png);
   background-repeat: no-repeat;
@@ -12,53 +43,109 @@ h2 {
   color: white;
 
   h1 {
+    font-size: 3.2em;
     text-align: center;
 
-    img {
-      height: 1em;
+    img.jumbotron-algolia_logo {
+      height: 1.2em;
+      position: relative;
+      top: -0.1em;
+      margin-right: 8px;
+    }
+
+    img.jumbotron-magento_logo {
+      height: 1.8em;
+      position: relative;
+      top: -0.05em;
+      margin-left: 8px;
     }
   }
 
   p {
-    font-size: 24px;
-    line-height: 32px;
+    font-size: 1.5em;
+    line-height: 1.3;
   }
 
   .latest-version {
     text-align: center;
-    font-size: 18px;
-    margin: 30px 0 40px 0;
+    font-size: 1em;
+    margin: 30px 0 40px;
   }
 
   .buttons {
     text-align: center;
     margin-bottom: 40px;
+    text-transform: uppercase;
 
     .btn {
       border-width: 2px;
       font-size: 14px;
       margin: 0 10px;
     }
+    .btn-primary-full {
+      background: $magento-orange;
+    }
 
+  }
+  .badges {
+    text-align: center;
+    img {
+      vertical-align: top;
+    }
   }
 }
 
-.headline {
-  text-align: center;
-  font-size: 30px;
 
-  &:after {
-    display: block;
-    content: ' ';
-    height: 10px;
-    border-bottom: 2px solid $magento-orange;
-    margin: 0 auto 1em auto;
-    width: 30px;
+
+/* THE WHY
+// ------------------------- */
+.the-why p {
+  font-size: 1.2em;
+  font-family: $headings-font-family;
+  line-height: 1.5;
+}
+
+
+
+/* INTEGRATE
+// ------------------------- */
+.integrate {
+  padding-top: 0;
+
+  p {
+    position: relative;
+    top: 50px;
   }
 }
 
+
+
+/* DEMOS
+// ------------------------- */
+.demos {
+  background: #F5F5F9;
+  .demo {
+    margin-bottom: 40px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .icon {
+      width: 46px;
+    }
+    h3 {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  }
+}
+
+
+
+/* FEATURES
+// ------------------------- */
 .features {
-  .row {
+  .feature {
     margin-bottom: 50px;
 
     h3 {
@@ -79,6 +166,7 @@ h2 {
     border-radius: 50%;
     float: left;
     margin-right: 20px;
+    clear: both;
   }
 
   .bubble {
@@ -119,29 +207,18 @@ h2 {
 
 }
 
-.integrate {
-  margin-top: 100px;
-  margin-bottom: 100px;
-}
 
-.demo {
-  margin-bottom: 100px;
 
-  .icon {
-    width: 46px;
-  }
-
-  h3 {
-    font-size: 18px;
-    font-weight: bold;
-  }
-}
-
+/* SHOWCASES
+// ------------------------- */
 .showcases {
+  background: $dark-blue;
   text-align: center;
+  font-weight: 300;
+  color: #FFF;
 
   .showcase {
-    display: block;
+    display: inline-block;
     height: 323px;
     overflow: hidden;
 
@@ -150,19 +227,25 @@ h2 {
     }
 
     &.fixme {
-      width: 100%;
+      color: #666;
+      width: 350px;
       height: 323px;
-      background: #efefef;
+      border: #666 4px dashed;
       line-height: 323px;
       font-size: 2em;
     }
   }
 
-}
-
-.badges {
-  text-align: center;
-  img {
-    vertical-align: top;
+  .showcase-link, .showcase-join {
+    display: inline-block;
+    font-size: 1.1em;
+    margin-top: 8px;
+    margin-bottom: 10px;
+    color: #FFF;
+  }
+  .showcase-link:hover {
+    color: $magento-orange;
+    text-decoration: none;
   }
 }
+

@@ -12,7 +12,7 @@ class Algolia_Algoliasearch_Model_Queue
     /** @var Algolia_Algoliasearch_Helper_Logger */
     protected $logger;
 
-    private $by_page;
+    protected $by_page;
 
     public function __construct()
     {
@@ -51,7 +51,7 @@ class Algolia_Algoliasearch_Model_Queue
         $this->run($nbJobs);
     }
 
-    private function mergeable($j1, $j2)
+    protected function mergeable($j1, $j2)
     {
         if ($j1['class'] !== $j2['class'])
             return false;
@@ -79,7 +79,7 @@ class Algolia_Algoliasearch_Model_Queue
         return true;
     }
 
-    private function sortAndMergeJob($old_jobs)
+    protected function sortAndMergeJob($old_jobs)
     {
         usort($old_jobs, function ($a, $b) {
             if (strcmp($a['class'], $b['class']) !== 0)

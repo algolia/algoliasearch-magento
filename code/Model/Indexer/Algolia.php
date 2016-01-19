@@ -5,14 +5,14 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
     const EVENT_MATCH_RESULT_KEY = 'algoliasearch_match_result';
 
     /** @var Algolia_Algoliasearch_Model_Resource_Engine */
-    private $engine;
-    private $config;
+    protected $engine;
+    protected $config;
 
     public static $product_categories = array();
-    private static $credential_error = false;
+    protected static $credential_error = false;
 
     /** @var Algolia_Algoliasearch_Helper_Logger */
-    private $logger;
+    protected $logger;
 
     public function __construct()
     {
