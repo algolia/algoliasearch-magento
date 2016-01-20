@@ -196,7 +196,15 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
                 }
 
                 $reindexData['catalogsearch_force_reindex'] = TRUE;
-                $reindexData['catalogsearch_product_ids'] = $actionObject->getProductIds();
+
+                if ($actionObject->getIsDeleted())
+                {
+                    $reindexData['catalogsearch_delete_product_id'] = $actionObject->getProductIds();
+                }
+                else
+                {
+                    $reindexData['catalogsearch_product_ids'] = $actionObject->getProductIds();
+                }
 
                 foreach ($reindexData as $k => $v)
                 {

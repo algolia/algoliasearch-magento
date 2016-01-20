@@ -37,11 +37,11 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     {
         $ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
 
+        if (is_array($product_ids) == false)
+            $product_ids = array($product_ids);
+
         foreach ($ids as $id)
         {
-            if (is_array($product_ids) == false)
-                $product_ids = array($product_ids);
-
             $by_page = $this->config->getNumberOfElementByPage();
 
             if (is_array($product_ids) && count($product_ids) > $by_page)
