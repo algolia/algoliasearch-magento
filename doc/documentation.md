@@ -118,7 +118,7 @@ If you want to customize the look and feel of the auto-completion menu and/or th
 
 ### Custom widgets
 
-If you want to use a widget that is not expose in the administration panel for a particular faceted attribute you can configure it using the `customAttributeFacet` variable of the `topsearch.phtml` file. For example if you want to have a toggle widget for the `in_stock` attribute, your `customAttributeFacet` variable should look like:
+If you want to use a widget that is not exposed in the administration panel for a particular faceted attribute you can configure it using the `customAttributeFacet` variable of the `topsearch.phtml` file. For example if you want to have a toggle widget for the `in_stock` attribute, your `customAttributeFacet` variable should look like:
 
 {% highlight js %}
 var customAttributeFacet = {

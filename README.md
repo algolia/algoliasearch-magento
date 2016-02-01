@@ -5,7 +5,7 @@ Algolia Search for Magento
 
 This extension replaces the default search of Magento with a typo-tolerant, fast & relevant search experience backed by Algolia. It's based on [algoliasearch-client-php](https://github.com/algolia/algoliasearch-client-php) and [algoliasearch-client-js](https://github.com/algolia/algoliasearch-client-js).
 
-See features and benefits of [Algolia Search Extension for Magento](https://www.algolia.com/with/magento).
+See features and benefits of [Algolia Search Extension for Magento](https://community.algolia.com/magento).
 
 ![Latest version](https://img.shields.io/badge/latest-1.5.2-green.svg)
 ![Magento 1.6.2](https://img.shields.io/badge/magento-1.6.2-blue.svg)

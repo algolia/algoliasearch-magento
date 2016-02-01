@@ -632,7 +632,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Choose if an query to Algolia is done by the backend for seo when instant search is enable</comment>
+                            <comment>Choose if a query to Algolia is done by the backend for SEO when instant search is enabled</comment>
                         </make_seo_request>
                         <remove_branding translate="label comment">
                             <label>Remove branding logo</label>
