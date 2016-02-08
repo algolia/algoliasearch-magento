@@ -5,7 +5,7 @@ RUN echo 'mysql-server mysql-server/root_password password P4ssw0rd' | debconf-s
 RUN echo 'mysql-server mysql-server/root_password_again password P4ssw0rd' | debconf-set-selections
 
 # packages/dependencies installation
-RUN apt-get update && apt-get install -y \
+RUN systemctl mask mysql && apt-get update && apt-get install -y \
   mysql-client-5.5 \
   mysql-server \
   php5-mysql \
@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y \
   vim emacs-nox \
   git-core \
   wget \
-  zsh
+  zsh && systemctl unmask mysql
+
 RUN docker-php-ext-install soap
 RUN docker-php-ext-install mysqli
 
