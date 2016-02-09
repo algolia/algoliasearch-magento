@@ -371,7 +371,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     }
                 }
 
-                if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
+                if ($type == 'grouped' || $type == 'bundle')
                 {
                     $min = PHP_INT_MAX;
                     $max = 0;
@@ -383,7 +383,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         list($min, $max) = $_priceModel->getTotalPrices($product, null, $with_tax, true);
                     }
 
-                    if ($type == 'grouped' || $type == 'configurable')
+                    if ($type == 'grouped')
                     {
                         if (count($sub_products) > 0)
                         {
