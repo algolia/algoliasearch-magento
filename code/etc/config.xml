@@ -143,7 +143,7 @@
                 <debug>0</debug>
                 <index_prefix>magento_</index_prefix>
                 <is_popup_enabled>1</is_popup_enabled>
-                <is_instant_enabled>1</is_instant_enabled>
+                <is_instant_enabled>0</is_instant_enabled>
             </credentials>
             <products>
                 <number_product_results>9</number_product_results>

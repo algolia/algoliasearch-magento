@@ -161,6 +161,9 @@
                             <comment>
                                 <![CDATA[
                                 If set to Yes, the products inside the results pages will be searchable the refined results updated as-you-type. It requires your theme to expose a <code>top.search</code> and <code>content</code> block.
+                                    <br><br>
+                                    <span style="font-size: 30px; color: #D83900">&#9888;</span> Enabling instant search can potentially break your design, some work will be required to have a good integration into your theme
+                                    products.
                                 ]]>
                             </comment>
                         </is_instant_enabled>
@@ -564,7 +567,7 @@
                                 <![CDATA[
                                 Number of jobs to run each time the cron is run. Default value is 10.
                                 <br><br>
-                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Eacb time the cron runs it will process ("Max number of element per indexing job" * "Number of jobs to run each time the cron is run")
+                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Each time the cron runs it will process ("Max number of element per indexing job" * "Number of jobs to run each time the cron is run")
                                 products.
                                 ]]>
                             </comment>
