@@ -788,6 +788,10 @@ $placeholder = $this->__('Search for products, categories, ...');
                         .on('autocomplete:updated', function (e) {
                             fixAutocompleteCssHeight(menu);
                         });
+
+                    $(window).resize(function () {
+                        fixAutocompleteCssSticky(menu);
+                    });
                 });
             }
         });

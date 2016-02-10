@@ -367,6 +367,7 @@ a.ais-current-refined-values--link:hover
 @media (min-width: 992px) {
   #algolia-autocomplete-container .aa-dropdown-menu {
     width: 71.1%;
+    min-width: 800px;
   }
 }
 
