@@ -367,6 +367,7 @@ a.ais-current-refined-values--link:hover
 @media (min-width: 992px) {
   #algolia-autocomplete-container .aa-dropdown-menu {
     width: 71.1%;
+    min-width: 800px;
   }
 }
 
@@ -752,18 +753,15 @@ a.ais-current-refined-values--link:hover
   overflow: hidden;
 }
 
-#instant-search-bar-container {
-    width: 100%;
-    position: relative;
-}
-
 #algolia_instant_selector #instant-search-bar {
-  width: 100%;
+  float: left;
+  width: calc(100% - 140px);
   height: 40px;
   font-family: "Raleway", "Helvetica Neue", Verdana, Arial, sans-serif;
-  border: none;
-  border-bottom: solid 2px #54A5CD;
-  padding-left: 36px;
+  border: solid 2px #54A5CD;
+  border-left: none;
+  padding-left: 6px;
+  padding-top: 2px;
 }
 
 #algolia_instant_selector.with-facets #algolia-right-container {
@@ -784,6 +782,10 @@ a.ais-current-refined-values--link:hover
 }
 #algolia_instant_selector .hits .infos strong {
   color: #555;
+}
+
+#algolia_instant_selector .hits .sort-by-label {
+  margin-right: 8px;
 }
 
 #algolia_instant_selector .hits .no-results {
@@ -965,6 +967,14 @@ a.ais-current-refined-values--link:hover
 #algolia_instant_selector #instant-search-bar-container {
   padding-top: 0px;
   margin-bottom: 15px;
+  width: 100%;
+  position: relative;
+}
+
+#algolia_instant_selector #instant-search-bar-container:after {
+  clear: both;
+  content: "";
+  display: block;
 }
 
 #algolia_instant_selector .as-search-box--input {
@@ -982,12 +992,23 @@ a.ais-current-refined-values--link:hover
   display: none;
 }
 
+#algolia_instant_selector .instant-search-bar-label {
+  background-color: #54A5CD;
+  height: 40px;
+  line-height: 24px;
+  padding: 8px 12px;
+  color: white;
+  float: left;
+  width: 140px;
+  text-align: right;
+}
+
 #algolia_instant_selector #instant-search-box svg.magnifying-glass {
   position: absolute;
   top: 8px;
-  left: 0px;
-  fill: #54A5CD;
-  stroke: #54A5CD;
+  left: 8px;
+  fill: #FFFFFF;
+  stroke: #FFFFFF;
 }
 
 #algolia_instant_selector .before_special {

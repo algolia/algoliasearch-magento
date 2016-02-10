@@ -57,8 +57,6 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
     {
         $storeRootCategoryPath = sprintf('%d/%d', $this->getRootCategoryId(), Mage::app()->getStore($storeId)->getRootCategoryId());
 
-        $index_name = $this->getIndexName($storeId);
-
         $categories = Mage::getResourceModel('catalog/category_collection'); /** @var $categories Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection */
 
         $unserializedCategorysAttrs = $this->config->getCategoryAdditionalAttributes($storeId);
@@ -74,6 +72,7 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
             ->addUrlRewriteToResult()
             ->addIsActiveFilter()
             ->setStoreId($storeId)
+            ->addAttributeToFilter('include_in_menu', '1')
             ->addAttributeToSelect(array_merge(array('name'), $additionalAttr))
             ->addFieldToFilter('level', array('gt' => 1));
 

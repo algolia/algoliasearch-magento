@@ -6,12 +6,12 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 {
     const ONE_TIME_AMOUNT = 100;
     /** @var Algolia_Algoliasearch_Helper_Logger */
-    private $logger;
-    private $queue;
-    private $config;
-    private $product_helper;
-    private $category_helper;
-    private $suggestion_helper;
+    protected $logger;
+    protected $queue;
+    protected $config;
+    protected $product_helper;
+    protected $category_helper;
+    protected $suggestion_helper;
 
     public function _construct()
     {
@@ -37,11 +37,11 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     {
         $ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
 
+        if (is_array($product_ids) == false)
+            $product_ids = array($product_ids);
+
         foreach ($ids as $id)
         {
-            if (is_array($product_ids) == false)
-                $product_ids = array($product_ids);
-
             $by_page = $this->config->getNumberOfElementByPage();
 
             if (is_array($product_ids) && count($product_ids) > $by_page)
@@ -236,7 +236,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $this;
     }
 
-    private function _rebuildCategoryIndex($storeId, $categoryIds = null)
+    protected function _rebuildCategoryIndex($storeId, $categoryIds = null)
     {
         if ($categoryIds == null || count($categoryIds) == 0)
         {
@@ -257,7 +257,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $this;
     }
 
-    private function _rebuildProductIndex($storeId, $productIds = null)
+    protected function _rebuildProductIndex($storeId, $productIds = null)
     {
         if ($productIds == null || count($productIds) == 0)
         {

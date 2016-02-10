@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.5.2</version>
+            <version>1.5.3</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -140,9 +140,10 @@
                 <application_id></application_id>
                 <search_only_api_key></search_only_api_key>
                 <api_key></api_key>
+                <debug>0</debug>
                 <index_prefix>magento_</index_prefix>
                 <is_popup_enabled>1</is_popup_enabled>
-                <is_instant_enabled>1</is_instant_enabled>
+                <is_instant_enabled>0</is_instant_enabled>
             </credentials>
             <products>
                 <number_product_results>9</number_product_results>

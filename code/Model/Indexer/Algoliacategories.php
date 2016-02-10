@@ -5,10 +5,10 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
     const EVENT_MATCH_RESULT_KEY = 'algoliasearch_match_result';
 
     /** @var Algolia_Algoliasearch_Model_Resource_Engine */
-    private $engine;
-    private $config;
+    protected $engine;
+    protected $config;
 
-    private static $credential_error = false;
+    protected static $credential_error = false;
 
     public function __construct()
     {
@@ -70,7 +70,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
                 $category   = $event->getDataObject();
                 $productIds = $category->getAffectedProductIds();
 
-                if (! $category->getData('is_active'))
+                if (! $category->getData('is_active') || ! $category->getData('include_in_menu'))
                 {
                     $event->addNewData('catalogsearch_delete_category_id', array_merge(array($category->getId()), $category->getAllChildren(TRUE)));
 
@@ -78,7 +78,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
                     {
                         $event->addNewData('catalogsearch_update_product_id', $productIds);
                     }
-
                 }
                 elseif ($productIds)
                 {

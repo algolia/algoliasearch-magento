@@ -234,7 +234,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                             $suffix_index_name = 'group_' . $group_id;
 
-                            $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'].'.'.$suffix_index_name : $values['attribute'];
+                            $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'].'.'.$currencies[0].'.'.$suffix_index_name : $values['attribute'];
 
                             $mergeSettings['ranking'] = array($values['sort'].'('.$sort_attribute.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
@@ -244,7 +244,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
                 else
                 {
-                    $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'].'.'.'default' : $values['attribute'];
+                    $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'].'.'.$currencies[0].'.'.'default' : $values['attribute'];
 
                     $mergeSettings['ranking'] = array($values['sort'].'('.$sort_attribute.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
@@ -258,7 +258,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
     }
 
-    private function getFields($store)
+    protected function getFields($store)
     {
         $tax_helper = Mage::helper('tax');
 
@@ -271,7 +271,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return array('price' => false, 'price_with_tax' => true);
     }
 
-    private function formatPrice($price, $includeContainer, $currency_code)
+    protected function formatPrice($price, $includeContainer, $currency_code)
     {
         if (!isset(static::$_currencies[$currency_code]))
         {
@@ -286,7 +286,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return $price;
     }
 
-    private function handlePrice(&$product, $sub_products, &$customData)
+    protected function handlePrice(&$product, $sub_products, &$customData)
     {
         $fields                     = $this->getFields($product->getStore());
         $customer_groups_enabled    = $this->config->isCustomerGroupsEnabled($product->getStoreId());
@@ -371,7 +371,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     }
                 }
 
-                if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
+                if ($type == 'grouped' || $type == 'bundle')
                 {
                     $min = PHP_INT_MAX;
                     $max = 0;
@@ -383,7 +383,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         list($min, $max) = $_priceModel->getTotalPrices($product, null, $with_tax, true);
                     }
 
-                    if ($type == 'grouped' || $type == 'configurable')
+                    if ($type == 'grouped')
                     {
                         if (count($sub_products) > 0)
                         {
@@ -508,6 +508,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $categoryCollection = Mage::getResourceModel('catalog/category_collection')
                 ->addAttributeToSelect('name')
                 ->addAttributeToFilter('entity_id', $_categoryIds)
+                ->addAttributeToFilter('include_in_menu', '1')
                 ->addFieldToFilter('level', array('gt' => 1))
                 ->addIsActiveFilter();
 

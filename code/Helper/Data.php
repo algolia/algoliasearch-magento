@@ -25,7 +25,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function __construct()
     {
-        \AlgoliaSearch\Version::$custom_value = " Magento (1.5.2)";
+        \AlgoliaSearch\Version::$custom_value = " Magento (1.5.3)";
 
         $this->algolia_helper               = Mage::helper('algoliasearch/algoliahelper');
 
@@ -427,7 +427,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $this->stopEmulation($emulationInfoPage);
     }
 
-    private function getProductsRecords($storeId, $collection)
+    protected function getProductsRecords($storeId, $collection)
     {
         $indexData = array();
 

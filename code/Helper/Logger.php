@@ -2,10 +2,10 @@
 
 class Algolia_Algoliasearch_Helper_Logger extends Mage_Core_Helper_Abstract
 {
-    private $enabled;
-    private $config;
-    private $timers = array();
-    private $stores = array();
+    protected $enabled;
+    protected $config;
+    protected $timers = array();
+    protected $stores = array();
 
     public function __construct()
     {
@@ -53,10 +53,12 @@ class Algolia_Algoliasearch_Helper_Logger extends Mage_Core_Helper_Abstract
 
     public function log($message)
     {
-        Mage::log($message, null, 'algolia.log');
+        if ($this->config->isLoggingEnabled()) {
+            Mage::log($message, null, 'algolia.log');
+        }
     }
 
-    private function formatTime($begin, $end)
+    protected function formatTime($begin, $end)
     {
         return ($end - $begin).'sec';
     }

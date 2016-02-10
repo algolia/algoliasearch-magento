@@ -1,5 +1,15 @@
 ## Change Log
 
+### 1.5.3
+
+- UPDATED: added a config to disable logging
+- UPDATED: better instant search UI
+- FIX: various design improvements
+- FIX: take into account "Include in Navigation" for categories
+- FIX: sorting in instant search page
+- FIX: wrong price for configurable products
+- FIX: mass action delete
+
 ### 1.5.2
 
 ==== BREAKING CHANGES ====
