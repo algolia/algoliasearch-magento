@@ -123,12 +123,20 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getImageWidth($storeId = null)
     {
-        return Mage::getStoreConfig(self::XML_PATH_IMAGE_WIDTH, $storeId);
+        $imageWidth = Mage::getStoreConfig(self::XML_PATH_IMAGE_WIDTH, $storeId);
+        if(empty($imageWidth)) {
+            return null;
+        }
+        return $imageWidth;
     }
 
     public function getImageHeight($storeId = null)
     {
-        return Mage::getStoreConfig(self::XML_PATH_IMAGE_HEIGHT, $storeId);
+        $imageHeight = Mage::getStoreConfig(self::XML_PATH_IMAGE_HEIGHT, $storeId);
+        if(empty($imageHeight)) {
+            return null;
+        }
+        return $imageHeight;
     }
 
     public function getImageType($storeId = null)
