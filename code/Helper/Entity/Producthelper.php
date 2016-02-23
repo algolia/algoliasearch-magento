@@ -429,12 +429,16 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                                 if ($min != $max && $min <= $customData[$field][$currency_code]['group_' . $group_id])
                                 {
                                     $customData[$field][$currency_code]['group_' . $group_id] = 0;
-                                    $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $dashed_format;
                                 }
+                                else
+                                {
+                                    $customData[$field][$currency_code]['group_' . $group_id] = $customData[$field][$currency_code]['default'];
+                                }
+
+                                $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $dashed_format;
                             }
                         }
                     }
-
 
                     if ($customData[$field][$currency_code]['default'] == 0)
                     {
