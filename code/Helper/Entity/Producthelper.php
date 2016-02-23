@@ -224,35 +224,31 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             foreach ($sorting_indices as $values)
             {
-                if ($this->config->isCustomerGroupsEnabled($storeId))
+                if ($this->config->isCustomerGroupsEnabled($storeId) && strpos($values['attribute'], 'price') !== false)
                 {
-                    if (strpos($values['attribute'], 'price') !== false)
+                    foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
                     {
-                        foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
-                        {
-                            $group_id = (int)$group->getData('customer_group_id');
+                        $group_id = (int)$group->getData('customer_group_id');
 
-                            $suffix_index_name = 'group_' . $group_id;
+                        $suffix_index_name = 'group_' . $group_id;
 
-                            $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'].'.'.$currencies[0].'.'.$suffix_index_name : $values['attribute'];
+                        $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'] . '.' . $currencies[0] . '.' . $suffix_index_name : $values['attribute'];
 
-                            $mergeSettings['ranking'] = array($values['sort'].'('.$sort_attribute.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
+                        $mergeSettings['ranking'] = array($values['sort'] . '(' . $sort_attribute . ')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
-                            $this->algolia_helper->setSettings($this->getIndexName($storeId).'_'.$values['attribute'].'_'. $suffix_index_name .'_'.$values['sort'], $mergeSettings);
-                        }
+                        $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' . $values['attribute'] . '_' . $suffix_index_name . '_' . $values['sort'], $mergeSettings);
                     }
                 }
                 else
                 {
-                    $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'].'.'.$currencies[0].'.'.'default' : $values['attribute'];
+                    $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'] . '.' . $currencies[0] . '.' . 'default' : $values['attribute'];
 
-                    $mergeSettings['ranking'] = array($values['sort'].'('.$sort_attribute.')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
+                    $mergeSettings['ranking'] = array($values['sort'] . '(' . $sort_attribute . ')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
                     if ($values['attribute'] === 'price')
-                        $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' .$values['attribute']. '_default_' . $values['sort'], $mergeSettings);
+                        $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' . $values['attribute'] . '_default_' . $values['sort'], $mergeSettings);
                     else
-                        $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' .$values['attribute']. '_' . $values['sort'], $mergeSettings);
-
+                        $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' . $values['attribute'] . '_' . $values['sort'], $mergeSettings);
                 }
             }
         }
