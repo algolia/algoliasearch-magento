@@ -381,6 +381,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $_priceModel = $product->getPriceModel();
 
                         list($min, $max) = $_priceModel->getTotalPrices($product, null, $with_tax, true);
+                        $min = (double) $min;
+                        $max = (double) $max;
                     }
 
                     if ($type == 'grouped')
