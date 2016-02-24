@@ -173,7 +173,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 if (Array.isArray(hit.price))
                     hit.price = hit.price[0];
 
-                if (price_key !== '.' + algoliaConfig.currency_code + '.default' &&
+                if (price_key !== '.' + algoliaConfig.currency_code + '.default' && hit['price'] !== undefined &&
                         hit['price'][algoliaConfig.currency_code][price_key.substr(1) + '_formated'] !== hit['price'][algoliaConfig.currency_code]['default_formated']) {
                     hit['price'][algoliaConfig.currency_code][price_key.substr(1) + '_original_formated'] = hit['price'][algoliaConfig.currency_code]['default_formated'];
                 }

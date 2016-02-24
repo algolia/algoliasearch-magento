@@ -351,6 +351,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         if ($special_price && $special_price < $customData[$field][$currency_code]['group_' . $group_id])
                         {
+                            $customData[$field][$currency_code]['group_' . $group_id . '_original_formated'] = $customData[$field][$currency_code]['default_formated'];
+
                             $customData[$field][$currency_code]['group_' . $group_id] = $special_price;
                             $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $this->formatPrice($special_price, false, $currency_code);
                         }

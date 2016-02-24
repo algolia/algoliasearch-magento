@@ -14,6 +14,7 @@ n98-magerun --root-dir=/var/www/htdocs config:set algoliasearch/credentials/appl
 n98-magerun --root-dir=/var/www/htdocs config:set algoliasearch/credentials/search_only_api_key $SEARCH_ONLY_API_KEY
 n98-magerun --root-dir=/var/www/htdocs config:set algoliasearch/credentials/api_key $API_KEY
 n98-magerun --root-dir=/var/www/htdocs config:set algoliasearch/credentials/index_prefix $INDEX_PREFIX
+n98-magerun --root-dir=/var/www/htdocs config:set algoliasearch/credentials/is_instant_enabled "1"
 n98-magerun --root-dir=/var/www/htdocs config:set web/unsecure/base_url $BASE_URL
 n98-magerun --root-dir=/var/www/htdocs config:set web/secure/base_url $BASE_URL
 
