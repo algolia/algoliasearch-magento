@@ -44,6 +44,9 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
     {
         foreach ($productData as $key => &$data)
         {
+            if ($key === 'sku') {
+                continue;
+            }
             $data = $this->try_cast($data);
 
             if (is_array($data) === false)
