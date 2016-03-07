@@ -33,13 +33,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $productAttributes = array_merge(array('name', 'path', 'categories', 'categories_without_path', 'description', 'ordered_qty', 'total_ordered', 'stock_qty', 'rating_summary', 'media_gallery'), $allAttributes);
 
-            $excludedAttributes = array(
-                'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
-                'custom_design', 'custom_design_from', 'custom_design_to', 'custom_layout_update', 'custom_use_parent_settings',
-                'default_sort_by', 'display_mode', 'filter_price_range', 'global_position', 'image', 'include_in_menu', 'is_active',
-                'is_always_include_in_menu', 'is_anchor', 'landing_page', 'level', 'lower_cms_block',
-                'page_layout', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
-                'visible_in_menu');
+            $excludedAttributes = $this->getExcludedAttributes();
 
             $productAttributes = array_diff($productAttributes, $excludedAttributes);
 
@@ -57,6 +51,18 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         });
 
         return $attributes;
+    }
+
+    protected function getExcludedAttributes()
+    {
+        return array(
+            'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
+            'custom_design', 'custom_design_from', 'custom_design_to', 'custom_layout_update', 'custom_use_parent_settings',
+            'default_sort_by', 'display_mode', 'filter_price_range', 'global_position', 'image', 'include_in_menu', 'is_active',
+            'is_always_include_in_menu', 'is_anchor', 'landing_page', 'level', 'lower_cms_block',
+            'page_layout', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
+            'visible_in_menu'
+        );
     }
 
     public function isAttributeEnabled($additionalAttributes, $attr_name)
