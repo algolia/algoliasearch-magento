@@ -1,5 +1,12 @@
 ## Change Log
 
+### 1.5.4
+
+- UPDATED: instantsearch.js update
+- FIX: issue with slaves creation
+- FIX: issue for bundle products when customer group is enabled
+- FIX: casting in resulting in bad typing in Algolia
+
 ### 1.5.3
 
 - UPDATED: added a config to disable logging
