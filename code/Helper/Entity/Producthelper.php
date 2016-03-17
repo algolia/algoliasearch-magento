@@ -116,6 +116,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         foreach ($this->config->getProductAdditionalAttributes($storeId) as $attribute)
         {
+            $attribute_name = $attribute['attribute'];
             if ($attribute['searchable'] == '1')
             {
                 if ($attribute['order'] == 'ordered')
@@ -690,12 +691,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         foreach ($additionalAttributes as $attribute)
         {
-            if (isset($customData[$attribute['attribute']]))
+            $attribute_name = $attribute['attribute'];
+            if (isset($customData[$attribute_name]))
                 continue;
 
-            $value = $product->getData($attribute['attribute']);
+            $value = $product->getData($attribute_name);
 
-            $attribute_resource = $product->getResource()->getAttribute($attribute['attribute']);
+            $attribute_resource = $product->getResource()->getAttribute($attribute_name);
 
             if ($attribute_resource)
             {
@@ -719,11 +721,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                             $all_sub_products_out_of_stock = false;
 
-                            $value = $sub_product->getData($attribute['attribute']);
+                            $value = $sub_product->getData($attribute_name);
 
                             if ($value)
                             {
-                                $value_text = $sub_product->getAttributeText($attribute['attribute']);
+                                $value_text = $sub_product->getAttributeText($attribute_name);
 
                                 if ($value_text)
                                     $values[] = $value_text;
@@ -734,7 +736,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         if (is_array($values) && count($values) > 0)
                         {
-                            $customData[$attribute['attribute']] = array_values(array_unique($values));
+                            $customData[$attribute_name] = array_values(array_unique($values));
                         }
 
                         if ($customData['in_stock'] && $all_sub_products_out_of_stock) {
@@ -746,7 +748,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
                 else
                 {
-                    $value_text = $product->getAttributeText($attribute['attribute']);
+                    $value_text = $product->getAttributeText($attribute_name);
 
                     if ($value_text)
                         $value = $value_text;
@@ -758,7 +760,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                     if ($value)
                     {
-                        $customData[$attribute['attribute']] = $value;
+                        $customData[$attribute_name] = $value;
                     }
                 }
             }
