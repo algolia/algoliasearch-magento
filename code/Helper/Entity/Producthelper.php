@@ -712,12 +712,16 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             {
                 $attribute_resource->setStoreId($product->getStoreId());
 
-                if ($value === null)
+                if ($value === null || 'sku' == $attribute_name)
                 {
                     /** Get values as array in children */
                     if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
                     {
-                        $values = array();
+                        if ($value === null) {
+                            $values = array();
+                        } else {
+                            $values = array($this->getValueOrValueText($product, $attribute_name, $attribute_resource));
+                        }
 
                         $all_sub_products_out_of_stock = true;
 
