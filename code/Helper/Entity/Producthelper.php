@@ -695,11 +695,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $value = $product->getData($attribute['attribute']);
 
-            $attribute_ressource = $product->getResource()->getAttribute($attribute['attribute']);
+            $attribute_resource = $product->getResource()->getAttribute($attribute['attribute']);
 
-            if ($attribute_ressource)
+            if ($attribute_resource)
             {
-                $attribute_ressource = $attribute_ressource->setStoreId($product->getStoreId());
+                $attribute_resource = $attribute_resource->setStoreId($product->getStoreId());
 
                 if ($value === null)
                 {
@@ -728,7 +728,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                                 if ($value_text)
                                     $values[] = $value_text;
                                 else
-                                    $values[] = $attribute_ressource->getFrontend()->getValue($sub_product);
+                                    $values[] = $attribute_resource->getFrontend()->getValue($sub_product);
                             }
                         }
 
@@ -752,8 +752,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $value = $value_text;
                     else
                     {
-                        $attribute_ressource = $attribute_ressource->setStoreId($product->getStoreId());
-                        $value = $attribute_ressource->getFrontend()->getValue($product);
+                        $attribute_resource = $attribute_resource->setStoreId($product->getStoreId());
+                        $value = $attribute_resource->getFrontend()->getValue($product);
                     }
 
                     if ($value)
