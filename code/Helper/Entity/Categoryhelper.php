@@ -158,11 +158,11 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         {
             $value = $category->getData($attribute['attribute']);
 
-            $attribute_ressource = $category->getResource()->getAttribute($attribute['attribute']);
+            $attribute_resource = $category->getResource()->getAttribute($attribute['attribute']);
 
-            if ($attribute_ressource)
+            if ($attribute_resource)
             {
-                $value = $attribute_ressource->getFrontend()->getValue($category);
+                $value = $attribute_resource->getFrontend()->getValue($category);
             }
 
             if (isset($data[$attribute['attribute']]))
