@@ -474,6 +474,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
     }
 
+    protected function getValueOrValueText(Mage_Catalog_Model_Product $product, $name, $resource)
+    {
+        $value_text = $product->getAttributeText($name);
+        if (!$value_text) {
+            $value_text = $resource->getFrontend()->getValue($product);
+        }
+        return $value_text;
+    }
+
     public function getObject(Mage_Catalog_Model_Product $product)
     {
         $type = $this->config->getMappedProductType($product->getTypeId());
@@ -700,7 +709,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             if ($attribute_resource)
             {
-                $attribute_resource = $attribute_resource->setStoreId($product->getStoreId());
+                $attribute_resource->setStoreId($product->getStoreId());
 
                 if ($value === null)
                 {
@@ -724,12 +733,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                             if ($value)
                             {
-                                $value_text = $sub_product->getAttributeText($attribute_name);
-
-                                if ($value_text)
-                                    $values[] = $value_text;
-                                else
-                                    $values[] = $attribute_resource->getFrontend()->getValue($sub_product);
+                                $values[] = $this->getValueOrValueText($sub_product, $attribute_name, $attribute_resource);
                             }
                         }
 
@@ -747,15 +751,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
                 else
                 {
-                    $value_text = $product->getAttributeText($attribute_name);
-
-                    if ($value_text)
-                        $value = $value_text;
-                    else
-                    {
-                        $attribute_resource = $attribute_resource->setStoreId($product->getStoreId());
-                        $value = $attribute_resource->getFrontend()->getValue($product);
-                    }
+                    $value = $this->getValueOrValueText($product, $attribute_name, $attribute_resource);
 
                     if ($value)
                     {
