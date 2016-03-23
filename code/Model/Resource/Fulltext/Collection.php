@@ -20,7 +20,19 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext_Collection extends Mage_Cata
         if ($config->isInstantEnabled($storeId) === false || $config->makeSeoRequest($storeId))
         {
             $algolia_query = $query !== '__empty__' ? $query : '';
-            $data = Mage::helper('algoliasearch')->getSearchResult($algolia_query, $storeId);
+
+            try
+            {
+                $data = Mage::helper('algoliasearch')->getSearchResult($algolia_query, $storeId);
+            }
+            catch (\Exception $e)
+            {
+                $logger = Mage::helper('algoliasearch/logger');
+                $logger->log($e->getMessage(), true);
+                $logger->log($e->getTraceAsString(), true);
+
+                return parent::addSearchFilter($query);
+            }
         }
 
 

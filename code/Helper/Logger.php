@@ -51,9 +51,9 @@ class Algolia_Algoliasearch_Helper_Logger extends Mage_Core_Helper_Abstract
         $this->log('<<<<< END ' .$action. ' (' . $this->formatTime($this->timers[$action], microtime(true)) . ')');
     }
 
-    public function log($message)
+    public function log($message, $forceLog = false)
     {
-        if ($this->config->isLoggingEnabled()) {
+        if ($this->config->isLoggingEnabled() || $forceLog) {
             Mage::log($message, null, 'algolia.log');
         }
     }
