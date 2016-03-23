@@ -33,13 +33,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $productAttributes = array_merge(array('name', 'path', 'categories', 'categories_without_path', 'description', 'ordered_qty', 'total_ordered', 'stock_qty', 'rating_summary', 'media_gallery'), $allAttributes);
 
-            $excludedAttributes = array(
-                'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
-                'custom_design', 'custom_design_from', 'custom_design_to', 'custom_layout_update', 'custom_use_parent_settings',
-                'default_sort_by', 'display_mode', 'filter_price_range', 'global_position', 'image', 'include_in_menu', 'is_active',
-                'is_always_include_in_menu', 'is_anchor', 'landing_page', 'level', 'lower_cms_block',
-                'page_layout', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
-                'visible_in_menu');
+            $excludedAttributes = $this->getExcludedAttributes();
 
             $productAttributes = array_diff($productAttributes, $excludedAttributes);
 
@@ -57,6 +51,18 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         });
 
         return $attributes;
+    }
+
+    protected function getExcludedAttributes()
+    {
+        return array(
+            'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
+            'custom_design', 'custom_design_from', 'custom_design_to', 'custom_layout_update', 'custom_use_parent_settings',
+            'default_sort_by', 'display_mode', 'filter_price_range', 'global_position', 'image', 'include_in_menu', 'is_active',
+            'is_always_include_in_menu', 'is_anchor', 'landing_page', 'level', 'lower_cms_block',
+            'page_layout', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
+            'visible_in_menu'
+        );
     }
 
     public function isAttributeEnabled($additionalAttributes, $attr_name)
@@ -468,6 +474,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
     }
 
+    protected function getValueOrValueText(Mage_Catalog_Model_Product $product, $name, $resource)
+    {
+        $value_text = $product->getAttributeText($name);
+        if (!$value_text) {
+            $value_text = $resource->getFrontend()->getValue($product);
+        }
+        return $value_text;
+    }
+
     public function getObject(Mage_Catalog_Model_Product $product)
     {
         $type = $this->config->getMappedProductType($product->getTypeId());
@@ -684,23 +699,28 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         foreach ($additionalAttributes as $attribute)
         {
-            if (isset($customData[$attribute['attribute']]))
+            $attribute_name = $attribute['attribute'];
+            if (isset($customData[$attribute_name]))
                 continue;
 
-            $value = $product->getData($attribute['attribute']);
+            $value = $product->getData($attribute_name);
 
-            $attribute_ressource = $product->getResource()->getAttribute($attribute['attribute']);
+            $attribute_resource = $product->getResource()->getAttribute($attribute_name);
 
-            if ($attribute_ressource)
+            if ($attribute_resource)
             {
-                $attribute_ressource = $attribute_ressource->setStoreId($product->getStoreId());
+                $attribute_resource->setStoreId($product->getStoreId());
 
-                if ($value === null)
+                if ($value === null || 'sku' == $attribute_name)
                 {
                     /** Get values as array in children */
                     if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')
                     {
-                        $values = array();
+                        if ($value === null) {
+                            $values = array();
+                        } else {
+                            $values = array($this->getValueOrValueText($product, $attribute_name, $attribute_resource));
+                        }
 
                         $all_sub_products_out_of_stock = true;
 
@@ -713,22 +733,17 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                             $all_sub_products_out_of_stock = false;
 
-                            $value = $sub_product->getData($attribute['attribute']);
+                            $value = $sub_product->getData($attribute_name);
 
                             if ($value)
                             {
-                                $value_text = $sub_product->getAttributeText($attribute['attribute']);
-
-                                if ($value_text)
-                                    $values[] = $value_text;
-                                else
-                                    $values[] = $attribute_ressource->getFrontend()->getValue($sub_product);
+                                $values[] = $this->getValueOrValueText($sub_product, $attribute_name, $attribute_resource);
                             }
                         }
 
                         if (is_array($values) && count($values) > 0)
                         {
-                            $customData[$attribute['attribute']] = array_values(array_unique($values));
+                            $customData[$attribute_name] = array_values(array_unique($values));
                         }
 
                         if ($customData['in_stock'] && $all_sub_products_out_of_stock) {
@@ -740,19 +755,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
                 else
                 {
-                    $value_text = $product->getAttributeText($attribute['attribute']);
-
-                    if ($value_text)
-                        $value = $value_text;
-                    else
-                    {
-                        $attribute_ressource = $attribute_ressource->setStoreId($product->getStoreId());
-                        $value = $attribute_ressource->getFrontend()->getValue($product);
-                    }
+                    $value = $this->getValueOrValueText($product, $attribute_name, $attribute_resource);
 
                     if ($value)
                     {
-                        $customData[$attribute['attribute']] = $value;
+                        $customData[$attribute_name] = $value;
                     }
                 }
             }
