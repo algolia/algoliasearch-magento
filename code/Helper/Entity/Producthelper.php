@@ -95,8 +95,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $additionalAttr = $this->config->getProductAdditionalAttributes($storeId);
 
-        foreach ($additionalAttr as &$attr)
-            $attr = $attr['attribute'];
+        /** Map instead of foreach because otherwise it adds quotes to the last attribute  **/
+        $additionalAttr = array_map(function($attr) {
+            return $attr['attribute'];
+        }, $additionalAttr);
 
         $products = $products->addAttributeToSelect(array_values(array_merge(static::$_predefinedProductAttributes, $additionalAttr)));
 
