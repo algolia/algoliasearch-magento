@@ -232,7 +232,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             foreach ($sorting_indices as $values)
             {
-                if ($this->config->isCustomerGroupsEnabled($storeId) && strpos($values['attribute'], 'price') !== false)
+                if ($this->config->isCustomerGroupsEnabled($storeId) && $values['attribute'] === 'price')
                 {
                     foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
                     {
@@ -240,7 +240,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         $suffix_index_name = 'group_' . $group_id;
 
-                        $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'] . '.' . $currencies[0] . '.' . $suffix_index_name : $values['attribute'];
+                        $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'] . '.' . $currencies[0] . '.' . $suffix_index_name : $values['attribute'];
 
                         $mergeSettings['ranking'] = array($values['sort'] . '(' . $sort_attribute . ')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
@@ -249,7 +249,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
                 else
                 {
-                    $sort_attribute = strpos($values['attribute'], 'price') !== false ? $values['attribute'] . '.' . $currencies[0] . '.' . 'default' : $values['attribute'];
+                    $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'] . '.' . $currencies[0] . '.' . 'default' : $values['attribute'];
 
                     $mergeSettings['ranking'] = array($values['sort'] . '(' . $sort_attribute . ')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
