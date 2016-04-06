@@ -68,8 +68,8 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
                     $tags = array(
                         Mage_CatalogSearch_Model_Query::CACHE_TAG
                     );
-                    $lifetime = Mage::getStoreConfig('core/cache/lifetime');
-                    Mage::app()->saveCache($cacheContent, $this->_popularQueriesCacheId, $tags, $lifetime);
+
+                    Mage::app()->saveCache($cacheContent, $this->_popularQueriesCacheId, $tags, 604800);
 
                 } catch (Exception $e) {
                     // Exception = no caching
