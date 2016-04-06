@@ -116,6 +116,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 priceKey: '<?php echo $price_key; ?>',
                 currencySymbol: '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>',
                 currency_code: '<?php echo $currency_code; ?>',
+                maxValuesPerFacet: <?php echo (int) $config->getMaxValuesPerFacet(); ?>,
                 autofocus: true,
                 request: {
                     query:<?php echo json_encode(array("value" => html_entity_decode($query))); ?>.value,
@@ -211,6 +212,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     return algoliaBundle.instantsearch.widgets.refinementList({
                         container: facet.wrapper.appendChild(document.createElement('div')),
                         attributeName: facet.attribute,
+                        limit: algoliaConfig.maxValuesPerFacet,
                         operator: 'and',
                         templates: templates,
                         cssClasses: {
@@ -225,6 +227,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     return algoliaBundle.instantsearch.widgets.refinementList({
                         container: facet.wrapper.appendChild(document.createElement('div')),
                         attributeName: facet.attribute,
+                        limit: algoliaConfig.maxValuesPerFacet,
                         operator: 'or',
                         templates: templates,
                         cssClasses: {

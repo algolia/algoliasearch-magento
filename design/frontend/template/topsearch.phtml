@@ -635,6 +635,7 @@ $placeholder = $this->__('Search for products, categories, ...');
                             attributes: hierarchical_levels,
                             separator: ' /// ',
                             alwaysGetRootLevel: true,
+                            limit: algoliaConfig.maxValuesPerFacet,
                             templates: templates,
                             sortBy: ['name:asc'],
                             cssClasses: {
