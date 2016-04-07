@@ -25,7 +25,8 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
             ->addAttributeToFilter($attributeCode, array('neq' => ''))
             ->addAttributeToSelect($attributeCode);
 
-        $usedAttributeValues = array_unique($products->getColumnValues($attributeCode));
+        $usedAttributeValues = array_keys(array_flip( // array unique
+            explode(',', implode(',', $products->getColumnValues($attributeCode)))));
 
         $attributeModel = Mage::getSingleton('eav/config')
             ->getAttribute('catalog_product', $attributeCode)
