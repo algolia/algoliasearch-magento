@@ -45,7 +45,7 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
             $values = array($values);
         }
 
-        $values = array_map(function ($value) use ($section) {
+        $values = array_map(function ($value) use ($section, $storeId) {
 
             $record = array(
                 'objectID'  => $value,
@@ -54,7 +54,8 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
 
             $transport = new Varien_Object($record);
 
-            Mage::dispatchEvent('algolia_additional_section_item_index_before', array('section' => $section, 'record' => $transport));
+            Mage::dispatchEvent('algolia_additional_section_item_index_before',
+                array('section' => $section, 'record' => $transport, 'store_id' => $storeId));
 
             $record = $transport->getData();
 
