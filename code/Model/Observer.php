@@ -203,12 +203,15 @@ class Algolia_Algoliasearch_Model_Observer
                 }
 
                 $this->helper->rebuildStoreProductIndex($storeId, $productIds);
+                $this->helper->removeNonIndexableProducts($storeId, $productIds);
             }
         } else {
             if (!empty($page) && !empty($pageSize)) {
+                $this->helper->removeNonIndexableProducts($storeId, $productIds);
                 $this->helper->rebuildStoreProductIndexPage($storeId,
                     $this->product_helper->getProductCollectionQuery($storeId, $productIds), $page, $pageSize);
             } else {
+                $this->helper->removeNonIndexableProducts($storeId, $productIds);
                 $this->helper->rebuildStoreProductIndex($storeId, $productIds);
             }
         }

@@ -536,6 +536,63 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->logger->stop('rebuildStoreProductIndexPage '.$this->logger->getStoreName($storeId).' page '.$page.' pageSize '.$pageSize);
     }
 
+    /**
+     * Removes products that are no longer indexable, i.e. they are disabled,
+     * from the specified Algolia index. You can provide an array from product
+     * IDs that you want to query. Otherwise, the entire product collection will
+     * be queried.
+     *
+     * @param string $storeId
+     * @param array $productIds
+     */
+    public function removeNonIndexableProducts($storeId, array $productIds = array())
+    {
+        $this->logger->start('REMOVE FROM ALGOLIA');
+
+        $nonIndexableProductIds = $this->getNonIndexableProductIds($storeId, $productIds);
+        if (count($nonIndexableProductIds) > 0) {
+            $this->removeProducts($nonIndexableProductIds, $storeId);
+        }
+
+        $this->logger->stop('REMOVE FROM ALGOLIA');
+    }
+
+    /**
+     * Returns an array of the IDs of products that are no longer indexable,
+     * i.e. they are disabled. You can provide an array from product IDs that
+     * you want to query. Otherwise, the entire product collection will be
+     * queried.
+     *
+     * @param string $storeId
+     * @param array $productIds
+     * @return array
+     */
+    public function getNonIndexableProductIds($storeId, array $productIds = array())
+    {
+        $nonIndexableProductIds = array();
+
+        /** @var Mage_Catalog_Model_Resource_Product_Collection $products */
+        $products = Mage::getModel('catalog/product')->getCollection();
+        $products
+            ->addStoreFilter($storeId)
+            ->addAttributeToFilter('type_id', 'configurable')
+            ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_DISABLED)
+        ;
+
+        if (!empty($productIds)) {
+            $products->addAttributeToFilter('entity_id', array(
+                'in' => $productIds
+            ));
+        }
+
+        foreach ($products as $product) {
+            /** @var Mage_Catalog_Model_Product $product */
+            $nonIndexableProductIds[] = $product->getId();
+        }
+
+        return $nonIndexableProductIds;
+    }
+
     public function startEmulation($storeId)
     {
         $this->logger->start('START EMULATION');
