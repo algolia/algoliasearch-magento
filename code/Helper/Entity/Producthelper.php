@@ -205,18 +205,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             foreach ($sorting_indices as $values)
             {
-                if ($this->config->isCustomerGroupsEnabled($storeId))
+                if ($this->config->isCustomerGroupsEnabled($storeId) && $values['attribute'] === 'price')
                 {
-                    if ($values['attribute'] === 'price')
+                    foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
                     {
-                        foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group)
-                        {
-                            $group_id = (int)$group->getData('customer_group_id');
-
-                            $suffix_index_name = 'group_' . $group_id;
-
-                            $slaves[] = $this->getIndexName($storeId) . '_' .$values['attribute'].'_' . $suffix_index_name . '_' . $values['sort'];
-                        }
+                        $group_id = (int) $group->getData('customer_group_id');
+            
+                        $suffix_index_name = 'group_'.$group_id;
+            
+                        $slaves[] = $this->getIndexName($storeId).'_'.$values['attribute'].'_'.$suffix_index_name.'_'.$values['sort'];
                     }
                 }
                 else
