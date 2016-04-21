@@ -21,6 +21,7 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
         $products = Mage::getResourceModel('catalog/product_collection')
             ->addStoreFilter($storeId)
             ->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
+            ->addAttributeToFilter('status', array('eq' => Mage_Catalog_Model_Product_Status::STATUS_ENABLED))
             ->addAttributeToFilter($attributeCode, array('notnull' => true))
             ->addAttributeToFilter($attributeCode, array('neq' => ''))
             ->addAttributeToSelect($attributeCode);
