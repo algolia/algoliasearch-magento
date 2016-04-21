@@ -70,6 +70,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
         $s = trim(preg_replace('/\s+/', ' ', $s));
         $s = preg_replace('/&nbsp;/', ' ', $s);
         $s = preg_replace('!\s+!', ' ', $s);
+        $s = preg_replace('/\{\{[^}]+\}\}/', ' ', $s);
 
         return trim(strip_tags($s));
     }
