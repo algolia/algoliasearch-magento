@@ -4,6 +4,7 @@ $config = Mage::helper('algoliasearch/config');
 $catalogSearchHelper = $this->helper('catalogsearch'); /** @var $catalogSearchHelper Mage_CatalogSearch_Helper_Data */
 $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHelper Algolia_Algoliasearch_Helper_Data */
 $product_helper = Mage::helper('algoliasearch/entity_producthelper');
+$algolia_helper = Mage::helper('algoliasearch/algoliahelper');
 
 $base_url = Mage::getBaseUrl();
 
@@ -12,6 +13,7 @@ $isCategoryPage = false;
 
 $currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
 $group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
+
 $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
 
 $allDepartments = "All departments";
@@ -106,7 +108,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 },
                 applicationId: '<?php echo $config->getApplicationID() ?>',
                 indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
-                apiKey: '<?php echo $config->getSearchOnlyAPIKey() ?>',
+                apiKey: '<?php echo $algolia_helper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $config->getAttributesToRetrieve($group_id)) ?>',
                 facets: <?php echo json_encode($config->getFacets()); ?>,
                 hitsPerPage: <?php echo (int) $config->getNumberOfProductResults() ?>,
                 sortingIndices: <?php echo json_encode(array_values($config->getSortingIndices())); ?>,

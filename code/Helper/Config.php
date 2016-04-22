@@ -315,6 +315,36 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return trim(Mage::getStoreConfig(self::INDEX_PREFIX, $storeId));
     }
 
+    public function getAttributesToRetrieve($group_id)
+    {
+        if (false === $this->isCustomerGroupsEnabled()) {
+            return [];
+        }
+
+        $attributes = array();
+        foreach ($this->getProductAdditionalAttributes() as $attribute) {
+            if ($attribute['attribute'] !== 'price') {
+                $attributes[] = $attribute['attribute'];
+            }
+        }
+
+        $attributes = array_merge($attributes, ['objectID', 'name', 'url', 'visibility_search', 'visibility_catalog', 'categories', 'categories_without_path', 'thumbnail_url', 'image_url', 'in_stock', 'type_id']);
+
+        $currencies = Mage::getModel('directory/currency')->getConfigAllowCurrencies();
+
+        foreach ($currencies as $currency) {
+            $attributes[] = 'price.'.$currency.'.default';
+            $attributes[] = 'price.'.$currency.'.default_formated';
+            $attributes[] = 'price.'.$currency.'.group_'.$group_id;
+            $attributes[] = 'price.'.$currency.'.group_'.$group_id.'_formated';
+            $attributes[] = 'price.'.$currency.'.special_from_date';
+            $attributes[] = 'price.'.$currency.'.special_to_date';
+        }
+
+
+        return ['attributesToRetrieve' => $attributes];
+    }
+
     public function getCategoryAdditionalAttributes($storeId = NULL)
     {
         $attrs = unserialize(Mage::getStoreConfig(self::CATEGORY_ATTRIBUTES, $storeId));

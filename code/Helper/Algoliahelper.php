@@ -13,6 +13,7 @@ if (class_exists('AlgoliaSearch\Client', false) == false)
 
 class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstract
 {
+    /** @var \AlgoliaSearch\Client */
     protected $client;
     protected $config;
 
@@ -26,6 +27,11 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
     {
         if ($this->config->getApplicationID() && $this->config->getAPIKey())
             $this->client = new \AlgoliaSearch\Client($this->config->getApplicationID(), $this->config->getAPIKey());
+    }
+
+    public function generateSearchSecuredApiKey($key, $params = array())
+    {
+        return $this->client->generateSecuredApiKey($key, $params);
     }
 
     public function getIndex($name)
