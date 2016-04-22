@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2013 Algolia
  * http://www.algolia.com/
@@ -23,53 +24,159 @@
  *
  *
  */
+
 namespace AlgoliaSearch;
 
 use Exception;
 
-class ClientContext {
-
+class ClientContext
+{
+    /**
+     * @var string
+     */
     public $applicationID;
+
+    /**
+     * @var string
+     */
     public $apiKey;
+
+    /**
+     * @var array
+     */
     public $readHostsArray;
+
+    /**
+     * @var array
+     */
     public $writeHostsArray;
+
+    /**
+     * @var resource
+     */
     public $curlMHandle;
+
+    /**
+     * @var string
+     */
     public $adminAPIKey;
+
+    /**
+     * @var string
+     */
+    public $endUserIP;
+
+    /**
+     * @var string
+     */
+    public $algoliaUserToken;
+
+    /**
+     * @var int
+     */
     public $connectTimeout;
 
-    function __construct($applicationID, $apiKey, $hostsArray) {
-        $this->connectTimeout = 2; // connect timeout of 2s by default
-        $this->readTimeout = 30; // global timeout of 30s by default
-        $this->searchTimeout = 5; // search timeout of 5s by default
+    /**
+     * ClientContext constructor.
+     *
+     * @param string $applicationID
+     * @param string $apiKey
+     * @param array  $hostsArray
+     * @param bool   $placesEnabled
+     *
+     * @throws Exception
+     */
+    public function __construct($applicationID, $apiKey, $hostsArray, $placesEnabled = false)
+    {
+        // connect timeout of 2s by default
+        $this->connectTimeout = 2;
+
+        // global timeout of 30s by default
+        $this->readTimeout = 30;
+
+        // search timeout of 5s by default
+        $this->searchTimeout = 5;
+
         $this->applicationID = $applicationID;
         $this->apiKey = $apiKey;
         $this->readHostsArray = $hostsArray;
         $this->writeHostsArray = $hostsArray;
+
         if ($this->readHostsArray == null || count($this->readHostsArray) == 0) {
-            $this->readHostsArray = array($applicationID . "-dsn.algolia.net", $applicationID . "-1.algolianet.com", $applicationID . "-2.algolianet.com", $applicationID . "-3.algolianet.com");
-            $this->writeHostsArray = array($applicationID . ".algolia.net", $applicationID . "-1.algolianet.com", $applicationID . "-2.algolianet.com", $applicationID . "-3.algolianet.com");
+            $this->readHostsArray = $this->getDefaultReadHosts($placesEnabled);
+            $this->writeHostsArray = $this->getDefaultWriteHosts();
         }
+
         if ($this->applicationID == null || mb_strlen($this->applicationID) == 0) {
             throw new Exception('AlgoliaSearch requires an applicationID.');
         }
+
         if ($this->apiKey == null || mb_strlen($this->apiKey) == 0) {
             throw new Exception('AlgoliaSearch requires an apiKey.');
         }
 
-        $this->curlMHandle = NULL;
-        $this->adminAPIKey = NULL;
-        $this->endUserIP = NULL;
-        $this->rateLimitAPIKey = NULL;
-        $this->headers = array();
+        $this->curlMHandle = null;
+        $this->adminAPIKey = null;
+        $this->endUserIP = null;
+        $this->algoliaUserToken = null;
+        $this->rateLimitAPIKey = null;
+        $this->headers = [];
     }
 
-    function __destruct() {
+    /**
+     * @param bool $placesEnabled
+     *
+     * @return array
+     */
+    private function getDefaultReadHosts($placesEnabled)
+    {
+        if ($placesEnabled) {
+            return [
+                'places-dsn.algolia.net',
+                'places-1.algolianet.com',
+                'places-2.algolianet.com',
+                'places-3.algolianet.com',
+            ];
+        }
+
+        return [
+            $this->applicationID.'-dsn.algolia.net',
+            $this->applicationID.'-1.algolianet.com',
+            $this->applicationID.'-2.algolianet.com',
+            $this->applicationID.'-3.algolianet.com',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getDefaultWriteHosts()
+    {
+        return [
+            $this->applicationID.'.algolia.net',
+            $this->applicationID.'-1.algolianet.com',
+            $this->applicationID.'-2.algolianet.com',
+            $this->applicationID.'-3.algolianet.com',
+        ];
+    }
+
+    /**
+     * Closes eventually opened curl handles.
+     */
+    public function __destruct()
+    {
         if ($this->curlMHandle != null) {
             curl_multi_close($this->curlMHandle);
         }
     }
 
-    public function getMHandle($curlHandle) {
+    /**
+     * @param $curlHandle
+     *
+     * @return resource
+     */
+    public function getMHandle($curlHandle)
+    {
         if ($this->curlMHandle == null) {
             $this->curlMHandle = curl_multi_init();
         }
@@ -78,24 +185,58 @@ class ClientContext {
         return $this->curlMHandle;
     }
 
-    public function releaseMHandle($curlHandle) {
+    /**
+     * @param $curlHandle
+     */
+    public function releaseMHandle($curlHandle)
+    {
         curl_multi_remove_handle($this->curlMHandle, $curlHandle);
     }
 
-    public function setRateLimit($adminAPIKey, $endUserIP, $rateLimitAPIKey) {
+    /**
+     * @param string $ip
+     */
+    public function setForwardedFor($ip)
+    {
+        $this->endUserIP = $ip;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setAlgoliaUserToken($token)
+    {
+        $this->algoliaUserToken = $token;
+    }
+
+    /**
+     * @param string $adminAPIKey
+     * @param string $endUserIP
+     * @param string $rateLimitAPIKey
+     */
+    public function setRateLimit($adminAPIKey, $endUserIP, $rateLimitAPIKey)
+    {
         $this->adminAPIKey = $adminAPIKey;
         $this->endUserIP = $endUserIP;
         $this->rateLimitAPIKey = $rateLimitAPIKey;
     }
 
-    public function disableRateLimit() {
-        $this->adminAPIKey = NULL;
-        $this->endUserIP = NULL;
-        $this->rateLimitAPIKey = NULL;
-
+    /**
+     * Disables the rate limit.
+     */
+    public function disableRateLimit()
+    {
+        $this->adminAPIKey = null;
+        $this->endUserIP = null;
+        $this->rateLimitAPIKey = null;
     }
 
-    public function setExtraHeader($key, $value) {
+    /**
+     * @param string $key
+     * @param string $value
+     */
+    public function setExtraHeader($key, $value)
+    {
         $this->headers[$key] = $value;
     }
 }
