@@ -7,6 +7,8 @@ if (class_exists('AlgoliaSearch\Client', false) == false)
     require_once Mage::getBaseDir('lib').'/AlgoliaSearch/ClientContext.php';
     require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Client.php';
     require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Index.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/PlacesIndex.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/IndexBrowser.php';
 }
 
 class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstract
