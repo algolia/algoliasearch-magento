@@ -297,22 +297,22 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getApplicationID($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::APPLICATION_ID, $storeId);
+        return trim(Mage::getStoreConfig(self::APPLICATION_ID, $storeId));
     }
 
     public function getAPIKey($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::API_KEY, $storeId);
+        return trim(Mage::getStoreConfig(self::API_KEY, $storeId));
     }
 
     public function getSearchOnlyAPIKey($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::SEARCH_ONLY_API_KEY, $storeId);
+        return trim(Mage::getStoreConfig(self::SEARCH_ONLY_API_KEY, $storeId));
     }
 
     public function getIndexPrefix($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::INDEX_PREFIX, $storeId);
+        return trim(Mage::getStoreConfig(self::INDEX_PREFIX, $storeId));
     }
 
     public function getCategoryAdditionalAttributes($storeId = NULL)
