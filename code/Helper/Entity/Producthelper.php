@@ -82,14 +82,17 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $products = $products->setStoreId($storeId)
                         ->addStoreFilter($storeId);
 
-        if ($only_visible)
+        if ($only_visible) {
             $products = $products->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSiteIds()));
+            $products = $products->addFinalPrice();
+        }
 
-        if (false === $this->config->getShowOutOfStock($storeId))
+
+        if (false === $this->config->getShowOutOfStock($storeId) && $only_visible == true) {
             Mage::getSingleton('cataloginventory/stock')->addInStockFilterToCollection($products);
+        }
 
-        $products = $products->addFinalPrice()
-                        ->addAttributeToSelect('special_from_date')
+        $products = $products->addAttributeToSelect('special_from_date')
                         ->addAttributeToSelect('special_to_date')
                         ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
 
@@ -726,7 +729,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         {
                             $isInStock = (int) $sub_product->getStockItem()->getIsInStock();
 
-                            if ($isInStock == false)
+                            if ($isInStock == false && $this->config->indexOutOfStockOptions($product->getStoreId()) == false)
                                 continue;
 
                             $all_sub_products_out_of_stock = false;

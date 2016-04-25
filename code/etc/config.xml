@@ -151,6 +151,7 @@
                 <custom_ranking_product_attributes>a:1:{s:18:"_1427960305274_274";a:2:{s:9:"attribute";s:11:"ordered_qty";s:5:"order";s:4:"desc";}}</custom_ranking_product_attributes>
                 <results_limit>1000</results_limit>
                 <show_suggestions_on_no_result_page>1</show_suggestions_on_no_result_page>
+                <index_out_of_stock_options>0</index_out_of_stock_options>
             </products>
             <instant>
                 <replace_categories>1</replace_categories>

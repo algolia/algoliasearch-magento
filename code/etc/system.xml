@@ -428,6 +428,20 @@
                                 ]]>
                             </comment>
                         </show_suggestions_on_no_result_page>
+                        <index_out_of_stock_options translate="label comment">
+                            <label>Index out of stock options for configurable products</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    Choose here if you want to index out of stock options for configurable products
+                                ]]>
+                            </comment>
+                        </index_out_of_stock_options>
                     </fields>
                 </products>
                 <categories translate="label">
