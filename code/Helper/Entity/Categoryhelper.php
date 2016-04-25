@@ -66,13 +66,14 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         foreach ($unserializedCategorysAttrs as $attr)
             $additionalAttr[] = $attr['attribute'];
 
+        $additionalAttr[] = 'include_in_menu';
+
         $categories
             ->addPathFilter($storeRootCategoryPath)
             ->addNameToResult()
             ->addUrlRewriteToResult()
             ->addIsActiveFilter()
             ->setStoreId($storeId)
-            ->addAttributeToFilter('include_in_menu', '1')
             ->addAttributeToSelect(array_merge(array('name'), $additionalAttr))
             ->addFieldToFilter('level', array('gt' => 1));
 
@@ -140,14 +141,15 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         } catch (Exception $e) { /* no image, no default: not fatal */
         }
         $data = array(
-            'objectID'      => $category->getId(),
-            'name'          => $category->getName(),
-            'path'          => $path,
-            'level'         => $category->getLevel(),
-            'url'           => $category->getUrl(),
-            '_tags'         => array('category'),
-            'popularity'    => 1,
-            'product_count' => $category->getProductCount()
+            'objectID'          => $category->getId(),
+            'name'              => $category->getName(),
+            'path'              => $path,
+            'level'             => $category->getLevel(),
+            'url'               => $category->getUrl(),
+            'include_in_menu'   => $category->getIncludeInMenu(),
+            '_tags'             => array('category'),
+            'popularity'        => 1,
+            'product_count'     => $category->getProductCount()
         );
 
         if ( ! empty($image_url)) {

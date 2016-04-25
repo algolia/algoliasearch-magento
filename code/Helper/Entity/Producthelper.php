@@ -526,7 +526,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $categoryCollection = Mage::getResourceModel('catalog/category_collection')
                 ->addAttributeToSelect('name')
                 ->addAttributeToFilter('entity_id', $_categoryIds)
-                ->addAttributeToFilter('include_in_menu', '1')
                 ->addFieldToFilter('level', array('gt' => 1))
                 ->addIsActiveFilter();
 

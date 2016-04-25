@@ -126,6 +126,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     refinement_value: '<?php echo $refinement_value; ?>',
                     path: '<?php echo $path; ?>'
                 },
+                show_cats_not_included_in_navigation: <?php echo $config->showCatsNotIncludedInNavigation() ? "true" : "false"; ?>,
                 showSuggestionsOnNoResultsPage: <?php echo $config->showSuggestionsOnNoResultsPage() ? "true" : "false"; ?>,
                 baseUrl: '<?php echo $base_url ?>',
                 popularQueries: <?php echo json_encode($config->getPopularQueries()); ?>
@@ -306,6 +307,10 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 }
                 else if (section.name === "categories" || section.name === "pages")
                 {
+                    if (section.name === "categories" && algoliaConfig.show_cats_not_included_in_navigation == false) {
+                        options.numericFilters = 'include_in_menu=1';
+                    }
+
                     source =  {
                         source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), options),
                         name: i,
