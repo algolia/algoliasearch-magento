@@ -32,7 +32,7 @@
                     <sort_order>10</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>  
+                    <show_in_store>1</show_in_store>
                     <expanded>1</expanded>
                     <comment>
                      <![CDATA[
@@ -263,6 +263,20 @@
                                 ]]>
                             </comment>
                         </excluded_pages>
+                        <render_template_directives translate="label comment">
+                            <label>Render template directives</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                For CMS pages, template directives (e.g. <code>{{{{block type="core/template" ...}}</code>) will be processed by default. Set this to "No" if you don't want to have template content indexed.
+                                ]]>
+                            </comment>
+                        </render_template_directives>
                     </fields>
                 </autocomplete>
                 <instant>
