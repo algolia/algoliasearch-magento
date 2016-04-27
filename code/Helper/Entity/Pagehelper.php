@@ -45,11 +45,15 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
             if (! $page->getId())
                 continue;
 
-            $tmplProc = Mage::helper('cms')->getPageTemplateProcessor();
+            $content = $page->getContent();
+            if ($this->config->getRenderTemplateDirectives()) {
+                $tmplProc = Mage::helper('cms')->getPageTemplateProcessor();
+                $content = $tmplProc->filter($content);
+            }
 
             $page_obj['objectID'] = $page->getId();
             $page_obj['url'] = Mage::helper('cms/page')->getPageUrl($page->getId());
-            $page_obj['content'] = $this->strip($tmplProc->filter($page->getContent()));
+            $page_obj['content'] = $this->strip($content);
 
             $pages[] = $page_obj;
         }
