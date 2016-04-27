@@ -45,10 +45,11 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
             if (! $page->getId())
                 continue;
 
-            $page_obj['objectID'] = $page->getId();
+            $tmplProc = Mage::helper('cms')->getPageTemplateProcessor();
 
+            $page_obj['objectID'] = $page->getId();
             $page_obj['url'] = Mage::helper('cms/page')->getPageUrl($page->getId());
-            $page_obj['content'] = $this->strip($page->getContent());
+            $page_obj['content'] = $this->strip($tmplProc->filter($page->getContent()));
 
             $pages[] = $page_obj;
         }
