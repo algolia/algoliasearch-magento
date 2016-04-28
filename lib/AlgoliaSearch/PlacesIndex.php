@@ -27,6 +27,55 @@
 
 namespace AlgoliaSearch;
 
-class AlgoliaException extends \Exception
+class PlacesIndex
 {
+    private $context;
+    private $client;
+
+    /**
+     * @param ClientContext $context
+     * @param Client        $client
+     */
+    public function __construct($context, Client $client)
+    {
+        $this->context = $context;
+        $this->client = $client;
+    }
+
+    /**
+     * @param string     $query
+     * @param array|null $args
+     *
+     * @return mixed
+     *
+     * @throws AlgoliaException
+     */
+    public function search($query, $args = null)
+    {
+        if ($args === null) {
+            $args = [];
+        }
+        $args['query'] = $query;
+
+        return $this->client->request(
+            $this->context,
+            'POST',
+            '/1/places/query',
+            [],
+            ['params' => $this->client->buildQuery($args)],
+            $this->context->readHostsArray,
+            $this->context->connectTimeout,
+            $this->context->searchTimeout
+        );
+    }
+
+    public function setExtraHeader($key, $value)
+    {
+        $this->context->setExtraHeader($key, $value);
+    }
+
+    public function getContext()
+    {
+        return $this->context;
+    }
 }

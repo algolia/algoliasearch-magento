@@ -28,16 +28,19 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const EXCLUDED_PAGES                       = 'algoliasearch/autocomplete/excluded_pages';
     const MIN_POPULARITY                       = 'algoliasearch/autocomplete/min_popularity';
     const MIN_NUMBER_OF_RESULTS                = 'algoliasearch/autocomplete/min_number_of_results';
+    const RENDER_TEMPLATE_DIRECTIVES           = 'algoliasearch/autocomplete/render_template_directives';
 
     const NUMBER_OF_PRODUCT_RESULTS            = 'algoliasearch/products/number_product_results';
     const PRODUCT_ATTRIBUTES                   = 'algoliasearch/products/product_additional_attributes';
     const PRODUCT_CUSTOM_RANKING               = 'algoliasearch/products/custom_ranking_product_attributes';
     const RESULTS_LIMIT                        = 'algoliasearch/products/results_limit';
     const SHOW_SUGGESTIONS_NO_RESULTS          = 'algoliasearch/products/show_suggestions_on_no_result_page';
+    const INDEX_OUT_OF_STOCK_OPTIONS           = 'algoliasearch/products/index_out_of_stock_options';
 
     const CATEGORY_ATTRIBUTES                  = 'algoliasearch/categories/category_additional_attributes2';
     const INDEX_PRODUCT_COUNT                  = 'algoliasearch/categories/index_product_count';
     const CATEGORY_CUSTOM_RANKING              = 'algoliasearch/categories/custom_ranking_category_attributes';
+    const SHOW_CATS_NOT_INCLUDED_IN_NAVIGATION = 'algoliasearch/categories/show_cats_not_included_in_navigation';
 
 
     const IS_ACTIVE                            = 'algoliasearch/queue/active';
@@ -59,6 +62,16 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const LOGGING_ENABLED                      = 'algoliasearch/credentials/debug';
 
     protected $_productTypeMap = array();
+
+    public function indexOutOfStockOptions($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::INDEX_OUT_OF_STOCK_OPTIONS, $storeId);
+    }
+
+    public function showCatsNotIncludedInNavigation($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::SHOW_CATS_NOT_INCLUDED_IN_NAVIGATION, $storeId);
+    }
 
     public function isDefaultSelector($storeId = null)
     {
@@ -259,6 +272,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return array();
     }
 
+    public function getRenderTemplateDirectives($storeId = NULL)
+    {
+        return Mage::getStoreConfigFlag(self::RENDER_TEMPLATE_DIRECTIVES, $storeId);
+    }
+
     public function getSortingIndices($storeId = NULL)
     {
         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
@@ -297,22 +315,52 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getApplicationID($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::APPLICATION_ID, $storeId);
+        return trim(Mage::getStoreConfig(self::APPLICATION_ID, $storeId));
     }
 
     public function getAPIKey($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::API_KEY, $storeId);
+        return trim(Mage::getStoreConfig(self::API_KEY, $storeId));
     }
 
     public function getSearchOnlyAPIKey($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::SEARCH_ONLY_API_KEY, $storeId);
+        return trim(Mage::getStoreConfig(self::SEARCH_ONLY_API_KEY, $storeId));
     }
 
     public function getIndexPrefix($storeId = NULL)
     {
-        return Mage::getStoreConfig(self::INDEX_PREFIX, $storeId);
+        return trim(Mage::getStoreConfig(self::INDEX_PREFIX, $storeId));
+    }
+
+    public function getAttributesToRetrieve($group_id)
+    {
+        if (false === $this->isCustomerGroupsEnabled()) {
+            return [];
+        }
+
+        $attributes = array();
+        foreach ($this->getProductAdditionalAttributes() as $attribute) {
+            if ($attribute['attribute'] !== 'price') {
+                $attributes[] = $attribute['attribute'];
+            }
+        }
+
+        $attributes = array_merge($attributes, ['objectID', 'name', 'url', 'visibility_search', 'visibility_catalog', 'categories', 'categories_without_path', 'thumbnail_url', 'image_url', 'in_stock', 'type_id']);
+
+        $currencies = Mage::getModel('directory/currency')->getConfigAllowCurrencies();
+
+        foreach ($currencies as $currency) {
+            $attributes[] = 'price.'.$currency.'.default';
+            $attributes[] = 'price.'.$currency.'.default_formated';
+            $attributes[] = 'price.'.$currency.'.group_'.$group_id;
+            $attributes[] = 'price.'.$currency.'.group_'.$group_id.'_formated';
+            $attributes[] = 'price.'.$currency.'.special_from_date';
+            $attributes[] = 'price.'.$currency.'.special_to_date';
+        }
+
+
+        return ['attributesToRetrieve' => $attributes];
     }
 
     public function getCategoryAdditionalAttributes($storeId = NULL)

@@ -7,6 +7,8 @@ if (class_exists('AlgoliaSearch\Client', false) == false)
     require_once Mage::getBaseDir('lib').'/AlgoliaSearch/ClientContext.php';
     require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Client.php';
     require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Index.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/PlacesIndex.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/IndexBrowser.php';
 }
 
 class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
@@ -25,7 +27,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function __construct()
     {
-        \AlgoliaSearch\Version::$custom_value = " Magento (1.5.4)";
+        \AlgoliaSearch\Version::$custom_value = " Magento (1.5.5)";
 
         $this->algolia_helper               = Mage::helper('algoliasearch/algoliahelper');
 

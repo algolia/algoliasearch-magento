@@ -1,5 +1,19 @@
 ## Change Log
 
+### 1.5.5
+
+- NEW: Add an option to include data from out-of-stock sub products
+- NEW: Use secured api keys to only retrieve one group price in the frontend
+- NEW: Better update strategy to simplify the indexer code and to avoid missing deleted products event
+- UPDATE: Better handling of include in navigation config
+- UPDATE: underlying php client
+- UPDATE: Conditionally render template directives
+- UPDATE: Make sub product skus searchable
+- FIX: slaves creation issue
+- FIX: small price issue
+- FIX: fallback to default search in case there is a error from the api
+
+
 ### 1.5.4
 
 - UPDATED: instantsearch.js update
@@ -58,7 +72,7 @@
 
 ### 1.4.8
 - NEW: allow to have custom product types
-- NEW: make image generation size parameter customizable to be able to save ressources when already in cache
+- NEW: make image generation size parameter customizable to be able to save resources when already in cache
 - UPDATED: remove root category when fetching product categories
 - UPDATED: rewrite image class to be able to log the error when not being able to generate it
 - UPDATED: Handle display price with AND without tax
@@ -198,6 +212,6 @@
  - Upgrade the underlying Algolia PHP API client to 1.5.5 (high available DNS)
 
 ### 1.0.3
- - Upgrade the underlying PHP API client to 1.5.4
+ - Upgrade the underlying PHP API client to 1.5.5
  - Fix deadlock that may occur with order processing
  - Fix results saved every search (remove flag probably added for debugging).

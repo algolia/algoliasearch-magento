@@ -4,7 +4,7 @@
         <algoliasearch translate="label" module="algoliasearch">
             <label>
                 <![CDATA[
-                Algolia Search 1.5.4
+                Algolia Search 1.5.5
                 <style>
                     .algoliasearch-admin-menu span {
                         padding-left: 38px !important;
@@ -32,7 +32,7 @@
                     <sort_order>10</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>  
+                    <show_in_store>1</show_in_store>
                     <expanded>1</expanded>
                     <comment>
                      <![CDATA[
@@ -146,7 +146,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If set to Yes, the seach box will display a search-as-you-type drop-down menu. It requires your theme to expose a <code>top.search</code> and <code>content</code> block.
+                                If set to Yes, the search box will display a search-as-you-type drop-down menu. It requires your theme to expose a <code>top.search</code> and <code>content</code> block.
                                 ]]>
                             </comment>
                         </is_popup_enabled>
@@ -258,11 +258,25 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the pages you don't want to search in.<br><br>
-                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Do not forget to trigger the Algolia Search indexers whenever you modify those settings.
+                                Configure here the pages you don't want to search in.
                                 ]]>
                             </comment>
                         </excluded_pages>
+                        <render_template_directives translate="label comment">
+                            <label>Render template directives</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                For CMS pages, template directives (e.g. <code>{{block type="core/template" ...}}</code>) will be processed by default. Set this to "No" if you don't want to have template content indexed.<br><br>
+                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Do not forget to trigger the Algolia Search indexers whenever you modify those settings.
+                                ]]>
+                            </comment>
+                        </render_template_directives>
                     </fields>
                 </autocomplete>
                 <instant>
@@ -428,6 +442,20 @@
                                 ]]>
                             </comment>
                         </show_suggestions_on_no_result_page>
+                        <index_out_of_stock_options translate="label comment">
+                            <label>Index out of stock options for configurable products</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    Choose here if you want to index out of stock options for configurable products
+                                ]]>
+                            </comment>
+                        </index_out_of_stock_options>
                     </fields>
                 </products>
                 <categories translate="label">
@@ -474,6 +502,20 @@
                                 ]]>
                             </comment>
                         </custom_ranking_category_attributes>
+                        <show_cats_not_included_in_navigation translate="label comment">
+                            <label>Show categories that are not included in the navigation menu</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                If set to Yes, Algolia will display all categories in the autocomplete menu ignoring the setting: "Include in navigation menu". Default value: false
+                                ]]>
+                            </comment>
+                        </show_cats_not_included_in_navigation>
                     </fields>
                 </categories>
                 <image translate="label">
@@ -503,7 +545,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment><![CDATA[You can specify the size of the images used at the Search Results Page.<br />
-                                If your images are already present in some size, eg. 265x265, Algolia's index job may not have to resize those, potentially saving time and resources.]]></comment>
+                                If your images are already present in some size, e.g. 265x265, Algolia's index job may not have to resize those, potentially saving time and resources.]]></comment>
                         </height>
                         <type translate="label comment">
                             <label>Type</label>
@@ -536,7 +578,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If enabled, all inxdexing operations (add, remove & update operations) will be done asynchronously using the CRON mechanism.<br />
+                                If enabled, all indexing operations (add, remove & update operations) will be done asynchronously using the CRON mechanism.<br />
                                 <br>
                                 To schedule the run you need to add this in your crontab:<br>
                                 */5 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner

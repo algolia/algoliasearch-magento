@@ -21,11 +21,13 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
         $products = Mage::getResourceModel('catalog/product_collection')
             ->addStoreFilter($storeId)
             ->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
+            ->addAttributeToFilter('status', array('eq' => Mage_Catalog_Model_Product_Status::STATUS_ENABLED))
             ->addAttributeToFilter($attributeCode, array('notnull' => true))
             ->addAttributeToFilter($attributeCode, array('neq' => ''))
             ->addAttributeToSelect($attributeCode);
 
-        $usedAttributeValues = array_unique($products->getColumnValues($attributeCode));
+        $usedAttributeValues = array_keys(array_flip( // array unique
+            explode(',', implode(',', $products->getColumnValues($attributeCode)))));
 
         $attributeModel = Mage::getSingleton('eav/config')
             ->getAttribute('catalog_product', $attributeCode)
@@ -45,7 +47,7 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
             $values = array($values);
         }
 
-        $values = array_map(function ($value) use ($section) {
+        $values = array_map(function ($value) use ($section, $storeId) {
 
             $record = array(
                 'objectID'  => $value,
@@ -54,7 +56,8 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
 
             $transport = new Varien_Object($record);
 
-            Mage::dispatchEvent('algolia_additional_section_item_index_before', array('section' => $section, 'record' => $transport));
+            Mage::dispatchEvent('algolia_additional_section_item_index_before',
+                array('section' => $section, 'record' => $transport, 'store_id' => $storeId));
 
             $record = $transport->getData();
 

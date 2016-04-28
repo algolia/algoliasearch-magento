@@ -9,7 +9,7 @@
 <?php
 $config = Mage::helper('algoliasearch/config');
 $catalogSearchHelper = $this->helper('catalogsearch');
-$group_id = Mage::getSingleton('customer/session')->getCustomer()->getGroupId();
+$group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
 $currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
 $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
 
@@ -635,6 +635,7 @@ $placeholder = $this->__('Search for products, categories, ...');
                             attributes: hierarchical_levels,
                             separator: ' /// ',
                             alwaysGetRootLevel: true,
+                            limit: algoliaConfig.maxValuesPerFacet,
                             templates: templates,
                             sortBy: ['name:asc'],
                             cssClasses: {

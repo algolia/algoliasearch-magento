@@ -109,19 +109,16 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
             $product = Mage::getModel('catalog/product')->load($object->getProductId());
 
-            if ($object->getData('is_in_stock') == false || (int) $product->getStockItem()->getQty() <= 0)
+            try // In case of wrong credentials or overquota or block account. To avoid checkout process to fail
             {
-                try // In case of wrong credentials or overquota or block account. To avoid checkout process to fail
-                {
-                    $event->addNewData('catalogsearch_delete_product_id', $product->getId());
-                    $event->addNewData('catalogsearch_update_category_id', $product->getCategoryIds());
-                }
-                catch(\Exception $e)
-                {
-                    $this->logger->log('Error while trying to update stock');
-                    $this->logger->log($e->getMessage());
-                    $this->logger->log($e->getTraceAsString());
-                }
+                $event->addNewData('catalogsearch_delete_product_id', $product->getId());
+                $event->addNewData('catalogsearch_update_category_id', $product->getCategoryIds());
+            }
+            catch(\Exception $e)
+            {
+                $this->logger->log('Error while trying to update stock');
+                $this->logger->log($e->getMessage());
+                $this->logger->log($e->getTraceAsString());
             }
         }
     }
@@ -132,84 +129,33 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
             case Mage_Index_Model_Event::TYPE_SAVE:
                 /** @var $product Mage_Catalog_Model_Product */
                 $product = $event->getDataObject();
-                $delete = FALSE;
-                $visibleInSite = Mage::getSingleton('catalog/product_visibility')->getVisibleInSiteIds();
+                $event->addNewData('catalogsearch_update_product_id', $product->getId());
+                $event->addNewData('catalogsearch_update_category_id', $product->getCategoryIds());
 
-                if ($product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED)
+                /* product_categories is filled in Observer::saveProduct */
+                if (isset(static::$product_categories[$product->getId()]))
                 {
-                    $delete = TRUE;
-                }
-                elseif (! in_array($product->getData('visibility'), $visibleInSite))
-                {
-                    $delete = TRUE;
-                }
+                    $oldCategories = static::$product_categories[$product->getId()];
+                    $newCategories = $product->getCategoryIds();
 
-                if ($delete)
-                {
-                    $event->addNewData('catalogsearch_delete_product_id', $product->getId());
-                    $event->addNewData('catalogsearch_update_category_id', $product->getCategoryIds());
-                }
-                else
-                {
-                    $event->addNewData('catalogsearch_update_product_id', $product->getId());
+                    $diffCategories = array_merge(array_diff($oldCategories, $newCategories), array_diff($newCategories, $oldCategories));
 
-                    /* product_categories is filled in Observer::saveProduct */
-                    if (isset(static::$product_categories[$product->getId()]))
-                    {
-                        $oldCategories = static::$product_categories[$product->getId()];
-                        $newCategories = $product->getCategoryIds();
-
-                        $diffCategories = array_merge(array_diff($oldCategories, $newCategories), array_diff($newCategories, $oldCategories));
-
-                        $event->addNewData('catalogsearch_update_category_id', $diffCategories);
-                    }
+                    $event->addNewData('catalogsearch_update_category_id', $diffCategories);
                 }
 
-                break;
             case Mage_Index_Model_Event::TYPE_DELETE:
 
                 /** @var $product Mage_Catalog_Model_Product */
                 $product = $event->getDataObject();
-                $event->addNewData('catalogsearch_delete_product_id', $product->getId());
+                $event->addNewData('catalogsearch_update_product_id', $product->getId());
                 $event->addNewData('catalogsearch_update_category_id', $product->getCategoryIds());
-
                 break;
+
             case Mage_Index_Model_Event::TYPE_MASS_ACTION:
                 /** @var $actionObject Varien_Object */
                 $actionObject = $event->getDataObject();
 
-                $reindexData  = array();
-
-                // Check if status changed
-                $attrData = $actionObject->getAttributesData();
-
-                if (isset($attrData['status']))
-                {
-                    $reindexData['catalogsearch_status'] = $attrData['status'];
-                }
-
-                // Check changed websites
-                if ($actionObject->getWebsiteIds())
-                {
-                    $reindexData['catalogsearch_website_ids'] = $actionObject->getWebsiteIds();
-                    $reindexData['catalogsearch_action_type'] = $actionObject->getActionType();
-                }
-
-                $reindexData['catalogsearch_force_reindex'] = TRUE;
-
-                if ($actionObject->getIsDeleted())
-                {
-                    $reindexData['catalogsearch_delete_product_id'] = $actionObject->getProductIds();
-                }
-                else
-                {
-                    $reindexData['catalogsearch_product_ids'] = $actionObject->getProductIds();
-                }
-
-                foreach ($reindexData as $k => $v)
-                {
-                    $event->addNewData($k, $v);
-                }
+                $event->addNewData('catalogsearch_update_product_id', $actionObject->getProductIds());
 
                 break;
         }
@@ -247,81 +193,18 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
             $process->changeStatus(Mage_Index_Model_Process::STATUS_REQUIRE_REINDEX);
         }
 
-        /*
-         * Clear index for the deleted product.
-         */
-        else if ( ! empty($data['catalogsearch_delete_product_id'])) {
-            $productId = $data['catalogsearch_delete_product_id'];
-
-            if ( ! $this->_isProductComposite($productId)) {
-                $parentIds = $this->_getResource()->getRelationsByChild($productId);
-                if ( ! empty($parentIds)) {
-                    $this->engine
-                        ->rebuildProductIndex(null, $parentIds);
-                }
-            }
-
-            $this->engine
-                ->removeProducts(null, $productId);
-        }
-
-        // Mass action
-        else if ( ! empty($data['catalogsearch_product_ids'])) {
-            $productIds = $data['catalogsearch_product_ids'];
-
-            if (!empty($productIds))
-            {
-                if ( ! empty($data['catalogsearch_website_ids']))
-                {
-                    $websiteIds = $data['catalogsearch_website_ids'];
-                    $actionType = $data['catalogsearch_action_type'];
-                    foreach ($websiteIds as $websiteId)
-                    {
-                        foreach (Mage::app()->getWebsite($websiteId)->getStoreIds() as $storeId) {
-                            if ($actionType == 'remove')
-                            {
-                                $this->engine->removeProducts($storeId, $productIds);
-                            }
-                            else if ($actionType == 'add')
-                            {
-                                $this->engine->rebuildProductIndex($storeId, $productIds);
-                            }
-                        }
-                    }
-                }
-                else if (isset($data['catalogsearch_status']))
-                {
-                    $status = $data['catalogsearch_status'];
-                    if ($status == Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
-                        $this->engine->rebuildProductIndex(null, $productIds);
-                    }
-                    else
-                    {
-                        $this->engine->removeProducts(null, $productIds);
-                    }
-                }
-                else if (isset($data['catalogsearch_force_reindex']))
-                {
-                    $this->engine
-                        ->rebuildProductIndex(null, $productIds);
-                }
-            }
-        }
-
         if ( ! empty($data['catalogsearch_update_category_id'])) {
             $updateCategoryIds = $data['catalogsearch_update_category_id'];
             $updateCategoryIds = is_array($updateCategoryIds) ? $updateCategoryIds : array($updateCategoryIds);
 
-            foreach ($updateCategoryIds as $id)
-            {
+            foreach ($updateCategoryIds as $id) {
                 $categories = Mage::getModel('catalog/category')->getCategories($id);
 
                 foreach ($categories as $category)
                     $updateCategoryIds[] = $category->getId();
             }
 
-            $this->engine
-                ->rebuildCategoryIndex(null, $updateCategoryIds);
+            $this->engine->rebuildCategoryIndex(null, $updateCategoryIds);
         }
 
         /*
@@ -333,20 +216,18 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
             $updateProductIds = is_array($updateProductIds) ? $updateProductIds : array($updateProductIds);
             $productIds = $updateProductIds;
 
-            foreach ($updateProductIds as $updateProductId)
-            {
-                if (! $this->_isProductComposite($updateProductId))
-                {
+            foreach ($updateProductIds as $updateProductId) {
+                if (! $this->_isProductComposite($updateProductId)) {
                     $parentIds = $this->_getResource()->getRelationsByChild($updateProductId);
 
-                    if (! empty($parentIds))
-                    {
+                    if (! empty($parentIds)) {
                         $productIds = array_merge($productIds, $parentIds);
                     }
                 }
             }
 
             if (!empty($productIds)) {
+                $this->engine->removeProducts(null, $productIds);
                 $this->engine->rebuildProductIndex(null, $productIds);
             }
         }

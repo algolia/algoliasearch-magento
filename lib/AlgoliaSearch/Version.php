@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2013 Algolia
  * http://www.algolia.com/
@@ -23,13 +24,14 @@
  *
  *
  */
+
 namespace AlgoliaSearch;
 
 class Version
 {
-    const VALUE                   = "1.5.6";
+    const VALUE = '1.8.0';
 
-    public static $custom_value   = "";
+    public static $custom_value = '';
 
     public static function get()
     {

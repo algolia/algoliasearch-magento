@@ -4,6 +4,7 @@ $config = Mage::helper('algoliasearch/config');
 $catalogSearchHelper = $this->helper('catalogsearch'); /** @var $catalogSearchHelper Mage_CatalogSearch_Helper_Data */
 $algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHelper Algolia_Algoliasearch_Helper_Data */
 $product_helper = Mage::helper('algoliasearch/entity_producthelper');
+$algolia_helper = Mage::helper('algoliasearch/algoliahelper');
 
 $base_url = Mage::getBaseUrl();
 
@@ -12,6 +13,7 @@ $isCategoryPage = false;
 
 $currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
 $group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
+
 $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
 
 $allDepartments = "All departments";
@@ -106,7 +108,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 },
                 applicationId: '<?php echo $config->getApplicationID() ?>',
                 indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
-                apiKey: '<?php echo $config->getSearchOnlyAPIKey() ?>',
+                apiKey: '<?php echo $algolia_helper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $config->getAttributesToRetrieve($group_id)) ?>',
                 facets: <?php echo json_encode($config->getFacets()); ?>,
                 hitsPerPage: <?php echo (int) $config->getNumberOfProductResults() ?>,
                 sortingIndices: <?php echo json_encode(array_values($config->getSortingIndices())); ?>,
@@ -116,6 +118,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 priceKey: '<?php echo $price_key; ?>',
                 currencySymbol: '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>',
                 currency_code: '<?php echo $currency_code; ?>',
+                maxValuesPerFacet: <?php echo (int) $config->getMaxValuesPerFacet(); ?>,
                 autofocus: true,
                 request: {
                     query:<?php echo json_encode(array("value" => html_entity_decode($query))); ?>.value,
@@ -123,6 +126,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     refinement_value: '<?php echo $refinement_value; ?>',
                     path: '<?php echo $path; ?>'
                 },
+                show_cats_not_included_in_navigation: <?php echo $config->showCatsNotIncludedInNavigation() ? "true" : "false"; ?>,
                 showSuggestionsOnNoResultsPage: <?php echo $config->showSuggestionsOnNoResultsPage() ? "true" : "false"; ?>,
                 baseUrl: '<?php echo $base_url ?>',
                 popularQueries: <?php echo json_encode($config->getPopularQueries()); ?>
@@ -211,6 +215,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     return algoliaBundle.instantsearch.widgets.refinementList({
                         container: facet.wrapper.appendChild(document.createElement('div')),
                         attributeName: facet.attribute,
+                        limit: algoliaConfig.maxValuesPerFacet,
                         operator: 'and',
                         templates: templates,
                         cssClasses: {
@@ -225,6 +230,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     return algoliaBundle.instantsearch.widgets.refinementList({
                         container: facet.wrapper.appendChild(document.createElement('div')),
                         attributeName: facet.attribute,
+                        limit: algoliaConfig.maxValuesPerFacet,
                         operator: 'or',
                         templates: templates,
                         cssClasses: {
@@ -301,6 +307,10 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 }
                 else if (section.name === "categories" || section.name === "pages")
                 {
+                    if (section.name === "categories" && algoliaConfig.show_cats_not_included_in_navigation == false) {
+                        options.numericFilters = 'include_in_menu=1';
+                    }
+
                     source =  {
                         source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), options),
                         name: i,
