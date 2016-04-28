@@ -258,11 +258,25 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the pages you don't want to search in.<br><br>
-                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Do not forget to trigger the Algolia Search indexers whenever you modify those settings.
+                                Configure here the pages you don't want to search in.
                                 ]]>
                             </comment>
                         </excluded_pages>
+                        <render_template_directives translate="label comment">
+                            <label>Render template directives</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                For CMS pages, template directives (e.g. <code>{{block type="core/template" ...}}</code>) will be processed by default. Set this to "No" if you don't want to have template content indexed.<br><br>
+                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Do not forget to trigger the Algolia Search indexers whenever you modify those settings.
+                                ]]>
+                            </comment>
+                        </render_template_directives>
                     </fields>
                 </autocomplete>
                 <instant>

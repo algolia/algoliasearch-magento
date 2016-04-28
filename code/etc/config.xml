@@ -168,6 +168,7 @@
                 <sections>a:1:{s:18:"_1450089283397_397";a:3:{s:4:"name";s:5:"pages";s:5:"label";s:5:"Pages";s:11:"hitsPerPage";s:1:"2";}}</sections>
                 <min_popularity>1000</min_popularity>
                 <min_number_of_results>2</min_number_of_results>
+                <render_template_directives>1</render_template_directives>
             </autocomplete>
             <categories>
                 <number_category_suggestions>5</number_category_suggestions>
@@ -201,4 +202,4 @@
             </product_map>
         </algoliasearch>
     </default>
-</config> 
+</config>
