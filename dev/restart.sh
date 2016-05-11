@@ -6,7 +6,6 @@ API_KEY=
 SEARCH_ONLY_API_KEY=
 INDEX_PREFIX=magento_
 BASE_URL=http://mymagentostore.com/
-EXPOSED_PORT=80
 
 cd `dirname "$0"`
 docker build -t algolia/algoliasearch-magento . || exit 1
@@ -17,7 +16,7 @@ echo ""
 
 usage() {
   echo "Usage:" >&2
-  echo "$PROG -a APPLICATION_ID -k API_KEY -s SEARCH_ONLY_API_KEY [-p INDEX_PREFIX] [-b BASE_URL] [-o EXPOSED_PORT]" >&2
+  echo "$PROG -a APPLICATION_ID -k API_KEY -s SEARCH_ONLY_API_KEY [-p INDEX_PREFIX] [-b BASE_URL]" >&2
   echo "" >&2
   echo "Options:" >&2
   echo "   -a | --application-id               The application ID" >&2
@@ -25,7 +24,6 @@ usage() {
   echo "   -s | --search-only-api-key          The Search-only API key" >&2
   echo "   -p | --index-prefix                 The index prefix (default: magento_)" >&2
   echo "   -b | --base-url                     The base URL (default: http://mymagentostore.com/)" >&2
-  echo "   -o | --port                         The exposed port (default: 80)" >&2
   echo "   -h | --help                         Print this help" >&2
 }
 
@@ -58,10 +56,6 @@ while [[ $# > 0 ]]; do
       esac
       shift
       ;;
-    -o|--port)
-      EXPOSED_PORT="$2"
-      shift
-      ;;
     -h|--help)
       usage
       exit 0
@@ -89,7 +83,6 @@ ensure "-a" "$APPLICATION_ID"
 ensure "-k" "$API_KEY"
 ensure "-s" "$SEARCH_ONLY_API_KEY"
 ensure "-b" "$BASE_URL"
-ensure "-o" "$EXPOSED_PORT"
 
 docker stop algoliasearch-magento > /dev/null 2>&1 || true
 docker rm algoliasearch-magento > /dev/null 2>&1 || true
@@ -99,10 +92,9 @@ echo "            API_KEY: $API_KEY"
 echo "SEARCH_ONLY_API_KEY: $SEARCH_ONLY_API_KEY"
 echo "       INDEX_PREFIX: $INDEX_PREFIX"
 echo "           BASE_URL: $BASE_URL"
-echo "       EXPOSED PORT: $EXPOSED_PORT"
 echo ""
 
-docker run -p $EXPOSED_PORT:80 \
+docker run -p 80:80 \
   -v "`pwd`/..":/var/www/htdocs/.modman/algoliasearch-magento \
   -e APPLICATION_ID=$APPLICATION_ID \
   -e SEARCH_ONLY_API_KEY=$SEARCH_ONLY_API_KEY \
