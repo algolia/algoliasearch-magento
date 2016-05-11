@@ -405,7 +405,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     source.templates.footer = function (query, content) {
                         var keys = [];
                         for (var key in content.facets['categories.level0']) {
-                            var url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + query.query + '#q=' + query.query + '&hFR[categories.level0][0]=' + encodeURIComponent(key) + '&idx=' + algoliaConfig.indexName + '_products';
+                            var url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query.query) + '#q=' + encodeURIComponent(query.query) + '&hFR[categories.level0][0]=' + encodeURIComponent(key) + '&idx=' + algoliaConfig.indexName + '_products';
                             keys.push({
                                 key: key,
                                 value: content.facets['categories.level0'][key],
@@ -426,8 +426,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         if (keys.length > 1) {
                             ors += ', <span><a href="' + keys[1].url + '">' + keys[1].key + '</a></span>';
                         }
-
-                        var allUrl = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + query.query;
+                        
+                        var allUrl = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query.query);
                         return '<div id="autocomplete-products-footer">See products in <span><a href="' + allUrl +  '">All departments</a></span> (' + content.nbHits + ') or in ' + ors + '</div>';
                     }
                 }
