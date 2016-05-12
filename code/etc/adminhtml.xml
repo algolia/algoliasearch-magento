@@ -9,7 +9,7 @@
                             <config>
                                 <children>
                                     <algoliasearch translate="title" module="algoliasearch">
-                                        <title>Configuration Section</title>
+                                        <title>Algolia Search Configuration</title>
                                         <sort_order>100</sort_order>
                                     </algoliasearch>
                                 </children>
