@@ -142,7 +142,8 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
                     $event->addNewData('catalogsearch_update_category_id', $diffCategories);
                 }
-
+                break;
+            
             case Mage_Index_Model_Event::TYPE_DELETE:
 
                 /** @var $product Mage_Catalog_Model_Product */
