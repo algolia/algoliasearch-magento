@@ -1,30 +1,34 @@
 <?php
 
 /**
- * Algolia custom sort order field
+ * Algolia custom sort order field.
  */
 class Algolia_Algoliasearch_Block_System_Config_Form_Field_Custompages extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
 {
-    protected $selectFields = array();
+    protected $selectFields = [];
 
     /**
      * Creates and populates a select block to represent each column in the configuration property.
      *
      * @param $columnId String The name of the column defined in addColumn
+     *
      * @return Algolia_Algoliasearch_Block_System_Config_Form_Field_Select
+     *
      * @throws Exception
      */
-    protected function getRenderer($columnId) {
+    protected function getRenderer($columnId)
+    {
         if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId]) {
-            $aOptions = array();
-            switch($columnId) {
+            $aOptions = [];
+            switch ($columnId) {
                 case 'pages': // Populate the attribute column with a list of searchable attributes
-                    $magento_pages = Mage::getModel('cms/page')->getCollection()->addFieldToFilter('is_active',1);
+                    $magento_pages = Mage::getModel('cms/page')->getCollection()->addFieldToFilter('is_active', 1);
 
                     $ids = $magento_pages->toOptionArray();
 
-                    foreach ($ids as $id)
+                    foreach ($ids as $id) {
                         $aOptions[$id['value']] = $id['value'];
+                    }
 
                     break;
                 default:
@@ -42,10 +46,10 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Custompages extends M
 
     public function __construct()
     {
-        $this->addColumn('pages', array(
+        $this->addColumn('pages', [
             'label' => Mage::helper('adminhtml')->__('Pages'),
-            'renderer'=> $this->getRenderer('pages'),
-        ));
+            'renderer' => $this->getRenderer('pages'),
+        ]);
         $this->_addAfter = false;
         $this->_addButtonLabel = Mage::helper('adminhtml')->__('Add Excluded Page');
         parent::__construct();

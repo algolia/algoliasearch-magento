@@ -6,6 +6,8 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
 
     /** @var Algolia_Algoliasearch_Model_Resource_Engine */
     protected $engine;
+
+    /** @var Algolia_Algoliasearch_Helper_Config */
     protected $config;
 
     protected static $credential_error = false;
@@ -18,12 +20,12 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
         $this->config = Mage::helper('algoliasearch/config');
     }
 
-    protected $_matchedEntities = array(
-        Mage_Catalog_Model_Category::ENTITY                => array(
+    protected $_matchedEntities = [
+        Mage_Catalog_Model_Category::ENTITY => [
             Mage_Index_Model_Event::TYPE_SAVE,
-            Mage_Index_Model_Event::TYPE_DELETE
-        )
-    );
+            Mage_Index_Model_Event::TYPE_DELETE,
+        ],
+    ];
 
     protected function _getResource()
     {
@@ -43,7 +45,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
 
     public function matchEvent(Mage_Index_Model_Event $event)
     {
-        $result = $event->getEntity() !== 'core_config_data';;
+        $result = $event->getEntity() !== 'core_config_data';
 
         $event->addNewData(self::EVENT_MATCH_RESULT_KEY, $result);
 
@@ -52,7 +54,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
 
     protected function _registerEvent(Mage_Index_Model_Event $event)
     {
-        $event->addNewData(self::EVENT_MATCH_RESULT_KEY, TRUE);
+        $event->addNewData(self::EVENT_MATCH_RESULT_KEY, true);
 
         switch ($event->getEntity()) {
             case Mage_Catalog_Model_Category::ENTITY:
@@ -66,31 +68,24 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
         switch ($event->getType()) {
             case Mage_Index_Model_Event::TYPE_SAVE:
 
-                /** @var $category Mage_Catalog_Model_Category */
-                $category   = $event->getDataObject();
+                /** @var Mage_Catalog_Model_Category $category*/
+                $category = $event->getDataObject();
                 $productIds = $category->getAffectedProductIds();
 
-                if (! $category->getData('is_active'))
-                {
-                    $event->addNewData('catalogsearch_delete_category_id', array_merge(array($category->getId()), $category->getAllChildren(TRUE)));
+                if (!$category->getData('is_active')) {
+                    $event->addNewData('catalogsearch_delete_category_id',
+                        array_merge([$category->getId()], $category->getAllChildren(true)));
 
-                    if ($productIds)
-                    {
+                    if ($productIds) {
                         $event->addNewData('catalogsearch_update_product_id', $productIds);
                     }
-                }
-                elseif ($productIds)
-                {
+                } elseif ($productIds) {
                     $event->addNewData('catalogsearch_update_product_id', $productIds);
-                    $event->addNewData('catalogsearch_update_category_id', array($category->getId()));
-                }
-                elseif ($movedCategoryId = $category->getMovedCategoryId())
-                {
-                    $event->addNewData('catalogsearch_update_category_id', array($movedCategoryId));
-                }
-                else
-                {
-                    $event->addNewData('catalogsearch_update_category_id', array($category->getId()));
+                    $event->addNewData('catalogsearch_update_category_id', [$category->getId()]);
+                } elseif ($movedCategoryId = $category->getMovedCategoryId()) {
+                    $event->addNewData('catalogsearch_update_category_id', [$movedCategoryId]);
+                } else {
+                    $event->addNewData('catalogsearch_update_category_id', [$category->getId()]);
                 }
 
                 break;
@@ -112,16 +107,18 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
     {
         /** @var $product Mage_Catalog_Model_Product */
         $product = Mage::getModel('catalog/product')->load($productId);
+
         return $product->isComposite();
     }
 
     protected function _processEvent(Mage_Index_Model_Event $event)
     {
-        if (! $this->config->getApplicationID() || ! $this->config->getAPIKey() || ! $this->config->getSearchOnlyAPIKey())
-        {
-            if (self::$credential_error === false)
-            {
-                Mage::getSingleton('adminhtml/session')->addError('Algolia indexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+        if (!$this->config->getApplicationID() || !$this->config->getAPIKey() || !$this->config->getSearchOnlyAPIKey()) {
+            if (self::$credential_error === false) {
+                /** @var Mage_Adminhtml_Model_Session $session */
+                $session = Mage::getSingleton('adminhtml/session');
+                $session->addError('Algolia indexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+
                 self::$credential_error = true;
             }
 
@@ -133,58 +130,57 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Mage_Index_M
         /*
          * Reindex all products and all categories and update index settings
          */
-        if ( ! empty($data['algoliasearch_reindex_all'])) {
+        if (!empty($data['algoliasearch_reindex_all'])) {
             $process = $event->getProcess();
             $process->changeStatus(Mage_Index_Model_Process::STATUS_REQUIRE_REINDEX);
-        }
-
-        /*
+        } /*
          * Clear indexer for the deleted category including all children categories and update index for the related products.
-         */
-        else if ( ! empty($data['catalogsearch_delete_category_id'])) {
-            $categoryIds = $data['catalogsearch_delete_category_id'];
-            $this->engine
-                ->removeCategories(null, $categoryIds);
-            /*
-             * Change indexer status as need to reindex related products to update the list of categories.
-             * It's low priority so no need to automatically reindex all related products after deleting each category.
-             * Do not reindex all if affected products are given or product count is not indexed.
-             */
-            if ( ! isset($data['catalogsearch_update_product_id'])) {
-                $process = $event->getProcess();
-                $process->changeStatus(Mage_Index_Model_Process::STATUS_REQUIRE_REINDEX);
-            }
-        }
+         */ else {
+     if (!empty($data['catalogsearch_delete_category_id'])) {
+         $categoryIds = $data['catalogsearch_delete_category_id'];
+         $this->engine->removeCategories(null, $categoryIds);
+                /*
+                 * Change indexer status as need to reindex related products to update the list of categories.
+                 * It's low priority so no need to automatically reindex all related products after deleting each category.
+                 * Do not reindex all if affected products are given or product count is not indexed.
+                 */
+                if (!isset($data['catalogsearch_update_product_id'])) {
+                    $process = $event->getProcess();
+                    $process->changeStatus(Mage_Index_Model_Process::STATUS_REQUIRE_REINDEX);
+                }
+     }
+ }
 
         /*
          * Reindex categories.
          * Category products are tracked separately. The specified categories are active. See _registerCatalogCategoryEvent().
          */
-        if ( ! empty($data['catalogsearch_update_category_id'])) {
+        if (!empty($data['catalogsearch_update_category_id'])) {
             $updateCategoryIds = $data['catalogsearch_update_category_id'];
-            $updateCategoryIds = is_array($updateCategoryIds) ? $updateCategoryIds : array($updateCategoryIds);
+            $updateCategoryIds = is_array($updateCategoryIds) ? $updateCategoryIds : [$updateCategoryIds];
 
-            foreach ($updateCategoryIds as $id)
-            {
+            foreach ($updateCategoryIds as $id) {
                 $categories = Mage::getModel('catalog/category')->getCategories($id);
 
-                foreach ($categories as $category)
+                foreach ($categories as $category) {
                     $updateCategoryIds[] = $category->getId();
+                }
             }
 
-            $this->engine
-                ->rebuildCategoryIndex(null, $updateCategoryIds);
+            $this->engine->rebuildCategoryIndex(null, $updateCategoryIds);
         }
     }
 
     /**
-     * Rebuild all index data
+     * Rebuild all index data.
      */
     public function reindexAll()
     {
-        if (! $this->config->getApplicationID() || ! $this->config->getAPIKey() || ! $this->config->getSearchOnlyAPIKey())
-        {
-            Mage::getSingleton('adminhtml/session')->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+        if (!$this->config->getApplicationID() || !$this->config->getAPIKey() || !$this->config->getSearchOnlyAPIKey()) {
+            /** @var Mage_Adminhtml_Model_Session $session */
+            $session = Mage::getSingleton('adminhtml/session');
+            $session->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+
             return;
         }
 

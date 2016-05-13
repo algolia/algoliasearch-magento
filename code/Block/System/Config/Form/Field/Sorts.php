@@ -1,29 +1,32 @@
 <?php
 
 /**
- * Algolia custom sort order field
+ * Algolia custom sort order field.
  */
 class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
 {
-    protected $selectFields = array();
+    protected $selectFields = [];
 
     /**
      * Creates and populates a select block to represent each column in the configuration property.
      *
      * @param $columnId String The name of the column defined in addColumn
+     *
      * @return Algolia_Algoliasearch_Block_System_Config_Form_Field_Select
+     *
      * @throws Exception
      */
-    protected function getRenderer($columnId) {
-        if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId])
-        {
-            $aOptions = array();
+    protected function getRenderer($columnId)
+    {
+        if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId]) {
+            $aOptions = [];
 
             $selectField = Mage::app()->getLayout()->createBlock('algoliasearch/system_config_form_field_select')->setIsRenderToJsTemplate(true);
 
+            /** @var Algolia_Algoliasearch_Helper_Config $config */
             $config = Mage::helper('algoliasearch/config');
 
-            switch($columnId) {
+            switch ($columnId) {
                 case 'attribute': // Populate the attribute column with a list of searchable attributes
                     $attributes = $config->getProductAdditionalAttributes();
 
@@ -34,10 +37,10 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Mage_Ad
                     $selectField->setExtraParams('style="width:160px;"');
                     break;
                 case 'sort':
-                    $aOptions = array(
-                        'asc'   => 'Ascending',
-                        'desc'  => 'Descending',
-                    );
+                    $aOptions = [
+                        'asc' => 'Ascending',
+                        'desc' => 'Descending',
+                    ];
 
                     $selectField->setExtraParams('style="width:100px;"');
                     break;
@@ -48,25 +51,26 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Mage_Ad
             $selectField->setOptions($aOptions);
             $this->selectFields[$columnId] = $selectField;
         }
+
         return $this->selectFields[$columnId];
     }
 
     public function __construct()
     {
-        $this->addColumn('attribute', array(
+        $this->addColumn('attribute', [
             'label' => Mage::helper('adminhtml')->__('Attribute'),
-            'renderer'=> $this->getRenderer('attribute'),
-        ));
+            'renderer' => $this->getRenderer('attribute'),
+        ]);
 
-        $this->addColumn('sort', array(
+        $this->addColumn('sort', [
             'label' => Mage::helper('adminhtml')->__('Sort'),
-            'renderer'=> $this->getRenderer('sort'),
-        ));
+            'renderer' => $this->getRenderer('sort'),
+        ]);
 
-        $this->addColumn('label', array(
+        $this->addColumn('label', [
             'label' => Mage::helper('adminhtml')->__('Label'),
-            'style' => 'width: 200px;'
-        ));
+            'style' => 'width: 200px;',
+        ]);
 
         $this->_addAfter = false;
         $this->_addButtonLabel = Mage::helper('adminhtml')->__('Add Attribute');
