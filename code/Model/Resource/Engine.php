@@ -168,6 +168,8 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function rebuildProducts()
     {
+        $this->saveSettings();
+        
         foreach (Mage::app()->getStores() as $store)
         {
             if ($this->config->isEnabledBackEnd($store->getId()) === false)
