@@ -2,7 +2,7 @@
 <layout>
     <algolia_bundle_handle>
         <reference name="before_body_end">
-            <block type="core/template" template="algoliasearch/adminjs.phtml"/>
+            <block type="core/template" template="algoliasearch/adminjs.phtml" name="algolia-admin-beforebodyend"/>
         </reference>
     </algolia_bundle_handle>
 </layout>
