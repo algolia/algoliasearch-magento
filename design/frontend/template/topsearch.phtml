@@ -13,7 +13,7 @@ $group_id = Mage::getSingleton('customer/session')->getCustomerGroupId();
 $currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
 $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
 
-$image_base_url = Mage::getBaseUrl('media');
+$image_base_url = Mage::getBaseUrl();
 
 $title = '';
 $description = '';
