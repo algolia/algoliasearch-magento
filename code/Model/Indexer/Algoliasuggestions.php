@@ -6,6 +6,8 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliasuggestions extends Mage_Index_
 
     /** @var Algolia_Algoliasearch_Model_Resource_Engine */
     protected $engine;
+
+    /** @var Algolia_Algoliasearch_Helper_Config */
     protected $config;
 
     public function __construct()
@@ -16,7 +18,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliasuggestions extends Mage_Index_
         $this->config = Mage::helper('algoliasearch/config');
     }
 
-    protected $_matchedEntities = array();
+    protected $_matchedEntities = [];
 
     protected function _getResource()
     {
@@ -63,13 +65,15 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliasuggestions extends Mage_Index_
     }
 
     /**
-     * Rebuild all index data
+     * Rebuild all index data.
      */
     public function reindexAll()
     {
-        if (! $this->config->getApplicationID() || ! $this->config->getAPIKey() || ! $this->config->getSearchOnlyAPIKey())
-        {
-            Mage::getSingleton('adminhtml/session')->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+        if (!$this->config->getApplicationID() || !$this->config->getAPIKey() || !$this->config->getSearchOnlyAPIKey()) {
+            /** @var Mage_Adminhtml_Model_Session $session */
+            $session = Mage::getSingleton('adminhtml/session');
+            $session->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+
             return;
         }
 
