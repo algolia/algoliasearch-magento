@@ -32,7 +32,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
                     $aOptions = [
                         'conjunctive' => 'Conjunctive',
                         'disjunctive' => 'Disjunctive',
-                        'slider' => 'Slider',
+                        'slider'      => 'Slider',
                         'priceRanges' => 'Price Ranges',
                     ];
 
@@ -40,7 +40,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
 
                     break;
                 default:
-                    throw new Exception('Unknown attribute id ' . $columnId);
+                    throw new Exception('Unknown attribute id '.$columnId);
             }
 
             $selectField->setOptions($aOptions);
@@ -53,12 +53,12 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
     public function __construct()
     {
         $this->addColumn('attribute', [
-            'label' => Mage::helper('adminhtml')->__('Attribute'),
+            'label'    => Mage::helper('adminhtml')->__('Attribute'),
             'renderer' => $this->getRenderer('attribute'),
         ]);
 
         $this->addColumn('type', [
-            'label' => Mage::helper('adminhtml')->__('Facet type'),
+            'label'    => Mage::helper('adminhtml')->__('Facet type'),
             'renderer' => $this->getRenderer('type'),
         ]);
 
@@ -75,13 +75,13 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Mage_A
     protected function _prepareArrayRow(Varien_Object $row)
     {
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('attribute')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('attribute')->calcOptionHash(
                 $row->getAttribute()),
             'selected="selected"'
         );
 
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('type')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('type')->calcOptionHash(
                 $row->getType()),
             'selected="selected"'
         );

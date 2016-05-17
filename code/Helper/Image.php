@@ -37,7 +37,7 @@ class Algolia_Algoliasearch_Helper_Image extends Mage_Catalog_Helper_Image
     public function getUrl(Mage_Catalog_Model_Product_Image $model)
     {
         $baseDir = Mage::getBaseDir('media');
-        $path = str_replace($baseDir . DS, '', $model->getNewFile());
+        $path = str_replace($baseDir.DS, '', $model->getNewFile());
         $url = str_replace(DS, '/', $path);
 
         return $url;

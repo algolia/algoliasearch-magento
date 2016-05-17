@@ -13,9 +13,9 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
     public function getIndexSettings($storeId)
     {
         return [
-            'attributesToIndex' => ['query'],
-            'customRanking' => ['desc(popularity)', 'desc(number_of_results)', 'asc(date)'],
-            'typoTolerance' => false,
+            'attributesToIndex'    => ['query'],
+            'customRanking'        => ['desc(popularity)', 'desc(number_of_results)', 'asc(date)'],
+            'typoTolerance'        => false,
             'attributesToRetrieve' => ['query'],
         ];
     }
@@ -23,11 +23,11 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
     public function getObject(Mage_CatalogSearch_Model_Query $suggestion)
     {
         $suggestion_obj = [
-            'objectID' => $suggestion->getData('query_id'),
-            'query' => $suggestion->getData('query_text'),
+            'objectID'          => $suggestion->getData('query_id'),
+            'query'             => $suggestion->getData('query_text'),
             'number_of_results' => (int) $suggestion->getData('num_results'),
-            'popularity' => (int) $suggestion->getData('popularity'),
-            'updated_at' => (int) strtotime($suggestion->getData('updated_at')),
+            'popularity'        => (int) $suggestion->getData('popularity'),
+            'updated_at'        => (int) strtotime($suggestion->getData('updated_at')),
         ];
 
         return $suggestion_obj;
@@ -43,7 +43,7 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
                 $this->_popularQueries = unserialize($cachedPopularQueries);
             } else {
                 $collection = Mage::getResourceModel('catalogsearch/query_collection');
-                $collection->getSelect()->where('num_results >= ' . $this->config->getMinNumberOfResults() . ' AND popularity >= ' . $this->config->getMinPopularity() . ' AND query_text != "__empty__"');
+                $collection->getSelect()->where('num_results >= '.$this->config->getMinNumberOfResults().' AND popularity >= '.$this->config->getMinPopularity().' AND query_text != "__empty__"');
                 $collection->getSelect()->limit(12);
                 $collection->setOrder('popularity', 'DESC');
                 $collection->setOrder('num_results', 'DESC');
@@ -89,7 +89,7 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
                             ->addStoreFilter($storeId)
                             ->setStoreId($storeId);
 
-        $collection->getSelect()->where('num_results >= ' . $this->config->getMinNumberOfResults() . ' AND popularity >= ' . $this->config->getMinPopularity() . ' AND query_text != "__empty__"');
+        $collection->getSelect()->where('num_results >= '.$this->config->getMinNumberOfResults().' AND popularity >= '.$this->config->getMinPopularity().' AND query_text != "__empty__"');
 
         return $collection;
     }

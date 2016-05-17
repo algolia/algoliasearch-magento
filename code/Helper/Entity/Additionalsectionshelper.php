@@ -55,7 +55,7 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
 
             $record = [
                 'objectID' => $value,
-                'value' => $value,
+                'value'    => $value,
             ];
 
             $transport = new Varien_Object($record);

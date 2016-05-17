@@ -295,17 +295,17 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         foreach ($attrs as &$attr) {
             if ($this->isCustomerGroupsEnabled($storeId)) {
                 if (strpos($attr['attribute'], 'price') !== false) {
-                    $suffix_index_name = 'group_' . $group_id;
+                    $suffix_index_name = 'group_'.$group_id;
 
-                    $attr['name'] = $product_helper->getIndexName($storeId) . '_' . $attr['attribute'] . '_' . $suffix_index_name . '_' . $attr['sort'];
+                    $attr['name'] = $product_helper->getIndexName($storeId).'_'.$attr['attribute'].'_'.$suffix_index_name.'_'.$attr['sort'];
                 } else {
-                    $attr['name'] = $product_helper->getIndexName($storeId) . '_' . $attr['attribute'] . '_' . $attr['sort'];
+                    $attr['name'] = $product_helper->getIndexName($storeId).'_'.$attr['attribute'].'_'.$attr['sort'];
                 }
             } else {
                 if (strpos($attr['attribute'], 'price') !== false) {
-                    $attr['name'] = $product_helper->getIndexName($storeId) . '_' . $attr['attribute'] . '_' . 'default' . '_' . $attr['sort'];
+                    $attr['name'] = $product_helper->getIndexName($storeId).'_'.$attr['attribute'].'_'.'default'.'_'.$attr['sort'];
                 } else {
-                    $attr['name'] = $product_helper->getIndexName($storeId) . '_' . $attr['attribute'] . '_' . $attr['sort'];
+                    $attr['name'] = $product_helper->getIndexName($storeId).'_'.$attr['attribute'].'_'.$attr['sort'];
                 }
             }
         }
@@ -369,12 +369,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         $currencies = $currencyDirectory->getConfigAllowCurrencies();
 
         foreach ($currencies as $currency) {
-            $attributes[] = 'price.' . $currency . '.default';
-            $attributes[] = 'price.' . $currency . '.default_formated';
-            $attributes[] = 'price.' . $currency . '.group_' . $group_id;
-            $attributes[] = 'price.' . $currency . '.group_' . $group_id . '_formated';
-            $attributes[] = 'price.' . $currency . '.special_from_date';
-            $attributes[] = 'price.' . $currency . '.special_to_date';
+            $attributes[] = 'price.'.$currency.'.default';
+            $attributes[] = 'price.'.$currency.'.default_formated';
+            $attributes[] = 'price.'.$currency.'.group_'.$group_id;
+            $attributes[] = 'price.'.$currency.'.group_'.$group_id.'_formated';
+            $attributes[] = 'price.'.$currency.'.special_from_date';
+            $attributes[] = 'price.'.$currency.'.special_to_date';
         }
 
         return ['attributesToRetrieve' => $attributes];
@@ -472,7 +472,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getMappedProductType($originalType)
     {
         if (!isset($this->_productTypeMap[$originalType])) {
-            $mappedType = (string) Mage::app()->getConfig()->getNode('default/algoliasearch/product_map/' . $originalType);
+            $mappedType = (string) Mage::app()->getConfig()->getNode('default/algoliasearch/product_map/'.$originalType);
 
             if ($mappedType) {
                 $this->_productTypeMap[$originalType] = $mappedType;

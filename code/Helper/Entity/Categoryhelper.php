@@ -20,7 +20,7 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
                 if ($attribute['order'] == 'ordered') {
                     $attributesToIndex[] = $attribute['attribute'];
                 } else {
-                    $attributesToIndex[] = 'unordered(' . $attribute['attribute'] . ')';
+                    $attributesToIndex[] = 'unordered('.$attribute['attribute'].')';
                 }
             }
 
@@ -34,13 +34,13 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         $customRankingsArr = [];
 
         foreach ($customRankings as $ranking) {
-            $customRankingsArr[] = $ranking['order'] . '(' . $ranking['attribute'] . ')';
+            $customRankingsArr[] = $ranking['order'].'('.$ranking['attribute'].')';
         }
 
         // Default index settings
         $indexSettings = [
-            'attributesToIndex' => array_values(array_unique($attributesToIndex)),
-            'customRanking' => $customRankingsArr,
+            'attributesToIndex'       => array_values(array_unique($attributesToIndex)),
+            'customRanking'           => $customRankingsArr,
             'unretrievableAttributes' => $unretrievableAttributes,
         ];
 
@@ -144,15 +144,15 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         } catch (Exception $e) { /* no image, no default: not fatal */
         }
         $data = [
-            'objectID' => $category->getId(),
-            'name' => $category->getName(),
-            'path' => $path,
-            'level' => $category->getLevel(),
-            'url' => $category->getUrl(),
+            'objectID'        => $category->getId(),
+            'name'            => $category->getName(),
+            'path'            => $path,
+            'level'           => $category->getLevel(),
+            'url'             => $category->getUrl(),
             'include_in_menu' => $category->getIncludeInMenu(),
-            '_tags' => ['category'],
-            'popularity' => 1,
-            'product_count' => $category->getProductCount(),
+            '_tags'           => ['category'],
+            'popularity'      => 1,
+            'product_count'   => $category->getProductCount(),
         ];
 
         if (!empty($image_url)) {

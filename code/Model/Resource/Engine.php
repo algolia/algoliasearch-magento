@@ -123,14 +123,14 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         foreach (Mage::app()->getStores() as $store) {
             if ($this->config->isEnabledBackend($store->getId()) === false) {
                 if (php_sapi_name() === 'cli') {
-                    echo '[ALGOLIA] INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()) . "\n";
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
                 }
 
                 /** @var Mage_Adminhtml_Model_Session $session */
                 $session = Mage::getSingleton('adminhtml/session');
-                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()));
+                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
 
-                $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()));
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
 
                 continue;
             }
@@ -145,14 +145,14 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         foreach (Mage::app()->getStores() as $store) {
             if ($this->config->isEnabledBackend($store->getId()) === false) {
                 if (php_sapi_name() === 'cli') {
-                    echo '[ALGOLIA] INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()) . "\n";
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
                 }
 
                 /** @var Mage_Adminhtml_Model_Session $session */
                 $session = Mage::getSingleton('adminhtml/session');
-                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()));
+                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
 
-                $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()));
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
 
                 continue;
             }
@@ -168,14 +168,14 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         foreach (Mage::app()->getStores() as $store) {
             if ($this->config->isEnabledBackend($store->getId()) === false) {
                 if (php_sapi_name() === 'cli') {
-                    echo '[ALGOLIA] INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()) . "\n";
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
                 }
 
                 /** @var Mage_Adminhtml_Model_Session $session */
                 $session = Mage::getSingleton('adminhtml/session');
-                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()));
+                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
 
-                $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()));
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
 
                 continue;
             }
@@ -204,14 +204,14 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         foreach (Mage::app()->getStores() as $store) {
             if ($this->config->isEnabledBackend($store->getId()) === false) {
                 if (php_sapi_name() === 'cli') {
-                    echo '[ALGOLIA] INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()) . "\n";
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
                 }
 
                 /** @var Mage_Adminhtml_Model_Session $session */
                 $session = Mage::getSingleton('adminhtml/session');
-                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()));
+                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
 
-                $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()));
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
 
                 continue;
             }
@@ -231,14 +231,14 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         foreach (Mage::app()->getStores() as $store) {
             if ($this->config->isEnabledBackend($store->getId()) === false) {
                 if (php_sapi_name() === 'cli') {
-                    echo '[ALGOLIA] INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()) . "\n";
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
                 }
 
                 /** @var Mage_Adminhtml_Model_Session $session */
                 $session = Mage::getSingleton('adminhtml/session');
-                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()));
+                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
 
-                $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store->getId()));
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
 
                 continue;
             }
@@ -281,10 +281,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
             for ($i = 1; $i <= $nb_page; $i++) {
                 $data = [
-                    'store_id' => $storeId,
+                    'store_id'     => $storeId,
                     'category_ids' => $categoryIds,
-                    'page_size' => $by_page,
-                    'page' => $i,
+                    'page_size'    => $by_page,
+                    'page'         => $i,
                 ];
 
                 $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', $data, $by_page);
@@ -306,10 +306,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
             for ($i = 1; $i <= $nb_page; $i++) {
                 $data = [
-                    'store_id' => $storeId,
+                    'store_id'    => $storeId,
                     'product_ids' => $productIds,
-                    'page_size' => $by_page,
-                    'page' => $i,
+                    'page_size'   => $by_page,
+                    'page'        => $i,
                 ];
 
                 $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', $data, $by_page);

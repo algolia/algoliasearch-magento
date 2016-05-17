@@ -1,13 +1,13 @@
 <?php
 
 if (class_exists('AlgoliaSearch\Client', false) == false) {
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/Version.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/AlgoliaException.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/ClientContext.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/Client.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/Index.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/PlacesIndex.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/IndexBrowser.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Version.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/AlgoliaException.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/ClientContext.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Client.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Index.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/PlacesIndex.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/IndexBrowser.php';
 }
 
 class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
@@ -59,7 +59,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         if ($storeId !== null) {
             if ($this->config->isEnabledBackend($storeId) === false) {
-                $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
                 return;
             }
@@ -72,7 +72,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         if ($storeId !== null) {
             if ($this->config->isEnabledBackend($storeId) === false) {
-                $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
                 return;
             }
@@ -90,7 +90,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         if ($this->config->isEnabledBackend($storeId) === false) {
-            $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+            $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
             return;
         }
@@ -107,7 +107,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 continue;
             }
 
-            $this->algolia_helper->setSettings($this->additionalsections_helper->getIndexName($storeId) . '_' . $section['name'],
+            $this->algolia_helper->setSettings($this->additionalsections_helper->getIndexName($storeId).'_'.$section['name'],
                 $this->additionalsections_helper->getIndexSettings($storeId));
         }
 
@@ -127,13 +127,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         $answer = $this->algolia_helper->query($index_name, $query, [
-            'hitsPerPage' => $number_of_results, // retrieve all the hits (hard limit is 1000)
-            'attributesToRetrieve' => 'objectID',
-            'attributesToHighlight' => '',
-            'attributesToSnippet' => '',
-            'numericFilters' => 'visibility_search=1',
+            'hitsPerPage'            => $number_of_results, // retrieve all the hits (hard limit is 1000)
+            'attributesToRetrieve'   => 'objectID',
+            'attributesToHighlight'  => '',
+            'attributesToSnippet'    => '',
+            'numericFilters'         => 'visibility_search=1',
             'removeWordsIfNoResults' => $this->config->getRemoveWordsIfNoResult($storeId),
-            'analyticsTags' => 'backend-search',
+            'analyticsTags'          => 'backend-search',
         ]);
 
         $data = [];
@@ -155,7 +155,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         foreach ($store_ids as $store_id) {
             if ($this->config->isEnabledBackend($store_id) === false) {
-                $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store_id));
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store_id));
                 continue;
             }
 
@@ -171,7 +171,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         foreach ($store_ids as $store_id) {
             if ($this->config->isEnabledBackend($store_id) === false) {
-                $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($store_id));
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store_id));
                 continue;
             }
 
@@ -184,7 +184,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function rebuildStoreAdditionalSectionsIndex($storeId)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
-            $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+            $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
             return;
         }
@@ -196,15 +196,15 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 continue;
             }
 
-            $index_name = $this->additionalsections_helper->getIndexName($storeId) . '_' . $section['name'];
+            $index_name = $this->additionalsections_helper->getIndexName($storeId).'_'.$section['name'];
 
             $attribute_values = $this->additionalsections_helper->getAttributeValues($storeId, $section);
 
             foreach (array_chunk($attribute_values, 100) as $chunk) {
-                $this->algolia_helper->addObjects($chunk, $index_name . '_tmp');
+                $this->algolia_helper->addObjects($chunk, $index_name.'_tmp');
             }
 
-            $this->algolia_helper->moveIndex($index_name . '_tmp', $index_name);
+            $this->algolia_helper->moveIndex($index_name.'_tmp', $index_name);
 
             $this->algolia_helper->setSettings($index_name,
                 $this->additionalsections_helper->getIndexSettings($storeId));
@@ -214,7 +214,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function rebuildStorePageIndex($storeId)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
-            $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+            $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
             return;
         }
@@ -226,10 +226,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $pages = $this->page_helper->getPages($storeId);
 
         foreach (array_chunk($pages, 100) as $chunk) {
-            $this->algolia_helper->addObjects($chunk, $index_name . '_tmp');
+            $this->algolia_helper->addObjects($chunk, $index_name.'_tmp');
         }
 
-        $this->algolia_helper->moveIndex($index_name . '_tmp', $index_name);
+        $this->algolia_helper->moveIndex($index_name.'_tmp', $index_name);
 
         $this->algolia_helper->setSettings($index_name, $this->page_helper->getIndexSettings($storeId));
 
@@ -239,7 +239,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function rebuildStoreCategoryIndex($storeId, $categoryIds = null)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
-            $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+            $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
             return;
         }
@@ -276,7 +276,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function rebuildStoreSuggestionIndex($storeId)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
-            $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+            $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
             return;
         }
@@ -304,19 +304,19 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function moveStoreSuggestionIndex($storeId)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
-            $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+            $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
             return;
         }
 
-        $this->algolia_helper->moveIndex($this->suggestion_helper->getIndexName($storeId) . '_tmp',
+        $this->algolia_helper->moveIndex($this->suggestion_helper->getIndexName($storeId).'_tmp',
             $this->suggestion_helper->getIndexName($storeId));
     }
 
     public function rebuildStoreProductIndex($storeId, $productIds)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
-            $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+            $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
             return;
         }
@@ -328,7 +328,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $size = $collection->getSize();
 
-            $this->logger->log('Store ' . $this->logger->getStoreName($storeId) . ' collection size : ' . $size);
+            $this->logger->log('Store '.$this->logger->getStoreName($storeId).' collection size : '.$size);
 
             if ($size > 0) {
                 $pages = ceil($size / $this->config->getNumberOfElementByPage());
@@ -353,7 +353,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function rebuildStoreSuggestionIndexPage($storeId, $collectionDefault, $page, $pageSize)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
-            $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+            $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
             return;
         }
@@ -362,7 +362,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $collection->setCurPage($page)->setPageSize($pageSize);
         $collection->load();
 
-        $index_name = $this->suggestion_helper->getIndexName($storeId) . '_tmp';
+        $index_name = $this->suggestion_helper->getIndexName($storeId).'_tmp';
 
         $indexData = [];
 
@@ -392,7 +392,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function rebuildStoreCategoryIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
-            $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+            $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
             return;
         }
@@ -446,8 +446,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $indexData = [];
 
-        $this->logger->start('CREATE RECORDS ' . $this->logger->getStoreName($storeId));
-        $this->logger->log(count($collection) . ' product records to create');
+        $this->logger->start('CREATE RECORDS '.$this->logger->getStoreName($storeId));
+        $this->logger->log(count($collection).' product records to create');
         /** @var $product Mage_Catalog_Model_Product */
         foreach ($collection as $product) {
             $product->setStoreId($storeId);
@@ -456,7 +456,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             array_push($indexData, $json);
         }
-        $this->logger->stop('CREATE RECORDS ' . $this->logger->getStoreName($storeId));
+        $this->logger->stop('CREATE RECORDS '.$this->logger->getStoreName($storeId));
 
         return $indexData;
     }
@@ -464,12 +464,12 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
-            $this->logger->log('INDEXING IS DISABLED FOR ' . $this->logger->getStoreName($storeId));
+            $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
             return;
         }
 
-        $this->logger->start('rebuildStoreProductIndexPage ' . $this->logger->getStoreName($storeId) . ' page ' . $page . ' pageSize ' . $pageSize);
+        $this->logger->start('rebuildStoreProductIndexPage '.$this->logger->getStoreName($storeId).' page '.$page.' pageSize '.$pageSize);
         $emulationInfoPage = null;
 
         if ($emulationInfo === null) {
@@ -486,31 +486,31 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $collection->addUrlRewrite();
 
         if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'stock_qty')) {
-            $collection->joinField('stock_qty', $index_prefix . 'cataloginventory_stock_item', 'qty',
+            $collection->joinField('stock_qty', $index_prefix.'cataloginventory_stock_item', 'qty',
                 'product_id=entity_id', '{{table}}.stock_id=1', 'left');
         }
 
         if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'ordered_qty')) {
             $collection->getSelect()
-                       ->columns('(SELECT SUM(qty_ordered) FROM ' . $index_prefix . 'sales_flat_order_item WHERE ' . $index_prefix . 'sales_flat_order_item.product_id = e.entity_id) as ordered_qty');
+                       ->columns('(SELECT SUM(qty_ordered) FROM '.$index_prefix.'sales_flat_order_item WHERE '.$index_prefix.'sales_flat_order_item.product_id = e.entity_id) as ordered_qty');
         }
 
         if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'total_ordered')) {
             $collection->getSelect()
-                       ->columns('(SELECT SUM(row_total) FROM ' . $index_prefix . 'sales_flat_order_item WHERE ' . $index_prefix . 'sales_flat_order_item.product_id = e.entity_id) as total_ordered');
+                       ->columns('(SELECT SUM(row_total) FROM '.$index_prefix.'sales_flat_order_item WHERE '.$index_prefix.'sales_flat_order_item.product_id = e.entity_id) as total_ordered');
         }
 
         if ($this->product_helper->isAttributeEnabled($additionalAttributes, 'rating_summary')) {
-            $collection->joinField('rating_summary', $index_prefix . 'review_entity_summary', 'rating_summary',
-                'entity_pk_value=entity_id', '{{table}}.store_id=' . $storeId, 'left');
+            $collection->joinField('rating_summary', $index_prefix.'review_entity_summary', 'rating_summary',
+                'entity_pk_value=entity_id', '{{table}}.store_id='.$storeId, 'left');
         }
 
-        $this->logger->start('LOADING ' . $this->logger->getStoreName($storeId) . ' collection page ' . $page . ', pageSize ' . $pageSize);
+        $this->logger->start('LOADING '.$this->logger->getStoreName($storeId).' collection page '.$page.', pageSize '.$pageSize);
 
         $collection->load();
 
-        $this->logger->log('Loaded ' . count($collection) . ' products');
-        $this->logger->stop('LOADING ' . $this->logger->getStoreName($storeId) . ' collection page ' . $page . ', pageSize ' . $pageSize);
+        $this->logger->log('Loaded '.count($collection).' products');
+        $this->logger->stop('LOADING '.$this->logger->getStoreName($storeId).' collection page '.$page.', pageSize '.$pageSize);
 
         $index_name = $this->product_helper->getIndexName($storeId);
 
@@ -533,7 +533,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $this->stopEmulation($emulationInfoPage);
         }
 
-        $this->logger->stop('rebuildStoreProductIndexPage ' . $this->logger->getStoreName($storeId) . ' page ' . $page . ' pageSize ' . $pageSize);
+        $this->logger->stop('rebuildStoreProductIndexPage '.$this->logger->getStoreName($storeId).' page '.$page.' pageSize '.$pageSize);
     }
 
     public function startEmulation($storeId)

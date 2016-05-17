@@ -1,13 +1,13 @@
 <?php
 
 if (class_exists('AlgoliaSearch\Client', false) == false) {
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/Version.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/AlgoliaException.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/ClientContext.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/Client.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/Index.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/PlacesIndex.php';
-    require_once Mage::getBaseDir('lib') . '/AlgoliaSearch/IndexBrowser.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Version.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/AlgoliaException.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/ClientContext.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Client.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/Index.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/PlacesIndex.php';
+    require_once Mage::getBaseDir('lib').'/AlgoliaSearch/IndexBrowser.php';
 }
 
 class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstract
@@ -114,7 +114,7 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
                 foreach ($long_attributes as $attribute) {
                     if (isset($object[$attribute])) {
                         unset($object[$attribute]);
-                        $ids[$index_name . ' objectID(' . $object['objectID'] . ')'] = true;
+                        $ids[$index_name.' objectID('.$object['objectID'].')'] = true;
                         $good_size = false;
                     }
                 }
@@ -134,8 +134,8 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         if ($good_size === false) {
             /** @var Mage_Adminhtml_Model_Session $session */
             $session = Mage::getSingleton('adminhtml/session');
-            $session->addError('Algolia reindexing : You have some records (' . implode(',',
-                        array_keys($ids)) . ') that are too big. They have either been truncated or skipped');
+            $session->addError('Algolia reindexing : You have some records ('.implode(',',
+                        array_keys($ids)).') that are too big. They have either been truncated or skipped');
         }
     }
 

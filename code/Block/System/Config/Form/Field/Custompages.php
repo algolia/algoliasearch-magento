@@ -32,7 +32,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Custompages extends M
 
                     break;
                 default:
-                    throw new Exception('Unknown attribute id ' . $columnId);
+                    throw new Exception('Unknown attribute id '.$columnId);
             }
 
             $selectField = Mage::app()->getLayout()->createBlock('algoliasearch/system_config_form_field_select')->setIsRenderToJsTemplate(true);
@@ -47,7 +47,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Custompages extends M
     public function __construct()
     {
         $this->addColumn('pages', [
-            'label' => Mage::helper('adminhtml')->__('Pages'),
+            'label'    => Mage::helper('adminhtml')->__('Pages'),
             'renderer' => $this->getRenderer('pages'),
         ]);
         $this->_addAfter = false;
@@ -58,7 +58,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Custompages extends M
     protected function _prepareArrayRow(Varien_Object $row)
     {
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('pages')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('pages')->calcOptionHash(
                 $row->getPages()),
             'selected="selected"'
         );

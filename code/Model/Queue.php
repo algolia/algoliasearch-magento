@@ -34,11 +34,11 @@ class Algolia_Algoliasearch_Model_Queue
     {
         // Insert a row for the new job
         $this->db->insert($this->table, [
-            'class' => $class,
-            'method' => $method,
-            'data' => json_encode($data),
+            'class'     => $class,
+            'method'    => $method,
+            'data'      => json_encode($data),
             'data_size' => $data_size,
-            'pid' => null,
+            'pid'       => null,
         ]);
     }
 
@@ -178,7 +178,7 @@ class Algolia_Algoliasearch_Model_Queue
         $pid = getmypid();
 
         // Reserve all new jobs since last run
-        $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = " . $pid . ' WHERE job_id >= ' . $first_id . " AND job_id <= $last_id");
+        $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = ".$pid.' WHERE job_id >= '.$first_id." AND job_id <= $last_id");
 
         foreach ($jobs as &$job) {
             $job['data'] = json_decode($job['data'], true);
@@ -194,8 +194,8 @@ class Algolia_Algoliasearch_Model_Queue
                 $model->$method(new Varien_Object($job['data']));
             } catch (Exception $e) {
                 // Increment retries and log error information
-                $this->logger->log("Queue processing {$job['pid']} [KO]: Mage::getSingleton({$job['class']})->{$job['method']}(" . json_encode($job['data']) . ')');
-                $this->logger->log(date('c') . ' ERROR: ' . get_class($e) . ": '{$e->getMessage()}' in {$e->getFile()}:{$e->getLine()}\n" . "Stack trace:\n" . $e->getTraceAsString());
+                $this->logger->log("Queue processing {$job['pid']} [KO]: Mage::getSingleton({$job['class']})->{$job['method']}(".json_encode($job['data']).')');
+                $this->logger->log(date('c').' ERROR: '.get_class($e).": '{$e->getMessage()}' in {$e->getFile()}:{$e->getLine()}\n"."Stack trace:\n".$e->getTraceAsString());
             }
         }
 

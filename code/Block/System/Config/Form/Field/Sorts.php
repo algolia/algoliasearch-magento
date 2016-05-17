@@ -38,14 +38,14 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Mage_Ad
                     break;
                 case 'sort':
                     $aOptions = [
-                        'asc' => 'Ascending',
+                        'asc'  => 'Ascending',
                         'desc' => 'Descending',
                     ];
 
                     $selectField->setExtraParams('style="width:100px;"');
                     break;
                 default:
-                    throw new Exception('Unknown attribute id ' . $columnId);
+                    throw new Exception('Unknown attribute id '.$columnId);
             }
 
             $selectField->setOptions($aOptions);
@@ -58,12 +58,12 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Mage_Ad
     public function __construct()
     {
         $this->addColumn('attribute', [
-            'label' => Mage::helper('adminhtml')->__('Attribute'),
+            'label'    => Mage::helper('adminhtml')->__('Attribute'),
             'renderer' => $this->getRenderer('attribute'),
         ]);
 
         $this->addColumn('sort', [
-            'label' => Mage::helper('adminhtml')->__('Sort'),
+            'label'    => Mage::helper('adminhtml')->__('Sort'),
             'renderer' => $this->getRenderer('sort'),
         ]);
 
@@ -80,13 +80,13 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Mage_Ad
     protected function _prepareArrayRow(Varien_Object $row)
     {
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('attribute')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('attribute')->calcOptionHash(
                 $row->getAttribute()),
             'selected="selected"'
         );
 
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('sort')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('sort')->calcOptionHash(
                 $row->getSort()),
             'selected="selected"'
         );

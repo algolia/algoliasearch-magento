@@ -46,7 +46,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sections extends Mage
 
                     break;
                 default:
-                    throw new Exception('Unknown attribute id ' . $columnId);
+                    throw new Exception('Unknown attribute id '.$columnId);
             }
 
             $selectField->setOptions($aOptions);
@@ -59,7 +59,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sections extends Mage
     public function __construct()
     {
         $this->addColumn('name', [
-            'label' => Mage::helper('adminhtml')->__('Section'),
+            'label'    => Mage::helper('adminhtml')->__('Section'),
             'renderer' => $this->getRenderer('name'),
         ]);
 
@@ -82,7 +82,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sections extends Mage
     protected function _prepareArrayRow(Varien_Object $row)
     {
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('name')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('name')->calcOptionHash(
                 $row->getName()),
             'selected="selected"'
         );

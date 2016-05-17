@@ -54,14 +54,14 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
                     break;
                 case 'order':
                     $aOptions = [
-                        'ordered' => 'Ordered',
+                        'ordered'   => 'Ordered',
                         'unordered' => 'Unordered',
                     ];
 
                     $selectField->setExtraParams('style="width:100px;"');
                     break;
                 default:
-                    throw new Exception('Unknown attribute id ' . $columnId);
+                    throw new Exception('Unknown attribute id '.$columnId);
             }
 
             $selectField->setOptions($aOptions);
@@ -74,19 +74,19 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
     public function __construct()
     {
         $this->addColumn('attribute', [
-            'label' => Mage::helper('adminhtml')->__('Attribute'),
+            'label'    => Mage::helper('adminhtml')->__('Attribute'),
             'renderer' => $this->getRenderer('attribute'),
         ]);
         $this->addColumn('searchable', [
-            'label' => Mage::helper('adminhtml')->__('Searchable'),
+            'label'    => Mage::helper('adminhtml')->__('Searchable'),
             'renderer' => $this->getRenderer('searchable'),
         ]);
         $this->addColumn('retrievable', [
-            'label' => Mage::helper('adminhtml')->__('Retrievable'),
+            'label'    => Mage::helper('adminhtml')->__('Retrievable'),
             'renderer' => $this->getRenderer('retrievable'),
         ]);
         $this->addColumn('order', [
-            'label' => Mage::helper('adminhtml')->__('Ordered'),
+            'label'    => Mage::helper('adminhtml')->__('Ordered'),
             'renderer' => $this->getRenderer('order'),
         ]);
         $this->_addAfter = false;
@@ -97,22 +97,22 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customsortordercatego
     protected function _prepareArrayRow(Varien_Object $row)
     {
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('attribute')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('attribute')->calcOptionHash(
                 $row->getAttribute()),
             'selected="selected"'
         );
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('searchable')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('searchable')->calcOptionHash(
                 $row->getSearchable()),
             'selected="selected"'
         );
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('searchable')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('searchable')->calcOptionHash(
                 $row->getRetrievable()),
             'selected="selected"'
         );
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('order')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('order')->calcOptionHash(
                 $row->getOrder()),
             'selected="selected"'
         );

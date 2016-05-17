@@ -36,11 +36,11 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customrankingproduct 
                 case 'order':
                     $aOptions = [
                         'desc' => 'Descending',
-                        'asc' => 'Ascending',
+                        'asc'  => 'Ascending',
                     ];
                     break;
                 default:
-                    throw new Exception('Unknown attribute id ' . $columnId);
+                    throw new Exception('Unknown attribute id '.$columnId);
             }
 
             $selectField = Mage::app()->getLayout()->createBlock('algoliasearch/system_config_form_field_select')->setIsRenderToJsTemplate(true);
@@ -55,11 +55,11 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customrankingproduct 
     public function __construct()
     {
         $this->addColumn('attribute', [
-            'label' => Mage::helper('adminhtml')->__('Attribute'),
+            'label'    => Mage::helper('adminhtml')->__('Attribute'),
             'renderer' => $this->getRenderer('attribute'),
         ]);
         $this->addColumn('order', [
-            'label' => Mage::helper('adminhtml')->__('Ordered'),
+            'label'    => Mage::helper('adminhtml')->__('Ordered'),
             'renderer' => $this->getRenderer('order'),
         ]);
         $this->_addAfter = false;
@@ -70,12 +70,12 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Customrankingproduct 
     protected function _prepareArrayRow(Varien_Object $row)
     {
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('attribute')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('attribute')->calcOptionHash(
                 $row->getAttribute()),
             'selected="selected"'
         );
         $row->setData(
-            'option_extra_attr_' . $this->getRenderer('order')->calcOptionHash(
+            'option_extra_attr_'.$this->getRenderer('order')->calcOptionHash(
                 $row->getOrder()),
             'selected="selected"'
         );

@@ -39,7 +39,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext_Collection extends Mage_Cata
         $sortedIds = array_reverse(array_keys($data));
 
         $this->getSelect()->columns([
-            'relevance' => new Zend_Db_Expr("FIND_IN_SET(e.entity_id, '" . implode(',', $sortedIds) . "')"),
+            'relevance' => new Zend_Db_Expr("FIND_IN_SET(e.entity_id, '".implode(',', $sortedIds)."')"),
         ]);
 
         $this->getSelect()->where('e.entity_id IN (?)', $sortedIds);

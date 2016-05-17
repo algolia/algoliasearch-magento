@@ -25,12 +25,12 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
 
     public function getBaseIndexName($storeId = null)
     {
-        return (string) $this->config->getIndexPrefix($storeId) . Mage::app()->getStore($storeId)->getCode();
+        return (string) $this->config->getIndexPrefix($storeId).Mage::app()->getStore($storeId)->getCode();
     }
 
     public function getIndexName($storeId = null)
     {
-        return (string) $this->getBaseIndexName($storeId) . $this->getIndexNameSuffix();
+        return (string) $this->getBaseIndexName($storeId).$this->getIndexNameSuffix();
     }
 
     protected function try_cast($value)
@@ -123,12 +123,12 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
         $storeId = intval($storeId);
         $categoryId = intval($categoryId);
         $path = null;
-        $key = $storeId . '-' . $categoryId;
+        $key = $storeId.'-'.$categoryId;
 
         if (isset($categories[$key])) {
             $path = ($categories[$key]['value'] == 1) ? strval($categories[$key]['path']) : null;
         } elseif ($storeId !== 0) {
-            $key = '0-' . $categoryId;
+            $key = '0-'.$categoryId;
 
             if (isset($categories[$key])) {
                 $path = ($categories[$key]['value'] == 1) ? strval($categories[$key]['path']) : null;
@@ -205,7 +205,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
 
         $categoryName = null;
 
-        $key = $storeId . '-' . $categoryId;
+        $key = $storeId.'-'.$categoryId;
 
         if (isset(self::$_categoryNames[$key])) {
             // Check whether the category name is present for the specified store
@@ -214,7 +214,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
         } elseif ($storeId != 0) {
             // Check whether the category name is present for the default store
 
-            $key = '0-' . $categoryId;
+            $key = '0-'.$categoryId;
 
             if (isset(self::$_categoryNames[$key])) {
                 $categoryName = strval(self::$_categoryNames[$key]);
