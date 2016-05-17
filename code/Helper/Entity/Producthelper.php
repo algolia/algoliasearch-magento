@@ -666,8 +666,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $this->logger->log($e->getMessage());
                 $this->logger->log($e->getTraceAsString());
 
-                $customData['thumbnail_url'] = str_replace(['https://', 'http://'], '//',
-                    Mage::getDesign()->getSkinUrl($thumb->getPlaceholder()));
+                $baseUrl = Mage::getBaseUrl();
+                $placeholderUrl = Mage::getDesign()->getSkinUrl($thumb->getPlaceholder());
+
+                $customData['thumbnail_url'] = str_replace($baseUrl, '', $placeholderUrl);
             }
         }
 
@@ -682,8 +684,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $this->logger->log($e->getMessage());
                 $this->logger->log($e->getTraceAsString());
 
-                $customData['image_url'] = str_replace(['https://', 'http://'], '//',
-                    Mage::getDesign()->getSkinUrl($image->getPlaceholder()));
+                $baseUrl = Mage::getBaseUrl();
+                $placeholderUrl = Mage::getDesign()->getSkinUrl($image->getPlaceholder());
+
+                $customData['image_url'] = str_replace($baseUrl, '', $placeholderUrl);
             }
 
             if ($this->isAttributeEnabled($additionalAttributes, 'media_gallery')) {
