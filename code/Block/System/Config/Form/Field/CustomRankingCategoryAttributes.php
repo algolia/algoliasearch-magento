@@ -3,7 +3,7 @@
 /**
  * Algolia custom sort order field.
  */
-class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Algolia_Algoliasearch_Block_System_Config_Form_Field_AbstractField
+class Algolia_Algoliasearch_Block_System_Config_Form_Field_CustomRankingCategoryAttributes extends Algolia_Algoliasearch_Block_System_Config_Form_Field_AbstractField
 {
     public function __construct()
     {
@@ -17,7 +17,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Algoli
                         /** @var Algolia_Algoliasearch_Helper_Config $config */
                         $config = Mage::helper('algoliasearch/config');
 
-                        $attributes = $config->getProductAdditionalAttributes();
+                        $attributes = $config->getCategoryAdditionalAttributes();
                         foreach ($attributes as $attribute) {
                             $options[$attribute['attribute']] = $attribute['attribute'];
                         }
@@ -25,24 +25,17 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Algoli
                         return $options;
                     },
                     'rowMethod' => 'getAttribute',
-                    'width'     => 160,
                 ],
-                'type' => [
-                    'label'   => 'Facet type',
+                'order' => [
+                    'label'   => 'Asc / Desc',
                     'options' => [
-                        'conjunctive' => 'Conjunctive',
-                        'disjunctive' => 'Disjunctive',
-                        'slider'      => 'Slider',
-                        'priceRanges' => 'Price Ranges',
+                        'desc' => 'Descending',
+                        'asc'  => 'Ascending',
                     ],
-                    'rowMethod' => 'getType',
-                ],
-                'label' => [
-                    'label' => 'Label',
-                    'style' => 'width: 100px;',
+                    'rowMethod' => 'getOrder',
                 ],
             ],
-            'buttonLabel' => 'Add Facet',
+            'buttonLabel' => 'Add Ranking Criterion',
             'addAfter'    => false,
         ];
 
