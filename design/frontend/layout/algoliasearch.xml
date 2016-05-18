@@ -13,23 +13,29 @@
                     </text>
                 </action>
             </block>
-            <block type="core/template" template="algoliasearch/beforetopsearch.phtml" name="algolia-beforetopsearch"/>
+            <block type="core/template" template="algoliasearch/internals/commonjs.phtml" name="algolia-beforetopsearch"/>
         </reference>
         <reference name="before_body_end">
-            <block type="core/template" template="algoliasearch/frontjs.phtml" name="algolia-beforebodyend"/>
+            <block type="core/template" template="algoliasearch/internals/frontjs.phtml" name="algolia-beforebodyend"/>
         </reference>
         <reference name="content">
-            <block type="core/template" before="content" template="algoliasearch/beforecontent.phtml" name="algolia-beforecontent"/>
+            <block type="core/template" before="content" template="algoliasearch/internals/beforecontent.phtml" name="algolia-beforecontent"/>
         </reference>
     </algolia_search_handle>
     <algolia_search_handle_with_topsearch>
-        <reference name="top.search">
-            <action method="setTemplate"><template>algoliasearch/topsearch.phtml</template></action>
+        <reference name="header">
+            <block type="core/template" name="top.search" as="topSearch" template="algoliasearch/internals/templateloader.phtml">
+                <!-- Autocomplete.phtml must be loaded after Instantsearch.phtml to be able to bind to the recreated <div id="algolia-autocomplete-container"></div> -->
+                <block type="core/template" template="algoliasearch/instantsearch.phtml" as="algolia-instantsearch" name="algolia-instantsearch"/>
+                <block type="core/template" template="algoliasearch/autocomplete.phtml" as="algolia-autocomplete" name="algolia-autocomplete"/>
+            </block>
         </reference>
     </algolia_search_handle_with_topsearch>
     <algolia_search_handle_no_topsearch>
         <reference name="head">
-            <block type="core/template" template="algoliasearch/topsearch.phtml" name="algolia-topseach"/>
+            <!-- Autocomplete.phtml must be loaded after Instantsearch.phtml to be able to bind to the recreated <div id="algolia-autocomplete-container"></div> -->
+            <block type="core/template" template="algoliasearch/instantsearch.phtml" name="algolia-instantsearch"/>
+            <block type="core/template" template="algoliasearch/autocomplete.phtml" name="algolia-autocomplete"/>
         </reference>
     </algolia_search_handle_no_topsearch>
 </layout>
