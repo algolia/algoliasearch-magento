@@ -109,13 +109,17 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
 
         foreach ($objects as $key => &$object) {
             $size = mb_strlen(json_encode($object));
-
-            if ($size > 20000) {
-                foreach ($long_attributes as $attribute) {
-                    if (isset($object[$attribute])) {
+            
+            if ($size > 20000)
+            {
+                $good_size = false;
+                
+                foreach ($long_attributes as $attribute)
+                {
+                    if (isset($object[$attribute]))
+                    {
                         unset($object[$attribute]);
                         $ids[$index_name.' objectID('.$object['objectID'].')'] = true;
-                        $good_size = false;
                     }
                 }
 
