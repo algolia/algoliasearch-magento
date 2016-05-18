@@ -3,21 +3,21 @@
 /**
  * Algolia custom sort order field.
  */
-class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Algolia_Algoliasearch_Block_System_Config_Form_Field_AbstractField
+class Algolia_Algoliasearch_Block_System_Config_Form_Field_CustomRankingProductAttributes extends Algolia_Algoliasearch_Block_System_Config_Form_Field_AbstractField
 {
     public function __construct()
     {
         $this->settings = [
             'columns' => [
-                'sort_and_facet_attribute' => [
+                'product_custom_ranking_attribute' => [
                     'label' => 'Attribute',
                     'options' => function () {
                         $options = [];
 
                         /** @var Algolia_Algoliasearch_Helper_Config $config */
                         $config = Mage::helper('algoliasearch/config');
-
                         $attributes = $config->getProductAdditionalAttributes();
+
                         foreach ($attributes as $attribute) {
                             $options[$attribute['attribute']] = $attribute['attribute'];
                         }
@@ -25,26 +25,20 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Algolia
                         return $options;
                     },
                     'rowMethod' => 'getAttribute',
-                    'width' => 160,
                 ],
-                'sort' => [
-                    'label' => 'Sort',
+                'custom_ranking_order' => [
+                    'label' => 'Asc / Desc',
                     'options' => [
-                        'asc' => 'Ascending',
                         'desc' => 'Descending',
+                        'asc' => 'Ascending',
                     ],
-                    'rowMethod' => 'getSort',
+                    'rowMethod' => 'getOrder',
                 ],
             ],
-            'buttonLabel' => 'Add Sorting Attribute',
+            'buttonLabel' => 'Add Ranking Criterion',
             'addAfter' => false,
         ];
-
+        
         parent::__construct();
-
-        $this->addColumn('label', [
-            'label' => Mage::helper('adminhtml')->__('Label'),
-            'style' => 'width: 200px;',
-        ]);
     }
 }
