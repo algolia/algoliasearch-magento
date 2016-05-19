@@ -85,7 +85,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     /**
      * Returns whether we want to remove disabled products from the Algolia
-     * index.
+     * index during a full re-index.
      *
      * @param mixed $storeId
      * @return bool
