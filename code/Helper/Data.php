@@ -565,7 +565,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      * you want to query. Otherwise, the entire product collection will be
      * queried.
      *
-     * @param string $storeId
+     * @param mixed $storeId
      * @param array $productIds
      * @return array
      */
@@ -577,7 +577,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $products = Mage::getModel('catalog/product')->getCollection();
         $products
             ->addStoreFilter($storeId)
-            ->addAttributeToFilter('type_id', 'configurable')
+            ->addAttributeToFilter('visibility', array(Mage::getSingleton('catalog/product_visibility')->getVisibleInSiteIds()))
             ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_DISABLED)
         ;
 
