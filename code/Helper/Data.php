@@ -547,14 +547,16 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function removeNonIndexableProducts($storeId, array $productIds = array())
     {
-        $this->logger->start('REMOVE FROM ALGOLIA');
+        if ($this->config->removeDisabledProductsFromIndex($storeId)) {
+            $this->logger->start('REMOVE FROM ALGOLIA');
 
-        $nonIndexableProductIds = $this->getNonIndexableProductIds($storeId, $productIds);
-        if (count($nonIndexableProductIds) > 0) {
-            $this->removeProducts($nonIndexableProductIds, $storeId);
+            $nonIndexableProductIds = $this->getNonIndexableProductIds($storeId, $productIds);
+            if (count($nonIndexableProductIds) > 0) {
+                $this->removeProducts($nonIndexableProductIds, $storeId);
+            }
+
+            $this->logger->stop('REMOVE FROM ALGOLIA');
         }
-
-        $this->logger->stop('REMOVE FROM ALGOLIA');
     }
 
     /**
