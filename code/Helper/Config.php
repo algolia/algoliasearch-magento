@@ -394,6 +394,21 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getProductAdditionalAttributes($storeId = null)
     {
         $attrs = unserialize(Mage::getStoreConfig(self::PRODUCT_ATTRIBUTES, $storeId));
+        $facets = unserialize(Mage::getStoreConfig(self::FACETS, $storeId));
+
+        foreach ((array) $facets as $facet) {
+            foreach ((array) $attrs as $attr) {
+                if ($facet['attribute'] == $attr['attribute']) {
+                    continue 2;
+                }
+            }
+
+            $attrs[] = [
+                'attribute'   => $facet['attribute'],
+                'searchable'  => '0',
+                'retrievable' => '1',
+            ];
+        }
 
         if (is_array($attrs)) {
             return $attrs;
