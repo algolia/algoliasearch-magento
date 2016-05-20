@@ -405,7 +405,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getFacets($storeId = null)
     {
         $attrs = unserialize(Mage::getStoreConfig(self::FACETS, $storeId));
-
         foreach ($attrs as &$attr) {
             if ($attr['type'] == 'other') {
                 $attr['type'] = $attr['other_type'];
