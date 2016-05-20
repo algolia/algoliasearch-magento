@@ -14,12 +14,12 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Algoli
                     'options' => function () {
                         $options = [];
 
-                        /** @var Algolia_Algoliasearch_Helper_Config $config */
-                        $config = Mage::helper('algoliasearch/config');
+                        /** @var Algolia_Algoliasearch_Helper_Entity_Producthelper $product_helper */
+                        $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
-                        $attributes = $config->getProductAdditionalAttributes();
-                        foreach ($attributes as $attribute) {
-                            $options[$attribute['attribute']] = $attribute['attribute'];
+                        $attributes = $product_helper->getAllAttributes();
+                        foreach ($attributes as $key => $label) {
+                            $options[$key] = $key ?: $label;
                         }
 
                         return $options;

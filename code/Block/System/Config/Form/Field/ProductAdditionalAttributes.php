@@ -16,10 +16,10 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_ProductAdditionalAttr
 
                         /** @var Algolia_Algoliasearch_Helper_Entity_Producthelper $product_helper */
                         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
-                        
+
                         $searchableAttributes = $product_helper->getAllAttributes();
                         foreach ($searchableAttributes as $key => $label) {
-                            $options[$key] = $key ? $key : $label;
+                            $options[$key] = $key ?: $label;
                         }
 
                         return $options;
