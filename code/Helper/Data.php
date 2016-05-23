@@ -569,28 +569,17 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      * @param array $productIds
      * @return array
      */
-    public function getNonIndexableProductIds($storeId, array $productIds = array())
+    public function getNonIndexableProductIds($storeId)
     {
-        $nonIndexableProductIds = array();
+        $indexableProducts = $this->product_helper->getProductCollectionQuery($storeId, null, true, true);
+        $indexableProductIds = $indexableProducts->getAllIds();
 
-        /** @var Mage_Catalog_Model_Resource_Product_Collection $products */
-        $products = Mage::getModel('catalog/product')->getCollection();
-        $products
-            ->addStoreFilter($storeId)
-            ->addAttributeToFilter('visibility', array(Mage::getSingleton('catalog/product_visibility')->getVisibleInSiteIds()))
-            ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_DISABLED)
-        ;
+        /** @var Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection $wholeCatalog */
+        $wholeCatalog = Mage::getResourceModel('catalog/product_collection');
+        $wholeCatalog = $wholeCatalog->setStoreId($storeId)->addStoreFilter($storeId);
+        $wholeCatalogProductIds = $wholeCatalog->getAllIds();
 
-        if (!empty($productIds)) {
-            $products->addAttributeToFilter('entity_id', array(
-                'in' => $productIds
-            ));
-        }
-
-        foreach ($products as $product) {
-            /** @var Mage_Catalog_Model_Product $product */
-            $nonIndexableProductIds[] = $product->getId();
-        }
+        $nonIndexableProductIds = array_diff($wholeCatalogProductIds, $indexableProductIds);
 
         return $nonIndexableProductIds;
     }

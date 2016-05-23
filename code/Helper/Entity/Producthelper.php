@@ -113,7 +113,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return false;
     }
 
-    public function getProductCollectionQuery($storeId, $productIds = null, $only_visible = true)
+    public function getProductCollectionQuery($storeId, $productIds = null, $only_visible = true, $withoutData = false)
     {
         /** @var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
         $products = Mage::getResourceModel('catalog/product_collection');
@@ -123,25 +123,30 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         if ($only_visible) {
             $products = $products->addAttributeToFilter('visibility',
                 ['in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSiteIds()]);
-            $products = $products->addFinalPrice();
+
+            if($withoutData === false) {
+                $products = $products->addFinalPrice();
+            }
         }
 
-        if (false === $this->config->getShowOutOfStock($storeId) && $only_visible == true) {
-            Mage::getSingleton('cataloginventory/stock')->addInStockFilterToCollection($products);
-        }
+        if ($withoutData === false) {
+            if (false === $this->config->getShowOutOfStock($storeId) && $only_visible == true) {
+                Mage::getSingleton('cataloginventory/stock')->addInStockFilterToCollection($products);
+            }
 
-        $products = $products->addAttributeToSelect('special_from_date')->addAttributeToSelect('special_to_date')
+            $products = $products->addAttributeToSelect('special_from_date')->addAttributeToSelect('special_to_date')
                              ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
 
-        $additionalAttr = $this->config->getProductAdditionalAttributes($storeId);
+            $additionalAttr = $this->config->getProductAdditionalAttributes($storeId);
 
-        /* Map instead of foreach because otherwise it adds quotes to the last attribute  **/
-        $additionalAttr = array_map(function ($attr) {
-            return $attr['attribute'];
-        }, $additionalAttr);
+            /* Map instead of foreach because otherwise it adds quotes to the last attribute  **/
+            $additionalAttr = array_map(function ($attr) {
+                return $attr['attribute'];
+            }, $additionalAttr);
 
-        $products = $products->addAttributeToSelect(array_values(array_merge(static::$_predefinedProductAttributes,
-            $additionalAttr)));
+            $products = $products->addAttributeToSelect(array_values(array_merge(static::$_predefinedProductAttributes,
+                $additionalAttr)));
+        }
 
         if ($productIds && count($productIds) > 0) {
             $products = $products->addAttributeToFilter('entity_id', ['in' => $productIds]);
