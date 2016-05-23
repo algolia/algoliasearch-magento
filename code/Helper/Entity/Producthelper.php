@@ -124,7 +124,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $products = $products->addAttributeToFilter('visibility',
                 ['in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSiteIds()]);
 
-            if($withoutData === false) {
+            if ($withoutData === false) {
                 $products = $products->addFinalPrice();
             }
         }
