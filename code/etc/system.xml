@@ -698,6 +698,16 @@
                             <show_in_store>1</show_in_store>
                             <comment>If you don't have the top.search block you can specify the selector of your search input here to use it. Default value is .algolia-search-input</comment>
                         </autocomplete_selector>
+                        <remove_disabled_products_from_index translate="label comment">
+                            <label>Remove disabled products as part of indexing</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>This feature will allow the indexer to remove disabled products from your Algolia index. This is useful if your products are being disabled without dispatching the catalog_product_save_before event, e.g. a custom solution for importing products.</comment>
+                        </remove_disabled_products_from_index>
                     </fields>
                 </advanced>
             </groups>

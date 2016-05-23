@@ -536,6 +536,54 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->logger->stop('rebuildStoreProductIndexPage '.$this->logger->getStoreName($storeId).' page '.$page.' pageSize '.$pageSize);
     }
 
+    /**
+     * Removes products that are no longer indexable, i.e. they are disabled,
+     * from the specified Algolia index. You can provide an array from product
+     * IDs that you want to query. Otherwise, the entire product collection will
+     * be queried.
+     *
+     * @param string $storeId
+     * @param array $productIds
+     */
+    public function removeNonIndexableProducts($storeId, array $productIds = array())
+    {
+        if ($this->config->removeDisabledProductsFromIndex($storeId)) {
+            $this->logger->start('REMOVE FROM ALGOLIA');
+
+            $nonIndexableProductIds = $this->getNonIndexableProductIds($storeId, $productIds);
+            if (count($nonIndexableProductIds) > 0) {
+                $this->removeProducts($nonIndexableProductIds, $storeId);
+            }
+
+            $this->logger->stop('REMOVE FROM ALGOLIA');
+        }
+    }
+
+    /**
+     * Returns an array of the IDs of products that are no longer indexable,
+     * i.e. they are disabled. You can provide an array from product IDs that
+     * you want to query. Otherwise, the entire product collection will be
+     * queried.
+     *
+     * @param mixed $storeId
+     * @param array $productIds
+     * @return array
+     */
+    public function getNonIndexableProductIds($storeId)
+    {
+        $indexableProducts = $this->product_helper->getProductCollectionQuery($storeId, null, true, true);
+        $indexableProductIds = $indexableProducts->getAllIds();
+
+        /** @var Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection $wholeCatalog */
+        $wholeCatalog = Mage::getResourceModel('catalog/product_collection');
+        $wholeCatalog = $wholeCatalog->setStoreId($storeId)->addStoreFilter($storeId);
+        $wholeCatalogProductIds = $wholeCatalog->getAllIds();
+
+        $nonIndexableProductIds = array_diff($wholeCatalogProductIds, $indexableProductIds);
+
+        return $nonIndexableProductIds;
+    }
+
     public function startEmulation($storeId)
     {
         $this->logger->start('START EMULATION');
