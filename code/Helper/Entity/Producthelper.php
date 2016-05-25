@@ -816,7 +816,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                             $customData['in_stock'] = 0;
                         }
                     }
-                } else {
+                }
+
+                if ($value !== null) {
                     $value = $this->getValueOrValueText($product, $attribute_name, $attribute_resource);
 
                     if ($value) {
