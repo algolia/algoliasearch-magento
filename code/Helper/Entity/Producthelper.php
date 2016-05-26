@@ -778,43 +778,44 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             if ($attribute_resource) {
                 $attribute_resource->setStoreId($product->getStoreId());
 
-                if ($value === null || 'sku' == $attribute_name) {
-                    /* Get values as array in children */
-                    if ($type == 'configurable' || $type == 'grouped' || $type == 'bundle') {
-                        if ($value === null) {
-                            $values = [];
-                        } else {
-                            $values = [$this->getValueOrValueText($product, $attribute_name, $attribute_resource)];
+                /**
+                 * if $value is missing or if the attribute is SKU,
+                 * use values from child products
+                 */
+                if (($value === null || 'sku' == $attribute_name) && ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')) {
+                    if ($value === null) {
+                        $values = [];
+                    } else {
+                        $values = [$this->getValueOrValueText($product, $attribute_name, $attribute_resource)];
+                    }
+
+                    $all_sub_products_out_of_stock = true;
+
+                    foreach ($sub_products as $sub_product) {
+                        $isInStock = (int) $sub_product->getStockItem()->getIsInStock();
+
+                        if ($isInStock == false && $this->config->indexOutOfStockOptions($product->getStoreId()) == false) {
+                            continue;
                         }
 
-                        $all_sub_products_out_of_stock = true;
+                        $all_sub_products_out_of_stock = false;
 
-                        foreach ($sub_products as $sub_product) {
-                            $isInStock = (int) $sub_product->getStockItem()->getIsInStock();
+                        $value = $sub_product->getData($attribute_name);
 
-                            if ($isInStock == false && $this->config->indexOutOfStockOptions($product->getStoreId()) == false) {
-                                continue;
-                            }
-
-                            $all_sub_products_out_of_stock = false;
-
-                            $value = $sub_product->getData($attribute_name);
-
-                            if ($value) {
-                                $values[] = $this->getValueOrValueText($sub_product, $attribute_name,
-                                    $attribute_resource);
-                            }
+                        if ($value) {
+                            $values[] = $this->getValueOrValueText($sub_product, $attribute_name,
+                                $attribute_resource);
                         }
+                    }
 
-                        if (is_array($values) && count($values) > 0) {
-                            $customData[$attribute_name] = array_values(array_unique($values));
-                        }
+                    if (is_array($values) && count($values) > 0) {
+                        $customData[$attribute_name] = array_values(array_unique($values));
+                    }
 
-                        if ($customData['in_stock'] && $all_sub_products_out_of_stock) {
-                            // Set main product out of stock if all
-                            // sub-products is out of stock.
-                            $customData['in_stock'] = 0;
-                        }
+                    if ($customData['in_stock'] && $all_sub_products_out_of_stock) {
+                        // Set main product out of stock if all
+                        // sub-products is out of stock.
+                        $customData['in_stock'] = 0;
                     }
                 } else {
                     $value = $this->getValueOrValueText($product, $attribute_name, $attribute_resource);
