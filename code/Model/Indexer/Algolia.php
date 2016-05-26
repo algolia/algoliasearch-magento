@@ -61,7 +61,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
 
     public function getName()
     {
-        return Mage::helper('algoliasearch')->__('Algolia Search');
+        return Mage::helper('algoliasearch')->__('Algolia Search Products');
     }
 
     public function getDescription()
