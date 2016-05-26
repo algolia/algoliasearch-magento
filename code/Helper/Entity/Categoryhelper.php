@@ -118,9 +118,13 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
 
     public function getObject(Mage_Catalog_Model_Category $category)
     {
-        /** @var Mage_Catalog_Model_Resource_Product_Collection $productCollection */
-        $productCollection = $category->getProductCollection();
-        $productCollection = $productCollection->addMinimalPrice();
+        $storeId = $category->getStoreId();
+
+        /** @var Algolia_Algoliasearch_Helper_Entity_Producthelper $productHelper */
+        $productHelper = Mage::helper('algoliasearch/entity_producthelper');
+
+        $productCollection = clone $productHelper->getProductCollectionQuery($storeId, null, true, true);
+        $productCollection = $productCollection->addCategoryFilter($category);
 
         $category->setProductCount($productCollection->getSize());
 
@@ -128,7 +132,6 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         Mage::dispatchEvent('algolia_category_index_before', ['category' => $category, 'custom_data' => $transport]);
         $customData = $transport->getData();
 
-        $storeId = $category->getStoreId();
         $category->getUrlInstance()->setStore($storeId);
         $path = '';
         foreach ($category->getPathIds() as $categoryId) {
