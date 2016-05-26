@@ -712,6 +712,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             {
                 $attribute_resource->setStoreId($product->getStoreId());
 
+                /**
+                 * if $value is missing or if the attribute is SKU,
+                 * use values from child products
+                 */
                 if (($value === null || 'sku' == $attribute_name) && ($type == 'configurable' || $type == 'grouped' || $type == 'bundle'))
                 {
                     if ($value === null) {
