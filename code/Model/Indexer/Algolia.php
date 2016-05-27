@@ -1,11 +1,8 @@
 <?php
 
-class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Indexer_Abstract
+class Algolia_Algoliasearch_Model_Indexer_Algolia extends Algolia_Algoliasearch_Model_Indexer_Abstract
 {
     const EVENT_MATCH_RESULT_KEY = 'algoliasearch_match_result';
-
-    /** @var Algolia_Algoliasearch_Model_Resource_Engine */
-    protected $engine;
 
     /** @var Algolia_Algoliasearch_Helper_Config */
     protected $config;
@@ -20,7 +17,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
     {
         parent::__construct();
 
-        $this->engine = new Algolia_Algoliasearch_Model_Resource_Engine();
         $this->config = Mage::helper('algoliasearch/config');
         $this->logger = Mage::helper('algoliasearch/logger');
     }
@@ -53,11 +49,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
             Mage_Index_Model_Event::TYPE_DELETE,
         ],
     ];
-
-    protected function _getResource()
-    {
-        return Mage::getResourceSingleton('catalogsearch/indexer_fulltext');
-    }
 
     public function getName()
     {
@@ -171,14 +162,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
         return $this;
     }
 
-    protected function _isProductComposite($productId)
-    {
-        /** @var $product Mage_Catalog_Model_Product */
-        $product = Mage::getModel('catalog/product')->load($productId);
-
-        return $product->isComposite();
-    }
-
     protected function _processEvent(Mage_Index_Model_Event $event)
     {
         if (!$this->config->getApplicationID() || !$this->config->getAPIKey() || !$this->config->getSearchOnlyAPIKey()) {
@@ -204,45 +187,14 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Mage_Index_Model_Index
         }
 
         if (!empty($data['catalogsearch_update_category_id'])) {
-            $updateCategoryIds = $data['catalogsearch_update_category_id'];
-            $updateCategoryIds = is_array($updateCategoryIds) ? $updateCategoryIds : [$updateCategoryIds];
-
-            foreach ($updateCategoryIds as $id) {
-                /** @var Mage_Catalog_Model_Category $categoryModel */
-                $categoryModel = Mage::getModel('catalog/category');
-                $categories = $categoryModel->getCategories($id);
-
-                /** @var Mage_Catalog_Model_Category $category */
-                foreach ($categories as $category) {
-                    $updateCategoryIds[] = $category->getId();
-                }
-            }
-
-            $this->engine->rebuildCategoryIndex(null, $updateCategoryIds);
+            $this->reindexSpecificCategories($data['catalogsearch_update_category_id']);
         }
 
         /*
          * Reindex products.
          */
         if (!empty($data['catalogsearch_update_product_id'])) {
-            $updateProductIds = $data['catalogsearch_update_product_id'];
-            $updateProductIds = is_array($updateProductIds) ? $updateProductIds : [$updateProductIds];
-            $productIds = $updateProductIds;
-
-            foreach ($updateProductIds as $updateProductId) {
-                if (!$this->_isProductComposite($updateProductId)) {
-                    $parentIds = $this->_getResource()->getRelationsByChild($updateProductId);
-
-                    if (!empty($parentIds)) {
-                        $productIds = array_merge($productIds, $parentIds);
-                    }
-                }
-            }
-
-            if (!empty($productIds)) {
-                $this->engine->removeProducts(null, $productIds);
-                $this->engine->rebuildProductIndex(null, $productIds);
-            }
+            $this->reindexSpecificProducts($data['catalogsearch_update_product_id']);
         }
     }
 
