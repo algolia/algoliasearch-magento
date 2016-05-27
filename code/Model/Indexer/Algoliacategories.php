@@ -147,7 +147,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Algolia_Algo
          * If we have added any new products to a category then we need to
          * update these products in Algolia indices.
          */
-        if (!empty($data['catalogsearch_update_product_id'])) {
+        if ($this->config->indexProductOnCategoryProductsUpdate() && !empty($data['catalogsearch_update_product_id'])) {
             $this->reindexSpecificProducts($data['catalogsearch_update_product_id']);
         }
     }
