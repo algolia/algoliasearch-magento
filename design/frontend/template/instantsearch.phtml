@@ -298,6 +298,8 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                 }
             });
 
+            search.client.addAlgoliaAgent('Magento ' + algoliaConfig.extensionVersion);
+
             /**
              * Custom widget - this widget is used to refine results for search page or catalog page
              * Docs: https://community.algolia.com/instantsearch.js/documentation/#custom-widgets

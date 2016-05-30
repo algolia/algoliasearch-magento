@@ -17,11 +17,10 @@ algoliaAdminBundle.$(function($) {
 
     $('.grid tr:not(:first-child):not(:last-child) td').css('cursor', 'move');
 
-	var currentVersion = '1.5.5';
 	$.getJSON('https://api.github.com/repos/algolia/algoliasearch-magento/releases/latest', function(payload) {
 		var latestVersion = payload.name;
 
-		if(compareVersion(currentVersion, latestVersion) > 0) {
+		if(compareVersion(algoliaSearchExtentionsVersion, latestVersion) > 0) {
 			$('.content-header h3').after('</td><td style="font-size: 1.25em; color: #D83900; padding: 3px 8px; border: 1px solid;">' +
 				'<span style="font-size: 30px; position: relative; top: 5px;">⚠</span>' +
 				' You are using old version of Algolia extension. ' +
