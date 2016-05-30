@@ -1,9 +1,18 @@
 <?php
 
+/** @var Algolia_Algoliasearch_Helper_Config $config */
 $config = Mage::helper('algoliasearch/config');
-$catalogSearchHelper = $this->helper('catalogsearch'); /** @var $catalogSearchHelper Mage_CatalogSearch_Helper_Data */
-$algoliaSearchHelper = $this->helper('algoliasearch'); /** @var $algoliaSearchHelper Algolia_Algoliasearch_Helper_Data */
+
+/** @var Mage_CatalogSearch_Helper_Data $catalogSearchHelper */
+$catalogSearchHelper = $this->helper('catalogsearch');
+
+/** @var Algolia_Algoliasearch_Helper_Data $algoliaSearchHelper */
+$algoliaSearchHelper = $this->helper('algoliasearch');
+
+/** @var Algolia_Algoliasearch_Helper_Entity_Producthelper $product_helper **/
 $product_helper = Mage::helper('algoliasearch/entity_producthelper');
+
+/** @var Algolia_Algoliasearch_Helper_Algoliahelper $algolia_helper **/
 $algolia_helper = Mage::helper('algoliasearch/algoliahelper');
 
 $base_url = Mage::getBaseUrl();
@@ -106,6 +115,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                     nbOfCategoriesSuggestions: '<?php echo $config->getNumberOfCategoriesSuggestions(); ?>',
                     nbOfQueriesSuggestions: '<?php echo $config->getNumberOfQueriesSuggestions(); ?>'
                 },
+                extensionVersion: '<?php echo $config->getExtensionVersion() ?>',
                 applicationId: '<?php echo $config->getApplicationID() ?>',
                 indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
                 apiKey: '<?php echo $algolia_helper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $config->getAttributesToRetrieve($group_id)) ?>',

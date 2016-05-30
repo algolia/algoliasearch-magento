@@ -516,4 +516,9 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
         return $this->_productTypeMap[$originalType];
     }
+
+    public function getExtensionVersion()
+    {
+        return (string) Mage::getConfig()->getNode()->modules->Algolia_Algoliasearch->version;
+    }
 }
