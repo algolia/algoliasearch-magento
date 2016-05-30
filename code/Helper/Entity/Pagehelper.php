@@ -21,7 +21,7 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
         $cmsPage = Mage::getModel('cms/page');
 
         /** @var Mage_Cms_Model_Resource_Page_Collection $magento_pages */
-        $magento_pages = $cmsPage->getCollection()->addFieldToFilter('is_active', 1);
+        $magento_pages = $cmsPage->getCollection()->addStoreFilter($storeId)->addFieldToFilter('is_active', 1);
 
         $ids = $magento_pages->toOptionArray();
 
