@@ -52,7 +52,6 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
         }
 
         $values = array_map(function ($value) use ($section, $storeId) {
-
             $record = [
                 'objectID' => $value,
                 'value'    => $value,
