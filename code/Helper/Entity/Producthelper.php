@@ -812,17 +812,17 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $customData[$attribute_name] = array_values(array_unique($values));
                     }
 
+                    // Set main product out of stock if all
+                    // sub-products are out of stock.
                     if ($customData['in_stock'] && $all_sub_products_out_of_stock) {
-                        // Set main product out of stock if all
-                        // sub-products is out of stock.
                         $customData['in_stock'] = 0;
                     }
-                } else {
+                } elseif ($value === null) {
                     $value = $this->getValueOrValueText($product, $attribute_name, $attribute_resource);
+                }
 
-                    if ($value) {
-                        $customData[$attribute_name] = $value;
-                    }
+                if ($value && !isset($customData[$attribute_name])) {
+                    $customData[$attribute_name] = $value;
                 }
             }
         }
