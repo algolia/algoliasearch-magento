@@ -11,6 +11,12 @@ class Algolia_Algoliasearch_Model_Observer
     /** @var Algolia_Algoliasearch_Helper_Entity_Producthelper */
     protected $product_helper;
 
+    /** @var Algolia_Algoliasearch_Helper_Entity_Categoryhelper **/
+    protected $category_helper;
+
+    /** @var Algolia_Algoliasearch_Helper_Entity_Suggestionhelper */
+    protected $suggestion_helper;
+
     /** @var Algolia_Algoliasearch_Helper_Data */
     protected $helper;
 
@@ -18,11 +24,8 @@ class Algolia_Algoliasearch_Model_Observer
     {
         $this->config = Mage::helper('algoliasearch/config');
         $this->product_helper = Mage::helper('algoliasearch/entity_producthelper');
-
-        /* @var Algolia_Algoliasearch_Helper_Entity_Categoryhelper category_helper */
         $this->category_helper = Mage::helper('algoliasearch/entity_categoryhelper');
         $this->suggestion_helper = Mage::helper('algoliasearch/entity_suggestionhelper');
-
         $this->helper = Mage::helper('algoliasearch');
     }
 
@@ -139,7 +142,7 @@ class Algolia_Algoliasearch_Model_Observer
                     continue;
                 }
 
-                $this->helper->rebuildStoreSuggestionIndex($storeId, $categoryIds);
+                $this->helper->rebuildStoreSuggestionIndex($storeId);
             }
         } else {
             if (!empty($page) && !empty($pageSize)) {

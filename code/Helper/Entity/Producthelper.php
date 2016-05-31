@@ -118,11 +118,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         /** @var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
         $products = Mage::getResourceModel('catalog/product_collection');
 
-        $products = $products->setStoreId($storeId)->addStoreFilter($storeId);
+        $products = $products->setStoreId($storeId);
+        $products = $products->addStoreFilter($storeId);
 
         if ($only_visible) {
-            $products = $products->addAttributeToFilter('visibility',
-                ['in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSiteIds()]);
+            /** @var Mage_Catalog_Model_Product_Visibility $catalog_productVisibility */
+            $catalog_productVisibility = Mage::getSingleton('catalog/product_visibility');
+
+            $products = $products->addAttributeToFilter('visibility', ['in' => $catalog_productVisibility->getVisibleInSiteIds()]);
 
             if ($withoutData === false) {
                 $products = $products->addFinalPrice();
@@ -131,7 +134,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if ($withoutData === false) {
             if (false === $this->config->getShowOutOfStock($storeId) && $only_visible == true) {
-                Mage::getSingleton('cataloginventory/stock')->addInStockFilterToCollection($products);
+                /** @var Mage_CatalogInventory_Model_Stock $catalogInventory_stock */
+                $catalogInventory_stock = Mage::getSingleton('cataloginventory/stock');
+                $catalogInventory_stock->addInStockFilterToCollection($products);
             }
 
             $products = $products->addAttributeToSelect('special_from_date')->addAttributeToSelect('special_to_date')
@@ -228,8 +233,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         // Additional index settings from event observer
         $transport = new Varien_Object($indexSettings);
-        Mage::dispatchEvent('algolia_index_settings_prepare',
-            ['store_id' => $storeId, 'index_settings' => $transport]);
+        Mage::dispatchEvent('algolia_index_settings_prepare', ['store_id' => $storeId, 'index_settings' => $transport]);
+
         $indexSettings = $transport->getData();
 
         $mergeSettings = $this->algolia_helper->mergeSettings($this->getIndexName($storeId), $indexSettings);
@@ -348,7 +353,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return $price;
     }
 
-    protected function handlePrice(&$product, $sub_products, &$customData)
+    protected function handlePrice(Mage_Catalog_Model_Product &$product, $sub_products, &$customData)
     {
         $fields = $this->getFields($product->getStore());
         $customer_groups_enabled = $this->config->isCustomerGroupsEnabled($product->getStoreId());
@@ -379,17 +384,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             foreach ($currencies as $currency_code) {
                 $customData[$field][$currency_code] = [];
 
-                $price = (double)
-                                     $taxHelper->getPrice($product, $product->getPrice(), $with_tax, null, null, null,
-                                         $product->getStore(), null);
+                $price = (double) $taxHelper->getPrice($product, $product->getPrice(), $with_tax, null, null, null, $product->getStore(), null);
                 $price = $directoryHelper->currencyConvert($price, $baseCurrencyCode, $currency_code);
 
                 $customData[$field][$currency_code]['default'] = $price;
-                $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($price, false,
-                    $currency_code);
+                $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($price, false, $currency_code);
 
-                $special_price = (double) $taxHelper->getPrice($product, $product->getFinalPrice(), $with_tax, null, null,
-                                                 null, $product->getStore(), null);
+                $special_price = (double) $taxHelper->getPrice($product, $product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
                 $special_price = $directoryHelper->currencyConvert($special_price, $baseCurrencyCode, $currency_code);
 
                 if ($customer_groups_enabled) {
@@ -534,7 +535,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
     }
 
-    protected function getValueOrValueText(Mage_Catalog_Model_Product $product, $name, $resource)
+    protected function getValueOrValueText(Mage_Catalog_Model_Product $product, $name, Mage_Catalog_Model_Resource_Eav_Attribute $resource)
     {
         $value_text = $product->getAttributeText($name);
         if (!$value_text) {
