@@ -95,7 +95,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                                                     d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z"></path>
                                             </g>
                                         </svg>
-                                        <span>Current search</span>
+                                        <span><?php echo $this->__('Current search'); ?></span>
                                     </div>
                                     <div class="instant-search-bar-wrapper">
                                         <label for="instant-search-bar">
@@ -344,7 +344,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
             search.addWidget(
                 algoliaBundle.instantsearch.widgets.searchBox({
                     container: instant_selector,
-                    placeholder: 'Search for products'
+                    placeholder: '<?php echo $this->__('Search for products'); ?>'
                 })
             );
 
@@ -479,6 +479,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                     },
                     templates: {
                         header: '<div class="name">' + '<?php echo $this->__('Selected Filters'); ?>' + '</div>',
+                        clearAll: '<?php echo $this->__('Clear all'); ?>',
                         item: $('#current-refinements-template').html()
                     },
                     attributes: attributes,
