@@ -25,7 +25,9 @@ abstract class Algolia_Algoliasearch_Model_Indexer_Abstract extends Mage_Index_M
         $updateCategoryIds = (array) $updateCategoryIds;
 
         foreach ($updateCategoryIds as $id) {
-            $categories = Mage::getModel('catalog/category')->getCategories($id);
+            /** @var Mage_Catalog_Model_Category $categoryModel */
+            $categoryModel = Mage::getModel('catalog/category');
+            $categories = $categoryModel->getCategories($id);
 
             foreach ($categories as $category) {
                 $updateCategoryIds[] = $category->getId();

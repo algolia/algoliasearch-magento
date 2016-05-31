@@ -55,13 +55,17 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
 
             $content = $page->getContent();
             if ($this->config->getRenderTemplateDirectives()) {
+                /** @var Mage_Cms_Helper_Data $cms_helper */
                 $cms_helper = Mage::helper('cms');
                 $tmplProc = $cms_helper->getPageTemplateProcessor();
                 $content = $tmplProc->filter($content);
             }
 
+            /** @var Mage_Cms_Helper_Page $cms_helper_page */
+            $cms_helper_page = Mage::helper('cms/page');
+
             $page_obj['objectID'] = $page->getId();
-            $page_obj['url'] = Mage::helper('cms/page')->getPageUrl($page->getId());
+            $page_obj['url'] = $cms_helper_page->getPageUrl($page->getId());
             $page_obj['content'] = $this->strip($content);
 
             $pages[] = $page_obj;
