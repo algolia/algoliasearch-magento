@@ -252,7 +252,7 @@ $placeholder = $this->__('Search for products, categories, ...');
                                                 <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z"></path>
                                             </g>
                                         </svg>
-                                        <span>Current search</span>
+                                        <span><?php echo $this->__("Current search");</span>
                                     </div>
                                     <div class="instant-search-bar-wrapper">
                                         <label for="instant-search-bar">
@@ -499,7 +499,7 @@ $placeholder = $this->__('Search for products, categories, ...');
                 search.addWidget(
                     algoliaBundle.instantsearch.widgets.searchBox({
                         container: instant_selector,
-                        placeholder: 'Search for products'
+                        placeholder: '<?php echo $this->__("Search for products"); ?>'
                     })
                 );
 
