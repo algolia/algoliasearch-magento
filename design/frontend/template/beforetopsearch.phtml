@@ -428,7 +428,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         }
 
                         var allUrl = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + query.query;
-                        return '<div id="autocomplete-products-footer">See products in <span><a href="' + allUrl +  '">All departments</a></span> (' + content.nbHits + ') or in ' + ors + '</div>';
+                        return '<div id="autocomplete-products-footer"><?php echo $this->__("See products in"); ?> <span><a href="' + allUrl +  '"><?php echo $this->__("All departments"); ?></a></span> (' + content.nbHits + ') <?php echo $this->__("or in"); ?> ' + ors + '</div>';
                     }
                 }
 
@@ -557,9 +557,9 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             $('body').on('click', '#refine-toggle', function () {
                 $('#instant-search-facets-container').toggleClass('hidden-sm').toggleClass('hidden-xs');
                 if ($(this).html()[0] === '+')
-                    $(this).html('- Refine');
+                    $(this).html('- <?php echo $this->__("Refine"); ?>');
                 else
-                    $(this).html('+ Refine');
+                    $(this).html('+ <?php echo $this->__("Refine"); ?>');
             });
 
             $.fn.focusWithoutScrolling = function(){
