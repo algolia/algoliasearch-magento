@@ -322,7 +322,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), options),
                         name: i,
                         templates: {
-                            empty: '<div class="aa-no-results">No results</div>',
+                            empty: '<div class="aa-no-results"><?php echo $this->__("No results"); ?></div>',
                             suggestion: function (hit) {
                                 if (section.name === 'categories') {
                                     hit.displayKey = hit.path;
@@ -572,9 +572,9 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             $('body').on('click', '#refine-toggle', function () {
                 $('#instant-search-facets-container').toggleClass('hidden-sm').toggleClass('hidden-xs');
                 if ($(this).html()[0] === '+')
-                    $(this).html('- Refine');
+                    $(this).html('- <?php echo $this->__("Refine"); ?>');
                 else
-                    $(this).html('+ Refine');
+                    $(this).html('+ <?php echo $this->__("Refine"); ?>');
             });
 
             $.fn.focusWithoutScrolling = function(){
