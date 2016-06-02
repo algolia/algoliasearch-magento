@@ -90,7 +90,10 @@ if ($config->isInstantEnabled()) {
 
 // Hide the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS.
 if ($config->isInstantEnabled() && $isSearchPage) {
-    echo '<style>' . $config->getInstantSelector() . '{ display: none; }</style>';
+    echo '
+    <script>
+        document.write(\'<style type="text/css"> ' . $config->getInstantSelector() . '{display:none}</style>\');
+    </script>';
 }
 
 ?>
