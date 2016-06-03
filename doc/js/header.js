@@ -1,15 +1,28 @@
 
-    $(document).ready(function(){
-        var scroll_start = 0;
-        var startchange = $('.navbar-brand.auto-hide');
-        if (startchange.length) {
-            $(document).scroll(function() {
-                scroll_start = $(this).scrollTop();
-                if(scroll_start > 300) {
-                    startchange.addClass("visible");
-                } else {
-                    startchange.removeClass("visible");
-                }
-            });
-        }
+$(document).ready(function(){
+    function responsiveNavigation() {
+      var navigation = document.querySelector('.ac-nav');
+      var links = navigation.querySelectorAll('a');
+      var navigationAsSelect = document.createElement('select');
+
+      if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
+        navigationAsSelect.classList.add('display-on-small', 'device');
+    } else {
+        navigationAsSelect.classList.add('display-on-small');
+    }
+
+    for (var i = 0; i < links.length; i++) {
+        var option = document.createElement('option');
+        option.text = links[i].title;
+        option.value = links[i].href;
+        option.selected = true;
+        navigationAsSelect.appendChild(option);
+    }
+
+    navigation.appendChild(navigationAsSelect);
+    navigation.addEventListener('change', function () {
+        return window.location = e.target.value;
     });
+}
+responsiveNavigation();
+});
