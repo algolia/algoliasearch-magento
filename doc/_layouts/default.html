@@ -34,6 +34,9 @@
 
   <script src="//cdn.jsdelivr.net/jquery/2.1.4/jquery.min.js"></script>
   <script src="{{ "/js/header.js" | prepend: site.baseurl }}"></script>
+  {% if page.title == 'Documentation' %}
+    <script src="{{ "/js/sidebar.js" | prepend: site.baseurl }}"></script>
+  {% endif %}
 </body>
 
 </html>
