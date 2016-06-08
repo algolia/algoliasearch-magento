@@ -107,7 +107,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                                                autocorrect="off" autocapitalize="off"/>
 
                                         <img class="clear-query-instant"
-                                             src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/cross.png"/>
+                                             src="<?php echo $this->getSkinUrl('algoliasearch/cross.png') ?>"/>
                                     </div>
                                 </div>
                             </div>
@@ -223,7 +223,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
 <!-- Current refinements template -->
 <script type="text/template" id="current-refinements-template">
     <div class="cross-wrapper">
-        <img src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/cross.png"/>
+        <img src="<?php echo $this->getSkinUrl('algoliasearch/cross.png') ?>"/>
     </div>
     <div class="current-refinement-wrapper">
         {{#label}}
@@ -516,7 +516,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                     hierarchicalMenuParams.templates.item = '' +
                         '<div class="ais-hierearchical-link-wrapper">' +
                         '<a class="{{cssClasses.link}}" href="{{url}}">{{name}}' +
-                        '{{#isRefined}}<img class="cross-circle" src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/cross-circle.png"/>{{/isRefined}}' +
+                        '{{#isRefined}}<img class="cross-circle" src="<?php echo $this->getSkinUrl('algoliasearch/cross-circle.png') ?>"/>{{/isRefined}}' +
                         '<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span></a>' +
                         '</div>';
 
