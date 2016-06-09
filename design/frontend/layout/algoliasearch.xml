@@ -13,13 +13,13 @@
                     </text>
                 </action>
             </block>
-            <block type="core/template" template="algoliasearch/beforetopsearch.phtml"/>
+            <block type="core/template" name="algoliasearch.beforetopsearch" template="algoliasearch/beforetopsearch.phtml"/>
         </reference>
         <reference name="before_body_end">
-            <block type="core/template" template="algoliasearch/frontjs.phtml"/>
+            <block type="core/template" name="algoliasearch.frontjs" template="algoliasearch/frontjs.phtml"/>
         </reference>
         <reference name="content">
-            <block type="core/template" before="content" template="algoliasearch/beforecontent.phtml"/>
+            <block type="core/template" name="algoliasearch.beforecontent" before="content" template="algoliasearch/beforecontent.phtml"/>
         </reference>
     </algolia_search_handle>
     <algolia_search_handle_with_topsearch>
@@ -29,7 +29,7 @@
     </algolia_search_handle_with_topsearch>
     <algolia_search_handle_no_topsearch>
         <reference name="head">
-            <block type="core/template" template="algoliasearch/topsearch.phtml"/>
+            <block type="core/template" name="algoliasearch.topsearch" template="algoliasearch/topsearch.phtml"/>
         </reference>
     </algolia_search_handle_no_topsearch>
 </layout>
