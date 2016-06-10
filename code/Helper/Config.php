@@ -56,7 +56,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const MAKE_SEO_REQUEST = 'algoliasearch/advanced/make_seo_request';
     const REMOVE_BRANDING = 'algoliasearch/advanced/remove_branding';
     const AUTOCOMPLETE_SELECTOR = 'algoliasearch/advanced/autocomplete_selector';
-    const REMOVE_DISABLED_PRODUCTS_FROM_INDEX = 'algoliasearch/advanced/remove_disabled_products_from_index';
     const INDEX_PRODUCT_ON_CATEGORY_PRODUCTS_UPDATE = 'algoliasearch/advanced/index_product_on_category_products_update';
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
@@ -82,18 +81,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getAutocompleteSelector($storeId = null)
     {
         return Mage::getStoreConfig(self::AUTOCOMPLETE_SELECTOR, $storeId);
-    }
-
-    /**
-     * Returns whether we want to remove disabled products from the Algolia
-     * index during a full re-index.
-     *
-     * @param mixed $storeId
-     * @return bool
-     */
-    public function removeDisabledProductsFromIndex($storeId = null)
-    {
-        return Mage::getStoreConfigFlag(self::REMOVE_DISABLED_PRODUCTS_FROM_INDEX, $storeId);
     }
 
     public function indexProductOnCategoryProductsUpdate($storeId = null)

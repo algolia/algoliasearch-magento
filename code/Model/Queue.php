@@ -115,17 +115,23 @@ class Algolia_Algoliasearch_Model_Queue
 
                 if ($this->mergeable($current_job, $next_job)) {
                     if (isset($current_job['data']['product_ids'])) {
-                        $current_job['data']['product_ids'] = array_merge($current_job['data']['product_ids'],
-                            $next_job['data']['product_ids']);
+                        $current_job['data']['product_ids'] = array_merge($current_job['data']['product_ids'], $next_job['data']['product_ids']);
                     } else {
-                        $current_job['data']['category_ids'] = array_merge($current_job['data']['category_ids'],
-                            $next_job['data']['category_ids']);
+                        $current_job['data']['category_ids'] = array_merge($current_job['data']['category_ids'], $next_job['data']['category_ids']);
                     }
 
                     continue;
                 }
             } else {
                 $next_job = null;
+            }
+
+            if (isset($current_job['data']['product_ids'])) {
+                $current_job['data']['product_ids'] = array_unique($current_job['data']['product_ids']);
+            }
+
+            if (isset($current_job['data']['category_ids'])) {
+                $current_job['data']['category_ids'] = array_unique($current_job['data']['category_ids']);
             }
 
             $jobs[] = $current_job;

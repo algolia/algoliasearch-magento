@@ -37,11 +37,12 @@ class Algolia_Algoliasearch_Model_Observer
         $this->saveSettings();
     }
 
-    public function saveSettings()
+    public function saveSettings($isFullProductReindex = false)
     {
         foreach (Mage::app()->getStores() as $store) {/* @var $store Mage_Core_Model_Store */
             if ($store->getIsActive()) {
-                $this->helper->saveConfigurationToAlgolia($store->getId());
+                $saveToTmpIndicesToo = ($isFullProductReindex && $this->config->isQueueActive($store->getId()));
+                $this->helper->saveConfigurationToAlgolia($store->getId(), $saveToTmpIndicesToo);
             }
         }
     }
@@ -97,14 +98,6 @@ class Algolia_Algoliasearch_Model_Observer
         $storeId = $event->getStoreId();
 
         $this->helper->deleteCategoriesStoreIndices($storeId);
-    }
-
-    public function removeProducts(Varien_Object $event)
-    {
-        $storeId = $event->getStoreId();
-        $product_ids = $event->getProductIds();
-
-        $this->helper->removeProducts($product_ids, $storeId);
     }
 
     public function removeCategories(Varien_Object $event)
@@ -199,6 +192,8 @@ class Algolia_Algoliasearch_Model_Observer
         $page = $event->getPage();
         $pageSize = $event->getPageSize();
 
+        $useTmpIndex = (bool) $event->getUseTmpIndex();
+
         if (is_null($storeId) && !empty($productIds)) {
             foreach (Mage::app()->getStores() as $storeId => $store) {
                 if (!$store->getIsActive()) {
@@ -206,18 +201,23 @@ class Algolia_Algoliasearch_Model_Observer
                 }
 
                 $this->helper->rebuildStoreProductIndex($storeId, $productIds);
-                $this->helper->removeNonIndexableProducts($storeId, $productIds);
             }
         } else {
-            $this->helper->removeNonIndexableProducts($storeId, $productIds);
             if (!empty($page) && !empty($pageSize)) {
-                $this->helper->rebuildStoreProductIndexPage($storeId,
-                    $this->product_helper->getProductCollectionQuery($storeId, $productIds), $page, $pageSize);
+                $collection = $this->product_helper->getProductCollectionQuery($storeId, $productIds, $useTmpIndex);
+                $this->helper->rebuildStoreProductIndexPage($storeId, $collection, $page, $pageSize, null, $productIds, $useTmpIndex);
             } else {
                 $this->helper->rebuildStoreProductIndex($storeId, $productIds);
             }
         }
 
         return $this;
+    }
+
+    public function moveProductsTmpIndex(Varien_Object $event)
+    {
+        $storeId = $event->getStoreId();
+
+        $this->helper->moveProductsIndex($storeId);
     }
 }
