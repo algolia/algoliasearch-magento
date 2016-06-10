@@ -48,10 +48,13 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
 
     protected function castProductObject(&$productData)
     {
+        $nonCastableAttributes = ['sku', 'name', 'description'];
+
         foreach ($productData as $key => &$data) {
-            if ($key === 'sku') {
+            if (in_array($key, $nonCastableAttributes, true) === true) {
                 continue;
             }
+
             $data = $this->try_cast($data);
 
             if (is_array($data) === false) {
