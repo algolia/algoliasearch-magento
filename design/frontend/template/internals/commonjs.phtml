@@ -591,6 +591,10 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
 <!--[if lte IE 9]>
 <script>
-    algoliaConfig.autofocus = false;
+    document.addEventListener("DOMContentLoaded", function(event) {
+        algoliaBundle.$(function ($) {
+            window.algoliaConfig.autofocus = false;
+        });
+    });
 </script>
 <![endif]-->
