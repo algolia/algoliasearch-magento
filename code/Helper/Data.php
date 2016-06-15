@@ -69,7 +69,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->algolia_helper->deleteIndex($this->category_helper->getIndexName($storeId));
     }
 
-    public function saveConfigurationToAlgolia($storeId)
+    public function saveConfigurationToAlgolia($storeId, $saveToTmpIndicesToo = false)
     {
         $this->algolia_helper->resetCredentialsFromConfig();
 
@@ -99,7 +99,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 $this->additionalsections_helper->getIndexSettings($storeId));
         }
 
-        $this->product_helper->setSettings($storeId);
+        $this->product_helper->setSettings($storeId, $saveToTmpIndicesToo);
     }
 
     public function getSearchResult($query, $storeId)
@@ -135,22 +135,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         return $data;
-    }
-
-    public function removeProducts($ids, $store_id = null)
-    {
-        $store_ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($store_id);
-
-        foreach ($store_ids as $store_id) {
-            if ($this->config->isEnabledBackend($store_id) === false) {
-                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store_id));
-                continue;
-            }
-
-            $index_name = $this->product_helper->getIndexName($store_id);
-
-            $this->algolia_helper->deleteObjects($ids, $index_name);
-        }
     }
 
     public function removeCategories($ids, $store_id = null)
@@ -301,6 +285,14 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $this->suggestion_helper->getIndexName($storeId));
     }
 
+    public function moveProductsIndex($storeId)
+    {
+        $indexName = $this->product_helper->getIndexName($storeId);
+        $tmpIndexName = $this->product_helper->getIndexName($storeId, true);
+
+        $this->algolia_helper->moveIndex($tmpIndexName, $indexName);
+    }
+
     public function rebuildStoreProductIndex($storeId, $productIds)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
@@ -312,20 +304,24 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $emulationInfo = $this->startEmulation($storeId);
 
         try {
-            $collection = $this->product_helper->getProductCollectionQuery($storeId, $productIds);
-
+            $collection = $this->product_helper->getProductCollectionQuery($storeId, $productIds, false);
             $size = $collection->getSize();
+
+            if (!empty($productIds)) {
+                $size = max(count($productIds), $size);
+            }
 
             $this->logger->log('Store '.$this->logger->getStoreName($storeId).' collection size : '.$size);
 
             if ($size > 0) {
                 $pages = ceil($size / $this->config->getNumberOfElementByPage());
-                $collection->clear();
                 $page = 1;
+
+                $collection->clear();
 
                 while ($page <= $pages) {
                     $this->rebuildStoreProductIndexPage($storeId, $collection, $page,
-                        $this->config->getNumberOfElementByPage(), $emulationInfo);
+                        $this->config->getNumberOfElementByPage(), $emulationInfo, $productIds);
 
                     $page++;
                 }
@@ -430,26 +426,46 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
-    protected function getProductsRecords($storeId, $collection)
+    protected function getProductsRecords($storeId, $collection, $productIds = null)
     {
-        $indexData = [];
+        $productsToIndex = [];
+        $productsToRemove = [];
+
+        $productIds = array_combine($productIds, $productIds);
 
         $this->logger->start('CREATE RECORDS '.$this->logger->getStoreName($storeId));
         $this->logger->log(count($collection).' product records to create');
+
         /** @var $product Mage_Catalog_Model_Product */
         foreach ($collection as $product) {
             $product->setStoreId($storeId);
 
-            $json = $this->product_helper->getObject($product);
+            $productId = $product->getId();
 
-            array_push($indexData, $json);
+            if (isset($productIds[$productId])) {
+                unset($productIds[$productId]);
+            }
+            
+            if ($product->isDeleted() === true || $product->isDisabled() === true || (int) $product->getVisibility() <= Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE || $product->getStockItem()->is_in_stock === '0') {
+                array_push($productsToRemove, $productId);
+                continue;
+            }
+
+            $json = $this->product_helper->getObject($product);
+            array_push($productsToIndex, $json);
         }
+
+        $productsToRemove = array_merge($productsToRemove, $productIds);
+
         $this->logger->stop('CREATE RECORDS '.$this->logger->getStoreName($storeId));
 
-        return $indexData;
+        return [
+            'toIndex' => $productsToIndex,
+            'toRemove' => array_unique($productsToRemove),
+        ];
     }
 
-    public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null)
+    public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null, $productIds = null, $useTmpIndex = false)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
             $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
@@ -468,7 +484,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $additionalAttributes = $this->config->getProductAdditionalAttributes($storeId);
 
+        /** @var Mage_Catalog_Model_Resource_Product_Collection $collection */
         $collection = clone $collectionDefault;
+
         $collection->setCurPage($page)->setPageSize($pageSize);
         $collection->addCategoryIds();
         $collection->addUrlRewrite();
@@ -500,14 +518,20 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->logger->log('Loaded '.count($collection).' products');
         $this->logger->stop('LOADING '.$this->logger->getStoreName($storeId).' collection page '.$page.', pageSize '.$pageSize);
 
-        $index_name = $this->product_helper->getIndexName($storeId);
+        $index_name = $this->product_helper->getIndexName($storeId, $useTmpIndex);
 
-        $indexData = $this->getProductsRecords($storeId, $collection);
+        $indexData = $this->getProductsRecords($storeId, $collection, $productIds);
 
         $this->logger->start('SEND TO ALGOLIA');
-        if (count($indexData) > 0) {
-            $this->algolia_helper->addObjects($indexData, $index_name);
+
+        if (!empty($indexData['toIndex'])) {
+            $this->algolia_helper->addObjects($indexData['toIndex'], $index_name);
         }
+
+        if (!empty($indexData['toRemove'])) {
+            $this->algolia_helper->deleteObjects($indexData['toRemove'], $index_name);
+        }
+
         $this->logger->stop('SEND TO ALGOLIA');
 
         unset($indexData);
@@ -522,54 +546,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         $this->logger->stop('rebuildStoreProductIndexPage '.$this->logger->getStoreName($storeId).' page '.$page.' pageSize '.$pageSize);
-    }
-
-    /**
-     * Removes products that are no longer indexable, i.e. they are disabled,
-     * from the specified Algolia index. You can provide an array from product
-     * IDs that you want to query. Otherwise, the entire product collection will
-     * be queried.
-     *
-     * @param string $storeId
-     * @param array $productIds
-     */
-    public function removeNonIndexableProducts($storeId, array $productIds = array())
-    {
-        if ($this->config->removeDisabledProductsFromIndex($storeId)) {
-            $this->logger->start('REMOVE FROM ALGOLIA');
-
-            $nonIndexableProductIds = $this->getNonIndexableProductIds($storeId, $productIds);
-            if (count($nonIndexableProductIds) > 0) {
-                $this->removeProducts($nonIndexableProductIds, $storeId);
-            }
-
-            $this->logger->stop('REMOVE FROM ALGOLIA');
-        }
-    }
-
-    /**
-     * Returns an array of the IDs of products that are no longer indexable,
-     * i.e. they are disabled. You can provide an array from product IDs that
-     * you want to query. Otherwise, the entire product collection will be
-     * queried.
-     *
-     * @param mixed $storeId
-     * @param array $productIds
-     * @return array
-     */
-    public function getNonIndexableProductIds($storeId)
-    {
-        $indexableProducts = $this->product_helper->getProductCollectionQuery($storeId, null, true, true);
-        $indexableProductIds = $indexableProducts->getAllIds();
-
-        /** @var Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection $wholeCatalog */
-        $wholeCatalog = Mage::getResourceModel('catalog/product_collection');
-        $wholeCatalog = $wholeCatalog->setStoreId($storeId)->addStoreFilter($storeId);
-        $wholeCatalogProductIds = $wholeCatalog->getAllIds();
-
-        $nonIndexableProductIds = array_diff($wholeCatalogProductIds, $indexableProductIds);
-
-        return $nonIndexableProductIds;
     }
 
     public function startEmulation($storeId)

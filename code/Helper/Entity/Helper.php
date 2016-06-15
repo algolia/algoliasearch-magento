@@ -28,9 +28,15 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
         return (string) $this->config->getIndexPrefix($storeId).Mage::app()->getStore($storeId)->getCode();
     }
 
-    public function getIndexName($storeId = null)
+    public function getIndexName($storeId = null, $getTmpIndexName = false)
     {
-        return (string) $this->getBaseIndexName($storeId).$this->getIndexNameSuffix();
+        $indexName = (string) $this->getBaseIndexName($storeId).$this->getIndexNameSuffix();
+
+        if ($getTmpIndexName === true) {
+            $indexName .= '_tmp';
+        }
+
+        return $indexName;
     }
 
     protected function try_cast($value)

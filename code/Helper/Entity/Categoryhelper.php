@@ -123,7 +123,9 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         /** @var Algolia_Algoliasearch_Helper_Entity_Producthelper $productHelper */
         $productHelper = Mage::helper('algoliasearch/entity_producthelper');
 
-        $productCollection = clone $productHelper->getProductCollectionQuery($storeId, null, true, true);
+        $collection = $productHelper->getProductCollectionQuery($storeId, null, true, true);
+
+        $productCollection = clone $collection;
         $productCollection = $productCollection->addCategoryFilter($category);
 
         $category->setProductCount($productCollection->getSize());

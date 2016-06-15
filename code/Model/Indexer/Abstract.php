@@ -61,7 +61,6 @@ abstract class Algolia_Algoliasearch_Model_Indexer_Abstract extends Mage_Index_M
         }
 
         if (!empty($productIds)) {
-            $this->engine->removeProducts(null, $productIds);
             $this->engine->rebuildProductIndex(null, $productIds);
         }
     }
