@@ -111,7 +111,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Algolia_Algoliasearch_
             try {
                 // In case of wrong credentials or overquota or block account. To avoid checkout process to fail
 
-                $event->addNewData('catalogsearch_delete_product_id', $product->getId());
                 $event->addNewData('catalogsearch_update_category_id', $product->getCategoryIds());
             } catch (\Exception $e) {
                 $this->logger->log('Error while trying to update stock');
@@ -127,6 +126,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Algolia_Algoliasearch_
             case Mage_Index_Model_Event::TYPE_SAVE:
                 /** @var $product Mage_Catalog_Model_Product */
                 $product = $event->getDataObject();
+
                 $event->addNewData('catalogsearch_update_product_id', $product->getId());
                 $event->addNewData('catalogsearch_update_category_id', $product->getCategoryIds());
 
@@ -143,9 +143,9 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Algolia_Algoliasearch_
                 break;
 
             case Mage_Index_Model_Event::TYPE_DELETE:
-
                 /** @var $product Mage_Catalog_Model_Product */
                 $product = $event->getDataObject();
+
                 $event->addNewData('catalogsearch_update_product_id', $product->getId());
                 $event->addNewData('catalogsearch_update_category_id', $product->getCategoryIds());
                 break;
@@ -155,7 +155,6 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Algolia_Algoliasearch_
                 $actionObject = $event->getDataObject();
 
                 $event->addNewData('catalogsearch_update_product_id', $actionObject->getProductIds());
-
                 break;
         }
 

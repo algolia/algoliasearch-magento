@@ -121,15 +121,16 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $products = $products->setStoreId($storeId);
         $products = $products->addStoreFilter($storeId);
 
+        if ($productIds && count($productIds) > 0) {
+            $products = $products->addAttributeToFilter('entity_id', ['in' => $productIds]);
+        }
+
         if ($only_visible) {
             /** @var Mage_Catalog_Model_Product_Visibility $catalog_productVisibility */
             $catalog_productVisibility = Mage::getSingleton('catalog/product_visibility');
 
             $products = $products->addAttributeToFilter('visibility', ['in' => $catalog_productVisibility->getVisibleInSiteIds()]);
-
-            if ($withoutData === false) {
-                $products = $products->addFinalPrice();
-            }
+            $products = $products->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
         }
 
         if ($withoutData === false) {
@@ -139,8 +140,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $catalogInventory_stock->addInStockFilterToCollection($products);
             }
 
-            $products = $products->addAttributeToSelect('special_from_date')->addAttributeToSelect('special_to_date')
-                             ->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
+            $products = $products
+                ->addAttributeToSelect('special_from_date')
+                ->addAttributeToSelect('special_to_date')
+                ->addAttributeToSelect('visibility')
+                ->addAttributeToSelect('status');
 
             $additionalAttr = $this->config->getProductAdditionalAttributes($storeId);
 
@@ -151,10 +155,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $products = $products->addAttributeToSelect(array_values(array_merge(static::$_predefinedProductAttributes,
                 $additionalAttr)));
-        }
 
-        if ($productIds && count($productIds) > 0) {
-            $products = $products->addAttributeToFilter('entity_id', ['in' => $productIds]);
+            $products->addFinalPrice();
+
+            if ($only_visible === false) {
+                $fromPart = $products->getSelect()->getPart(Varien_Db_Select::FROM);
+                $fromPart['price_index']['joinType'] = 'left join';
+                $products->getSelect()->setPart(Varien_Db_Select::FROM, $fromPart);
+            }
         }
 
         Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before',
@@ -163,7 +171,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return $products;
     }
 
-    public function setSettings($storeId)
+    public function setSettings($storeId, $saveToTmpIndicesToo = false)
     {
         $attributesToIndex = [];
         $unretrievableAttributes = [];
@@ -237,9 +245,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $indexSettings = $transport->getData();
 
-        $mergeSettings = $this->algolia_helper->mergeSettings($this->getIndexName($storeId), $indexSettings);
+        $indexName = $this->getIndexName($storeId);
 
-        $this->algolia_helper->setSettings($this->getIndexName($storeId), $mergeSettings);
+        $mergeSettings = $this->algolia_helper->mergeSettings($indexName, $indexSettings);
+
+        $this->algolia_helper->setSettings($indexName, $mergeSettings);
+        if ($saveToTmpIndicesToo === true) {
+            $this->algolia_helper->setSettings($indexName.'_tmp', $mergeSettings);
+        }
 
         /*
          * Handle Slaves
@@ -729,7 +742,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
 
             if (count($ids)) {
-                $sub_products = $this->getProductCollectionQuery($product->getStoreId(), $ids, false)->load();
+                $collection = $this->getProductCollectionQuery($product->getStoreId(), $ids, false);
+                $sub_products = $collection->load();
             } else {
                 $sub_products = [];
             }
@@ -851,5 +865,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $this->logger->stop('CREATE RECORD '.$product->getId().' '.$this->logger->getStoreName($product->storeId));
 
         return $customData;
+    }
+
+    public function getAllProductIds($storeId)
+    {
+        $products = Mage::getModel('catalog/product')->getCollection();
+
+        $products = $products->setStoreId($storeId);
+        $products = $products->addStoreFilter($storeId);
+
+        return $products->getAllIds();
     }
 }

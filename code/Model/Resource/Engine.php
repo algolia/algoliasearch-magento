@@ -46,31 +46,6 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         }
     }
 
-    public function removeProducts($storeId = null, $product_ids = null)
-    {
-        $ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
-
-        if (is_array($product_ids) == false) {
-            $product_ids = [$product_ids];
-        }
-
-        foreach ($ids as $id) {
-            $by_page = $this->config->getNumberOfElementByPage();
-
-            if (is_array($product_ids) && count($product_ids) > $by_page) {
-                foreach (array_chunk($product_ids, $by_page) as $chunk) {
-                    $this->addToQueue('algoliasearch/observer', 'removeProducts',
-                        ['store_id' => $id, 'product_ids' => $chunk], count($chunk));
-                }
-            } else {
-                $this->addToQueue('algoliasearch/observer', 'removeProducts',
-                    ['store_id' => $id, 'product_ids' => $product_ids], count($product_ids));
-            }
-        }
-
-        return $this;
-    }
-
     public function removeCategories($storeId = null, $category_ids = null)
     {
         $ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
@@ -198,29 +173,36 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function rebuildProducts()
     {
-        $this->saveSettings();
+        $this->saveSettings(true);
 
         /** @var Mage_Core_Model_Store $store */
         foreach (Mage::app()->getStores() as $store) {
-            if ($this->config->isEnabledBackend($store->getId()) === false) {
+            $storeId = $store->getId();
+
+            if ($this->config->isEnabledBackend($storeId) === false) {
                 if (php_sapi_name() === 'cli') {
-                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId)."\n";
                 }
 
                 /** @var Mage_Adminhtml_Model_Session $session */
                 $session = Mage::getSingleton('adminhtml/session');
-                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
+                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
-                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
 
                 continue;
             }
 
             if ($store->getIsActive()) {
-                $this->_rebuildProductIndex($store->getId(), []);
+                $useTmpIndex = $this->config->isQueueActive($storeId);
+                $this->_rebuildProductIndex($storeId, [], $useTmpIndex);
+
+                if ($this->config->isQueueActive($storeId)) {
+                    $this->addToQueue('algoliasearch/observer', 'moveProductsTmpIndex', ['store_id' => $storeId], 1);
+                }
             } else {
                 $this->addToQueue('algoliasearch/observer', 'deleteProductsStoreIndices',
-                    ['store_id' => $store->getId()], 1);
+                    ['store_id' => $storeId], 1);
             }
         }
     }
@@ -255,17 +237,16 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function rebuildProductIndex($storeId = null, $productIds = null)
     {
-        $ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
+        $storeIds = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
+        $by_page = $this->config->getNumberOfElementByPage();
 
-        foreach ($ids as $id) {
-            $by_page = $this->config->getNumberOfElementByPage();
-
+        foreach ($storeIds as $storeId) {
             if (is_array($productIds) && count($productIds) > $by_page) {
                 foreach (array_chunk($productIds, $by_page) as $chunk) {
-                    $this->_rebuildProductIndex($id, $chunk);
+                    $this->_rebuildProductIndex($storeId, $chunk);
                 }
             } else {
-                $this->_rebuildProductIndex($id, $productIds);
+                $this->_rebuildProductIndex($storeId, $productIds);
             }
         }
 
@@ -297,19 +278,26 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $this;
     }
 
-    protected function _rebuildProductIndex($storeId, $productIds = null)
+    protected function _rebuildProductIndex($storeId, $productIds = null, $useTmpIndex = false)
     {
         if ($productIds == null || count($productIds) == 0) {
-            $size = $this->product_helper->getProductCollectionQuery($storeId, $productIds)->getSize();
+            $collection = $this->product_helper->getProductCollectionQuery($storeId, $productIds, !$useTmpIndex);
+            $size = $collection->getSize();
+
+            if (!empty($productIds)) {
+                $size = max(count($productIds), $size);
+            }
+            
             $by_page = $this->config->getNumberOfElementByPage();
             $nb_page = ceil($size / $by_page);
 
             for ($i = 1; $i <= $nb_page; $i++) {
                 $data = [
-                    'store_id'    => $storeId,
-                    'product_ids' => $productIds,
-                    'page_size'   => $by_page,
-                    'page'        => $i,
+                    'store_id'      => $storeId,
+                    'product_ids'   => $productIds,
+                    'page_size'     => $by_page,
+                    'page'          => $i,
+                    'use_tmp_index' => $useTmpIndex,
                 ];
 
                 $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', $data, $by_page);
@@ -341,10 +329,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $index;
     }
 
-    public function saveSettings()
+    public function saveSettings($isFullProductReindex = false)
     {
         /** @var Algolia_Algoliasearch_Model_Observer $observer */
         $observer = Mage::getSingleton('algoliasearch/observer');
-        $observer->saveSettings();
+        $observer->saveSettings($isFullProductReindex);
     }
 }
