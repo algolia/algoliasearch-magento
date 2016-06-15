@@ -1,4 +1,4 @@
-version: 1.5.5
+version: 1.6.0
 
 # Site settings
 title: Algolia for Magento
@@ -12,6 +12,10 @@ host: 0.0.0.0
 navigation:
  - text: Documentation
    url: /documentation/
+ - text: FAQ
+   url: /faq/
+# - text: Developers
+#   url: /developers/
  - text: About
    url: /about/
 
