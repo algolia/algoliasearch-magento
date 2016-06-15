@@ -215,7 +215,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                 var listItemTemplate = '<label class="{{cssClasses.label}}">' +
                     '<input type="checkbox" class="{{cssClasses.checkbox}}" value="{{name}}" {{#isRefined}}checked{{/isRefined}} />{{name}}' +
-                    '{{#isRefined}}<img class="cross-circle" src="<?php echo Mage::getBaseUrl(); ?>/skin/frontend/base/default/algoliasearch/cross-circle.png"/>{{/isRefined}}' +
+                    '{{#isRefined}}<img class="cross-circle" src="<?php echo $this->getSkinUrl('algoliasearch/cross-circle.png') ?>"/>{{/isRefined}}' +
                     '<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>' +
                     '</label>';
 
