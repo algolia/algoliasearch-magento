@@ -445,14 +445,18 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             if (isset($productIds[$productId])) {
                 unset($productIds[$productId]);
             }
+
+            if (isset($productsToIndex[$productId]) || isset($productsToRemove[$productId])) {
+                continue;
+            }
             
             if ($product->isDeleted() === true || $product->isDisabled() === true || (int) $product->getVisibility() <= Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE || $product->getStockItem()->is_in_stock === '0') {
-                array_push($productsToRemove, $productId);
+                $productsToRemove[$productId] = $productId;
                 continue;
             }
 
             $json = $this->product_helper->getObject($product);
-            array_push($productsToIndex, $json);
+            $productsToIndex[$productId] = $json;
         }
 
         $productsToRemove = array_merge($productsToRemove, $productIds);
@@ -522,17 +526,24 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $indexData = $this->getProductsRecords($storeId, $collection, $productIds);
 
-        $this->logger->start('SEND TO ALGOLIA');
-
         if (!empty($indexData['toIndex'])) {
+            $this->logger->start('ADD/UPDATE TO ALGOLIA');
+
             $this->algolia_helper->addObjects($indexData['toIndex'], $index_name);
+
+            $this->logger->log('Product IDs: '.implode(', ', array_keys($indexData['toIndex'])));
+            $this->logger->stop('ADD/UPDATE TO ALGOLIA');
         }
 
         if (!empty($indexData['toRemove'])) {
+            $this->logger->start('REMOVE FROM ALGOLIA');
+
             $this->algolia_helper->deleteObjects($indexData['toRemove'], $index_name);
+
+            $this->logger->log('Product IDs: '.implode(', ', $indexData['toRemove']));
+            $this->logger->stop('REMOVE FROM ALGOLIA');
         }
 
-        $this->logger->stop('SEND TO ALGOLIA');
 
         unset($indexData);
 
