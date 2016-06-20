@@ -50,6 +50,10 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IMAGE_HEIGHT = 'algoliasearch/image/height';
     const XML_PATH_IMAGE_TYPE = 'algoliasearch/image/type';
 
+    const SYNONYMS = 'algoliasearch/synonyms/synonyms';
+    const ONEWAY_SYNONYMS = 'algoliasearch/synonyms/oneway_synonyms';
+    const SYNONYMS_FILE = 'algoliasearch/synonyms/synonyms_file';
+
     const REMOVE_IF_NO_RESULT = 'algoliasearch/advanced/remove_words_if_no_result';
     const PARTIAL_UPDATES = 'algoliasearch/advanced/partial_update';
     const CUSTOMER_GROUPS_ENABLE = 'algoliasearch/advanced/customer_groups_enable';
@@ -507,5 +511,37 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getExtensionVersion()
     {
         return (string) Mage::getConfig()->getNode()->modules->Algolia_Algoliasearch->version;
+    }
+
+    public function getSynonyms($storeId = null)
+    {
+        $synonyms = unserialize(Mage::getStoreConfig(self::SYNONYMS, $storeId));
+
+        if (is_array($synonyms)) {
+            return $synonyms;
+        }
+
+        return [];
+    }
+
+    public function getOnewaySynonyms($storeId = null)
+    {
+        $onewaySynonyms = unserialize(Mage::getStoreConfig(self::ONEWAY_SYNONYMS, $storeId));
+
+        if (is_array($onewaySynonyms)) {
+            return $onewaySynonyms;
+        }
+
+        return [];
+    }
+
+    public function getSynonymsFile($storeId = null)
+    {
+        $filename = Mage::getStoreConfig(self::SYNONYMS_FILE, $storeId);
+        if (!$filename) {
+            return null;
+        }
+
+        return Mage::getBaseDir('media'). '/algoliasearch-admin-config-uploads/' . $filename;
     }
 }
