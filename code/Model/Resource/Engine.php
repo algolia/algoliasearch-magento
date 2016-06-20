@@ -281,7 +281,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     protected function _rebuildProductIndex($storeId, $productIds = null, $useTmpIndex = false)
     {
         if ($productIds == null || count($productIds) == 0) {
-            $collection = $this->product_helper->getProductCollectionQuery($storeId, $productIds, !$useTmpIndex);
+            $collection = $this->product_helper->getProductCollectionQuery($storeId, $productIds, $useTmpIndex);
             $size = $collection->getSize();
 
             if (!empty($productIds)) {
