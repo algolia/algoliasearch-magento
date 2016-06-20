@@ -1,6 +1,6 @@
 <?php
 
-class Algolia_Algoliasearch_Model_Indexer_Algoliasuggestions extends Mage_Index_Model_Indexer_Abstract
+class Algolia_Algoliasearch_Model_Indexer_Algoliasuggestions extends Algolia_Algoliasearch_Model_Indexer_Abstract
 {
     const EVENT_MATCH_RESULT_KEY = 'algoliasearch_match_result';
 
@@ -32,8 +32,11 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliasuggestions extends Mage_Index_
 
     public function getDescription()
     {
-        return Mage::helper('algoliasearch')->__('Rebuild suggestions.
-        Please enable the queueing system to do it asynchronously (CRON) if you have a lot of products in System > Configuration > Algolia Search > Queue configuration');
+        /** @var Algolia_Algoliasearch_Helper_Data $helper */
+        $helper = Mage::helper('algoliasearch');
+        $decription = $helper->__('Rebuild suggestions.').' '.$helper->__($this->enableQueueMsg);
+
+        return $decription;
     }
 
     public function matchEvent(Mage_Index_Model_Event $event)
