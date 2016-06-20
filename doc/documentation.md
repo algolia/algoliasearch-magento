@@ -106,6 +106,28 @@ EMPTY_QUEUE=1 php -f /absolute/path/to/magento/shell/indexer.php -- -reindex alg
   Trying to synchronously index too many objects might trigger PHP timeouts.
 </div>
 
+## Full products' reindex
+
+### With enabled indexing queue
+
+With enabled indexing queue products are reindexed with usage of temporary indices. That means that all products are pushed into temporary Algolia indices. When all products are pushed, the production indices are replaced by temporary ones. This approach has these advantages:
+
+1. Higher re-indexing speed when only indexable products are processed and pushed to Algolia
+2. Higher reliability regarding removing deleted products
+3. Lower number of operations needed for full re-index
+
+All changes done by re-indexing will be visible in search results when the whole process of re-indexing is done and production indices are replaced by temporary ones.
+
+### With disabled indexing queue
+
+When the indexing queue is disabled, full product re-index has to process whole catalog. It has to push updates to Algolia as well as remove inactive products from there.
+That being said it takes more time and resources. It is also a little bit less reliable as some deleted products may not be processed and removed from Algolia's indices.
+
+<div class="alert alert-warning">
+    <i class="fa fa-exclamation-triangle"></i>
+    Doing full reindex on large catalog is strongly recommended with <strong>indexing queue enabled</strong>.
+</div>
+
 ## Indexable attributes
 
 You can specify which attributes you want to index in your Algolia indices. This option is available only for Products and Categories. For indexable attributes configuration navigate to **System > Configuration > Algolia Search > Products / Categories** tab.
@@ -254,7 +276,8 @@ List of logged events:
 - Loading products' collection
 - Creating of products' records
 - Creating of single product's record
-- Start and stop of sending objects to Algolia
+- Start and stop of sending products to Algolia
+- Start and stop of removing products from Algolia
 - Start and stop of emulation
 - Exceptions from images' loading
 - Miscellaneous errors and exceptions
