@@ -5,6 +5,8 @@ abstract class Algolia_Algoliasearch_Model_Indexer_Abstract extends Mage_Index_M
     /** @var Algolia_Algoliasearch_Model_Resource_Engine */
     protected $engine;
 
+    protected $enableQueueMsg = 'Please enable the queueing system to do it asynchronously (CRON) if you have a lot of products in System > Configuration > Algolia Search > Queue configuration';
+
     public function __construct()
     {
         parent::__construct();

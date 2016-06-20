@@ -99,7 +99,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                                     </div>
                                     <div class="instant-search-bar-wrapper">
                                         <label for="instant-search-bar">
-                                            <?php echo $this->__('Search :'); ?>
+                                            <?php echo $this->__('Search:'); ?>
                                         </label>
 
                                         <input placeholder="<?php echo $this->__('Search for products'); ?>"
@@ -431,7 +431,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                         content += '<div class="popular-searches">';
 
                         if (algoliaConfig.showSuggestionsOnNoResultsPage && this.suggestions.length > 0) {
-                            content += '<div><?php echo $this->__('You can can try one of the popular search queries'); ?></div>' + this.suggestions.join(', ');
+                            content += '<div><?php echo $this->__('You can try one of the popular search queries'); ?></div>' + this.suggestions.join(', ');
                         }
 
                         content += '</div>';

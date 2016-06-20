@@ -57,8 +57,11 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Algolia_Algoliasearch_
 
     public function getDescription()
     {
-        return Mage::helper('algoliasearch')->__('Rebuild product index.
-        Please enable the queueing system to do it asynchronously (CRON) if you have a lot of products in System > Configuration > Algolia Search > Queue configuration');
+        /** @var Algolia_Algoliasearch_Helper_Data $helper */
+        $helper = Mage::helper('algoliasearch');
+        $decription = $helper->__('Rebuild products.').' '.$helper->__($this->enableQueueMsg);
+
+        return $decription;
     }
 
     public function matchEvent(Mage_Index_Model_Event $event)

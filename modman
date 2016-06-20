@@ -10,6 +10,7 @@ design/frontend/layout/algoliasearch.xml    app/design/frontend/base/default/lay
 design/frontend/template                    app/design/frontend/base/default/template/algoliasearch
 design/adminhtml/layout/algoliasearch.xml   app/design/adminhtml/default/default/layout/algoliasearch.xml
 design/adminhtml/template                   app/design/adminhtml/default/default/template/algoliasearch
+locale/en_GB/Algolia_Algoliasearch.csv      app/locale/en_GB/Algolia_Algoliasearch.csv
 skin                                        skin/frontend/base/default/algoliasearch
 js                                          js/algoliasearch
 lib/AlgoliaSearch                           lib/AlgoliaSearch/

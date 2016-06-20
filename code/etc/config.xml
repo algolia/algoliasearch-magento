@@ -24,6 +24,15 @@
                 </observers>
             </controller_action_layout_load_before>
         </events>
+        <translate>
+            <modules>
+                <Algolia_Algoliasearch>
+                    <files>
+                        <default>Algolia_Algoliasearch.csv</default>
+                    </files>
+                </Algolia_Algoliasearch>
+            </modules>
+        </translate>
     </frontend>
     <adminhtml>
         <layout>
@@ -44,6 +53,15 @@
                 </observers>
             </controller_action_layout_load_before>
         </events>
+        <translate>
+            <modules>
+                <Algolia_Algoliasearch>
+                    <files>
+                        <default>Algolia_Algoliasearch.csv</default>
+                    </files>
+                </Algolia_Algoliasearch>
+            </modules>
+        </translate>
     </adminhtml>
     <global>
         <helpers>
