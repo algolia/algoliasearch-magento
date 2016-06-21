@@ -566,24 +566,12 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                 })
             );
 
-            /** Initialise searching **/
-            if (algoliaConfig.isSearchPage) {
-                startInstantSearch();
-            }
-            else {
-                (function () {
-                    var isStarted = false;
-
-                    $(instant_selector).one('focus', (function () {
-                        if (!isStarted) {
-                            startInstantSearch();
-                        }
-                        isStarted = true;
-                    }));
-                })();
-            }
-
+            var isStarted = false;
             function startInstantSearch() {
+                if(isStarted == true) {
+                    return;
+                }
+
                 search.start();
 
                 handleInputCrossInstant($(instant_selector));
@@ -600,7 +588,12 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                 $(document).on('click', '.ais-hierarchical-menu--link, .ais-refinement-list--checkbox', function () {
                     focusInstantSearchBar(search, instant_search_bar);
                 });
+
+                isStarted = true;
             }
+
+            /** Initialise searching **/
+            startInstantSearch();
         });
     });
 
