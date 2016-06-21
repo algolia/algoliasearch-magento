@@ -329,6 +329,33 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
             }
         }
+
+        if ($synonymsFile = $this->config->getSynonymsFile($storeId)) {
+            $synonymsToSet = json_decode(file_get_contents($synonymsFile));
+        } else {
+            $synonymsToSet = [];
+
+            $synonyms = $this->config->getSynonyms($storeId);
+            foreach ($synonyms as $objectID => $synonym) {
+                $synonymsToSet[] = [
+                    'objectID' => $objectID,
+                    'type' => 'synonym',
+                    'synonyms' => $this->explodeSynomyms($synonym['synonyms']),
+                ];
+            }
+
+            $onewaySynonyms = $this->config->getOnewaySynonyms($storeId);
+            foreach ($onewaySynonyms as $objectID => $onewaySynonym) {
+                $synonymsToSet[] = [
+                    'objectID' => $objectID,
+                    'type' => 'oneWaySynonym',
+                    'input' => $onewaySynonym['input'],
+                    'synonyms' => $this->explodeSynomyms($onewaySynonym['synonyms']),
+                ];
+            }
+        }
+
+        $this->algolia_helper->setSynonyms($this->getIndexName($storeId, $saveToTmpIndicesToo), $synonymsToSet);
     }
 
     protected function getFields($store)
@@ -875,5 +902,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $products = $products->addStoreFilter($storeId);
 
         return $products->getAllIds();
+    }
+
+    private function explodeSynomyms($synonyms)
+    {
+        return array_map('trim', explode(',', $synonyms));
     }
 }

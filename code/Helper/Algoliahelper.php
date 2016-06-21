@@ -149,4 +149,32 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
             $index->addObjects($objects);
         }
     }
+
+    public function setSynonyms($index_name, $synonyms)
+    {
+        if (empty($synonyms)) {
+            return;
+        }
+
+        $index = $this->getIndex($index_name);
+
+        /**
+         * Placeholders and alternative corrections are handled directly in Algolia dashboard.
+         * To keep it works, we need to merge it before setting synonyms to Algolia indices.
+         */
+        $hitsPerPage = 100;
+        $page = 0;
+        do {
+            $complexSynonyms = $index->searchSynonyms('', ['altCorrection1', 'altCorrection2', 'placeholder'], $page, $hitsPerPage);
+            foreach ($complexSynonyms['hits'] as $hit) {
+                unset($hit['_highlightResult']);
+
+                $synonyms[] = $hit;
+            }
+
+            $page++;
+        } while (($page * $hitsPerPage) < $complexSynonyms['nbHits']);
+
+        $index->batchSynonyms($synonyms, true, true);
+    }
 }

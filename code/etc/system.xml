@@ -15,6 +15,13 @@
                         background: white url("/skin/frontend/base/default/algoliasearch/algolia-admin-menu.png") 20px 4px no-repeat !important;
                         border-bottom: none;
                     }
+
+                    span.algolia-config-warning {
+                        font-size: 25px;
+                        color: #D83900;
+                        position: relative;
+                        top: 4px;
+                    }
                 </style>
                 ]]>
             </label>
@@ -162,7 +169,7 @@
                                 <![CDATA[
                                 If set to Yes, the products inside the results pages will be searchable the refined results updated as-you-type. It requires your theme to expose a <code>top.search</code> and <code>content</code> block.
                                     <br><br>
-                                    <span style="font-size: 30px; color: #D83900">&#9888;</span> Enabling instant search can potentially break your design, some work will be required to have a good integration into your theme
+                                    <span class="algolia-config-warning">&#9888;</span> Enabling instant search can potentially break your design, some work will be required to have a good integration into your theme
                                     products.
                                 ]]>
                             </comment>
@@ -244,7 +251,7 @@
                             <comment>
                                 <![CDATA[
                                 Configure here the additional auto-completion menu sections you want include in the dropdown menu (Ex. Suggestions, Pages, Manufacturer, Colors).<br /><br>
-                                <span style="color: #D83900">&#9888;</span> All attributes used here must have been initially included in the <strong>Attributes Configuration</strong> panel and configured as a facet in the <strong>Instant Search Results Page Configuration</strong> panel to be able to refine on the specific attribute.
+                                <span class="algolia-config-warning">&#9888;</span> All attributes used here must have been initially included in the <strong>Attributes Configuration</strong> panel and configured as a facet in the <strong>Instant Search Results Page Configuration</strong> panel to be able to refine on the specific attribute.
                                 ]]>
                             </comment>
                         </sections>
@@ -273,7 +280,7 @@
                             <comment>
                                 <![CDATA[
                                 For CMS pages, template directives (e.g. <code>{{block type="core/template" ...}}</code>) will be processed by default. Set this to "No" if you don't want to have template content indexed.<br><br>
-                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Do not forget to trigger the Algolia Search indexers whenever you modify those settings.
+                                <span class="algolia-config-warning">&#9888;</span> Do not forget to trigger the Algolia Search indexers whenever you modify those settings.
                                 ]]>
                             </comment>
                         </render_template_directives>
@@ -409,7 +416,7 @@
                                 <![CDATA[
                                 Choose here the product attributes your users can search on, the ones you want to use as filters and sorts options and the ones required to display the search results.<br><br>
                                  The order of the searchable attributes matters: a query matching the first searchable attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matching word(s) inside the attribute to matter. A match at the beginning of an attribute will be considered more important: for the query "iPhone", "iPhone 5s" will be ranked before "case for iPhone".<br />
-                                <br><span style="font-size: 20px; color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
+                                <br><span class="algolia-config-warning">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
                                 ]]>
                             </comment>
                         </product_additional_attributes>
@@ -424,7 +431,7 @@
                             <comment>
                                 <![CDATA[
                                 Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
-                                <span style="color: #D83900">&#9888;</span> All attributes used here must have been initially included in the Attributes configuration panel.
+                                <span class="algolia-config-warning">&#9888;</span> All attributes used here must have been initially included in the Attributes configuration panel.
                                 ]]>
                             </comment>
                         </custom_ranking_product_attributes>
@@ -438,7 +445,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                    Choose here if you want to show most popular queries suggestions when there are no results/
+                                    Choose here if you want to show most popular queries suggestions when there are no results
                                 ]]>
                             </comment>
                         </show_suggestions_on_no_result_page>
@@ -483,7 +490,7 @@
                             <comment>
                                 <![CDATA[
                                 Configure here the category attributes your users can search on. The order of these attributes matters: the higher in the list, the more important to rank the results.<br />
-                                <span style="color: #D83900">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
+                                <span class="algolia-config-warning">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
                                 ]]>
                             </comment>
                         </category_additional_attributes2>
@@ -498,7 +505,7 @@
                             <comment>
                                 <![CDATA[
                                 Choose here the attributes that reflect the popularity of your categories (number of products, total number of sales of the category,etc.).<br />
-                                <span style="color: #D83900">&#9888;</span> All attributes used here must have been included before in the Attributes chart.
+                                <span class="algolia-config-warning">&#9888;</span> All attributes used here must have been included before in the Attributes chart.
                                 ]]>
                             </comment>
                         </custom_ranking_category_attributes>
@@ -583,7 +590,7 @@
                                 To schedule the run you need to add this in your crontab:<br>
                                 */5 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner
                                 <br><br>
-                                <span style="color: #D83900">&#9888;</span> Enabling this option is recommended in production or if your store has a lot of products.
+                                <span class="algolia-config-warning">&#9888;</span> Enabling this option is recommended in production or if your store has a lot of products.
                                 ]]>
                             </comment>
                         </active>
@@ -609,14 +616,97 @@
                                 <![CDATA[
                                 Number of jobs to run each time the cron is run. Default value is 10.
                                 <br><br>
-                                <span style="font-size: 20px; color: #D83900">&#9888;</span> Each time the cron runs it will process ("Max number of element per indexing job" * "Number of jobs to run each time the cron is run")
+                                <span class="algolia-config-warning">&#9888;</span> Each time the cron runs it will process ("Max number of element per indexing job" * "Number of jobs to run each time the cron is run")
                                 products.
                                 ]]>
                             </comment>
-                            <depends><active>1</active></depends>
+                            <depends>
+                                <active>1</active>
+                            </depends>
                         </number_of_job_to_run>
                     </fields>
                 </queue>
+                <synonyms translate="label">
+                    <label>Synonyms</label>
+                    <expanded>0</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>85</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment>
+                        <![CDATA[
+                        <table>
+                            <tr>
+                                <td>Synonyms documentation:</td>
+                                <td><a target="_blank" href="https://www.algolia.com/doc/synonyms">https://www.algolia.com/doc/synonyms</a></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <hr>
+                        <br>
+                        ]]>
+                    </comment>
+                    <fields>
+                        <synonyms translate="label comment">
+                            <label>Synonyms</label>
+                            <frontend_model>algoliasearch/system_config_form_field_synonyms</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                Synonyms are defined by a comma-separated list of words that should be considered equivalent by the Algolia engine.<br>
+                                For instance: <code>tv, television, tv set</code><br>
+                                Using that set, if a record contains “television” and a user searches for “TV”, this record will be returned.<br>
+                                Documentation: <a href="https://www.algolia.com/doc/synonyms#synonyms" target="_blank">https://www.algolia.com/doc/synonyms#synonyms</a>
+                                ]]>
+                            </comment>
+                        </synonyms>
+                        <oneway_synonyms translate="label comment">
+                            <label>One-way Synonyms</label>
+                            <frontend_model>algoliasearch/system_config_form_field_onewaysynonyms</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                One-way synonyms allow you to define alternative words for a search term, which are not synonyms to each others.<br>
+                                Let’s take an example: when a user searches for “tablet”, you want him to be able to find iPads and Galaxy Note tablets alike, but you might not want Android tablets to show up when he searches for “iPad”.<br>
+                                To do this, you’d define a one-way synonyms set between <code>tablet</code> (as input) and <code>ipad, galaxy note</code> (as synonyms). When the user types in “tablet”, records containing “iPad” and “Galaxy Note” will be returned. However records containing only “tablet” or “Galaxy Note” won’t be returned if he searches for “iPad”.<br>
+                                Documentation: <a href="https://www.algolia.com/doc/synonyms#one-way-synonyms" target="_blank">https://www.algolia.com/doc/synonyms#one-way-synonyms</a>
+                                   <br>
+                                <br>
+                                    Algolia offers more synonymys’ types - placeholders and alternative corrections. These types can be managed directly from your <a href="https://www.algolia.com/dashboard" target="_blank">Algolia’s dashboard</a>.
+                                    Any changes you will make to placeholders and alternative corrections in Algolia’s dashboard won’t be overriden.
+                                ]]>
+                            </comment>
+                        </oneway_synonyms>
+                        <synonyms_file translate="label comment">
+                            <label>Synonyms File</label>
+                            <frontend_type>file</frontend_type>
+                            <backend_model>algoliasearch/system_config_backend_synonymsfile</backend_model>
+                            <upload_dir config="system/filesystem/media" scope_info="1">algoliasearch-admin-config-uploads</upload_dir>
+                            <base_url type="media" scope_info="1">algoliasearch-admin-config-uploads</base_url>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    If you have large amount of synonyms (appr. more than hundred), you don't have to fill it into inputs above and you can upload a JSON file with synonyms instead.
+                                    The documentation with the file structure can be found <a href="https://www.algolia.com/doc/relevance/synonyms#synonyms" target="_blank">here</a>.<br><br>
+                                    <span class="algolia-config-warning">&#9888;</span>
+                                    When you upload a JSON file, all the synonyms settings from above will be ignored and only synonyms from the JSON file will be pushed to Algolia.
+                                ]]>
+                            </comment>
+                        </synonyms_file>
+                    </fields>
+                </synonyms>
                 <advanced translate="label">
                     <label>Advanced</label>
                     <expanded>0</expanded>
