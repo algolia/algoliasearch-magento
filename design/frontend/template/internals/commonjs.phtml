@@ -566,6 +566,11 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             $(document).on('click', '.clear-query-autocomplete', function () {
                 var input = $(this).closest('#algolia-searchbox').find('input');
                 input.val('');
+
+                if(!algoliaConfig.autocomplete.enabled && algoliaConfig.instant.enabled) {
+                    input.get(0).dispatchEvent(new Event('input'));
+                }
+
                 handleInputCrossAutocomplete(input);
             });
 
