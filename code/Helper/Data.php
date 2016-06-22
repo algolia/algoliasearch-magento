@@ -426,12 +426,15 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
-    protected function getProductsRecords($storeId, $collection, $productIds = null)
+    protected function getProductsRecords($storeId, $collection, $potentiallyDeletedProductsIds = null)
     {
         $productsToIndex = [];
         $productsToRemove = [];
 
-        $productIds = array_combine($productIds, $productIds);
+        // In $potentiallyDeletedProductsIds there might be IDs of deleted products which will not be in a collection
+        if (is_array($potentiallyDeletedProductsIds)) {
+            $potentiallyDeletedProductsIds = array_combine($potentiallyDeletedProductsIds, $potentiallyDeletedProductsIds);
+        }
 
         $this->logger->start('CREATE RECORDS '.$this->logger->getStoreName($storeId));
         $this->logger->log(count($collection).' product records to create');
@@ -442,15 +445,16 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $productId = $product->getId();
 
-            if (isset($productIds[$productId])) {
-                unset($productIds[$productId]);
+            // If $productId is in the collection, remove it from $potentiallyDeletedProductsIds so it's not removed without check
+            if (isset($potentiallyDeletedProductsIds[$productId])) {
+                unset($potentiallyDeletedProductsIds[$productId]);
             }
 
             if (isset($productsToIndex[$productId]) || isset($productsToRemove[$productId])) {
                 continue;
             }
             
-            if ($product->isDeleted() === true || $product->isDisabled() === true || (int) $product->getVisibility() <= Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE || $product->getStockItem()->is_in_stock === '0') {
+            if ($product->isDeleted() === true || $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED || (int) $product->getVisibility() <= Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE || $product->getStockItem()->is_in_stock === '0') {
                 $productsToRemove[$productId] = $productId;
                 continue;
             }
@@ -459,7 +463,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $productsToIndex[$productId] = $json;
         }
 
-        $productsToRemove = array_merge($productsToRemove, $productIds);
+        $productsToRemove = array_merge($productsToRemove, $potentiallyDeletedProductsIds);
 
         $this->logger->stop('CREATE RECORDS '.$this->logger->getStoreName($storeId));
 
