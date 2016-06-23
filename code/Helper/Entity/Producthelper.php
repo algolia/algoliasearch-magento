@@ -815,6 +815,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $value = $product->getData($attribute_name);
 
+            /** @var Mage_Catalog_Model_Resource_Eav_Attribute $attribute_resource */
             $attribute_resource = $product->getResource()->getAttribute($attribute_name);
 
             if ($attribute_resource) {
@@ -859,7 +860,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     if ($customData['in_stock'] && $all_sub_products_out_of_stock) {
                         $customData['in_stock'] = 0;
                     }
-                } elseif ($value === null) {
+                } elseif (!is_array($value)) {
                     $value = $this->getValueOrValueText($product, $attribute_name, $attribute_resource);
                 }
 
