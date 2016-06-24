@@ -348,9 +348,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $index_name = $this->suggestion_helper->getIndexName($storeId).'_tmp';
 
+        if ($page == 1) {
+            $this->algolia_helper->setSettings($index_name, $this->suggestion_helper->getIndexSettings($storeId));
+        }
+
         $indexData = [];
 
-        /** @var Mage_Catalog_Model_Category $suggestion */
+        /** @var Mage_CatalogSearch_Model_Query $suggestion */
         foreach ($collection as $suggestion) {
             $suggestion->setStoreId($storeId);
 
