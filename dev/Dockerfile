@@ -27,19 +27,23 @@ COPY bin/php.ini /usr/local/etc/php/php.ini
 RUN cd /tmp && curl -O https://phpmyadmin-downloads-532693.c.cdn77.org/phpMyAdmin/4.4.9/phpMyAdmin-4.4.9-english.tar.gz && tar xvf phpMyAdmin-4.4.9-english.tar.gz && mv phpMyAdmin-4.4.9-english /var/www/htdocs/phpmyadmin
 COPY bin/config.inc.php /var/www/htdocs/phpmyadmin/
 
-# magento 1.9.1
-## download & install script
-RUN cd /tmp && curl -O https://demos.algolia.com/downloads/magento-1.9.2.1.tar.gz && tar xvf magento-1.9.2.1.tar.gz && mv magento/* magento/.htaccess /var/www/htdocs
+## download & install Magento
+ARG MAGENTO_VERSION
+
+RUN cd /tmp && curl -O https://demos.algolia.com/downloads/magento-$MAGENTO_VERSION.tar.gz && tar xvf magento-$MAGENTO_VERSION.tar.gz && mv magento/* magento/.htaccess /var/www/htdocs
 COPY ./bin/install-magento /usr/local/bin/install-magento
 RUN chmod +x /usr/local/bin/install-magento
+
 ## sample dataset import
 RUN cd /tmp && curl -O https://demos.algolia.com/downloads/magento-sample-data-1.9.0.0.tar.gz && tar xvf magento-sample-data-1.9.0.0.tar.gz
 RUN cd /var/www/htdocs/media && cp -R /tmp/magento-sample-data-1.9.0.0/media/* . && chmod -R 777 /var/www/htdocs/media
 RUN cd /var/www/htdocs/skin && cp -R /tmp/magento-sample-data-1.9.0.0/skin/* .
 RUN chown -R www-data:www-data /var/www/htdocs
+
 ## database setup
 RUN service mysql start && (echo "CREATE DATABASE magento" | mysql -u root --password=P4ssw0rd) && mysql -u root --password=P4ssw0rd magento < /tmp/magento-sample-data-1.9.0.0/magento_sample_data_for_1.9.0.0.sql && service mysql stop
 RUN service mysql start && MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PASSWORD=P4ssw0rd MYSQL_DATABASE=magento MAGENTO_LOCALE=en_GB MAGENTO_TIMEZONE=Europe/Paris MAGENTO_DEFAULT_CURRENCY=USD MAGENTO_URL=http://mymagentostore.com MAGENTO_ADMIN_FIRSTNAME=Admin MAGENTO_ADMIN_LASTNAME=MyStore MAGENTO_ADMIN_EMAIL=amdin@mymagentostore.com MAGENTO_ADMIN_USERNAME=admin MAGENTO_ADMIN_PASSWORD=magentorocks1 /usr/local/bin/install-magento && service mysql stop
+
 ## disable cache
 RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs cache:flush && n98-magerun --root-dir=/var/www/htdocs cache:disable && service mysql stop
 ## allow symlinks

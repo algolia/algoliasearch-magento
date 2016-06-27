@@ -7,17 +7,14 @@ SEARCH_ONLY_API_KEY=
 INDEX_PREFIX=magento_
 BASE_URL=http://mymagentostore.com/
 EXPOSED_PORT=80
+MAGENTO_VERSION=19
+INSTALL_ALGOLIA=Yes
 
 cd `dirname "$0"`
-docker build -t algolia/algoliasearch-magento . || exit 1
-echo "=============================================================="
-echo "||        DOCKER IMAGE SUCCESSFULLY REBUILT                 ||"
-echo "=============================================================="
-echo ""
 
 usage() {
   echo "Usage:" >&2
-  echo "$PROG -a APPLICATION_ID -k API_KEY -s SEARCH_ONLY_API_KEY [-p INDEX_PREFIX] [-b BASE_URL] [-o EXPOSED_PORT]" >&2
+  echo "$PROG -a APPLICATION_ID -k API_KEY -s SEARCH_ONLY_API_KEY [-p INDEX_PREFIX] [-b BASE_URL] [-o EXPOSED_PORT] [-v MAGENTO_VERSION]" >&2
   echo "" >&2
   echo "Options:" >&2
   echo "   -a | --application-id               The application ID" >&2
@@ -27,6 +24,8 @@ usage() {
   echo "   -b | --base-url                     The base URL (default: http://mymagentostore.com/)" >&2
   echo "   -o | --port                         The exposed port (default: 80)" >&2
   echo "   -h | --help                         Print this help" >&2
+  echo "   -v | --magento-version              Magento version [16, 17, 18, 19] (default: 19)" >&2
+  echo "   --no-algolia                        Build Magento container without Algolia search extension" >&2
 }
 
 while [[ $# > 0 ]]; do
@@ -62,6 +61,14 @@ while [[ $# > 0 ]]; do
       EXPOSED_PORT="$2"
       shift
       ;;
+    -v|--magneto-version)
+      MAGENTO_VERSION="$2"
+      shift
+      ;;
+    --no-algolia)
+      INSTALL_ALGOLIA=No
+      shift
+      ;;
     -h|--help)
       usage
       exit 0
@@ -89,7 +96,33 @@ ensure "-a" "$APPLICATION_ID"
 ensure "-k" "$API_KEY"
 ensure "-s" "$SEARCH_ONLY_API_KEY"
 ensure "-b" "$BASE_URL"
-ensure "-o" "$EXPOSED_PORT"
+
+case "$MAGENTO_VERSION" in
+  19)
+    MAGENTO_VERSION=1.9.2.1
+    ;;
+  18)
+    MAGENTO_VERSION=1.8.1
+    ;;
+  17)
+    MAGENTO_VERSION=1.7.0
+    ;;
+  16)
+    MAGENTO_VERSION=1.6.2
+    ;;
+  *)
+    echo "Bad Magento version. Supported Magento versions: 16, 17, 18, 19. Default value: 19."
+    echo ""
+    usage
+    exit 1
+esac
+
+docker build --build-arg MAGENTO_VERSION=$MAGENTO_VERSION -t algolia/algoliasearch-magento . || exit 1
+
+echo "=============================================================="
+echo "||        DOCKER IMAGE SUCCESSFULLY REBUILT                 ||"
+echo "=============================================================="
+echo ""
 
 docker stop algoliasearch-magento > /dev/null 2>&1 || true
 docker rm algoliasearch-magento > /dev/null 2>&1 || true
@@ -100,6 +133,8 @@ echo "SEARCH_ONLY_API_KEY: $SEARCH_ONLY_API_KEY"
 echo "       INDEX_PREFIX: $INDEX_PREFIX"
 echo "           BASE_URL: $BASE_URL"
 echo "       EXPOSED PORT: $EXPOSED_PORT"
+echo "    MAGENTO VERSION: $MAGENTO_VERSION"
+echo "    INSTALL ALGOLIA: $INSTALL_ALGOLIA"
 echo ""
 
 docker run -p $EXPOSED_PORT:80 \
@@ -109,6 +144,7 @@ docker run -p $EXPOSED_PORT:80 \
   -e API_KEY=$API_KEY \
   -e INDEX_PREFIX=$INDEX_PREFIX \
   -e BASE_URL=$BASE_URL \
+  -e INSTALL_ALGOLIA=$INSTALL_ALGOLIA \
   -d \
   --name algoliasearch-magento \
   -t algolia/algoliasearch-magento
