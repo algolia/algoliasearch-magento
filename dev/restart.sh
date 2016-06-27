@@ -9,6 +9,7 @@ BASE_URL=http://mymagentostore.com/
 EXPOSED_PORT=80
 MAGENTO_VERSION=19
 INSTALL_ALGOLIA=Yes
+MAKE_RELEASE=No
 
 cd `dirname "$0"`
 
@@ -26,6 +27,7 @@ usage() {
   echo "   -h | --help                         Print this help" >&2
   echo "   -v | --magento-version              Magento version [16, 17, 18, 19] (default: 19)" >&2
   echo "   --no-algolia                        Build Magento container without Algolia search extension" >&2
+  echo "   --release                           Create Magento Connect release arcive in /var/connect directory" >&2
 }
 
 while [[ $# > 0 ]]; do
@@ -67,6 +69,10 @@ while [[ $# > 0 ]]; do
       ;;
     --no-algolia)
       INSTALL_ALGOLIA=No
+      shift
+      ;;
+    --release)
+      MAKE_RELEASE=Yes
       shift
       ;;
     -h|--help)
@@ -127,14 +133,15 @@ echo ""
 docker stop algoliasearch-magento > /dev/null 2>&1 || true
 docker rm algoliasearch-magento > /dev/null 2>&1 || true
 
-echo "     APPLICATION_ID: $APPLICATION_ID"
-echo "            API_KEY: $API_KEY"
-echo "SEARCH_ONLY_API_KEY: $SEARCH_ONLY_API_KEY"
-echo "       INDEX_PREFIX: $INDEX_PREFIX"
-echo "           BASE_URL: $BASE_URL"
-echo "       EXPOSED PORT: $EXPOSED_PORT"
-echo "    MAGENTO VERSION: $MAGENTO_VERSION"
-echo "    INSTALL ALGOLIA: $INSTALL_ALGOLIA"
+echo "      APPLICATION_ID: $APPLICATION_ID"
+echo "             API_KEY: $API_KEY"
+echo " SEARCH_ONLY_API_KEY: $SEARCH_ONLY_API_KEY"
+echo "        INDEX_PREFIX: $INDEX_PREFIX"
+echo "            BASE_URL: $BASE_URL"
+echo "        EXPOSED PORT: $EXPOSED_PORT"
+echo "     MAGENTO VERSION: $MAGENTO_VERSION"
+echo "     INSTALL ALGOLIA: $INSTALL_ALGOLIA"
+echo "MAKE RELEASE PACKAGE: $MAKE_RELEASE"
 echo ""
 
 docker run -p $EXPOSED_PORT:80 \
@@ -145,6 +152,7 @@ docker run -p $EXPOSED_PORT:80 \
   -e INDEX_PREFIX=$INDEX_PREFIX \
   -e BASE_URL=$BASE_URL \
   -e INSTALL_ALGOLIA=$INSTALL_ALGOLIA \
+  -e MAKE_RELEASE=$MAKE_RELEASE \
   -d \
   --name algoliasearch-magento \
   -t algolia/algoliasearch-magento
