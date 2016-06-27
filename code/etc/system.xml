@@ -519,7 +519,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If set to Yes, Algolia will display all categories in the autocomplete menu ignoring the setting: "Include in navigation menu". Default value: false
+                                If set to Yes, Algolia will display all categories in both the autocomplete menu and instant search page ignoring the setting: "Include in navigation menu". Default value: No
                                 ]]>
                             </comment>
                         </show_cats_not_included_in_navigation>
