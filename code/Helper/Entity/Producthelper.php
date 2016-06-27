@@ -632,6 +632,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                                       ->addAttributeToFilter('entity_id', $_categoryIds)
                                       ->addFieldToFilter('level', ['gt' => 1])->addIsActiveFilter();
 
+            if ($this->config->showCatsNotIncludedInNavigation($product->getStoreId()) == false) {
+                $categoryCollection->addAttributeToFilter('include_in_menu', '1');
+            }
+
             $rootCat = Mage::app()->getStore($product->getStoreId())->getRootCategoryId();
 
             /** @var Mage_Catalog_Model_Category $category */
