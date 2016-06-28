@@ -667,7 +667,7 @@
                         </synonyms>
                         <oneway_synonyms translate="label comment">
                             <label>One-way Synonyms</label>
-                            <frontend_model>algoliasearch/system_config_form_field_onewaysynonyms</frontend_model>
+                            <frontend_model>algoliasearch/system_config_form_field_onewaySynonyms</frontend_model>
                             <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
