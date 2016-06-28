@@ -689,7 +689,7 @@
                         <synonyms_file translate="label comment">
                             <label>Synonyms File</label>
                             <frontend_type>file</frontend_type>
-                            <backend_model>algoliasearch/system_config_backend_synonymsfile</backend_model>
+                            <backend_model>algoliasearch/system_config_backend_SynonymsFile</backend_model>
                             <upload_dir config="system/filesystem/media" scope_info="1">algoliasearch-admin-config-uploads</upload_dir>
                             <base_url type="media" scope_info="1">algoliasearch-admin-config-uploads</base_url>
                             <sort_order>30</sort_order>
