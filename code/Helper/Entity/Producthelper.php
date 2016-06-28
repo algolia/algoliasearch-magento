@@ -13,6 +13,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         'small_image',
         'thumbnail',
         'msrp_enabled', // NEEDED to handle msrp behavior
+        'tax_class_id', // Needed for tax calculation
     ];
 
     protected function getIndexNameSuffix()
