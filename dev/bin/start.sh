@@ -40,5 +40,9 @@ chown -R www-data:www-data /var/www/htdocs/media
 # do it after indexing so that var/log doesn't get created as root
 n98-magerun --root-dir=/var/www/htdocs config:set dev/log/active 1
 
+if [ $MAKE_RELEASE == Yes ]; then
+  php makeRelease.php
+fi
+
 service apache2 stop
 exec /usr/sbin/apache2ctl -D FOREGROUND
