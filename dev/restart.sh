@@ -15,7 +15,7 @@ cd `dirname "$0"`
 
 usage() {
   echo "Usage:" >&2
-  echo "$PROG -a APPLICATION_ID -k API_KEY -s SEARCH_ONLY_API_KEY [-p INDEX_PREFIX] [-b BASE_URL] [-o EXPOSED_PORT] [-v MAGENTO_VERSION]" >&2
+  echo "$PROG -a APPLICATION_ID -k API_KEY -s SEARCH_ONLY_API_KEY [-p INDEX_PREFIX] [-b BASE_URL] [-o EXPOSED_PORT] [-v MAGENTO_VERSION] [--no-algolia] [--release]" >&2
   echo "" >&2
   echo "Options:" >&2
   echo "   -a | --application-id               The application ID" >&2
@@ -102,6 +102,7 @@ ensure "-a" "$APPLICATION_ID"
 ensure "-k" "$API_KEY"
 ensure "-s" "$SEARCH_ONLY_API_KEY"
 ensure "-b" "$BASE_URL"
+ensure "-o" "$EXPOSED_PORT"
 
 case "$MAGENTO_VERSION" in
   19)
