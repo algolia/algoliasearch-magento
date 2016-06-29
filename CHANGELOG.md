@@ -23,6 +23,7 @@
   - **BC break** - if you use you own templates, they must be updated for new templates' structure
 - New version of [instantsearch.js](https://github.com/algolia/instantsearch.js) library updated
 - Refactored [products' re-indexing](https://community.algolia.com/magento/documentation/#full-products-reindex)
+  - **BC break** - when you install this version, the indexing queue will be truncated. Full re-index is required.
 - Added logging of updated/deleted products
 - `name` and `description` attributes are now not casted before indexing. It solves issue with non-highlighted numerical products' names.
 - All static strings can be localized via Magento localizator now
@@ -44,6 +45,7 @@
 - Undefined `algoliaConfig` variable in IE9
 - Main content is no longer hidden on disabled JavaScript
 - Fix not started instant search which caused bugs on products' details
+- Prices are now indexed correctly with taxes
 
 ### 1.5.5
 
