@@ -458,7 +458,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 continue;
             }
             
-            if ($product->isDeleted() === true || $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED || (int) $product->getVisibility() <= Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE || $product->getStockItem()->is_in_stock === '0') {
+            if ($product->isDeleted() === true
+                || $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED
+                || (int) $product->getVisibility() <= Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE
+                || ($product->getStockItem()->is_in_stock == 0 && !$this->config->getShowOutOfStock($storeId))
+            ) {
                 $productsToRemove[$productId] = $productId;
                 continue;
             }
