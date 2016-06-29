@@ -9,55 +9,58 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
 
     public function getIndexSettings($storeId)
     {
-        return array(
-            'attributesToIndex'         => array('value'),
-        );
+        return [
+            'attributesToIndex' => ['value'],
+        ];
     }
 
     public function getAttributeValues($storeId, $section)
     {
+        /** @var Mage_Catalog_Model_Product_Visibility $catalogProductVisibility */
+        $catalogProductVisibility = Mage::getSingleton('catalog/product_visibility');
+
         $attributeCode = $section['name'];
 
-        $products = Mage::getResourceModel('catalog/product_collection')
-            ->addStoreFilter($storeId)
-            ->addAttributeToFilter('visibility', array('in' => Mage::getSingleton('catalog/product_visibility')->getVisibleInSearchIds()))
-            ->addAttributeToFilter('status', array('eq' => Mage_Catalog_Model_Product_Status::STATUS_ENABLED))
-            ->addAttributeToFilter($attributeCode, array('notnull' => true))
-            ->addAttributeToFilter($attributeCode, array('neq' => ''))
-            ->addAttributeToSelect($attributeCode);
+        /** @var Mage_Catalog_Model_Resource_Product_Collection $products */
+        $products = Mage::getResourceModel('catalog/product_collection')->addStoreFilter($storeId)
+                        ->addAttributeToFilter('visibility',
+                            ['in' => $catalogProductVisibility->getVisibleInSearchIds()])
+                        ->addAttributeToFilter('status',
+                            ['eq' => Mage_Catalog_Model_Product_Status::STATUS_ENABLED])
+                        ->addAttributeToFilter($attributeCode, ['notnull' => true])
+                        ->addAttributeToFilter($attributeCode, ['neq' => ''])
+                        ->addAttributeToSelect($attributeCode);
 
-        $usedAttributeValues = array_keys(array_flip( // array unique
+        $usedAttributeValues = array_keys(array_flip(// array unique
             explode(',', implode(',', $products->getColumnValues($attributeCode)))));
 
-        $attributeModel = Mage::getSingleton('eav/config')
-            ->getAttribute('catalog_product', $attributeCode)
-            ->setStoreId($storeId);
+        /** @var Mage_Eav_Model_Config $eavConfig */
+        $eavConfig = Mage::getSingleton('eav/config');
 
-        $values = $attributeModel->getSource()->getOptionText(
-            implode(',', $usedAttributeValues)
-        );
+        /** @var Mage_Eav_Model_Attribute $attributeModel */
+        $attributeModel = $eavConfig->getAttribute('catalog_product', $attributeCode);
+        $attributeModel->setStoreId($storeId);
 
-        if (! $values || count($values) == 0)
-        {
+        $values = $attributeModel->getSource()->getOptionText(implode(',', $usedAttributeValues));
+
+        if (!$values || count($values) == 0) {
             $values = array_unique($products->getColumnValues($attributeCode));
         }
 
-        if ($values && is_array($values) == false)
-        {
-            $values = array($values);
+        if ($values && is_array($values) == false) {
+            $values = [$values];
         }
 
         $values = array_map(function ($value) use ($section, $storeId) {
-
-            $record = array(
-                'objectID'  => $value,
-                'value'     => $value
-            );
+            $record = [
+                'objectID' => $value,
+                'value'    => $value,
+            ];
 
             $transport = new Varien_Object($record);
 
             Mage::dispatchEvent('algolia_additional_section_item_index_before',
-                array('section' => $section, 'record' => $transport, 'store_id' => $storeId));
+                ['section' => $section, 'record' => $transport, 'store_id' => $storeId]);
 
             $record = $transport->getData();
 

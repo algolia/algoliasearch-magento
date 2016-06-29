@@ -29,14 +29,21 @@ namespace AlgoliaSearch;
 
 class PlacesIndex
 {
+    /**
+     * @var ClientContext
+     */
     private $context;
+
+    /**
+     * @var Client
+     */
     private $client;
 
     /**
      * @param ClientContext $context
      * @param Client        $client
      */
-    public function __construct($context, Client $client)
+    public function __construct(ClientContext $context, Client $client)
     {
         $this->context = $context;
         $this->client = $client;
@@ -53,7 +60,7 @@ class PlacesIndex
     public function search($query, $args = null)
     {
         if ($args === null) {
-            $args = [];
+            $args = array();
         }
         $args['query'] = $query;
 
@@ -61,19 +68,26 @@ class PlacesIndex
             $this->context,
             'POST',
             '/1/places/query',
-            [],
-            ['params' => $this->client->buildQuery($args)],
+            array(),
+            array('params' => $this->client->buildQuery($args)),
             $this->context->readHostsArray,
             $this->context->connectTimeout,
             $this->context->searchTimeout
         );
     }
 
+    /**
+     * @param string $key
+     * @param string $value
+     */
     public function setExtraHeader($key, $value)
     {
         $this->context->setExtraHeader($key, $value);
     }
 
+    /**
+     * @return ClientContext
+     */
     public function getContext()
     {
         return $this->context;

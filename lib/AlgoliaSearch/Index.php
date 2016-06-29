@@ -85,14 +85,14 @@ class Index
      */
     public function batchObjects($objects, $objectIDKey = 'objectID', $objectActionKey = 'objectAction')
     {
-        $requests = [];
-        $allowedActions = [
+        $requests = array();
+        $allowedActions = array(
             'addObject',
             'updateObject',
             'deleteObject',
             'partialUpdateObject',
             'partialUpdateObjectNoCreate',
-        ];
+        );
 
         foreach ($objects as $obj) {
             // If no or invalid action, assume updateObject
@@ -105,7 +105,7 @@ class Index
             // The action key is not included in the object
             unset($obj[$objectActionKey]);
 
-            $req = ['action' => $action, 'body' => $obj];
+            $req = array('action' => $action, 'body' => $obj);
 
             if (array_key_exists($objectIDKey, $obj)) {
                 $req['objectID'] = (string) $obj[$objectIDKey];
@@ -114,7 +114,7 @@ class Index
             $requests[] = $req;
         }
 
-        return $this->batch(['requests' => $requests]);
+        return $this->batch(array('requests' => $requests));
     }
 
     /**
@@ -134,7 +134,7 @@ class Index
                 $this->context,
                 'POST',
                 '/1/indexes/'.$this->urlIndexName,
-                [],
+                array(),
                 $content,
                 $this->context->writeHostsArray,
                 $this->context->connectTimeout,
@@ -146,7 +146,7 @@ class Index
             $this->context,
             'PUT',
             '/1/indexes/'.$this->urlIndexName.'/'.urlencode($objectID),
-            [],
+            array(),
             $content,
             $this->context->writeHostsArray,
             $this->context->connectTimeout,
@@ -198,7 +198,7 @@ class Index
             $this->context,
             'GET',
             '/1/indexes/'.$this->urlIndexName.'/'.$id,
-            ['attributes' => $attributesToRetrieve],
+            array('attributes' => $attributesToRetrieve),
             null,
             $this->context->readHostsArray,
             $this->context->connectTimeout,
@@ -221,9 +221,9 @@ class Index
             throw new \Exception('No list of objectID provided');
         }
 
-        $requests = [];
+        $requests = array();
         foreach ($objectIDs as $object) {
-            $req = ['indexName' => $this->indexName, 'objectID' => $object];
+            $req = array('indexName' => $this->indexName, 'objectID' => $object);
             array_push($requests, $req);
         }
 
@@ -231,8 +231,8 @@ class Index
             $this->context,
             'POST',
             '/1/indexes/*/objects',
-            [],
-            ['requests' => $requests],
+            array(),
+            array('requests' => $requests),
             $this->context->readHostsArray,
             $this->context->connectTimeout,
             $this->context->readTimeout
@@ -258,7 +258,7 @@ class Index
             $this->context,
             'POST',
             '/1/indexes/'.$this->urlIndexName.'/'.urlencode($partialObject['objectID']).'/partial'.$queryString,
-            [],
+            array(),
             $partialObject,
             $this->context->writeHostsArray,
             $this->context->connectTimeout,
@@ -289,17 +289,19 @@ class Index
     /**
      * Override the content of object.
      *
-     * @param array $object contains the object to save, the object must contains an objectID attribute
+     * @param array  $object      contains the object to save, the object must contains an objectID attribute
+     *                            or attribute specified in $objectIDKey considered as objectID
+     * @param string $objectIDKey
      *
      * @return mixed
      */
-    public function saveObject($object)
+    public function saveObject($object, $objectIDKey = 'objectID')
     {
         return $this->client->request(
             $this->context,
             'PUT',
-            '/1/indexes/'.$this->urlIndexName.'/'.urlencode($object['objectID']),
-            [],
+            '/1/indexes/'.$this->urlIndexName.'/'.urlencode($object[$objectIDKey]),
+            array(),
             $object,
             $this->context->writeHostsArray,
             $this->context->connectTimeout,
@@ -359,9 +361,9 @@ class Index
      */
     public function deleteObjects($objects)
     {
-        $objectIDs = [];
+        $objectIDs = array();
         foreach ($objects as $key => $id) {
-            $objectIDs[$key] = ['objectID' => $id];
+            $objectIDs[$key] = array('objectID' => $id);
         }
         $requests = $this->buildBatch('deleteObject', $objectIDs, true);
 
@@ -376,27 +378,34 @@ class Index
      * @param bool   $waitLastCall
      *                             /!\ Be safe with "waitLastCall"
      *                             In really rare cases you can have the number of hits smaller than the hitsPerPage
-     *                             param if you trigger the timeout of the search, in that case you won't remove all the records
+     *                             param if you trigger the timeout of the search, in that case you won't remove all
+     *                             the records
+     *
+     * @return int the number of delete operations
      */
-    public function deleteByQuery($query, $args = [], $waitLastCall = true)
+    public function deleteByQuery($query, $args = array(), $waitLastCall = true)
     {
         $args['attributesToRetrieve'] = 'objectID';
         $args['hitsPerPage'] = 1000;
         $args['distinct'] = false;
 
+        $deletedCount = 0;
         $results = $this->search($query, $args);
         while ($results['nbHits'] != 0) {
-            $objectIDs = [];
+            $objectIDs = array();
             foreach ($results['hits'] as $elt) {
                 array_push($objectIDs, $elt['objectID']);
             }
             $res = $this->deleteObjects($objectIDs);
+            $deletedCount += count($objectIDs);
             if ($results['nbHits'] < $args['hitsPerPage'] && false === $waitLastCall) {
                 break;
             }
             $this->waitTask($res['taskID']);
             $results = $this->search($query, $args);
         }
+
+        return $deletedCount;
     }
 
     /**
@@ -485,7 +494,7 @@ class Index
     public function search($query, $args = null)
     {
         if ($args === null) {
-            $args = [];
+            $args = array();
         }
         $args['query'] = $query;
 
@@ -493,8 +502,8 @@ class Index
             $this->context,
             'POST',
             '/1/indexes/'.$this->urlIndexName.'/query',
-            [],
-            ['params' => $this->client->buildQuery($args)],
+            array(),
+            array('params' => $this->client->buildQuery($args)),
             $this->context->readHostsArray,
             $this->context->connectTimeout,
             $this->context->searchTimeout
@@ -515,7 +524,7 @@ class Index
      * @throws AlgoliaException
      * @throws \Exception
      */
-    public function searchDisjunctiveFaceting($query, $disjunctive_facets, $params = [], $refinements = [])
+    public function searchDisjunctiveFaceting($query, $disjunctive_facets, $params = array(), $refinements = array())
     {
         if (gettype($disjunctive_facets) != 'string' && gettype($disjunctive_facets) != 'array') {
             throw new AlgoliaException('Argument "disjunctive_facets" must be a String or an Array');
@@ -529,14 +538,14 @@ class Index
             $disjunctive_facets = explode(',', $disjunctive_facets);
         }
 
-        $disjunctive_refinements = [];
+        $disjunctive_refinements = array();
         foreach ($refinements as $key => $value) {
             if (in_array($key, $disjunctive_facets)) {
                 $disjunctive_refinements[$key] = $value;
             }
         }
-        $queries = [];
-        $filters = [];
+        $queries = array();
+        $filters = array();
 
         foreach ($refinements as $key => $value) {
             $r = array_map(
@@ -557,7 +566,7 @@ class Index
         $params['facetFilters'] = $filters;
         array_push($queries, $params);
         foreach ($disjunctive_facets as $disjunctive_facet) {
-            $filters = [];
+            $filters = array();
             foreach ($refinements as $key => $value) {
                 if ($key != $disjunctive_facet) {
                     $r = array_map(
@@ -579,9 +588,9 @@ class Index
             $params['facetFilters'] = $filters;
             $params['page'] = 0;
             $params['hitsPerPage'] = 0;
-            $params['attributesToRetrieve'] = [];
-            $params['attributesToHighlight'] = [];
-            $params['attributesToSnippet'] = [];
+            $params['attributesToRetrieve'] = array();
+            $params['attributesToHighlight'] = array();
+            $params['attributesToSnippet'] = array();
             $params['facets'] = $disjunctive_facet;
             $params['analytics'] = false;
             array_push($queries, $params);
@@ -589,7 +598,7 @@ class Index
         $answers = $this->client->multipleQueries($queries);
 
         $aggregated_answer = $answers['results'][0];
-        $aggregated_answer['disjunctiveFacets'] = [];
+        $aggregated_answer['disjunctiveFacets'] = array();
         for ($i = 1; $i < count($answers['results']); $i++) {
             foreach ($answers['results'][$i]['facets'] as $key => $facet) {
                 $aggregated_answer['disjunctiveFacets'][$key] = $facet;
@@ -624,7 +633,7 @@ class Index
             $this->context,
             'GET',
             '/1/indexes/'.$this->urlIndexName.'/browse',
-            ['page' => $page, 'hitsPerPage' => $hitsPerPage],
+            array('page' => $page, 'hitsPerPage' => $hitsPerPage),
             null,
             $this->context->readHostsArray,
             $this->context->connectTimeout,
@@ -686,7 +695,7 @@ class Index
         return $this->client->request(
             $this->context,
             'GET',
-            '/1/indexes/'.$this->urlIndexName.'/settings',
+            '/1/indexes/'.$this->urlIndexName.'/settings?getVersion=2',
             null,
             null,
             $this->context->readHostsArray,
@@ -780,15 +789,23 @@ class Index
      *                        - optionalWords: (array of strings) Specify a list of words that should be considered as
      *                        optional when found in the query.
      *
+     * @param  bool             $forwardToSlaves
      * @return mixed
+     * @throws AlgoliaException
      */
-    public function setSettings($settings)
+    public function setSettings($settings, $forwardToSlaves = false)
     {
+        $url = '/1/indexes/'.$this->urlIndexName.'/settings';
+
+        if ($forwardToSlaves) {
+            $url = $url.'?forwardToSlaves=true';
+        }
+
         return $this->client->request(
             $this->context,
             'PUT',
-            '/1/indexes/'.$this->urlIndexName.'/settings',
-            [],
+            $url,
+            array(),
             $settings,
             $this->context->writeHostsArray,
             $this->context->connectTimeout,
@@ -905,19 +922,19 @@ class Index
             $params['maxQueriesPerIPPerHour'] = $maxQueriesPerIPPerHour;
             $params['maxHitsPerQuery'] = $maxHitsPerQuery;
         } else {
-            $params = [
+            $params = array(
                 'acl'                    => $obj,
                 'validity'               => $validity,
                 'maxQueriesPerIPPerHour' => $maxQueriesPerIPPerHour,
                 'maxHitsPerQuery'        => $maxHitsPerQuery,
-            ];
+            );
         }
 
         return $this->client->request(
             $this->context,
             'POST',
             '/1/indexes/'.$this->urlIndexName.'/keys',
-            [],
+            array(),
             $params,
             $this->context->writeHostsArray,
             $this->context->connectTimeout,
@@ -968,19 +985,19 @@ class Index
             $params['maxQueriesPerIPPerHour'] = $maxQueriesPerIPPerHour;
             $params['maxHitsPerQuery'] = $maxHitsPerQuery;
         } else {
-            $params = [
+            $params = array(
                 'acl'                    => $obj,
                 'validity'               => $validity,
                 'maxQueriesPerIPPerHour' => $maxQueriesPerIPPerHour,
                 'maxHitsPerQuery'        => $maxHitsPerQuery,
-            ];
+            );
         }
 
         return $this->client->request(
             $this->context,
             'PUT',
             '/1/indexes/'.$this->urlIndexName.'/keys/'.$key,
-            [],
+            array(),
             $params,
             $this->context->writeHostsArray,
             $this->context->connectTimeout,
@@ -1001,7 +1018,7 @@ class Index
             $this->context,
             'POST',
             '/1/indexes/'.$this->urlIndexName.'/batch',
-            [],
+            array(),
             $requests,
             $this->context->writeHostsArray,
             $this->context->connectTimeout,
@@ -1021,16 +1038,16 @@ class Index
      */
     private function buildBatch($action, $objects, $withObjectID, $objectIDKey = 'objectID')
     {
-        $requests = [];
+        $requests = array();
         foreach ($objects as $obj) {
-            $req = ['action' => $action, 'body' => $obj];
+            $req = array('action' => $action, 'body' => $obj);
             if ($withObjectID && array_key_exists($objectIDKey, $obj)) {
                 $req['objectID'] = (string) $obj[$objectIDKey];
             }
             array_push($requests, $req);
         }
 
-        return ['requests' => $requests];
+        return array('requests' => $requests);
     }
 
     /**
@@ -1054,11 +1071,11 @@ class Index
     public function browseFrom($query, $params = null, $cursor = null)
     {
         if ($params === null) {
-            $params = [];
+            $params = array();
         }
         foreach ($params as $key => $value) {
             if (gettype($value) == 'array') {
-                $params[$key] = json_encode($value);
+                $params[$key] = Json::encode($value);
             }
         }
         if ($query != null) {
@@ -1081,6 +1098,168 @@ class Index
     }
 
     /**
+     * @param $query
+     * @param $synonymType
+     * @param null $page
+     * @param null $hitsPerPage
+     *
+     * @return mixed
+     *
+     * @throws AlgoliaException
+     */
+    public function searchSynonyms($query, array $synonymType = array(), $page = null, $hitsPerPage = null)
+    {
+        $params = array();
+
+        if ($query !== null) {
+            $params['query'] = $query;
+        }
+
+        if (count($synonymType) > 0) {
+            $types = array();
+
+            foreach ($synonymType as $type) {
+                if (is_integer($type)) {
+                    $types[] = SynonymType::getSynonymsTypeString($type);
+                } else {
+                    $types[] = $type;
+                }
+            }
+            $params['type'] = implode(',', $types);
+        }
+
+        if ($page !== null) {
+            $params['page'] = $page;
+        }
+
+        if ($hitsPerPage !== null) {
+            $params['hitsPerPage'] = $hitsPerPage;
+        }
+
+        return $this->client->request(
+            $this->context,
+            'POST',
+            '/1/indexes/'.$this->urlIndexName.'/synonyms/search',
+            null,
+            $params,
+            $this->context->readHostsArray,
+            $this->context->connectTimeout,
+            $this->context->readTimeout
+        );
+    }
+
+    /**
+     * @param $objectID
+     *
+     * @return mixed
+     *
+     * @throws AlgoliaException
+     */
+    public function getSynonym($objectID)
+    {
+        return $this->client->request(
+            $this->context,
+            'GET',
+            '/1/indexes/'.$this->urlIndexName.'/synonyms/'.urlencode($objectID),
+            null,
+            null,
+            $this->context->readHostsArray,
+            $this->context->connectTimeout,
+            $this->context->readTimeout
+        );
+    }
+
+    /**
+     * @param $objectID
+     * @param $forwardToSlaves
+     *
+     * @return mixed
+     *
+     * @throws AlgoliaException
+     */
+    public function deleteSynonym($objectID, $forwardToSlaves = false)
+    {
+        return $this->client->request(
+            $this->context,
+            'DELETE',
+            '/1/indexes/'.$this->urlIndexName.'/synonyms/'.urlencode($objectID).'?forwardToSlaves='.($forwardToSlaves ? 'true' : 'false'),
+            null,
+            null,
+            $this->context->writeHostsArray,
+            $this->context->connectTimeout,
+            $this->context->readTimeout
+        );
+    }
+
+    /**
+     * @param bool $forwardToSlaves
+     *
+     * @return mixed
+     *
+     * @throws AlgoliaException
+     */
+    public function clearSynonyms($forwardToSlaves = false)
+    {
+        return $this->client->request(
+            $this->context,
+            'POST',
+            '/1/indexes/'.$this->urlIndexName.'/synonyms/clear?forwardToSlaves='.($forwardToSlaves ? 'true' : 'false'),
+            null,
+            null,
+            $this->context->writeHostsArray,
+            $this->context->connectTimeout,
+            $this->context->readTimeout
+        );
+    }
+
+    /**
+     * @param $objects
+     * @param bool $forwardToSlaves
+     * @param bool $replaceExistingSynonyms
+     *
+     * @return mixed
+     *
+     * @throws AlgoliaException
+     */
+    public function batchSynonyms($objects, $forwardToSlaves = false, $replaceExistingSynonyms = false)
+    {
+        return $this->client->request(
+            $this->context,
+            'POST',
+            '/1/indexes/'.$this->urlIndexName.'/synonyms/batch?replaceExistingSynonyms='.($replaceExistingSynonyms ? 'true' : 'false')
+                .'&forwardToSlaves='.($forwardToSlaves ? 'true' : 'false'),
+            null,
+            $objects,
+            $this->context->writeHostsArray,
+            $this->context->connectTimeout,
+            $this->context->readTimeout
+        );
+    }
+
+    /**
+     * @param $objectID
+     * @param $content
+     * @param bool $forwardToSlaves
+     *
+     * @return mixed
+     *
+     * @throws AlgoliaException
+     */
+    public function saveSynonym($objectID, $content, $forwardToSlaves = false)
+    {
+        return $this->client->request(
+            $this->context,
+            'PUT',
+            '/1/indexes/'.$this->urlIndexName.'/synonyms/'.urlencode($objectID).'?forwardToSlaves='.($forwardToSlaves ? 'true' : 'false'),
+            $content,
+            null,
+            $this->context->writeHostsArray,
+            $this->context->connectTimeout,
+            $this->context->readTimeout
+        );
+    }
+
+    /**
      * @param string $name
      * @param array  $arguments
      *
@@ -1093,9 +1272,9 @@ class Index
         }
 
         if (count($arguments) >= 1 && is_string($arguments[0])) {
-            return call_user_func_array([$this, 'doBrowse'], $arguments);
+            return call_user_func_array(array($this, 'doBrowse'), $arguments);
         }
 
-        return call_user_func_array([$this, 'doBcBrowse'], $arguments);
+        return call_user_func_array(array($this, 'doBcBrowse'), $arguments);
     }
 }

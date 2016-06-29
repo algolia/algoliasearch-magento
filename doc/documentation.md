@@ -4,50 +4,75 @@ title: Documentation
 permalink: /documentation/
 ---
 
-# Installation
-{: .headline}
+# Getting started
 
-Please follow those steps to install the Algolia Search extension:
+For getting started you can watch our video where we will show you how to setup our Magento extension:
+
+<div style="text-align: center; margin-bottom: 30px;">
+    <iframe width="640" height="480" src="https://www.youtube.com/embed/DUuv9ALS5cM?rel=0" frameborder="0" allowfullscreen></iframe>
+</div>
+
+Or please follow those few steps to get started Algolia Search extension:
 
 ## Create an Algolia account
 
- * Create an **[Algolia](https://www.algolia.com)** Account.
- * Choose the Algolia datacenter which is the closest to your datacenter.
- * Get your Algolia credentials from the "Credentials" left-menu.
+1. Create your **[Algolia](https://www.algolia.com/?utm_medium=social-owned&amp;utm_source=magento%20website&amp;utm_campaign=docs)** accout. The [sign-up wizard](hhttps://www.algolia.com/users/sign_up?utm_medium=social-owned&amp;utm_source=magento%20website&amp;utm_campaign=docs) will guide you through Algolia's onboarding process. Pay extra attention to choosing your Algolia datacenter. Select the one which is the closest to your datacenter.
+2. Once you are logged into dashboard, get your Algolia credentials from the "Credentials" left-menu.
 
-<img src="../img/signup.png" class="img-responsive" />
+<figure>
+    <img src="../img/signup.png" class="img-responsive">
+    <figcaption>Algolia's sign up form</figcaption>
+</figure>
 
 ## Install the extension
 
- * Download and install the extension from the [Magento Commerce](http://www.magentocommerce.com/magento-connect/search-algolia-instant-search.html) or [GitHub](https://github.com/algolia/algoliasearch-magento).
- * Configure your credentials from the **System > Configuration > Catalog > Algolia Search** administration panel.
+1. Install the extension from the [Magento Commerce](http://www.magentocommerce.com/magento-connect/search-algolia-instant-search.html) or download it from [GitHub](https://github.com/algolia/algoliasearch-magento).
+2. In your Magento administration navigate to **System > Configuration > Catalog > Algolia Search** administration panel.
+3. In **Credentials & Setup** tab configure your Algolia credentials.
 
-<img src="../img/configuration.png" class="img-responsive" />
+<figure>
+    <img src="../img/configuration.png" class="img-responsive">
+    <figcaption>Extension's basic information configurations</figcaption>
+</figure>
 
 ## Initial indexing
 
- * Force the re-indexing of all products & categories with the **System > Index Management > Algolia Search Products** index.
- * Force the re-indexing of all products & categories with the **System > Index Management > Algolia Search Categories** index.
- * Force the re-indexing of all pages with the **System > Index Management > Algolia Search Pages** index.
- * Force the re-indexing of all suggestions with the **System > Index Management > Algolia Search Suggestions** index.
+Force the re-indexing of all sections you want to synchronize with Algolia. In your Magento administration navigate to **System > Index Management**. There hit **Reindex Data** button next to these indices:
 
-<img src="../img/indexers.png" class="img-responsive" />
+- Algolia Search Products
+- Algolia Search Categories
+- Algolia Search Pages
+- Algolia Search Suggestions
 
-# Indexing flow
-{: .headline}
+<figure>
+    <img src="../img/indexers_new.png" class="img-responsive">
+    <figcaption>Magento store's indexers</figcaption>
+</figure>
 
-## Indexing Queue Enabled
+**Congratulations!** You just installed Algolia extension to your Magento store!
 
-If enabled, every indexing job (whole re-indexing, addition/deletion/update of products) will be queued (`algoliasearch_queue` table). 
+# Indexing
 
-<div class="alert alert-warning">
-  <i class="fa fa-exclamation-triangle"></i>
-  Enabling the indexing queue is recommended for production environments.
-</div>
+In extension we try to keep your Magento store and Algolia indices synchronized. We have two types of indexing mechanism:
+
+- **Section re-index**
+This re-indexes whole part of your catalog _(Products, Categories etc...)_
+- **Single item re-index**
+Each time your catalog changes _(e.g. addition / deletion / update of products / categories etc...)_, we push the change into Algolia indices
+
+By default all this operations happen synchronously and administrator has to wait before continue his/her work. As it is not very convenient we came up with **Indexing queue**.
+
+## Indexing Queue
+To enable indexing queue navigate to **System > Configuration > Algolia Search > Indexing Queue / Cron tab** in your Magento administration.
+Once you have enabled queue, all operations mentioned above will be queued in database table called `algoliasearch_queue`.
+
+By enabling Indexing queue you can set how many jobs will be processed each time the queue is processed. By default the number is 10. But you can adjust it to fit to your catalog and server your Magento store runs on.
+
+Now you need to setup running the queue. There are to options how to do that:
 
 ### With cron
 
-To asynchronously process those queued indexing jobs, configure the following cron:
+To asynchronously process queued jobs, you can configure the following cron:
 
 ```sh
 */5 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner
@@ -70,55 +95,112 @@ If you want to process the queue entirely in one time you can run:
 EMPTY_QUEUE=1 php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner
 ```
 
-## Indexing Queue Disabled
-
-Every indexing job (whole re-indexing, update/deletion/update of products or categories, ...) will happen synchronously.
+<div class="alert alert-warning">
+    <i class="fa fa-exclamation-triangle"></i>
+    Enabling the indexing queue is recommended for production environments.
+</div>
 
 <div class="alert alert-danger">
   <i class="fa fa-exclamation-triangle"></i>
+  As mentioned before, when indexing queue is disabled every indexing job _(whole re-indexing, update/deletion/update of products or categories, etc...)_ will happen synchronously.
   Trying to synchronously index too many objects might trigger PHP timeouts.
 </div>
 
+## Full products' reindex
+
+### With enabled indexing queue
+
+With enabled indexing queue products are reindexed with usage of temporary indices. That means that all products are pushed into temporary Algolia indices. When all products are pushed, the production indices are replaced by temporary ones. This approach has these advantages:
+
+1. Higher re-indexing speed when only indexable products are processed and pushed to Algolia
+2. Higher reliability regarding removing deleted products
+3. Lower number of operations needed for full re-index
+
+All changes done by re-indexing will be visible in search results when the whole process of re-indexing is done and production indices are replaced by temporary ones.
+
+### With disabled indexing queue
+
+When the indexing queue is disabled, full product re-index has to process whole catalog. It has to push updates to Algolia as well as remove inactive products from there.
+That being said it takes more time and resources. It is also a little bit less reliable as some deleted products may not be processed and removed from Algolia's indices.
+
+<div class="alert alert-warning">
+    <i class="fa fa-exclamation-triangle"></i>
+    Doing full reindex on large catalog is strongly recommended with <strong>indexing queue enabled</strong>.
+</div>
+
+## Indexable attributes
+
+You can specify which attributes you want to index in your Algolia indices. This option is available only for Products and Categories. For indexable attributes configuration navigate to **System > Configuration > Algolia Search > Products / Categories** tab.
+There you can find table where you can set the attributes you want to send to Algolia. On each attribute you are able to specify if the attribute is Searchable, Retrievable and Order setting of the attribute. For more information about these settings please read [the official Algolia documentation](https://www.algolia.com/doc/?utm_medium=social-owned&amp;utm_source=magento%20website&amp;utm_campaign=docs).
+
+<figure>
+    <img src="../img/attributes.png" class="img-responsive">
+    <figcaption>Configuration of attributes to index</figcaption>
+</figure>
 
 
 # UI/UX
-{: .headline}
 
 ## Auto-completion menu
 
-The extension is making use of [autocomplete.js](https://github.com/algolia/autocomplete.js) to display the as-you-type auto-completion menu. By default it suggests:
+The extension uses [autocomplete.js](https://github.com/algolia/autocomplete.js) library to display the as-you-type auto-completion menu. By default the menu suggests:
 
- * products,
- * categories,
- * pages,
- * and optionally popular queries.
+- products
+- categories
+- pages
 
-You can add new sections through the administration panel. If you want to do more customization, you'll need to update the underlying JavaScript code.
 
-## Search results page
+You can configure displayed data in administration section **System > Configuration > Algolia Search > Autocomplete tab**.
+There you can configure which sections and how many items should be displayed in auto-complete menu.
 
-The extension is making use of [instantsearch.js](https://github.com/algolia/instantsearch.js) to display the as-you-type search results page. By default it uses the following widgets:
+If you need to do more customization, perhaps for auto-complete layout, you will need to update the underlying template. For more information please navigate to [Customization](#customization) section.
 
- * a hits widget,
- * a pagination widget,
- * a sort widget,
- * and a few refinements widgets (hierarchical menu, refinement list & range slider).
+<figure>
+    <img src="../img/autocomplete-admin.png" class="img-responsive">
+    <figcaption>Extension's autocomplete feature configuration</figcaption>
+</figure>
 
-You can add custom widgets or update those ones by updating the underlying JavaScript code.
+## Instant search results page
+
+The extension uses [instantsearch.js](https://github.com/algolia/instantsearch.js) library to display the as-you-type search results page. By default following widgets are displayed:
+
+- **hits** - displays products matching to customer query and filters
+- **pagination** - navigation between products' pages
+- **sorting** - switch between different products' sortings
+- **price range slider** - used to refine range of prices
+- **hierarchial menu** - allows to refine results by categories
+
+You can configure displayed data and set another refinements. Just navigate to **System > Configuration > Algolia Search > Instant Search Results Page tab**. You can configure which attributes you want to use as facets. Facets are used for filtering products. For more information about faceting please read [the official Algolia documentation](https://www.algolia.com/doc/?utm_medium=social-owned&amp;utm_source=magento%20website&amp;utm_campaign=docs).
+
+In the same way you can configure attributes for sorting your products. Be careful because each sorting creates Algolia index. For more information read [the official Algolia documentation](https://www.algolia.com/doc/?utm_medium=social-owned&amp;utm_source=magento%20website&amp;utm_campaign=docs).
+
+If you need to add another widgets or update the existing ones you will need to update the underlying template. For more information please navigate to [Customization](#customization) section.
+
+<div class="alert alert-warning">
+    <i class="fa fa-exclamation-triangle"></i>
+    By default instant search page is disabled, because it can break your existing layout. You can enable it in **System > Configuration > Algolia Search > Credentials & Setup tab**.
+</div>
+
+<figure>
+    <img src="../img/instantsearch-admin.png" class="img-responsive">
+    <figcaption>Extension's instant search feature configuration</figcaption>
+</figure>
 
 ## Customization
 
-### Introduction
+If you want to customize the look and feel of the auto-completion menu and/or the instant search results you need to have access to your server and you need to be a little bit developer. Or have one next to you :)
 
-If you want to customize the look and feel of the auto-completion menu and/or the instant search results page, the two important files you will need to modify are:
+All visual aspects are defined in single CSS file - [`algoliasearch.css`](https://github.com/algolia/algoliasearch-magento/blob/master/skin/algoliasearch.css). This file contains styles for both auto-complete menu and instant search page.
 
-- the [`topsearch.phtml`](https://github.com/algolia/algoliasearch-magento/blob/master/design/frontend/template/topsearch.phtml) including the HTML templates and JavaScript code
-- the [`algoliasearch.css`](https://github.com/algolia/algoliasearch-magento/blob/master/skin/algoliasearch.css) defining all the look & feel
+### Auto-completion menu customization
 
+There is one essential file - [`autocomplete.phtml`](https://github.com/algolia/algoliasearch-magento/blob/master/design/frontend/template/autocomplete.phtml).
+In this file you can find all HTML templates and JavaScript code used for rendering the menu.
 
-### Custom widgets
+### Instant Search Page customization
 
-If you want to use a widget that is not exposed in the administration panel for a particular faceted attribute you can configure it using the `customAttributeFacet` variable of the `topsearch.phtml` file. For example if you want to have a toggle widget for the `in_stock` attribute, your `customAttributeFacet` variable should look like:
+All code for rendering instant search page can be found in [`instantsearch.phtml`](https://github.com/algolia/algoliasearch-magento/blob/master/design/frontend/template/instantsearch.phtml).
+If you want to use a widget that is not exposed in the administration panel for a particular faceted attribute you can configure it using the `customAttributeFacet` variable of the `instantsearch.phtml` file. For example if you want to have a toggle widget for the `in_stock` attribute, your `customAttributeFacet` variable should look like:
 
 {% highlight js %}
 var customAttributeFacet = {
@@ -140,19 +222,72 @@ var customAttributeFacet = {
 };
 {% endhighlight %}
 
+More information about customizing widgets you can find in [instantsearch.js documentation](https://community.algolia.com/instantsearch.js/documentation/).
+
 # Upgrade
-{: .headline}
 
-To upgrade from version `X.Y` to version `X.Z`, do the following steps:
+For upgrade to new version, do the following steps:
 
- 1. Install the new version of the extension
- 1. Go to the **System > Configuration > Catalog > Algolia Search** administration panel and **save** your configuration. (even if you didn't change anything)
- 1. Force the re-indexing of all indexers
- 1. Follow any other guidelines specified in the [ChangeLog](https://github.com/algolia/algoliasearch-magento/blob/master/CHANGELOG.md)
+1. Install the new version of the extension
+2. Go to the **System > Configuration > Catalog > Algolia Search** administration panel and save your configuration. **Even if you didn’t change anything.**
+3. Force the re-indexing of all indexers
+4. Follow any other guidelines specified in the [changelog](https://github.com/algolia/algoliasearch-magento/blob/master/CHANGELOG.md)
 
-# Caveats
-{: .headline}
+# Developers
 
-### Magento hooks
+## Custom events
 
- The extension is using the default hooks of Magento, if you are doing insertion or deletion of products outside of the Magento code/interface the extension won't see it and your Algolia index will be out of sync. The best way to avoid that is to use Magento's methods. If this is not possible you still have the possibility to call the extension indexing methods manually as soon you as do the update.
+For developers the extension provides custom events to hook custom code on top of Algolia Search extension.
+
+`algolia_index_settings_prepare`
+Dispatches before pushing index settings to Algolia.
+
+
+`algolia_rebuild_store_product_index_collection_load_before`
+Dispatches after products collection creation.
+
+
+`algolia_product_index_before`
+Dispatches before fetching product's attributes for indexing.
+
+
+`algolia_subproducts_index`
+Dispatches after sub products are taken into account when fetching product's data for indexing.
+
+
+`algolia_category_index_before`
+Dispatches before fetching category's attributes for indexing.
+
+
+`algolia_additional_section_item_index_before`
+Dispatches after fetching [additional_section]'s attributes for indexing.
+
+## Logging & Debugging
+
+Sometimes may happen that not everything run smoothly. In may be caused by millions of reasons. That is why we impletemented logging into Algolia's Magento extension.
+Logging can be enabled in **System > Configuration > Algolia Search > Credentials & Setup** tab. When you enable togging, internal informations form the extension will be logged into Algolia log file. The file is located in Magento's log directory. By default it is `var/log` directory.
+
+Logging can produce large amount of data. So it shuld be enabled only while debugging and investigating issues. **It should definitely not be enabled in production!**
+
+List of logged events:
+
+- Full product reindex
+- Rebuilding one page of products
+- Loading products' collection
+- Creating of products' records
+- Creating of single product's record
+- Start and stop of sending products to Algolia
+- Start and stop of removing products from Algolia
+- Start and stop of emulation
+- Exceptions from images' loading
+- Miscellaneous errors and exceptions
+
+## Contributing
+
+See the project and readme on [GitHub](https://github.com/algolia/algoliasearch-magento).
+
+## Caveats
+
+###  Magento hooks
+
+The extension is using the default hooks of Magento, if you are doing insertion or deletion of products outside of the Magento code/interface the extension won't see it and your Algolia index will be out of sync. The best way to avoid that is to use Magento's methods. If this is not possible you still have the possibility to call the extension indexing methods manually as soon you as do the update.

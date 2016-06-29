@@ -2,18 +2,22 @@
 
 class Algolia_Algoliasearch_Helper_Logger extends Mage_Core_Helper_Abstract
 {
-    protected $enabled;
+    /** @var Algolia_Algoliasearch_Helper_Config */
     protected $config;
-    protected $timers = array();
-    protected $stores = array();
+
+    protected $enabled;
+    protected $timers = [];
+    protected $stores = [];
 
     public function __construct()
     {
         $this->config = Mage::helper('algoliasearch/config');
         $this->enabled = $this->config->isLoggingEnabled();
 
-        foreach (Mage::app()->getStores() as $store)
+        /** @var Mage_Core_Model_Store $store */
+        foreach (Mage::app()->getStores() as $store) {
             $this->stores[$store->getId()] = $store->getName();
+        }
     }
 
     public function isEnable()
@@ -23,16 +27,18 @@ class Algolia_Algoliasearch_Helper_Logger extends Mage_Core_Helper_Abstract
 
     public function getStoreName($storeId)
     {
-        if ($storeId === null)
+        if ($storeId === null) {
             return 'undefined store';
+        }
 
-        return $storeId . ' (' . $this->stores[$storeId] . ')';
+        return $storeId.' ('.$this->stores[$storeId].')';
     }
 
     public function start($action)
     {
-        if ($this->enabled == false)
+        if ($this->enabled == false) {
             return;
+        }
 
         $this->log('');
         $this->log('');
@@ -42,13 +48,15 @@ class Algolia_Algoliasearch_Helper_Logger extends Mage_Core_Helper_Abstract
 
     public function stop($action)
     {
-        if ($this->enabled == false)
+        if ($this->enabled == false) {
             return;
+        }
 
-        if (false === isset($this->timers[$action]))
-            throw new Exception("Algolia Logger => non existing action");
+        if (false === isset($this->timers[$action])) {
+            throw new Exception('Algolia Logger => non existing action');
+        }
 
-        $this->log('<<<<< END ' .$action. ' (' . $this->formatTime($this->timers[$action], microtime(true)) . ')');
+        $this->log('<<<<< END '.$action.' ('.$this->formatTime($this->timers[$action], microtime(true)).')');
     }
 
     public function log($message, $forceLog = false)

@@ -3,7 +3,10 @@
 class Algolia_Algoliasearch_Model_Indexer_Algoliaqueuerunner extends Mage_Index_Model_Indexer_Abstract
 {
     const EVENT_MATCH_RESULT_KEY = 'algoliasearch_match_result';
+
+    /** @var Algolia_Algoliasearch_Helper_Config */
     protected $config;
+
     /** @var Algolia_Algoliasearch_Model_Queue */
     protected $queue;
 
@@ -14,7 +17,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliaqueuerunner extends Mage_Index_
         $this->queue = Mage::getSingleton('algoliasearch/queue');
     }
 
-    protected $_matchedEntities = array();
+    protected $_matchedEntities = [];
 
     protected function _getResource()
     {
@@ -56,13 +59,15 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliaqueuerunner extends Mage_Index_
     }
 
     /**
-     * Rebuild all index data
+     * Rebuild all index data.
      */
     public function reindexAll()
     {
-        if (! $this->config->getApplicationID() || ! $this->config->getAPIKey() || ! $this->config->getSearchOnlyAPIKey())
-        {
-            Mage::getSingleton('adminhtml/session')->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+        if (!$this->config->getApplicationID() || !$this->config->getAPIKey() || !$this->config->getSearchOnlyAPIKey()) {
+            /** @var Mage_Adminhtml_Model_Session $session */
+            $session = Mage::getSingleton('adminhtml/session');
+            $session->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
+
             return;
         }
 

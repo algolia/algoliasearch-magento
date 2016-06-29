@@ -1,90 +1,49 @@
 <?php
 
 /**
- * Algolia custom sort order field
+ * Algolia custom sort order field.
  */
-class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
+class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Algolia_Algoliasearch_Block_System_Config_Form_Field_AbstractField
 {
-    protected $selectFields = array();
-
-    /**
-     * Creates and populates a select block to represent each column in the configuration property.
-     *
-     * @param $columnId String The name of the column defined in addColumn
-     * @return Algolia_Algoliasearch_Block_System_Config_Form_Field_Select
-     * @throws Exception
-     */
-    protected function getRenderer($columnId) {
-        if (!array_key_exists($columnId, $this->selectFields) || !$this->selectFields[$columnId])
-        {
-            $aOptions = array();
-
-            $selectField = Mage::app()->getLayout()->createBlock('algoliasearch/system_config_form_field_select')->setIsRenderToJsTemplate(true);
-
-            $config = Mage::helper('algoliasearch/config');
-
-            switch($columnId) {
-                case 'attribute': // Populate the attribute column with a list of searchable attributes
-                    $attributes = $config->getProductAdditionalAttributes();
-
-                    foreach ($attributes as $attribute) {
-                        $aOptions[$attribute['attribute']] = $attribute['attribute'];
-                    }
-
-                    $selectField->setExtraParams('style="width:160px;"');
-                    break;
-                case 'sort':
-                    $aOptions = array(
-                        'asc'   => 'Ascending',
-                        'desc'  => 'Descending',
-                    );
-
-                    $selectField->setExtraParams('style="width:100px;"');
-                    break;
-                default:
-                    throw new Exception('Unknown attribute id ' . $columnId);
-            }
-
-            $selectField->setOptions($aOptions);
-            $this->selectFields[$columnId] = $selectField;
-        }
-        return $this->selectFields[$columnId];
-    }
-
     public function __construct()
     {
-        $this->addColumn('attribute', array(
-            'label' => Mage::helper('adminhtml')->__('Attribute'),
-            'renderer'=> $this->getRenderer('attribute'),
-        ));
+        $this->settings = [
+            'columns' => [
+                'attribute' => [
+                    'label'   => 'Attribute',
+                    'options' => function () {
+                        $options = [];
 
-        $this->addColumn('sort', array(
-            'label' => Mage::helper('adminhtml')->__('Sort'),
-            'renderer'=> $this->getRenderer('sort'),
-        ));
+                        /** @var Algolia_Algoliasearch_Helper_Config $config */
+                        $config = Mage::helper('algoliasearch/config');
 
-        $this->addColumn('label', array(
-            'label' => Mage::helper('adminhtml')->__('Label'),
-            'style' => 'width: 200px;'
-        ));
+                        $attributes = $config->getProductAdditionalAttributes();
+                        foreach ($attributes as $attribute) {
+                            $options[$attribute['attribute']] = $attribute['attribute'];
+                        }
 
-        $this->_addAfter = false;
-        $this->_addButtonLabel = Mage::helper('adminhtml')->__('Add Attribute');
+                        return $options;
+                    },
+                    'rowMethod' => 'getAttribute',
+                    'width'     => 160,
+                ],
+                'sort' => [
+                    'label'   => 'Sort',
+                    'options' => [
+                        'asc'  => 'Ascending',
+                        'desc' => 'Descending',
+                    ],
+                    'rowMethod' => 'getSort',
+                ],
+                'label' => [
+                    'label' => 'Label',
+                    'style' => 'width: 200px;',
+                ],
+            ],
+            'buttonLabel' => 'Add Sorting Attribute',
+            'addAfter'    => false,
+        ];
+
         parent::__construct();
-    }
-
-    protected function _prepareArrayRow(Varien_Object $row)
-    {
-        $row->setData(
-            'option_extra_attr_' . $this->getRenderer('attribute')->calcOptionHash(
-                $row->getAttribute()),
-            'selected="selected"'
-        );
-
-        $row->setData(
-            'option_extra_attr_' . $this->getRenderer('sort')->calcOptionHash(
-                $row->getSort()),
-            'selected="selected"'
-        );
     }
 }

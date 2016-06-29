@@ -4,7 +4,7 @@ layout: default
 
 <div class="container main-content">
   <div class="row">
-    <div class="col-md-9 col-md-offset-3">
+    <div class="col-md-9 col-md-offset-3 header-section">
       <header class="page-header">
         <h1 class="page-title">{{ page.title }}</h1>
       </header>
@@ -13,7 +13,9 @@ layout: default
  <article class="page-content row">
     <div class="col-md-3 hidden-sm hidden-xs">
       <div class="menu">
-        {{ content | toc_generate }}
+        <ul>
+          {{ content | toc_generate }}
+        </ul>
         <div class="spacer30"></div>
         <p class="text-center">Latest version: <b>{{ site.version }}</b></p>
       </div>
@@ -23,3 +25,4 @@ layout: default
     </div>
   </article>
 </div>
+<div class="spacer100 bg-white"></div>

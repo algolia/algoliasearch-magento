@@ -1,3 +1,7 @@
+.main-content {
+  margin-top: $navbar-height;
+}
+
 h1[id]:before, h2[id]:before, h3[id]:before, h4[id]:before {
   content: " ";
   display: block;
@@ -11,7 +15,6 @@ h1[id]:before, h2[id]:before, h3[id]:before, h4[id]:before {
   width: 200px;
   list-style-type: none;
   font-size: .8em;
-
   a {
     display: block;
     padding: 2px 5px;
@@ -22,10 +25,16 @@ h1[id]:before, h2[id]:before, h3[id]:before, h4[id]:before {
     list-style-type: none;
     padding: 0;
     margin: 0;
-    a {
+    li ul a {
       &:before {
-        content: '» ';
-        display: inline;
+        content: "\f101 ";
+        display: inline-block;
+        font: normal normal normal 14px/1 FontAwesome;
+        margin: 0 5px;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
       padding-left: 10px;
     }
@@ -35,11 +44,17 @@ h1[id]:before, h2[id]:before, h3[id]:before, h4[id]:before {
 .documentation-content {
   h1 {
     margin-top: 50px;
+    &:after {
+      display: block;
+      content: ' ';
+      height: 10px;
+      border-bottom: 1px solid $magento-orange;
+      margin: 0 auto 1em auto;
+    }
   }
 
   h2 {
-    border-bottom: 1px solid $magento-orange;
-    margin-top: 40px;
+    margin-top: 2em;
   }
 
   h3 {
@@ -51,5 +66,36 @@ h1[id]:before, h2[id]:before, h3[id]:before, h4[id]:before {
     font-size: 1em;
     font-weight: bold;
     text-decoration: underline;
+  }
+
+}
+
+.faq {
+  p, li, figure {
+    width: 80ch;
+    font-size: 15px;
+  }
+  h2 {
+    border-bottom: 1px solid $magento-orange;
+    margin-top: 2em;
+    //&:before {
+    //  content: "\f29c";
+    //  display: inline-block;
+    //  font: normal normal normal 14px/1 FontAwesome;
+    //  font-size: inherit;
+    //  margin-right: 8px;
+    //  text-rendering: auto;
+    //  -webkit-font-smoothing: antialiased;
+    //  -moz-osx-font-smoothing: grayscale;
+    //}
+  }
+}
+
+figure {
+  margin: 30px 0;
+  figcaption {
+    text-align: center;
+    font-style: italic;
+    font-size: 0.9em;
   }
 }

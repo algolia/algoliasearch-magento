@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.5.5</version>
+            <version>1.6.0</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -24,6 +24,15 @@
                 </observers>
             </controller_action_layout_load_before>
         </events>
+        <translate>
+            <modules>
+                <Algolia_Algoliasearch>
+                    <files>
+                        <default>Algolia_Algoliasearch.csv</default>
+                    </files>
+                </Algolia_Algoliasearch>
+            </modules>
+        </translate>
     </frontend>
     <adminhtml>
         <layout>
@@ -44,6 +53,15 @@
                 </observers>
             </controller_action_layout_load_before>
         </events>
+        <translate>
+            <modules>
+                <Algolia_Algoliasearch>
+                    <files>
+                        <default>Algolia_Algoliasearch.csv</default>
+                    </files>
+                </Algolia_Algoliasearch>
+            </modules>
+        </translate>
     </adminhtml>
     <global>
         <helpers>
@@ -192,6 +210,7 @@
                 <make_seo_request>1</make_seo_request>
                 <remove_branding>0</remove_branding>
                 <autocomplete_selector>.algolia-search-input</autocomplete_selector>
+                <index_product_on_category_products_update>1</index_product_on_category_products_update>
             </advanced>
             <product_map>
                 <!--

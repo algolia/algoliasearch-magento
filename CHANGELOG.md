@@ -1,5 +1,50 @@
 ## Change Log
 
+### 1.6.0
+
+#### NEW FEATURES
+- Support of synonyms API
+- Facets can be chosen from all attributes now
+- Added option to remove products from Algolia index when performing full re-index. By default the feature is disabled.
+- Added warning if you use old version of the extension
+- *Index settings* are set to products' indices on full products re-index
+- Code now follows PSR2 standarts, annotations were added to most unresolveable variables
+- Added option to index products when they are added/removed to/from category via "Manage category". By default the feature is enabled.
+  - **BC break** - it may cause difficulties on large stores. If it does so, please disable the feature in Configuration.
+- Added locale CSV file for easier translations
+
+
+#### UPDATES
+- Frontend templates completely refactored
+  - topsearch.phtml file was divided into 2 separate files   - autocomplete.phtml and instantsearch.phtml
+  - internal JS code and template files were moved to separate `internals` folder
+  - names were assigned to templates blocks
+  - Parts of JS code are commented with links to it's documentation
+  - **BC break** - if you use you own templates, they must be updated for new templates' structure
+- New version of [instantsearch.js](https://github.com/algolia/instantsearch.js) library updated
+- Refactored [products' re-indexing](https://community.algolia.com/magento/documentation/#full-products-reindex)
+- Added logging of updated/deleted products
+- `name` and `description` attributes are now not casted before indexing. It solves issue with non-highlighted numerical products' names.
+- All static strings can be localized via Magento localizator now
+- All absolute skin URLs were replaces by Magento's built in `getSkinUrl` method
+- Small usability improvements
+- Upgrade the underlying PHP API client to 1.10.0
+- Updated [documentation](https://community.algolia.com/magento/documentation/)
+
+#### FIXES
+- All images are now indexed with its base folder path. It fixes the issue with placeholder images and CDNs.
+  - **BC break** - it's mandatory to reindex your products to index correct images paths of products
+- Backbutton on instant-search page now respects the query and refinements
+- Fixed issue when the warning about skipped/truncated products was not displayed sometimes
+- Categories on the bottom of auto-complete menu are not displayed when instantsearch is disabled because of wrong links
+- SKU of simple products is indexed correctly now
+- Count of products in category is now indexed correctly
+- XSS in auto-complete menu
+- Pages from different stores are not displayed in auto-complete menu anymore
+- Undefined `algoliaConfig` variable in IE9
+- Main content is no longer hidden on disabled JavaScript
+- Fix not started instant search which caused bugs on products' details
+
 ### 1.5.5
 
 - NEW: Add an option to include data from out-of-stock sub products
