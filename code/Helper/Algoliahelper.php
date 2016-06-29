@@ -152,10 +152,6 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
 
     public function setSynonyms($index_name, $synonyms)
     {
-        if (empty($synonyms)) {
-            return;
-        }
-
         $index = $this->getIndex($index_name);
 
         /**
@@ -174,6 +170,11 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
 
             $page++;
         } while (($page * $hitsPerPage) < $complexSynonyms['nbHits']);
+
+        if (empty($synonyms)) {
+            $index->clearSynonyms(true);
+            return;
+        }
 
         $index->batchSynonyms($synonyms, true, true);
     }
