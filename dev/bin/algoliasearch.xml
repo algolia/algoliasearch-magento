@@ -90,7 +90,7 @@
             <path>lib/AlgoliaSearch</path>
             <path>adminhtml/default/default/template/algoliasearch</path>
             <path>adminhtml/default/default/layout/algoliasearch.xml</path>
-            <path>en_GB/Algolia_Algoliasearch.csv</path>
+            <path>en_US/Algolia_Algoliasearch.csv</path>
         </path>
         <type>
             <type>file</type>
