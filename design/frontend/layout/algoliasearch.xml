@@ -30,12 +30,44 @@
                 <block type="core/template" template="algoliasearch/autocomplete.phtml" as="algolia-autocomplete" name="algolia-autocomplete"/>
             </block>
         </reference>
+        <reference name="footer">
+            <!-- Multi-category Autocomplete templates -->
+            <block type="core/template" template="algoliasearch/autocomplete/product.phtml" name="algolia-autocomplete-product"/>
+            <block type="core/template" template="algoliasearch/autocomplete/category.phtml" name="algolia-autocomplete-category"/>
+            <block type="core/template" template="algoliasearch/autocomplete/page.phtml" name="algolia-autocomplete-page"/>
+            <block type="core/template" template="algoliasearch/autocomplete/attribute.phtml" name="algolia-autocomplete-attribute"/>
+            <block type="core/template" template="algoliasearch/autocomplete/suggestion.phtml" name="algolia-autocomplete-suggestion"/>
+            <block type="core/template" template="algoliasearch/autocomplete/menu.phtml" name="algolia-autocomplete-menu"/>
+
+            <!-- Instant search results page templates -->
+            <block type="core/template" template="algoliasearch/instantsearch/wrapper.phtml" name="algolia-instantsearch-wrapper"/>
+            <block type="core/template" template="algoliasearch/instantsearch/hit.phtml" name="algolia-instantsearch-hit"/>
+            <block type="core/template" template="algoliasearch/instantsearch/stats.phtml" name="algolia-instantsearch-stats"/>
+            <block type="core/template" template="algoliasearch/instantsearch/facet.phtml" name="algolia-instantsearch-facet"/>
+            <block type="core/template" template="algoliasearch/instantsearch/refinements.phtml" name="algolia-instantsearch-refinements"/>
+        </reference>
     </algolia_search_handle_with_topsearch>
     <algolia_search_handle_no_topsearch>
         <reference name="head">
             <!-- Autocomplete.phtml must be loaded after Instantsearch.phtml to be able to bind to the recreated <div id="algolia-autocomplete-container"></div> -->
             <block type="core/template" template="algoliasearch/instantsearch.phtml" name="algolia-instantsearch"/>
             <block type="core/template" template="algoliasearch/autocomplete.phtml" name="algolia-autocomplete"/>
+        </reference>
+        <reference name="footer">
+            <!-- Multi-category Autocomplete templates -->
+            <block type="core/template" template="algoliasearch/autocomplete/product.phtml" name="algolia-autocomplete-product"/>
+            <block type="core/template" template="algoliasearch/autocomplete/category.phtml" name="algolia-autocomplete-category"/>
+            <block type="core/template" template="algoliasearch/autocomplete/page.phtml" name="algolia-autocomplete-page"/>
+            <block type="core/template" template="algoliasearch/autocomplete/attribute.phtml" name="algolia-autocomplete-attribute"/>
+            <block type="core/template" template="algoliasearch/autocomplete/suggestion.phtml" name="algolia-autocomplete-suggestion"/>
+            <block type="core/template" template="algoliasearch/autocomplete/menu.phtml" name="algolia-autocomplete-menu"/>
+
+            <!-- Instant search results page templates -->
+            <block type="core/template" template="algoliasearch/instantsearch/wrapper.phtml" name="algolia-instantsearch-wrapper"/>
+            <block type="core/template" template="algoliasearch/instantsearch/hit.phtml" name="algolia-instantsearch-hit"/>
+            <block type="core/template" template="algoliasearch/instantsearch/stats.phtml" name="algolia-instantsearch-stats"/>
+            <block type="core/template" template="algoliasearch/instantsearch/facet.phtml" name="algolia-instantsearch-facet"/>
+            <block type="core/template" template="algoliasearch/instantsearch/refinements.phtml" name="algolia-instantsearch-refinements"/>
         </reference>
     </algolia_search_handle_no_topsearch>
 </layout>
