@@ -1,3 +1,10 @@
+<?php
+
+/** @var Algolia_Algoliasearch_Helper_Data $helper */
+$helper = Mage::helper('algoliasearch');
+
+?>
+
 <script type="text/javascript">
     //<![CDATA[
 
@@ -105,7 +112,7 @@
             search.addWidget(
                 algoliaBundle.instantsearch.widgets.searchBox({
                     container: instant_selector,
-                    placeholder: '<?php echo $this->__('Search for products'); ?>'
+                    placeholder: '<?php echo $helper->escapeJsTranslatedString($this, 'Search for products'); ?>'
                 })
             );
 
@@ -135,7 +142,7 @@
              **/
             algoliaConfig.sortingIndices.unshift({
                 name: algoliaConfig.indexName + '_products',
-                label: '<?php echo $this->__('Relevance'); ?>'
+                label: '<?php echo $helper->escapeJsTranslatedString($this, 'Relevance'); ?>'
             });
 
             search.addWidget(
@@ -188,15 +195,15 @@
                 render: function (data) {
                     if (data.results.hits.length === 0) {
                         var content = '<div class="no-results">';
-                        content += '<div><b><?php echo $this->__('No products for query'); ?> "' + $("<div>").text(data.results.query).html() + '</b>"</div>';
+                        content += '<div><b><?php echo $helper->escapeJsTranslatedString($this, 'No products for query', true); ?> "' + $("<div>").text(data.results.query).html() + '</b>"</div>';
                         content += '<div class="popular-searches">';
 
                         if (algoliaConfig.showSuggestionsOnNoResultsPage && this.suggestions.length > 0) {
-                            content += '<div><?php echo $this->__('You can try one of the popular search queries'); ?></div>' + this.suggestions.join(', ');
+                            content += '<div><?php echo $helper->escapeJsTranslatedString($this, 'You can try one of the popular search queries', true); ?></div>' + this.suggestions.join(', ');
                         }
 
                         content += '</div>';
-                        content += '<?php echo $this->__('or'); ?> <a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__"><?php echo $this->__('See all products'); ?></a>'
+                        content += '<?php echo $helper->escapeJsTranslatedString($this, 'or', true); ?> <a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__"><?php echo $helper->escapeJsTranslatedString($this, 'See all products', true); ?></a>'
 
                         content += '</div>';
 
@@ -239,8 +246,8 @@
                         root: 'facet'
                     },
                     templates: {
-                        header: '<div class="name">' + '<?php echo $this->__('Selected Filters'); ?>' + '</div>',
-                        clearAll: '<?php echo $this->__('Clear all'); ?>',
+                        header: '<div class="name">' + '<?php echo $helper->escapeJsTranslatedString($this, 'Selected Filters', true); ?>' + '</div>',
+                        clearAll: '<?php echo $helper->escapeJsTranslatedString($this, 'Clear all'); ?>',
                         item: $('#current-refinements-template').html()
                     },
                     attributes: attributes,
@@ -320,8 +327,8 @@
                     showFirstLast: false,
                     maxPages: 1000,
                     labels: {
-                        previous: '<?php echo $this->__('Previous page'); ?>',
-                        next: '<?php echo $this->__('Next page'); ?>'
+                        previous: '<?php echo $helper->escapeJsTranslatedString($this, 'Previous page'); ?>',
+                        next: '<?php echo $helper->escapeJsTranslatedString($this, 'Next page'); ?>'
                     },
                     scrollTo: 'body'
                 })

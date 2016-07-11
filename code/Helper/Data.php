@@ -613,4 +613,15 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $appEmulation->stopEnvironmentEmulation($info);
         $this->logger->stop('STOP EMULATION');
     }
+
+    public function escapeJsTranslatedString(Mage_Core_Block_Template $template, $string, $useAddSlashes = false)
+    {
+        $translated = $template->__($string);
+
+        if ($useAddSlashes === true) {
+            return addslashes($translated);
+        }
+
+        return json_encode($translated);
+    }
 }
