@@ -15,6 +15,8 @@
 
   <!--[if IE]><link rel="shortcut icon" href="../img/favicon.png"><![endif]-->
   <link rel="icon" href="{{ "/img/favicon.png" | prepend: site.baseurl }}">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
 </head>
 
 <body>
@@ -40,6 +42,15 @@
   {% if page.title == 'Documentation' %}
     <script src="{{ "/js/sidebar.js" | prepend: site.baseurl }}"></script>
   {% endif %}
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+  <script type="text/javascript"> docsearch({
+      apiKey: 'a23cdc99940ffad43a4f98733b845fdf',
+      indexName: 'magento_algolia',
+      inputSelector: '#search',
+      debug: false // Set debug to true if you want to inspect the dropdown
+  });
+  </script>
 </body>
 
 </html>
