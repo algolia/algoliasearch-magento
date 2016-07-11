@@ -160,7 +160,7 @@ Suggestions are not indexed automatically by the extension. You need to trigger 
 ## Custom theme
 
 By default the extension tries to override <code>top.search</code> block of the theme template. In case your custom theme doesn't contain <code>top.search</code> block, you need to navigate to **System > Configuration > Algolia Search > Advanced tab** and change DOM selector of your search input.
-When you do that, the extension won't try to override <code>top.search</code> block and will only include it's scripts. In this case you will have to update your styles and put your desired look and feel to your autocomplete menu.
+When you do that, the extension won't try to override <code>top.search</code> block and will only include it's scripts. In this case you will have to update your styles and put your desired look and feel to your auto-completion menu.
 
 ## Auto-completion menu
 
