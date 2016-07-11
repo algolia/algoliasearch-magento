@@ -138,8 +138,29 @@ There you can find table where you can set the attributes you want to send to Al
     <figcaption>Configuration of attributes to index</figcaption>
 </figure>
 
+## Suggestions
+
+Each time the search is processed in backend of Magento, the query, number of results, number of searches of the query are stored/updated in Magento database. Exactly in <code>catalogsearch_query</code>. This is done automaticly by Magento itself and out extension has nothing to do with it.
+Be careful - only backend searches are stored in database. Autocomplete or instant search queries are not inserted into the database.
+
+When you enable the indexing of suggestions, the extension fetches queries from that table, filter the results according your settings (minimal nuber of results, minimal popularity, ...) and filtered queries pushes into Algolia suggestion index.
+
+To have correct data in your Algolia suggestion index, you need to have correct data in your <code>catalogsearch_query</code> table. To achieve that you need to have enabled backend search by Algolia. That you can have done by enabling <code>Search</code> and <code>Make SEO request</code> in configuration of Algolia extension in Magento administration.
+When you have this options enabled, backend search will be processed by Algolia and data in <code>catalogsearch_query</code> will be updated over time.
+
+Suggestions are not indexed automatically by the extension. You need to trigger reindex manually or you can put it into a cron tab to be processed automatically. For example every hour:
+
+```sh
+1 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex search_indexer_suggest
+```
+
 
 # UI/UX
+
+## Custom theme
+
+By default the extension tries to override <code>top.search</code> block of the theme template. In case your custom theme doesn't contain <code>top.search</code> block, you need to navigate to **System > Configuration > Algolia Search > Advanced tab** and change DOM selector of your search input.
+When you do that, the extension won't try to override <code>top.search</code> block and will only include it's scripts. In this case you will have to update your styles and put your desired look and feel to your autocomplete menu.
 
 ## Auto-completion menu
 
@@ -226,12 +247,19 @@ More information about customizing widgets you can find in [instantsearch.js doc
 
 # Upgrade
 
+It's strongly recommended to use [Modman](https://github.com/colinmollenhour/modman) or [Magento Connect](https://www.magentocommerce.com/magento-connect/search-algolia-search.html) to install the extension. Other installation methods are not supported.
+
 For upgrade to new version, do the following steps:
 
-1. Install the new version of the extension
-2. Go to the **System > Configuration > Catalog > Algolia Search** administration panel and save your configuration. **Even if you didn’t change anything.**
-3. Force the re-indexing of all indexers
-4. Follow any other guidelines specified in the [changelog](https://github.com/algolia/algoliasearch-magento/blob/master/CHANGELOG.md)
+1. If you have installed previous version of the extension, uninstall it
+	- via Magento Connect
+	- or by Modman command <code>$ modman undeploy algoliasearch-magento</code>
+2. Install the new version of the extension
+	- via Magento Connect
+	- or by Modman command <code>$ modman clone https://github.com/algolia/algoliasearch-magento</code>
+3. Go to the **System > Configuration > Catalog > Algolia Search** administration panel and save your configuration. **Even if you didn’t change anything.**
+4. Force the re-indexing of all indexers
+5. Follow any other guidelines specified in the [changelog](https://github.com/algolia/algoliasearch-magento/blob/master/CHANGELOG.md)
 
 # Developers
 
