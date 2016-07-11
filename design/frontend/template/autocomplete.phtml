@@ -3,6 +3,9 @@
 /** @var Algolia_Algoliasearch_Helper_Config $config */
 $config = Mage::helper('algoliasearch/config');
 
+/** @var Algolia_Algoliasearch_Helper_Data $helper */
+$helper = Mage::helper('algoliasearch');
+
 /** @var Mage_CatalogSearch_Helper_Data $catalogSearchHelper */
 $catalogSearchHelper = $this->helper('catalogsearch');
 
@@ -51,7 +54,7 @@ if ($config->isDefaultSelector()): ?>
             };
 
             /**
-             * Initialise Algolia client
+             * Initialise Algolia client 
              * Docs: https://www.algolia.com/doc/javascript
              **/
             var algolia_client = algoliaBundle.algoliasearch(algoliaConfig.applicationId, algoliaConfig.apiKey);
@@ -66,8 +69,8 @@ if ($config->isDefaultSelector()): ?>
                 algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_que, label: '', name: "suggestions"});
             }
 
-            algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_cat, label: <?php echo json_encode($this->__('Categories')); ?>, name: "categories"});
-            algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_pro, label: <?php echo json_encode($this->__('Products')); ?>, name: "products"});
+            algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_cat, label: <?php echo $helper->escapeJsTranslatedString($this, 'Categories'); ?>, name: "categories"});
+            algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_pro, label: <?php echo $helper->escapeJsTranslatedString($this, 'Products'); ?>, name: "products"});
 
             /** Setup autocomplete data sources **/
             var sources = [],
@@ -102,7 +105,7 @@ if ($config->isDefaultSelector()): ?>
                 };
 
                 if (algoliaConfig.removeBranding === false) {
-                    options.templates.footer = '<div class="footer_algolia"><span><?php echo $this->__('Search by'); ?></span> <a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo $this->getSkinUrl('algoliasearch/algolia-logo.png'); ?>" /></a></div>';
+                    options.templates.footer = '<div class="footer_algolia"><span><?php echo $helper->escapeJsTranslatedString($this, 'Search by', true); ?></span> <a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="<?php echo $this->getSkinUrl('algoliasearch/algolia-logo.png'); ?>" /></a></div>';
                 }
 
                 /** Bind autocomplete feature to the input */
