@@ -1,10 +1,3 @@
-<?php
-
-/** @var Algolia_Algoliasearch_Helper_Data $helper */
-$helper = Mage::helper('algoliasearch');
-
-?>
-
 <script type="text/javascript">
     //<![CDATA[
 
@@ -48,7 +41,10 @@ $helper = Mage::helper('algoliasearch');
             $('.algolia-instant-results-wrapper').append('<div class="algolia-instant-selector-results"></div>');
             $('.algolia-instant-selector-results').html(wrapperTemplate.render({
                 second_bar: algoliaConfig.autocomplete.enabled,
-                findAutocomplete: findAutocomplete
+                findAutocomplete: findAutocomplete,
+                config: algoliaConfig.instant,
+                translations: algoliaConfig.translations, 
+                crossImg: algoliaConfig.urls.cross
             })).show();
 
             /**
@@ -80,8 +76,8 @@ $helper = Mage::helper('algoliasearch');
                     return {};
                 },
                 init: function (data) {
-                    if (algoliaConfig.request.refinement_key.length > 0) {
-                        data.helper.toggleRefine(algoliaConfig.request.refinement_key, algoliaConfig.request.refinement_value);
+                    if (algoliaConfig.request.refinementKey.length > 0) {
+                        data.helper.toggleRefine(algoliaConfig.request.refinementKey, algoliaConfig.request.refinementValue);
                     }
 
                     if (algoliaConfig.isCategoryPage) {
@@ -112,7 +108,7 @@ $helper = Mage::helper('algoliasearch');
             search.addWidget(
                 algoliaBundle.instantsearch.widgets.searchBox({
                     container: instant_selector,
-                    placeholder: '<?php echo $helper->escapeJsTranslatedString($this, 'Search for products'); ?>'
+                    placeholder: algoliaConfig.translations.searchFor
                 })
             );
 
@@ -131,6 +127,8 @@ $helper = Mage::helper('algoliasearch');
                         data.last = Math.min(data.page * data.hitsPerPage + data.hitsPerPage, data.nbHits);
                         data.seconds = data.processingTimeMS / 1000;
 
+                        data.translations = window.algoliaConfig.translations;
+
                         return data;
                     }
                 })
@@ -142,7 +140,7 @@ $helper = Mage::helper('algoliasearch');
              **/
             algoliaConfig.sortingIndices.unshift({
                 name: algoliaConfig.indexName + '_products',
-                label: '<?php echo $helper->escapeJsTranslatedString($this, 'Relevance'); ?>'
+                label: algoliaConfig.translations.relevance
             });
 
             search.addWidget(
@@ -168,6 +166,8 @@ $helper = Mage::helper('algoliasearch');
                         item: function (hit) {
                             hit = transformHit(hit, algoliaConfig.priceKey);
                             hit.isAddToCartEnabled = algoliaConfig.instant.isAddToCartEnabled;
+
+                            hit.algoliaConfig = window.algoliaConfig;
 
                             return hit;
                         }
@@ -195,15 +195,15 @@ $helper = Mage::helper('algoliasearch');
                 render: function (data) {
                     if (data.results.hits.length === 0) {
                         var content = '<div class="no-results">';
-                        content += '<div><b><?php echo $helper->escapeJsTranslatedString($this, 'No products for query', true); ?> "' + $("<div>").text(data.results.query).html() + '</b>"</div>';
+                        content += '<div><b>' + algoliaConfig.translations.noProducts + ' "' + $("<div>").text(data.results.query).html() + '</b>"</div>';
                         content += '<div class="popular-searches">';
 
                         if (algoliaConfig.showSuggestionsOnNoResultsPage && this.suggestions.length > 0) {
-                            content += '<div><?php echo $helper->escapeJsTranslatedString($this, 'You can try one of the popular search queries', true); ?></div>' + this.suggestions.join(', ');
+                            content += '<div>' + algoliaConfig.translations.popularQueries + '</div>' + this.suggestions.join(', ');
                         }
 
                         content += '</div>';
-                        content += '<?php echo $helper->escapeJsTranslatedString($this, 'or', true); ?> <a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__"><?php echo $helper->escapeJsTranslatedString($this, 'See all products', true); ?></a>'
+                        content += algoliaConfig.translations.or + ' <a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__">' + algoliaConfig.translations.seeAll + '</a>'
 
                         content += '</div>';
 
@@ -230,7 +230,12 @@ $helper = Mage::helper('algoliasearch');
 
                 attributes.push({
                     name: name,
-                    label: facet.label ? facet.label : facet.attribute
+                    label: facet.label ? facet.label : facet.attribute,
+                    transformData: function(item) {
+                        item.crossUrl = window.algoliaConfig.urls.cross;
+
+                        return item;
+                    }
                 });
             });
 
@@ -246,8 +251,8 @@ $helper = Mage::helper('algoliasearch');
                         root: 'facet'
                     },
                     templates: {
-                        header: '<div class="name">' + '<?php echo $helper->escapeJsTranslatedString($this, 'Selected Filters', true); ?>' + '</div>',
-                        clearAll: '<?php echo $helper->escapeJsTranslatedString($this, 'Clear all'); ?>',
+                        header: '<div class="name">' + algoliaConfig.translations.selectedFilters + '</div>',
+                        clearAll: algoliaConfig.translations.clearAll,
                         item: $('#current-refinements-template').html()
                     },
                     attributes: attributes,
@@ -284,7 +289,7 @@ $helper = Mage::helper('algoliasearch');
                     hierarchicalMenuParams.templates.item = '' +
                         '<div class="ais-hierearchical-link-wrapper">' +
                         '<a class="{{cssClasses.link}}" href="{{url}}">{{name}}' +
-                        '{{#isRefined}}<img class="cross-circle" src="<?php echo $this->getSkinUrl('algoliasearch/cross-circle.png') ?>"/>{{/isRefined}}' +
+                        '{{#isRefined}}<img class="cross-circle" src="' + algoliaConfig.urls.crossCircle + '"/>{{/isRefined}}' +
                         '<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span></a>' +
                         '</div>';
 
@@ -327,8 +332,8 @@ $helper = Mage::helper('algoliasearch');
                     showFirstLast: false,
                     maxPages: 1000,
                     labels: {
-                        previous: '<?php echo $helper->escapeJsTranslatedString($this, 'Previous page'); ?>',
-                        next: '<?php echo $helper->escapeJsTranslatedString($this, 'Next page'); ?>'
+                        previous: algoliaConfig.translations.previousPage,
+                        next: algoliaConfig.translations.nextPage
                     },
                     scrollTo: 'body'
                 })

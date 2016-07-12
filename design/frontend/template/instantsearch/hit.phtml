@@ -1,19 +1,3 @@
-<?php
-
-/** @var Algolia_Algoliasearch_Helper_Config $config */
-$config = Mage::helper('algoliasearch/config');
-
-/** @var Mage_Customer_Model_Session $session */
-$session = Mage::getSingleton('customer/session');
-$group_id = $session->getCustomerGroupId();
-
-$currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
-$price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
-
-$image_base_url = Mage::getBaseUrl();
-
-?>
-
 <!-- Product hit template -->
 <script type="text/template" id="instant-hit-template">
     <div class="col-md-4 col-sm-6">
@@ -21,7 +5,7 @@ $image_base_url = Mage::getBaseUrl();
             <a href="{{url}}" class="result">
                 <div class="result-content">
                     <div class="result-thumbnail">
-                        {{#image_url}}<img src="<?php echo $image_base_url; ?>{{{ image_url }}}"/>{{/image_url}}
+                        {{#image_url}}<img src="{{{ algoliaConfig.baseUrl }}}/{{{ image_url }}}"/>{{/image_url}}
                         {{^image_url}}<span class="no-image"></span>{{/image_url}}
                     </div>
                     <div class="result-sub-content">
@@ -40,15 +24,15 @@ $image_base_url = Mage::getBaseUrl();
                                     <div class="price-wrapper">
                                         <div>
                                             <span
-                                                class="after_special {{#price<?php echo $price_key; ?>_original_formated}}promotion{{/price<?php echo $price_key; ?>_original_formated}}">
-                                                {{price<?php echo $price_key; ?>_formated}}
+                                                class="after_special {{#original_formatted_price}}promotion{{/original_formatted_price}}">
+                                                {{formatted_price}}
                                             </span>
 
-                                            {{#price<?php echo $price_key; ?>_original_formated}}
+                                            {{#original_formatted_price}}
                                                 <span class="before_special">
-                                                    {{price<?php echo $price_key; ?>_original_formated}}
+                                                    {{original_formatted_price}}
                                                 </span>
-                                            {{/price<?php echo $price_key; ?>_original_formated}}
+                                            {{/original_formatted_price}}
                                         </div>
                                     </div>
                                 </div>
@@ -58,12 +42,12 @@ $image_base_url = Mage::getBaseUrl();
 
                         {{#isAddToCartEnabled}}
                         {{#in_stock}}
-                        <form action="<?php echo Mage::getBaseUrl(); ?>/checkout/cart/add/product/{{objectID}}"
+                        <form action="{{{ algoliaCofig.baseUrl }}}/checkout/cart/add/product/{{ objectID }}"
                               method="post">
                             <input type="hidden" name="form_key"
-                                   value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>"/>
+                                   value="{{{ algoliaConfig.request.formKey }}}"/>
                             <input type="hidden" name="qty" value="1">
-                            <button type="submit"><?php echo $this->__('Add to Cart'); ?></button>
+                            <button type="submit">{{{ algoliaConfig.translations.addToCart }}}</button>
                         </form>
                         {{/in_stock}}
                         {{/isAddToCartEnabled}}
