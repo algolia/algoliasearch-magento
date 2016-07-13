@@ -18,7 +18,7 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->resetCredentialsFromConfig();
 
         $version = $this->config->getExtensionVersion();
-        \AlgoliaSearch\Version::$custom_value = ' Magento ('.$version.')';
+        \AlgoliaSearch\Version::$custom_value = '; Magento integration '.$version.'; PHP '.phpversion().'; Magento '.Mage::getVersion();
     }
 
     public function resetCredentialsFromConfig()
