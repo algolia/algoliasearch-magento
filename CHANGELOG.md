@@ -1,5 +1,18 @@
 ## Change Log
 
+### 1.6.1
+
+#### UPDATES
+- JavaScript templates were split to separate files (#483)
+- Locale CSV file was moved from `en_GB` to `en_US` directory (#481)
+
+#### FIXES
+- Fixed bug with reindexing with empty synonyms lines (#480)
+- Localized strings are properly escaped in JavaScript now (#488)
+- Fixed duplicite CSS class names (#484)
+	- Potential **BC break** - please review your design and CSS so it follows new classes
+
+
 ### 1.6.0
 
 #### NEW FEATURES
