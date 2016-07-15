@@ -2,33 +2,37 @@
 <layout>
     <algolia_search_handle>
         <reference name="head">
+            <block type="core/template" before="js" template="algoliasearch/internals/configuration.phtml" name="algolia-configuration"/>
+
             <action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>
+
+            <action method="addJs"><script>algoliasearch/internals/frontend/Function.prototype.bind.js</script></action>
+            <action method="addJs"><script>algoliasearch/internals/frontend/algoliaBundle.min.js</script></action>
+            <action method="addJs"><script>algoliasearch/internals/frontend/common.js</script></action>
+
+            <action method="addJs"><script>algoliasearch/instantsearch.js</script></action>
+            <action method="addJs"><script>algoliasearch/autocomplete.js</script></action>
+
             <block type="core/text" name="algolia-polyfill">
                 <action method="setText">
                     <text>
-                        <![CDATA[<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+                        <![CDATA[
+                            <meta http-equiv="X-UA-Compatible" content="IE=Edge">
                             <!--[if lte IE 9]>
                                 <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
-                        <![endif]-->]]>
+                            <![endif]-->
+                        ]]>
                     </text>
                 </action>
             </block>
-            <block type="core/template" template="algoliasearch/internals/commonjs.phtml" name="algolia-beforetopsearch"/>
-        </reference>
-        <reference name="before_body_end">
-            <block type="core/template" template="algoliasearch/internals/frontjs.phtml" name="algolia-beforebodyend"/>
         </reference>
         <reference name="content">
             <block type="core/template" before="content" template="algoliasearch/internals/beforecontent.phtml" name="algolia-beforecontent"/>
         </reference>
     </algolia_search_handle>
     <algolia_search_handle_with_topsearch>
-        <reference name="header">
-            <block type="core/template" name="top.search" as="topSearch" template="algoliasearch/internals/templateloader.phtml">
-                <!-- Autocomplete.phtml must be loaded after Instantsearch.phtml to be able to bind to the recreated <div id="algolia-autocomplete-container"></div> -->
-                <block type="core/template" template="algoliasearch/instantsearch.phtml" as="algolia-instantsearch" name="algolia-instantsearch"/>
-                <block type="core/template" template="algoliasearch/autocomplete.phtml" as="algolia-autocomplete" name="algolia-autocomplete"/>
-            </block>
+        <reference name="top.search">
+            <action method="setTemplate"><template name="algolia-autocomplete">algoliasearch/autocomplete.phtml</template></action>
         </reference>
         <reference name="footer">
             <!-- Multi-category Autocomplete templates -->
@@ -49,8 +53,6 @@
     </algolia_search_handle_with_topsearch>
     <algolia_search_handle_no_topsearch>
         <reference name="head">
-            <!-- Autocomplete.phtml must be loaded after Instantsearch.phtml to be able to bind to the recreated <div id="algolia-autocomplete-container"></div> -->
-            <block type="core/template" template="algoliasearch/instantsearch.phtml" name="algolia-instantsearch"/>
             <block type="core/template" template="algoliasearch/autocomplete.phtml" name="algolia-autocomplete"/>
         </reference>
         <reference name="footer">

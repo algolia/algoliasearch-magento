@@ -32,8 +32,7 @@ $image_base_url = Mage::getBaseUrl();
                             <div class="ratings-wrapper">
                                 <div class="ratings-sub-content">
                                     <div class="rating-box">
-                                        <div class="rating" style="width:{{rating_summary}}%" width="148"
-                                             height="148"></div>
+                                        <div class="rating" style="width:{{rating_summary}}%" width="148" height="148"></div>
                                     </div>
                                 </div>
                                 <div class="price">
@@ -57,15 +56,15 @@ $image_base_url = Mage::getBaseUrl();
                         <div class="result-description text-ellipsis">{{{ _highlightResult.description.value }}}</div>
 
                         {{#isAddToCartEnabled}}
-                        {{#in_stock}}
-                        <form action="<?php echo Mage::getBaseUrl(); ?>/checkout/cart/add/product/{{objectID}}"
-                              method="post">
-                            <input type="hidden" name="form_key"
-                                   value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>"/>
-                            <input type="hidden" name="qty" value="1">
-                            <button type="submit"><?php echo $this->__('Add to Cart'); ?></button>
-                        </form>
-                        {{/in_stock}}
+                            {{#in_stock}}
+                                <form action="<?php echo Mage::getBaseUrl(); ?>/checkout/cart/add/product/{{objectID}}"
+                                      method="post">
+                                    <input type="hidden" name="form_key"
+                                           value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>"/>
+                                    <input type="hidden" name="qty" value="1">
+                                    <button type="submit"><?php echo $this->__('Add to Cart'); ?></button>
+                                </form>
+                            {{/in_stock}}
                         {{/isAddToCartEnabled}}
                     </div>
                 </div>

@@ -6,8 +6,6 @@ $config = Mage::helper('algoliasearch/config');
 ?>
 
 <script>var algoliaSearchExtentionsVersion = "<?php echo $config->getExtensionVersion(); ?>"</script>
-<script src="<?php echo Mage::getBaseUrl('js'); ?>algoliasearch/algoliaAdminBundle.min.js"></script>
-<script src="<?php echo Mage::getBaseUrl('js'); ?>algoliasearch/admin_scripts.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
         algoliaAdminBundle.$(function ($) {
