@@ -9,53 +9,86 @@ $catalogSearchHelper = $this->helper('catalogsearch');
 /** @var Algolia_Algoliasearch_Helper_Data $algoliaSearchHelper */
 $algoliaSearchHelper = $this->helper('algoliasearch');
 
-/** @var Algolia_Algoliasearch_Helper_Entity_Producthelper $product_helper **/
-$product_helper = Mage::helper('algoliasearch/entity_producthelper');
+/** @var Algolia_Algoliasearch_Helper_Entity_Producthelper $productHelper **/
+$productHelper = Mage::helper('algoliasearch/entity_producthelper');
 
-/** @var Algolia_Algoliasearch_Helper_Algoliahelper $algolia_helper **/
-$algolia_helper = Mage::helper('algoliasearch/algoliahelper');
+/** @var Algolia_Algoliasearch_Helper_Algoliahelper $algoliaHelper **/
+$algoliaHelper = Mage::helper('algoliasearch/algoliahelper');
 
-$base_url = rtrim(Mage::getBaseUrl(), '/');
+$baseUrl = rtrim(Mage::getBaseUrl(), '/');
 
 $isSearchPage = false;
 $isCategoryPage = false;
 
-$currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
+/** @var Mage_Core_Model_App $app */
+$app = Mage::app();
+
+/** @var Mage_Core_Model_Store $store */
+$store = $app->getStore();
+$storeId = $store->getId();
+
+$currencyCode = $store->getCurrentCurrencyCode();
+$currencySymbol = $app->getLocale()->currency($currencyCode)->getSymbol();
 
 /** @var Mage_Customer_Model_Session $session */
 $session = Mage::getSingleton('customer/session');
-$group_id = $session->getCustomerGroupId();
+$customerGroupId = $session->getCustomerGroupId();
 
-$price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
-
-$allDepartments = "All departments";
+$priceKey = $config->isCustomerGroupsEnabled($storeId) ? '.'.$currencyCode.'.group_'.$customerGroupId : '.'.$currencyCode.'.default';
 
 $query = '';
-$refinement_key = '';
-$refinement_value = '';
+$refinementKey = '';
+$refinementValue = '';
 $path = '';
 
-/**
- * Handle category replacement
- */
-if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->getRequest()->getControllerName() == 'category') {
+$title = '';
+$description = '';
+$content = '';
+$imgHtml = '';
+
+if ($config->isInstantEnabled() && $config->replaceCategories() && $app->getRequest()->getControllerName() == 'category') {
     $category = Mage::registry('current_category');
 
+    /**
+     * Handle category replacement
+     */
     if ($category && $category->getDisplayMode() !== 'PAGE') {
-        $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
+        $category->getUrlInstance()->setStore($storeId);
 
         foreach ($category->getPathIds() as $treeCategoryId) {
             if ($path != '') {
                 $path .= ' /// ';
             }
 
-            $path .= $product_helper->getCategoryName($treeCategoryId, Mage::app()->getStore()->getStoreId());
+            $path .= $productHelper->getCategoryName($treeCategoryId, $storeId);
         }
 
-        $indexName = $product_helper->getIndexName(Mage::app()->getStore()->getStoreId());
+        $indexName = $productHelper->getIndexName($storeId);
         $category_url = $category->getUrl($category);
         $isSearchPage = true;
         $isCategoryPage = true;
+    }
+
+    /**
+     * Handle category static header
+     */
+    $title = $category->getName();
+
+    if ($category && $category->getDisplayMode() !== 'PAGE') {
+        $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
+
+        if ($category->getDisplayMode() == 'PRODUCTS_AND_PAGE') {
+            $page = $category->getLandingPage();
+            $cms_block = Mage::getModel('cms/block')->load($page);
+
+            $description = $category->getDescription();
+            $content = $this->getLayout()->createBlock('cms/block')->setBlockId($page)->toHtml();
+
+            if ($category->getImageUrl()) {
+                $imgHtml = '<p class="category-image"><img src="'.$category->getImageUrl().'" alt="'.$this->escapeHtml($category->getName()).'" title="'.$this->escapeHtml($category->getName()).'" /></p>';
+                $imgHtml = $this->helper('catalog/output')->categoryAttribute($category, $imgHtml, 'image');
+            }
+        }
     }
 }
 
@@ -63,7 +96,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
  * Handle search
  */
 if ($config->isInstantEnabled()) {
-    $pageIdentifier = Mage::app()->getFrontController()->getAction()->getFullActionName();
+    $pageIdentifier = $app->getFrontController()->getAction()->getFullActionName();
 
     if ($pageIdentifier === 'catalogsearch_result_index') {
         $query = $catalogSearchHelper->getEscapedQueryText();
@@ -72,16 +105,15 @@ if ($config->isInstantEnabled()) {
             $query = '';
         }
 
-        $product_helper = Mage::helper('algoliasearch/entity_producthelper');
+        $productHelper = Mage::helper('algoliasearch/entity_producthelper');
 
-        $refinement_key = Mage::app()->getRequest()->getParam('refinement_key');
-
-        if ($refinement_key !== null) {
-            $refinement_value = $query;
-            $query = "";
+        $refinementKey = $app->getRequest()->getParam('refinement_key');
+        if ($refinementKey !== null) {
+            $refinementValue = $query;
+            $query = '';
         }
         else {
-            $refinement_key = "";
+            $refinementKey = '';
         }
 
         $isSearchPage = true;
@@ -96,51 +128,97 @@ if ($config->isInstantEnabled() && $isSearchPage) {
     </script>';
 }
 
+$algoliaJsConfig = [
+    'instant' => [
+        'enabled' => $config->isInstantEnabled(),
+        'selector' => $config->getInstantSelector(),
+        'isAddToCartEnabled' => $config->isAddToCartEnable(),
+        'showStaticContent' => ($title || $imgHtml || $description || $content),
+        'title' => $title,
+        'description' => $description,
+        'content' => $content,
+        'imgHtml' => $imgHtml,
+        'hasFacets' => count($config->getFacets()) > 0,
+    ],
+    'autocomplete' => [
+        'enabled' => $config->isAutoCompleteEnabled(),
+        'selector' => $config->getAutocompleteSelector(),
+        'sections' => $config->getAutocompleteSections(),
+        'nbOfProductsSuggestions' => $config->getNumberOfProductsSuggestions(),
+        'nbOfCategoriesSuggestions' => $config->getNumberOfCategoriesSuggestions(),
+        'nbOfQueriesSuggestions' => $config->getNumberOfQueriesSuggestions(),
+    ],
+    'extensionVersion' => $config->getExtensionVersion(),
+    'applicationId' => $config->getApplicationID(),
+    'indexName' => $productHelper->getBaseIndexName(),
+    'apiKey' => $algoliaHelper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $config->getAttributesToRetrieve($customerGroupId)),
+    'facets' => $config->getFacets(),
+    'hitsPerPage' => (int) $config->getNumberOfProductResults(),
+    'sortingIndices' => array_values($config->getSortingIndices()),
+    'isSearchPage' => $isSearchPage,
+    'isCategoryPage' => $isCategoryPage,
+    'removeBranding' => $config->isRemoveBranding(),
+    'priceKey' => $priceKey,
+    'currencyCode' => $currencyCode,
+    'currencySymbol' => $currencySymbol,
+    'maxValuesPerFacet' => (int) $config->getMaxValuesPerFacet(),
+    'autofocus' => true,
+    'request' => [
+        'query' => html_entity_decode($query),
+        'refinementKey' => $refinementKey,
+        'refinementValue' => $refinementValue,
+        'path' => $path,
+        'formKey' => Mage::getSingleton('core/session')->getFormKey(),
+    ],
+    'showCatsNotIncludedInNavigation' => $config->showCatsNotIncludedInNavigation(),
+    'showSuggestionsOnNoResultsPage' => $config->showSuggestionsOnNoResultsPage(),
+    'baseUrl' => $baseUrl,
+    'popularQueries' => $config->getPopularQueries(),
+    'urls' => [
+        'crossCircle' => $this->getSkinUrl('algoliasearch/cross-circle.png'),
+        'logo' => $this->getSkinUrl('algoliasearch/algolia-logo.png'),
+        'cross' => $this->getSkinUrl('algoliasearch/cross.png'),
+    ],
+    'translations' => [
+        'to' => $this->__('to'),
+        'or' => $this->__('or'),
+        'go' => $this->__('Go'),
+        'in' => $this->__('in'),
+        'popularQueries' => $this->__('You can try one of the popular search queries'),
+        'seeAll' => $this->__('See all products'),
+        'allDepartments' => $this->__('All departments'),
+        'seeIn' => $this->__('See products in'),
+        'orIn' => $this->__('or in'),
+        'noProducts' => $this->__('No products for query'),
+        'noResults' => $this->__('No results'),
+        'refine' => $this->__('Refine'),
+        'selectedFilters' => $this->__('Selected Filters'),
+        'clearAll' => $this->__('Clear all'),
+        'previousPage' => $this->__('Previous page'),
+        'nextPage' => $this->__('Next page'),
+        'searchFor' => $this->__('Search for products'),
+        'relevance' => $this->__('Relevance'),
+        'categories' => $this->__('Categories'),
+        'products' => $this->__('Products'),
+        'searchBy' => $this->__('Search by'),
+        'addToCart' => $this->__('Add to Cart'),
+        'result' => $this->__('result'),
+        'resultsFound' => $this->__('results found'),
+        'seconds' => $this->__('seconds'),
+        'outOf' => $this->__('out of'),
+        'found' => $this->__('found'),
+        'currentSearch' => $this->__('Current search'),
+        'search' => $this->__('Search:'),
+        'sortBy' => $this->__('SORT BY'),
+    ],
+];
+
 ?>
 
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
         algoliaBundle.$(function ($) {
-            window.algoliaConfig = {
-                instant: {
-                    enabled: <?php echo $config->isInstantEnabled() ? "true" : "false"; ?>,
-                    selector: '<?php echo $config->getInstantSelector(); ?>',
-                    isAddToCartEnabled: <?php echo $config->isAddToCartEnable() ? "true" : "false"; ?>
-                },
-                autocomplete: {
-                    enabled: <?php echo $config->isAutoCompleteEnabled() ? "true" : "false"; ?>,
-                    selector: '<?php echo $config->getAutocompleteSelector(); ?>',
-                    sections: <?php echo json_encode($config->getAutocompleteSections()); ?>,
-                    nbOfProductsSuggestions: '<?php echo $config->getNumberOfProductsSuggestions(); ?>',
-                    nbOfCategoriesSuggestions: '<?php echo $config->getNumberOfCategoriesSuggestions(); ?>',
-                    nbOfQueriesSuggestions: '<?php echo $config->getNumberOfQueriesSuggestions(); ?>'
-                },
-                extensionVersion: '<?php echo $config->getExtensionVersion() ?>',
-                applicationId: '<?php echo $config->getApplicationID() ?>',
-                indexName: '<?php echo $product_helper->getBaseIndexName(); ?>',
-                apiKey: '<?php echo $algolia_helper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $config->getAttributesToRetrieve($group_id)) ?>',
-                facets: <?php echo json_encode($config->getFacets()); ?>,
-                hitsPerPage: <?php echo (int) $config->getNumberOfProductResults() ?>,
-                sortingIndices: <?php echo json_encode(array_values($config->getSortingIndices())); ?>,
-                isSearchPage: <?php echo $isSearchPage ? "true" : "false" ?>,
-                isCategoryPage: <?php echo $isCategoryPage ? "true" : "false" ?>,
-                removeBranding: <?php echo $config->isRemoveBranding() ? "true" : "false"; ?>,
-                priceKey: '<?php echo $price_key; ?>',
-                currencySymbol: '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>',
-                currency_code: '<?php echo $currency_code; ?>',
-                maxValuesPerFacet: <?php echo (int) $config->getMaxValuesPerFacet(); ?>,
-                autofocus: true,
-                request: {
-                    query:<?php echo json_encode(array("value" => html_entity_decode($query))); ?>.value,
-                    refinement_key: '<?php echo $refinement_key; ?>',
-                    refinement_value: '<?php echo $refinement_value; ?>',
-                    path: '<?php echo $path; ?>'
-                },
-                show_cats_not_included_in_navigation: <?php echo $config->showCatsNotIncludedInNavigation() ? "true" : "false"; ?>,
-                showSuggestionsOnNoResultsPage: <?php echo $config->showSuggestionsOnNoResultsPage() ? "true" : "false"; ?>,
-                baseUrl: '<?php echo $base_url ?>',
-                popularQueries: <?php echo json_encode($config->getPopularQueries()); ?>
-            };
+            window.algoliaConfig = <?php echo json_encode($algoliaJsConfig); ?>;
 
             window.transformHit = function (hit, price_key) {
                 if (Array.isArray(hit.categories))
@@ -187,10 +265,14 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 if (Array.isArray(hit.price))
                     hit.price = hit.price[0];
 
-                if (price_key !== '.' + algoliaConfig.currency_code + '.default' && hit['price'] !== undefined &&
-                        hit['price'][algoliaConfig.currency_code][price_key.substr(1) + '_formated'] !== hit['price'][algoliaConfig.currency_code]['default_formated']) {
-                    hit['price'][algoliaConfig.currency_code][price_key.substr(1) + '_original_formated'] = hit['price'][algoliaConfig.currency_code]['default_formated'];
+                if (price_key !== '.' + algoliaConfig.currencyCode + '.default' && hit['price'] !== undefined && hit['price'][algoliaConfig.currencyCode][price_key.substr(1) + '_formated'] !== hit['price'][algoliaConfig.currencyCode]['default_formated']) {
+                    hit['price'][algoliaConfig.currencyCode][price_key.substr(1) + '_original_formated'] = hit['price'][algoliaConfig.currencyCode]['default_formated'];
                 }
+
+                var splitPriceKey = algoliaConfig.priceKey.substr(1).split('.');
+
+                hit.formatted_price = hit['price'][splitPriceKey[0]][splitPriceKey[1] + '_formated'];
+                hit.original_formatted_price = hit['price'][splitPriceKey[0]][splitPriceKey[1] + '_original_formated'];
 
                 return hit;
             };
@@ -203,8 +285,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         attributeName: facet.attribute,
                         labels: {
                             currency: algoliaConfig.currencySymbol,
-                            separator: '<?php echo $this->__("to"); ?>',
-                            button: '<?php echo $this->__("Go"); ?>'
+                            separator: algoliaConfig.translations.to,
+                            button: algoliaConfig.translations.go
                         },
                         templates: templates,
                         cssClasses: {
@@ -215,7 +297,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
 
                 var listItemTemplate = '<label class="{{cssClasses.label}}">' +
                     '<input type="checkbox" class="{{cssClasses.checkbox}}" value="{{name}}" {{#isRefined}}checked{{/isRefined}} />{{name}}' +
-                    '{{#isRefined}}<img class="cross-circle" src="<?php echo $this->getSkinUrl('algoliasearch/cross-circle.png') ?>"/>{{/isRefined}}' +
+                    '{{#isRefined}}<img class="cross-circle" src="' + algoliaConfig.urls.crossCircle + '"/>{{/isRefined}}' +
                     '<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>' +
                     '</label>';
 
@@ -287,7 +369,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         templates: {
                             empty: function (query) {
                                 var template = '<div class="aa-no-results-products">' +
-                                                    '<div class="title"><?php echo $this->__('No products for query'); ?> "' + $("<div>").text(query.query).html() + '"</div>';
+                                                    '<div class="title">' + algoliaConfig.translations.noProducts + ' "' + $("<div>").text(query.query).html() + '"</div>';
 
                                 var suggestions = [];
 
@@ -297,12 +379,12 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                                         suggestions.push('<a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query) + '">' + query + '</a>');
                                     });
 
-                                    template +=     '<div class="suggestions"><div><?php echo $this->__('You can try one of the popular search queries'); ?></div>';
+                                    template +=     '<div class="suggestions"><div>' + algoliaConfig.translations.popularQueries + '</div>';
                                     template +=        '<div>' + suggestions.join(', ') + '</div>';
                                     template +=     '</div>';
                                 }
 
-                                template +=         '<div class="see-all">' + (suggestions.length > 0 ? '<?php echo $this->__('or'); ?> ' : '') + '<a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__"><?php echo $this->__('See all products'); ?></a></div>' +
+                                template +=         '<div class="see-all">' + (suggestions.length > 0 ? algoliaConfig.translations.or + ' ' : '') + '<a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__">' + algoliaConfig.translations.seeAll + '</a></div>' +
                                                 '</div>';
 
                                 return template;
@@ -310,6 +392,9 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             suggestion: function (hit) {
                                 hit = transformHit(hit, algoliaConfig.priceKey)
                                 hit.displayKey = hit.displayKey || hit.name;
+                                hit.baseUrl = algoliaConfig.baseUrl;
+                                hit.inTranslation = algoliaConfig.translations.in;
+
                                 return algoliaConfig.autocomplete.templates[section.name].render(hit);
                             }
                         }
@@ -317,7 +402,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                 }
                 else if (section.name === "categories" || section.name === "pages")
                 {
-                    if (section.name === "categories" && algoliaConfig.show_cats_not_included_in_navigation == false) {
+                    if (section.name === "categories" && algoliaConfig.showCatsNotIncludedInNavigation == false) {
                         options.numericFilters = 'include_in_menu=1';
                     }
 
@@ -325,7 +410,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), options),
                         name: i,
                         templates: {
-                            empty: '<div class="aa-no-results"><?php echo $this->__("No results"); ?></div>',
+                            empty: '<div class="aa-no-results">' + algoliaConfig.translations.noResults + '</div>',
                             suggestion: function (hit) {
                                 if (section.name === 'categories') {
                                     hit.displayKey = hit.path;
@@ -372,7 +457,7 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                             analytics: false
                         }, {
                             includeAll: true,
-                            allTitle: '<?php echo $this->__($allDepartments) ?>'
+                            allTitle: algoliaConfig.translations.allDepartments
                         }),
                         displayKey: 'query',
                         name: section.name,
@@ -382,11 +467,14 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                                     hit.category = hit.facet.value;
                                 }
 
-                                if (hit.facet && hit.facet.value !== "<?php echo $allDepartments; ?>") {
+                                if (hit.facet && hit.facet.value !== 'All departments') {
                                     hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.query + '#q=' + hit.query + '&hFR[categories.level0][0]=' + encodeURIComponent(hit.category) + '&idx=' + algoliaConfig.indexName + '_products';
                                 } else {
                                     hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.query;
                                 }
+
+                                hit.inTranslation = algoliaConfig.translations.in;
+
                                 return algoliaConfig.autocomplete.templates.suggestions.render(hit);
                             }
                         }
@@ -438,10 +526,10 @@ if ($config->isInstantEnabled() && $isSearchPage) {
                         }
                         
                         var allUrl = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query.query);
-                        var returnFooter = '<div id="autocomplete-products-footer"><?php echo $this->__('See products in'); ?> <span><a href="' + allUrl +  '"><?php echo $this->__('All departments'); ?></a></span> (' + content.nbHits + ')';
+                        var returnFooter = '<div id="autocomplete-products-footer">' + algoliaConfig.translations.seeIn + ' <span><a href="' + allUrl +  '">' + algoliaConfig.translations.allDepartments + '</a></span> (' + content.nbHits + ')';
 
                         if(ors && algoliaConfig.instant.enabled) {
-                            returnFooter += ' <?php echo $this->__('or in'); ?> ' + ors;
+                            returnFooter += ' ' + algoliaConfig.translations.orIn + ' ' + ors;
                         }
 
                         returnFooter += '</div>';
@@ -580,9 +668,9 @@ if ($config->isInstantEnabled() && $isSearchPage) {
             $('body').on('click', '#refine-toggle', function () {
                 $('#instant-search-facets-container').toggleClass('hidden-sm').toggleClass('hidden-xs');
                 if ($(this).html()[0] === '+')
-                    $(this).html('- <?php echo $this->__("Refine"); ?>');
+                    $(this).html('- ' + algoliaConfig.translations.refine);
                 else
-                    $(this).html('+ <?php echo $this->__("Refine"); ?>');
+                    $(this).html('+ ' + algoliaConfig.translations.refine);
             });
 
             $.fn.focusWithoutScrolling = function(){

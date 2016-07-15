@@ -1,15 +1,9 @@
-<?php
-
-$image_base_url = Mage::getBaseUrl();
-
-?>
-
 <!-- Category hit template -->
 <script type="text/template" id="autocomplete_categories_template">
     <a class="algoliasearch-autocomplete-hit" href="{{url}}">
         {{#image_url}}
         <div class="thumb">
-            <img src="<?php echo $image_base_url; ?>{{image_url}}" />
+            <img src="{{{ baseUrl }}}/{{ image_url }}" />
         </div>
         {{/image_url}}
 

@@ -1,66 +1,33 @@
-<?php
-
-/** @var Algolia_Algoliasearch_Helper_Config $config */
-$config = Mage::helper('algoliasearch/config');
-
-$title = '';
-$description = '';
-$content = '';
-$imgHtml = '';
-
-if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->getRequest()->getControllerName() == 'category') {
-    $category = Mage::registry('current_category');
-    $title = $category->getName();
-
-    if ($category && $category->getDisplayMode() !== 'PAGE') {
-        $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
-
-        if ($category->getDisplayMode() == 'PRODUCTS_AND_PAGE') {
-            $page = $category->getLandingPage();
-            $cms_block = Mage::getModel('cms/block')->load($page);
-
-            $description = $category->getDescription();
-            $content = $this->getLayout()->createBlock('cms/block')->setBlockId($page)->toHtml();
-
-            if ($category->getImageUrl()) {
-                $imgHtml = '<p class="category-image"><img src="'.$category->getImageUrl().'" alt="'.$this->escapeHtml($category->getName()).'" title="'.$this->escapeHtml($category->getName()).'" /></p>';
-                $imgHtml = $this->helper('catalog/output')->categoryAttribute($category, $imgHtml, 'image');
-            }
-        }
-    }
-}
-
-?>
-
 <!-- Instantsearch wrapper template -->
 <script type="text/template" id="instant_wrapper_template">
     {{#findAutocomplete}}
-    <div id="algolia-autocomplete-container"></div>
+        <div id="algolia-autocomplete-container"></div>
     {{/findAutocomplete}}
-    <div id="algolia_instant_selector" class="<?php echo count($config->getFacets()) > 0 ? ' with-facets' : '' ?>">
 
-        <?php if ($title || $imgHtml || $description || $content): ?>
+    <div id="algolia_instant_selector" class="{{#config.hasFacets}}with-facets{{/config.hasFacets}}">
+
+        {{#config.showStaticContent}}
             <div class="row">
                 <div class="col-md-12">
                     <div id="algolia-static-content">
                         <div class="page-title category-title">
-                            <h1><?php echo $title; ?></h1>
+                            <h1>{{ config.title }}</h1>
                         </div>
                         <div>
-                            <?php echo $imgHtml; ?>
+                            {{{ config.imgHtml }}}
                         </div>
                         <div class="category-description std">
-                            <?php echo $description; ?>
+                            {{{ config.description }}}
                         </div>
-                        <?php echo $content; ?>
+                        {{{ config.content }}}
                     </div>
                 </div>
             </div>
-        <?php endif; ?>
+        {{/config.showStaticContent}}
 
         <div class="row">
             <div class="col-md-3" id="algolia-left-container">
-                <div id="refine-toggle" class="visible-xs visible-sm">+ <?php echo $this->__('Refine'); ?></div>
+                <div id="refine-toggle" class="visible-xs visible-sm">+ {{ translations.refine }}</div>
                 <div class="hidden-xs hidden-sm" id="instant-search-facets-container">
                     <div id="current-refinements"></div>
                 </div>
@@ -83,19 +50,19 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                                                     d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z"></path>
                                             </g>
                                         </svg>
-                                        <span><?php echo $this->__('Current search'); ?></span>
+                                        <span>{{ translations.currentSearch }}</span>
                                     </div>
                                     <div class="instant-search-bar-wrapper">
                                         <label for="instant-search-bar">
-                                            <?php echo $this->__('Search:'); ?>
+                                            {{ translations.search }}
                                         </label>
 
-                                        <input placeholder="<?php echo $this->__('Search for products'); ?>"
+                                        <input placeholder="{{ translations.searchFor }}"
                                                id="instant-search-bar" type="text" autocomplete="off" spellcheck="false"
                                                autocorrect="off" autocapitalize="off"/>
 
                                         <img class="clear-query-instant"
-                                             src="<?php echo $this->getSkinUrl('algoliasearch/cross.png') ?>"/>
+                                             src="{{{ crossImg }}}"/>
                                     </div>
                                 </div>
                             </div>
@@ -110,7 +77,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                                 <div class="pull-left" id="algolia-stats"></div>
                                 <div class="pull-right">
                                     <div class="sort-by-label pull-left">
-                                        <?php echo $this->__('SORT BY'); ?>
+                                        {{ translations.sortBy }}
                                     </div>
                                     <div class="pull-left" id="algolia-sorts"></div>
                                 </div>
