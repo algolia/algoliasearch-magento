@@ -10,6 +10,10 @@ $searchbox: true!default;
 
 @include dropdown($dropdown-config...);
 
+.searchbox {
+  width: inherit;
+}
+
 .algolia-autocomplete .ds-dropdown-menu  {
   line-height: 32px;
 }
