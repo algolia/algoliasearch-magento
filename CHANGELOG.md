@@ -5,10 +5,13 @@
 #### UPDATES
 - JavaScript templates were split to separate files (#483)
 - Locale CSV file was moved from `en_GB` to `en_US` directory (#481)
+- Template loader can load more then only two blocks (#502)
 
 #### FIXES
+- Fixed bug when `top.search` block was not overriden in some themes (#500)
 - Fixed bug with reindexing with empty synonyms lines (#480)
 - Localized strings are properly escaped in JavaScript now (#488)
+- Fixed occasional warnings in `getProductsRecords` method (#503)
 - Fixed duplicite CSS class names (#484)
 	- Potential **BC break** - please review your design and CSS so it follows new classes
 
