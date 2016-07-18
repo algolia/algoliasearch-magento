@@ -430,7 +430,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
-    protected function getProductsRecords($storeId, $collection, $potentiallyDeletedProductsIds = null)
+    protected function getProductsRecords($storeId, $collection, $potentiallyDeletedProductsIds = [])
     {
         $productsToIndex = [];
         $productsToRemove = [];
@@ -438,6 +438,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         // In $potentiallyDeletedProductsIds there might be IDs of deleted products which will not be in a collection
         if (is_array($potentiallyDeletedProductsIds)) {
             $potentiallyDeletedProductsIds = array_combine($potentiallyDeletedProductsIds, $potentiallyDeletedProductsIds);
+        } else {
+            $potentiallyDeletedProductsIds = [];
         }
 
         $this->logger->start('CREATE RECORDS '.$this->logger->getStoreName($storeId));
@@ -612,5 +614,16 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $appEmulation->stopEnvironmentEmulation($info);
         $this->logger->stop('STOP EMULATION');
+    }
+
+    public function escapeJsTranslatedString(Mage_Core_Block_Template $template, $string, $useAddSlashes = false)
+    {
+        $translated = $template->__($string);
+
+        if ($useAddSlashes === true) {
+            return addslashes($translated);
+        }
+
+        return json_encode($translated);
     }
 }

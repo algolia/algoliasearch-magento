@@ -1,0 +1,6 @@
+<!-- Search statistics template (used for displaying hits' count and time of query) -->
+<script type="text/template" id="instant-stats-template">
+    {{#hasOneResult}}<strong>1</strong> <?php echo $this->__('result'); ?> found{{/hasOneResult}}
+    {{#hasManyResults}}{{^hasNoResults}}{{first}}-{{last}} out of{{/hasNoResults}} <strong>{{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}} <?php echo $this->__('results found'); ?></strong>{{/hasManyResults}}
+    <?php echo $this->__('in'); ?> {{seconds}} <?php echo $this->__('seconds'); ?>
+</script>

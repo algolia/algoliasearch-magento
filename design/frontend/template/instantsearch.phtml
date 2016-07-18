@@ -1,241 +1,9 @@
 <?php
 
-/** @var Algolia_Algoliasearch_Helper_Config $config */
-$config = Mage::helper('algoliasearch/config');
-
-/** @var Mage_CatalogSearch_Helper_Data $catalogSearchHelper */
-$catalogSearchHelper = $this->helper('catalogsearch');
-
-/** @var Mage_Customer_Model_Session $session */
-$session = Mage::getSingleton('customer/session');
-$group_id = $session->getCustomerGroupId();
-
-$currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
-$price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
-
-$image_base_url = Mage::getBaseUrl();
-
-$title = '';
-$description = '';
-$content = '';
-$imgHtml = '';
-
-if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->getRequest()->getControllerName() == 'category') {
-    $category = Mage::registry('current_category');
-    $title = $category->getName();
-
-    if ($category && $category->getDisplayMode() !== 'PAGE') {
-        $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
-
-        if ($category->getDisplayMode() == 'PRODUCTS_AND_PAGE') {
-            $page = $category->getLandingPage();
-            $cms_block = Mage::getModel('cms/block')->load($page);
-
-            $description = $category->getDescription();
-            $content = $this->getLayout()->createBlock('cms/block')->setBlockId($page)->toHtml();
-
-            if ($category->getImageUrl()) {
-                $imgHtml = '<p class="category-image"><img src="'.$category->getImageUrl().'" alt="'.$this->escapeHtml($category->getName()).'" title="'.$this->escapeHtml($category->getName()).'" /></p>';
-                $imgHtml = $this->helper('catalog/output')->categoryAttribute($category, $imgHtml, 'image');
-            }
-        }
-    }
-}
+/** @var Algolia_Algoliasearch_Helper_Data $helper */
+$helper = Mage::helper('algoliasearch');
 
 ?>
-
-<!-- Instantsearch wrapper template -->
-<script type="text/template" id="instant_wrapper_template">
-    {{#findAutocomplete}}
-    <div id="algolia-autocomplete-container"></div>
-    {{/findAutocomplete}}
-    <div id="algolia_instant_selector" class="<?php echo count($config->getFacets()) > 0 ? ' with-facets' : '' ?>">
-
-        <?php if ($title || $imgHtml || $description || $content): ?>
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="algolia-static-content">
-                        <div class="page-title category-title">
-                            <h1><?php echo $title; ?></h1>
-                        </div>
-                        <div>
-                            <?php echo $imgHtml; ?>
-                        </div>
-                        <div class="category-description std">
-                            <?php echo $description; ?>
-                        </div>
-                        <?php echo $content; ?>
-                    </div>
-                </div>
-            </div>
-        <?php endif; ?>
-
-        <div class="row">
-            <div class="col-md-3" id="algolia-left-container">
-                <div id="refine-toggle" class="visible-xs visible-sm">+ <?php echo $this->__('Refine'); ?></div>
-                <div class="hidden-xs hidden-sm" id="instant-search-facets-container">
-                    <div id="current-refinements"></div>
-                </div>
-            </div>
-
-            <div class="col-md-9" id="algolia-right-container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div>
-                            {{#second_bar}}
-                            <div id="instant-search-bar-container">
-                                <div id="instant-search-box">
-                                    <div class="instant-search-bar-label">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24"
-                                             height="24" viewBox="0 0 128 128">
-                                            <g transform="scale(4)">
-                                                <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
-                                                <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
-                                                <path
-                                                    d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z"></path>
-                                            </g>
-                                        </svg>
-                                        <span><?php echo $this->__('Current search'); ?></span>
-                                    </div>
-                                    <div class="instant-search-bar-wrapper">
-                                        <label for="instant-search-bar">
-                                            <?php echo $this->__('Search:'); ?>
-                                        </label>
-
-                                        <input placeholder="<?php echo $this->__('Search for products'); ?>"
-                                               id="instant-search-bar" type="text" autocomplete="off" spellcheck="false"
-                                               autocorrect="off" autocapitalize="off"/>
-
-                                        <img class="clear-query-instant"
-                                             src="<?php echo $this->getSkinUrl('algoliasearch/cross.png') ?>"/>
-                                    </div>
-                                </div>
-                            </div>
-                            {{/second_bar}}
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div>
-                        <div class="hits">
-                            <div class="infos">
-                                <div class="pull-left" id="algolia-stats"></div>
-                                <div class="pull-right">
-                                    <div class="sort-by-label pull-left">
-                                        <?php echo $this->__('SORT BY'); ?>
-                                    </div>
-                                    <div class="pull-left" id="algolia-sorts"></div>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-                            <div id="instant-search-results-container"></div>
-                        </div>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-
-                <div class="text-center">
-                    <div id="instant-search-pagination-container"></div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</script>
-
-<!-- Product hit template -->
-<script type="text/template" id="instant-hit-template">
-    <div class="col-md-4 col-sm-6">
-        <div class="result-wrapper">
-            <a href="{{url}}" class="result">
-                <div class="result-content">
-                    <div class="result-thumbnail">
-                        {{#image_url}}<img src="<?php echo $image_base_url; ?>{{{ image_url }}}"/>{{/image_url}}
-                        {{^image_url}}<span class="no-image"></span>{{/image_url}}
-                    </div>
-                    <div class="result-sub-content">
-                        <h3 class="result-title text-ellipsis">
-                            {{{ _highlightResult.name.value }}}
-                        </h3>
-                        <div class="ratings">
-                            <div class="result-sub-content">
-                                <div class="ratings">
-                                    <div class="rating-box">
-                                        <div class="rating" style="width:{{rating_summary}}%" width="148"
-                                             height="148"></div>
-                                    </div>
-                                </div>
-                                <div class="price">
-                                    <div class="price-wrapper">
-                                        <div>
-                                            <span
-                                                class="after_special {{#price<?php echo $price_key; ?>_original_formated}}promotion{{/price<?php echo $price_key; ?>_original_formated}}">
-                                                {{price<?php echo $price_key; ?>_formated}}
-                                            </span>
-
-                                            {{#price<?php echo $price_key; ?>_original_formated}}
-                                                <span class="before_special">
-                                                    {{price<?php echo $price_key; ?>_original_formated}}
-                                                </span>
-                                            {{/price<?php echo $price_key; ?>_original_formated}}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="result-description text-ellipsis">{{{ _highlightResult.description.value }}}</div>
-
-                        {{#isAddToCartEnabled}}
-                        {{#in_stock}}
-                        <form action="<?php echo Mage::getBaseUrl(); ?>/checkout/cart/add/product/{{objectID}}"
-                              method="post">
-                            <input type="hidden" name="form_key"
-                                   value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>"/>
-                            <input type="hidden" name="qty" value="1">
-                            <button type="submit"><?php echo $this->__('Add to Cart'); ?></button>
-                        </form>
-                        {{/in_stock}}
-                        {{/isAddToCartEnabled}}
-                    </div>
-                </div>
-                <div class="clearfix"></div>
-            </a>
-        </div>
-    </div>
-</script>
-
-<!-- Search statistics template (used for displaying hits' count and time of query) -->
-<script type="text/template" id="instant-stats-template">
-    {{#hasOneResult}}<strong>1</strong> <?php echo $this->__('result'); ?> found{{/hasOneResult}}
-    {{#hasManyResults}}{{^hasNoResults}}{{first}}-{{last}} out of{{/hasNoResults}} <strong>{{#helpers.formatNumber}}{{nbHits}}{{/helpers.formatNumber}} <?php echo $this->__('results found'); ?></strong>{{/hasManyResults}}
-    <?php echo $this->__('in'); ?> {{seconds}} <?php echo $this->__('seconds'); ?>
-</script>
-
-<!-- Basic facet template -->
-<script type="text/template" id="facet-template">
-    <div class="sub_facet {{#isRefined}}checked{{/isRefined}}">
-        <input class="facet_value" {{#isRefined}}checked{{/isRefined}} type="checkbox">
-        {{name}}
-        <span class="count">{{count}}</span>
-    </div>
-</script>
-
-<!-- Current refinements template -->
-<script type="text/template" id="current-refinements-template">
-    <div class="cross-wrapper">
-        <img src="<?php echo $this->getSkinUrl('algoliasearch/cross.png') ?>"/>
-    </div>
-    <div class="current-refinement-wrapper">
-        {{#label}}
-        <span class="current-refinement-label">{{label}}{{^operator}}:{{/operator}}</span>
-        {{/label}}
-        {{#operator}}
-        {{{displayOperator}}}
-        {{/operator}}
-        {{#exclude}}-{{/exclude}}
-        <span class="current-refinement-name">{{name}}</span>
-    </div>
-</script>
 
 <script type="text/javascript">
     //<![CDATA[
@@ -344,7 +112,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
             search.addWidget(
                 algoliaBundle.instantsearch.widgets.searchBox({
                     container: instant_selector,
-                    placeholder: '<?php echo $this->__('Search for products'); ?>'
+                    placeholder: '<?php echo $helper->escapeJsTranslatedString($this, 'Search for products'); ?>'
                 })
             );
 
@@ -374,7 +142,7 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
              **/
             algoliaConfig.sortingIndices.unshift({
                 name: algoliaConfig.indexName + '_products',
-                label: '<?php echo $this->__('Relevance'); ?>'
+                label: '<?php echo $helper->escapeJsTranslatedString($this, 'Relevance'); ?>'
             });
 
             search.addWidget(
@@ -427,15 +195,15 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                 render: function (data) {
                     if (data.results.hits.length === 0) {
                         var content = '<div class="no-results">';
-                        content += '<div><b><?php echo $this->__('No products for query'); ?> "' + $("<div>").text(data.results.query).html() + '</b>"</div>';
+                        content += '<div><b><?php echo $helper->escapeJsTranslatedString($this, 'No products for query', true); ?> "' + $("<div>").text(data.results.query).html() + '</b>"</div>';
                         content += '<div class="popular-searches">';
 
                         if (algoliaConfig.showSuggestionsOnNoResultsPage && this.suggestions.length > 0) {
-                            content += '<div><?php echo $this->__('You can try one of the popular search queries'); ?></div>' + this.suggestions.join(', ');
+                            content += '<div><?php echo $helper->escapeJsTranslatedString($this, 'You can try one of the popular search queries', true); ?></div>' + this.suggestions.join(', ');
                         }
 
                         content += '</div>';
-                        content += '<?php echo $this->__('or'); ?> <a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__"><?php echo $this->__('See all products'); ?></a>'
+                        content += '<?php echo $helper->escapeJsTranslatedString($this, 'or', true); ?> <a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__"><?php echo $helper->escapeJsTranslatedString($this, 'See all products', true); ?></a>'
 
                         content += '</div>';
 
@@ -478,8 +246,8 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                         root: 'facet'
                     },
                     templates: {
-                        header: '<div class="name">' + '<?php echo $this->__('Selected Filters'); ?>' + '</div>',
-                        clearAll: '<?php echo $this->__('Clear all'); ?>',
+                        header: '<div class="name">' + '<?php echo $helper->escapeJsTranslatedString($this, 'Selected Filters', true); ?>' + '</div>',
+                        clearAll: '<?php echo $helper->escapeJsTranslatedString($this, 'Clear all'); ?>',
                         item: $('#current-refinements-template').html()
                     },
                     attributes: attributes,
@@ -559,8 +327,8 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && Mage::app()->
                     showFirstLast: false,
                     maxPages: 1000,
                     labels: {
-                        previous: '<?php echo $this->__('Previous page'); ?>',
-                        next: '<?php echo $this->__('Next page'); ?>'
+                        previous: '<?php echo $helper->escapeJsTranslatedString($this, 'Previous page'); ?>',
+                        next: '<?php echo $helper->escapeJsTranslatedString($this, 'Next page'); ?>'
                     },
                     scrollTo: 'body'
                 })

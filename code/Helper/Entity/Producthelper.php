@@ -338,6 +338,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $synonyms = $this->config->getSynonyms($storeId);
             foreach ($synonyms as $objectID => $synonym) {
+                if (!trim($synonym['synonyms'])) {
+                    continue;
+                }
+
                 $synonymsToSet[] = [
                     'objectID' => $objectID,
                     'type' => 'synonym',
@@ -347,6 +351,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $onewaySynonyms = $this->config->getOnewaySynonyms($storeId);
             foreach ($onewaySynonyms as $objectID => $onewaySynonym) {
+                if (!trim($onewaySynonym['input']) || !trim($onewaySynonym['synonyms'])) {
+                    continue;
+                }
+
                 $synonymsToSet[] = [
                     'objectID' => $objectID,
                     'type' => 'oneWaySynonym',

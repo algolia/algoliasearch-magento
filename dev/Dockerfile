@@ -42,7 +42,7 @@ RUN chown -R www-data:www-data /var/www/htdocs
 
 ## database setup
 RUN service mysql start && (echo "CREATE DATABASE magento" | mysql -u root --password=P4ssw0rd) && mysql -u root --password=P4ssw0rd magento < /tmp/magento-sample-data-1.9.0.0/magento_sample_data_for_1.9.0.0.sql && service mysql stop
-RUN service mysql start && MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PASSWORD=P4ssw0rd MYSQL_DATABASE=magento MAGENTO_LOCALE=en_GB MAGENTO_TIMEZONE=Europe/Paris MAGENTO_DEFAULT_CURRENCY=USD MAGENTO_URL=http://mymagentostore.com MAGENTO_ADMIN_FIRSTNAME=Admin MAGENTO_ADMIN_LASTNAME=MyStore MAGENTO_ADMIN_EMAIL=amdin@mymagentostore.com MAGENTO_ADMIN_USERNAME=admin MAGENTO_ADMIN_PASSWORD=magentorocks1 /usr/local/bin/install-magento && service mysql stop
+RUN service mysql start && MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PASSWORD=P4ssw0rd MYSQL_DATABASE=magento MAGENTO_LOCALE=en_US MAGENTO_TIMEZONE=Europe/Paris MAGENTO_DEFAULT_CURRENCY=USD MAGENTO_URL=http://mymagentostore.com MAGENTO_ADMIN_FIRSTNAME=Admin MAGENTO_ADMIN_LASTNAME=MyStore MAGENTO_ADMIN_EMAIL=amdin@mymagentostore.com MAGENTO_ADMIN_USERNAME=admin MAGENTO_ADMIN_PASSWORD=magentorocks1 /usr/local/bin/install-magento && service mysql stop
 
 ## disable cache
 RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs cache:flush && n98-magerun --root-dir=/var/www/htdocs cache:disable && service mysql stop
