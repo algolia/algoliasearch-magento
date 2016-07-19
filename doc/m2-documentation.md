@@ -1,18 +1,10 @@
 ---
 layout: documentation
-title: Magento 1 Documentation
-permalink: /documentation/
+title: Magento 2 Documentation
+permalink: /m2-documentation/
 ---
 
 # Getting started
-
-For getting started you can watch our video where we will show you how to setup our Magento extension:
-
-<div style="text-align: center; margin-bottom: 30px;">
-    <iframe width="640" height="480" src="https://www.youtube.com/embed/DUuv9ALS5cM?rel=0" frameborder="0" allowfullscreen></iframe>
-</div>
-
-Or please follow those few steps to get started Algolia Search extension:
 
 ## Create an Algolia account
 
@@ -26,30 +18,29 @@ Or please follow those few steps to get started Algolia Search extension:
 
 ## Install the extension
 
-1. Install the extension from the [Magento Commerce](http://www.magentocommerce.com/magento-connect/search-algolia-instant-search.html) or download it from [GitHub](https://github.com/algolia/algoliasearch-magento).
-2. In your Magento administration navigate to **System > Configuration > Catalog > Algolia Search** administration panel.
+1. Install the extension from the [Magento Marketplace]([link_missing]) or via [Composer](https://getcomposer.org):
+```
+$ composer require algolia/algoliasearch-magento-2
+```
+2. In your Magento administration navigate to **Stores > Configuration > Algolia Search** administration panel.
 3. In **Credentials & Setup** tab configure your Algolia credentials.
 
 <figure>
-    <img src="../img/configuration.png" class="img-responsive">
+    <img src="../img/m2-configuration.png" class="img-responsive">
     <figcaption>Extension's basic information configurations</figcaption>
 </figure>
 
 ## Initial indexing
 
-Force the re-indexing of all sections you want to synchronize with Algolia. In your Magento administration navigate to **System > Index Management**. There hit **Reindex Data** button next to these indices:
+Force the re-indexing of all sections you want to synchronize with Algolia. In your console run command: 
 
-- Algolia Search Products
-- Algolia Search Categories
-- Algolia Search Pages
-- Algolia Search Suggestions
+```sh
+$ bin/magento indexer:reindex algolia_products algolia_categories algolia_pages algolia_suggestions algolia_additional_sections
+```
 
-<figure>
-    <img src="../img/indexers_new.png" class="img-responsive">
-    <figcaption>Magento store's indexers</figcaption>
-</figure>
+This command will trigger reindexing on all your content.
 
-**Congratulations!** You just installed Algolia extension to your Magento store!
+**Congratulations!** You just installed Algolia extension to your Magento 2 store!
 
 # Indexing
 
@@ -63,7 +54,7 @@ Each time your catalog changes _(e.g. addition / deletion / update of products /
 By default all this operations happen synchronously and administrator has to wait before continue his/her work. As it is not very convenient we came up with **Indexing queue**.
 
 ## Indexing Queue
-To enable indexing queue navigate to **System > Configuration > Algolia Search > Indexing Queue / Cron tab** in your Magento administration.
+To enable indexing queue navigate to **Stores > Configuration > Algolia Search > Indexing Queue / Cron** in your Magento administration.
 Once you have enabled queue, all operations mentioned above will be queued in database table called `algoliasearch_queue`.
 
 By enabling Indexing queue you can set how many jobs will be processed each time the queue is processed. By default the number is 10. But you can adjust it to fit to your catalog and server your Magento store runs on.
@@ -75,7 +66,7 @@ Now you need to setup running the queue. There are to options how to do that:
 To asynchronously process queued jobs, you can configure the following cron:
 
 ```sh
-*/5 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner
+*/5 * * * * absolute/path/to/magento/bin/magento indexer:reindex algolia_queue_runner
 ```
 
 This will run `N` jobs every 5 minutes depending of your queue configuration.
@@ -86,13 +77,13 @@ This will run `N` jobs every 5 minutes depending of your queue configuration.
 If you want to process the queue manually using the command line you can run:
 
 ```sh
-php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner
+$ bin/magento indexer:reindex algolia_queue_runner
 ```
 
 If you want to process the queue entirely in one time you can run:
 
 ```sh
-EMPTY_QUEUE=1 php -f /absolute/path/to/magento/shell/indexer.php -- -reindex algolia_queue_runner
+$ EMPTY_QUEUE=1 bin/magento indexer:reindex algolia_queue_runner
 ```
 
 <div class="alert alert-warning">
@@ -130,28 +121,28 @@ That being said it takes more time and resources. It is also a little bit less r
 
 ## Indexable attributes
 
-You can specify which attributes you want to index in your Algolia indices. This option is available only for Products and Categories. For indexable attributes configuration navigate to **System > Configuration > Algolia Search > Products / Categories** tab.
+You can specify which attributes you want to index in your Algolia indices. This option is available only for Products and Categories. For indexable attributes configuration navigate to **Stores > Configuration > Algolia Search > Products / Categories** tab.
 There you can find table where you can set the attributes you want to send to Algolia. On each attribute you are able to specify if the attribute is Searchable, Retrievable and Order setting of the attribute. For more information about these settings please read [the official Algolia documentation](https://www.algolia.com/doc/?utm_medium=social-owned&amp;utm_source=magento%20website&amp;utm_campaign=docs).
 
 <figure>
-    <img src="../img/attributes.png" class="img-responsive">
+    <img src="../img/m2-attributes.png" class="img-responsive">
     <figcaption>Configuration of attributes to index</figcaption>
 </figure>
 
 ## Suggestions
 
-Each time the search is processed in backend of Magento, the query, number of results, number of searches of the query are stored/updated in Magento database. Exactly in <code>catalogsearch_query</code>. This is done automaticly by Magento itself and out extension has nothing to do with it.
+Each time the search is processed in backend of Magento, the query, number of results, number of searches of the query are stored/updated in Magento database. Exactly in <code>search_query</code>. This is done automaticly by Magento itself and out extension has nothing to do with it.
 Be careful - only backend searches are stored in database. Autocomplete or instant search queries are not inserted into the database.
 
 When you enable the indexing of suggestions, the extension fetches queries from that table, filter the results according your settings (minimal nuber of results, minimal popularity, ...) and filtered queries pushes into Algolia suggestion index.
 
-To have correct data in your Algolia suggestion index, you need to have correct data in your <code>catalogsearch_query</code> table. To achieve that you need to have enabled backend search by Algolia. That you can have done by enabling <code>Search</code> and <code>Make SEO request</code> in configuration of Algolia extension in Magento administration.
-When you have this options enabled, backend search will be processed by Algolia and data in <code>catalogsearch_query</code> will be updated over time.
+To have correct data in your Algolia suggestion index, you need to have correct data in your <code>search_query</code> table. To achieve that you need to have enabled backend search by Algolia. That you can have done by enabling <code>Search</code> and <code>Make SEO request</code> in configuration of Algolia extension in Magento administration.
+When you have this options enabled, backend search will be processed by Algolia and data in <code>search_query</code> will be updated over time.
 
 Suggestions are not indexed automatically by the extension. You need to trigger reindex manually or you can put it into a cron tab to be processed automatically. For example every hour:
 
 ```sh
-1 * * * * php -f /absolute/path/to/magento/shell/indexer.php -- -reindex search_indexer_suggest
+1 * * * * absolute/path/to/magento/bin/magento indexer:reindex algolia_suggestions
 ```
 
 
@@ -159,8 +150,8 @@ Suggestions are not indexed automatically by the extension. You need to trigger 
 
 ## Custom theme
 
-By default the extension tries to override <code>top.search</code> block of the theme template. In case your custom theme doesn't contain <code>top.search</code> block, you need to navigate to **System > Configuration > Algolia Search > Advanced tab** and change DOM selector of your search input.
-When you do that, the extension won't try to override <code>top.search</code> block and will only include it's scripts. In this case you will have to update your styles and put your desired look and feel to your auto-completion menu.
+By default the extension tries to override <code>topSearch</code> block of the theme template. In case your custom theme doesn't contain <code>topSearch</code> block, you need to navigate to **Stores > Configuration > Algolia Search > Advanced** and change DOM selector of your search input.
+When you do that, the extension won't try to override <code>topSearch</code> block and will only include it's scripts. In this case you will have to update your styles and put your desired look and feel to your auto-completion menu.
 
 ## Auto-completion menu
 
@@ -170,14 +161,13 @@ The extension uses [autocomplete.js](https://github.com/algolia/autocomplete.js)
 - categories
 - pages
 
-
-You can configure displayed data in administration section **System > Configuration > Algolia Search > Autocomplete tab**.
+You can configure displayed data in administration section **Stores > Configuration > Algolia Search > Autocomplete**.
 There you can configure which sections and how many items should be displayed in auto-complete menu.
 
 If you need to do more customization, perhaps for auto-complete layout, you will need to update the underlying template. For more information please navigate to [Customization](#customization) section.
 
 <figure>
-    <img src="../img/autocomplete-admin.png" class="img-responsive">
+    <img src="../img/m2-autocomplete-admin.png" class="img-responsive">
     <figcaption>Extension's autocomplete feature configuration</figcaption>
 </figure>
 
@@ -191,7 +181,7 @@ The extension uses [instantsearch.js](https://github.com/algolia/instantsearch.j
 - **price range slider** - used to refine range of prices
 - **hierarchial menu** - allows to refine results by categories
 
-You can configure displayed data and set another refinements. Just navigate to **System > Configuration > Algolia Search > Instant Search Results Page tab**. You can configure which attributes you want to use as facets. Facets are used for filtering products. For more information about faceting please read [the official Algolia documentation](https://www.algolia.com/doc/?utm_medium=social-owned&amp;utm_source=magento%20website&amp;utm_campaign=docs).
+You can configure displayed data and set another refinements. Just navigate to **Stores > Configuration > Algolia Search > Instant Search Results Page**. You can configure which attributes you want to use as facets. Facets are used for filtering products. For more information about faceting please read [the official Algolia documentation](https://www.algolia.com/doc/?utm_medium=social-owned&amp;utm_source=magento%20website&amp;utm_campaign=docs).
 
 In the same way you can configure attributes for sorting your products. Be careful because each sorting creates Algolia index. For more information read [the official Algolia documentation](https://www.algolia.com/doc/?utm_medium=social-owned&amp;utm_source=magento%20website&amp;utm_campaign=docs).
 
@@ -199,11 +189,11 @@ If you need to add another widgets or update the existing ones you will need to 
 
 <div class="alert alert-warning">
     <i class="fa fa-exclamation-triangle"></i>
-    By default instant search page is disabled, because it can break your existing layout. You can enable it in **System > Configuration > Algolia Search > Credentials & Setup tab**.
+    By default instant search page is disabled, because it can break your existing layout. You can enable it in **Stores > Configuration > Algolia Search > Credentials & Setup**.
 </div>
 
 <figure>
-    <img src="../img/instantsearch-admin.png" class="img-responsive">
+    <img src="../img/m2-instantsearch-admin.png" class="img-responsive">
     <figcaption>Extension's instant search feature configuration</figcaption>
 </figure>
 
@@ -211,16 +201,16 @@ If you need to add another widgets or update the existing ones you will need to 
 
 If you want to customize the look and feel of the auto-completion menu and/or the instant search results you need to have access to your server and you need to be a little bit developer. Or have one next to you :)
 
-All visual aspects are defined in single CSS file - [`algoliasearch.css`](https://github.com/algolia/algoliasearch-magento/blob/master/skin/algoliasearch.css). This file contains styles for both auto-complete menu and instant search page.
+All visual aspects are defined in single CSS file - [`algoliasearch.css`](https://github.com/algolia/algoliasearch-magento-2/blob/master/view/frontend/web/algoliasearch.css). This file contains styles for both auto-complete menu and instant search page.
 
 ### Auto-completion menu customization
 
-There is one essential file - [`autocomplete.phtml`](https://github.com/algolia/algoliasearch-magento/blob/master/design/frontend/template/autocomplete.phtml).
+There is one essential file - [`autocomplete.phtml`](https://github.com/algolia/algoliasearch-magento-2/blob/master/view/frontend/templates/autocomplete.phtml).
 In this file you can find all HTML templates and JavaScript code used for rendering the menu.
 
 ### Instant Search Page customization
 
-All code for rendering instant search page can be found in [`instantsearch.phtml`](https://github.com/algolia/algoliasearch-magento/blob/master/design/frontend/template/instantsearch.phtml).
+All code for rendering instant search page can be found in [`instantsearch.phtml`](https://github.com/algolia/algoliasearch-magento-2/blob/master/view/frontend/templates/instantsearch.phtml).
 If you want to use a widget that is not exposed in the administration panel for a particular faceted attribute you can configure it using the `customAttributeFacet` variable of the `instantsearch.phtml` file. For example if you want to have a toggle widget for the `in_stock` attribute, your `customAttributeFacet` variable should look like:
 
 {% highlight js %}
@@ -247,19 +237,16 @@ More information about customizing widgets you can find in [instantsearch.js doc
 
 # Upgrade
 
-It's strongly recommended to use [Modman](https://github.com/colinmollenhour/modman) or [Magento Connect](https://www.magentocommerce.com/magento-connect/search-algolia-search.html) to install the extension. Other installation methods are not supported.
+It's strongly recommended to use [Composer](https://getcomposer.org) or [Magento Connect](https://www.magentocommerce.com/magento-connect/search-algolia-search.html) to install the extension. Other installation methods are not supported.
 
 For upgrade to new version, do the following steps:
 
-1. If you have installed previous version of the extension, uninstall it
+1. Install the new version of the extension
 	- via Magento Connect
-	- or by Modman command <code>$ modman undeploy algoliasearch-magento</code>
-2. Install the new version of the extension
-	- via Magento Connect
-	- or by Modman command <code>$ modman clone https://github.com/algolia/algoliasearch-magento</code>
-3. Go to the **System > Configuration > Catalog > Algolia Search** administration panel and save your configuration. **Even if you didn’t change anything.**
+	- or by Composer command <code>$ composer update algolia/algoliasearch-magento-2</code>
+3. Go to the **Stores > Configuration > Algolia Search** administration panel and save your configuration. **Even if you didn’t change anything.**
 4. Force the re-indexing of all indexers
-5. Follow any other guidelines specified in the [changelog](https://github.com/algolia/algoliasearch-magento/blob/master/CHANGELOG.md)
+5. Follow any other guidelines specified in the [changelog](https://github.com/algolia/algoliasearch-magento-2/blob/master/CHANGELOG.md)
 
 # Developers
 
@@ -293,7 +280,7 @@ Dispatches after fetching [additional_section]'s attributes for indexing.
 ## Logging & Debugging
 
 Sometimes may happen that not everything run smoothly. In may be caused by millions of reasons. That is why we impletemented logging into Algolia's Magento extension.
-Logging can be enabled in **System > Configuration > Algolia Search > Credentials & Setup** tab. When you enable togging, internal informations form the extension will be logged into Algolia log file. The file is located in Magento's log directory. By default it is `var/log` directory.
+Logging can be enabled in **Stores > Configuration > Algolia Search > Credentials & Setup** tab. When you enable togging, internal informations form the extension will be logged into Algolia log file. The file is located in Magento's log directory. By default it is `var/log` directory.
 
 Logging can produce large amount of data. So it shuld be enabled only while debugging and investigating issues. **It should definitely not be enabled in production!**
 
@@ -312,7 +299,7 @@ List of logged events:
 
 ## Contributing
 
-See the project and readme on [GitHub](https://github.com/algolia/algoliasearch-magento).
+See the project and readme on [GitHub](https://github.com/algolia/algoliasearch-magento-2).
 
 ## Caveats
 
