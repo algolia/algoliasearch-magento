@@ -128,6 +128,18 @@ That being said it takes more time and resources. It is also a little bit less r
     Doing full reindex on large catalog is strongly recommended with <strong>indexing queue enabled</strong>.
 </div>
 
+## Indexable products
+
+Not all products from you Magento are indexed in Algolia. We try to keep your number of records as low as possible and that is why the extension indexes only products which are supposed to come up in autocomplete menu or instant search page.
+Because of that the extension indexes only products which are:
+
+- Visible (catalog, search or both)
+- Enabled
+- Not deleted
+- On stock (in case you have set you want to index only "on-stock" products)
+
+In case you are missing some products in Algolia indices, make sure those products meet these indexing requirements.
+
 ## Indexable attributes
 
 You can specify which attributes you want to index in your Algolia indices. This option is available only for Products and Categories. For indexable attributes configuration navigate to **System > Configuration > Algolia Search > Products / Categories** tab.

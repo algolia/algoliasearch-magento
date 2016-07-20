@@ -67,6 +67,16 @@ Yes you just need to disable indexing for the store where you do not need Algoli
 In case you have indexing queue enabled, the reindex button will "only" insert indexing jobs to queue database table and not really send them to Algolia. Please make sure you have set queue proccessing correctly and you have set reasonable number of products to be processed in one job. If you set the number od processed products too high the processing script may run out of memory and no products will be indexed.
 More information about indexing queue can be found in [documentation](/magento/documentation/#indexing-queue).
 
+## Some of my products do not come up during searching
+
+At first please check if those products are indexed correctly in Algolia. You can go to your [Algolia explorer](https://www.algolia.com/explorer) select your default products index and search for products which are missing on your website.
+If you can find the missing products in Algolia, check if the products have set correct visibility. If products should be visible only in "Catalog", they will not come up when searching, but only on instant search page in category.
+
+If you cannot find the products in Algolia indices, the products are not indexed in Algolia. The extension indexes only visible, enabled and "on-stock" products (only in case you have set you want to index only "on-stock" products). More information about indexing you can find in [documentation](/magento/documentation/#indexing).
+So please check if the products meet all the requirements for indexing. If they do you should hit "Reindex" button again and check again the Algolia index.
+
+If the issues persist you can go Algolia configuration in Magento, turn on logging and investigate log files. There you should be able to find more information about what is going on while re-indexing. More information about troubleshooting and debugging you can find in [documentation](/magento/documentation/#logging--debugging).
+
 ## I cannot find my products by SKU
 
 Please, make sure you are using the newest version of the extension. And make sure you set SKU as searchable attribute to index in Algolia's extension configuration in Magento backend.
