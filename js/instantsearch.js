@@ -297,6 +297,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		window.getFacetWidget = function (facet, templates) {
 			
 			if (facet.type === 'priceRanges') {
+				delete templates.item;
+				
 				return algoliaBundle.instantsearch.widgets.priceRanges({
 					container: facet.wrapper.appendChild(document.createElement('div')),
 					attributeName: facet.attribute,
@@ -312,15 +314,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				})
 			}
 			
-			var listItemTemplate = '<label class="{{cssClasses.label}}">' +
-				'<input type="checkbox" class="{{cssClasses.checkbox}}" value="{{name}}" {{#isRefined}}checked{{/isRefined}} />{{name}}' +
-				'{{#isRefined}}<img class="cross-circle" src="' + algoliaConfig.urls.crossCircle + '"/>{{/isRefined}}' +
-				'<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span>' +
-				'</label>';
-			
 			if (facet.type === 'conjunctive') {
-				
-				templates.item = listItemTemplate;
 				return algoliaBundle.instantsearch.widgets.refinementList({
 					container: facet.wrapper.appendChild(document.createElement('div')),
 					attributeName: facet.attribute,
@@ -334,8 +328,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			}
 			
 			if (facet.type === 'disjunctive') {
-				templates.item = listItemTemplate;
-				
 				return algoliaBundle.instantsearch.widgets.refinementList({
 					container: facet.wrapper.appendChild(document.createElement('div')),
 					attributeName: facet.attribute,
@@ -349,6 +341,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			}
 			
 			if (facet.type == 'slider') {
+				delete templates.item;
+				
 				return algoliaBundle.instantsearch.widgets.rangeSlider({
 					container: facet.wrapper.appendChild(document.createElement('div')),
 					attributeName: facet.attribute,
@@ -374,7 +368,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			facet.wrapper = wrapper;
 			
 			var templates = {
-				header: '<div class="name">' + (facet.label ? facet.label : facet.attribute) + '</div>'
+				header: '<div class="name">' + (facet.label ? facet.label : facet.attribute) + '</div>',
+				item: $('#refinements-lists-item-template').html()
 			};
 			
 			var widget = customAttributeFacet[facet.attribute] !== undefined ?
