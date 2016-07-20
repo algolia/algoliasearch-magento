@@ -5,12 +5,15 @@
     </div>
     <div class="current-refinement-wrapper">
         {{#label}}
-        <span class="current-refinement-label">{{label}}{{^operator}}:{{/operator}}</span>
+            <span class="current-refinement-label">{{label}}{{^operator}}:{{/operator}}</span>
         {{/label}}
+
         {{#operator}}
-        {{{displayOperator}}}
+            {{{displayOperator}}}
         {{/operator}}
+
         {{#exclude}}-{{/exclude}}
+
         <span class="current-refinement-name">{{name}}</span>
     </div>
 </script>
