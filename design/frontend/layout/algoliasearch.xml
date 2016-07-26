@@ -40,8 +40,8 @@
             <block type="core/template" template="algoliasearch/instantsearch/wrapper.phtml" name="algolia-instantsearch-wrapper"/>
             <block type="core/template" template="algoliasearch/instantsearch/hit.phtml" name="algolia-instantsearch-hit"/>
             <block type="core/template" template="algoliasearch/instantsearch/stats.phtml" name="algolia-instantsearch-stats"/>
-            <block type="core/template" template="algoliasearch/instantsearch/facet.phtml" name="algolia-instantsearch-facet"/>
-            <block type="core/template" template="algoliasearch/instantsearch/refinements.phtml" name="algolia-instantsearch-refinements"/>
+            <block type="core/template" template="algoliasearch/instantsearch/refinementsItem.phtml" name="algolia-instantsearch-refinements-item"/>
+            <block type="core/template" template="algoliasearch/instantsearch/currentRefinements.phtml" name="algolia-instantsearch-current-refinments"/>
         </reference>
 
         <reference name="content">
