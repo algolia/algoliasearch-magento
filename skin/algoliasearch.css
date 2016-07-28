@@ -672,30 +672,31 @@ a.ais-current-refined-values--link:hover
   position: relative;
 }
 
-#algolia-searchbox .clear-query-autocomplete {
+.clear-cross {
   position: absolute;
-  display: block;
-  background: url("data:image/svg+xml;utf8,<svg width=\'12\' height=\'12\' viewBox=\'0 0 12 12\' xmlns=\'http://www.w3.org/2000/svg\' opacity=\'0.6\'><path d=\'M.566 1.698L0 1.13 1.132 0l.565.566L6 4.868 10.302.566 10.868 0 12 1.132l-.566.565L7.132 6l4.302 4.3.566.568L10.868 12l-.565-.566L6 7.132l-4.3 4.302L1.13 12 0 10.868l.566-.565L4.868 6 .566 1.698z\'></path></svg>") no-repeat center center / contain;
-  top: 13px;
-  right: 12px;
-  cursor: pointer;
   display: none;
+  background: url("data:image/svg+xml;utf8,<svg width=\'12\' height=\'12\' viewBox=\'0 0 12 12\' xmlns=\'http://www.w3.org/2000/svg\' opacity=\'0.6\'><path d=\'M.566 1.698L0 1.13 1.132 0l.565.566L6 4.868 10.302.566 10.868 0 12 1.132l-.566.565L7.132 6l4.302 4.3.566.568L10.868 12l-.565-.566L6 7.132l-4.3 4.302L1.13 12 0 10.868l.566-.565L4.868 6 .566 1.698z\'></path></svg>") no-repeat center center / contain;
+  cursor: pointer;
   width: 16px;
   height: 16px;
+}
+
+#algolia-searchbox .clear-query-autocomplete {
+  top: 13px;
+  right: 12px;
 }
 
 #algolia_instant_selector .clear-query-instant {
-  position: absolute;
   right: 12px;
   top: 10px;
-  cursor: pointer;
-  display: none;
-  width: 16px;
-  height: 16px;
-  background: url("data:image/svg+xml;utf8,<svg width=\'12\' height=\'12\' viewBox=\'0 0 12 12\' xmlns=\'http://www.w3.org/2000/svg\' opacity=\'0.6\'><path d=\'M.566 1.698L0 1.13 1.132 0l.565.566L6 4.868 10.302.566 10.868 0 12 1.132l-.566.565L7.132 6l4.302 4.3.566.568L10.868 12l-.565-.566L6 7.132l-4.3 4.302L1.13 12 0 10.868l.566-.565L4.868 6 .566 1.698z\'></path></svg>") no-repeat center center / contain;
 }
 
-
+.cross-wrapper .clear-refinement {
+  display: block;
+  position: relative;
+  top: 5px;
+  left: 5px;
+ }
 
 #algolia-searchbox .magnifying-glass {
   position: absolute;
@@ -710,7 +711,6 @@ a.ais-current-refined-values--link:hover
 #algolia-searchbox .algolia-search-input {
   width: 300px;
   float: right;
-
 }
 
 #algolia-searchbox .algolia-search-input:focus:not([value=""]) {

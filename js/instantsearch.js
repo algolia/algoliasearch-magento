@@ -280,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				hierarchicalMenuParams.templates.item = '' +
 					'<div class="ais-hierearchical-link-wrapper">' +
 					'<a class="{{cssClasses.link}}" href="{{url}}">{{name}}' +
-					'{{#isRefined}}<img class="cross-circle" src="' + algoliaConfig.urls.crossCircle + '"/>{{/isRefined}}' +
+					'{{#isRefined}}<span class="cross-circle"></span>{{/isRefined}}' +
 					'<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span></a>' +
 					'</div>';
 				
