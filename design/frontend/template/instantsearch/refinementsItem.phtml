@@ -2,7 +2,7 @@
 <script type="text/template" id="refinements-lists-item-template">
     <label class="{{cssClasses.label}}">
         <input type="checkbox" class="{{cssClasses.checkbox}}" value="{{name}}" {{#isRefined}}checked{{/isRefined}} />{{name}}
-        {{#isRefined}}<img class="cross-circle" src="<?php echo $this->getSkinUrl('algoliasearch/cross-circle.png'); ?>" />{{/isRefined}}
+        {{#isRefined}}<span class="cross-circle"></span>{{/isRefined}}
         <span class="{{cssClasses.count}}">
             {{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}
         </span>
