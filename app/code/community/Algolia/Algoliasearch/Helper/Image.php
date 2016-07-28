@@ -1,10 +1,10 @@
 <?php
 
+/*
+ * Subclass to be able to catch the error
+ */
 class Algolia_Algoliasearch_Helper_Image extends Mage_Catalog_Helper_Image
 {
-    /*
-     * Subclass to be able to catch the error
-     */
     public function toString()
     {
         $model = $this->_getModel();
@@ -16,7 +16,7 @@ class Algolia_Algoliasearch_Helper_Image extends Mage_Catalog_Helper_Image
         }
 
         if ($model->isCached()) {
-            return $this->getUrl($model);
+            return $this->removeProtocol($model->getUrl());
         }
 
         if ($this->_scheduleRotate) {
@@ -31,16 +31,11 @@ class Algolia_Algoliasearch_Helper_Image extends Mage_Catalog_Helper_Image
             $model->setWatermark($this->getWatermark());
         }
 
-        return $this->getUrl($model->saveFile());
+        return $this->removeProtocol($model->saveFile()->getUrl());
     }
 
-    public function getUrl(Mage_Catalog_Model_Product_Image $model)
+    public function removeProtocol($url)
     {
-        $baseDir = Mage::getBaseDir();
-        $path = str_replace($baseDir.DS, '', $model->getNewFile());
-
-        $url = str_replace(DS, '/', $path);
-
-        return $url;
+        return str_replace(['https://', 'http://'], '//', $url);
     }
 }

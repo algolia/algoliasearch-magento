@@ -1,0 +1,10 @@
+<!-- Refinements lists item template -->
+<script type="text/template" id="refinements-lists-item-template">
+    <label class="{{cssClasses.label}}">
+        <input type="checkbox" class="{{cssClasses.checkbox}}" value="{{name}}" {{#isRefined}}checked{{/isRefined}} />{{name}}
+        {{#isRefined}}<span class="cross-circle"></span>{{/isRefined}}
+        <span class="{{cssClasses.count}}">
+            {{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}
+        </span>
+    </label>
+</script>

@@ -14,14 +14,8 @@ if ($config->isDefaultSelector()): ?>
         <div id="algolia-searchbox">
             <label for="search"><?php echo $this->__('Search:') ?></label>
             <input id="search" type="text" name="<?php echo $catalogSearchHelper->getQueryParamName() ?>" class="input-text algolia-search-input" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="<?php echo $placeholder; ?>" />
-            <img class="clear-query-autocomplete" src="<?php echo $this->getSkinUrl('algoliasearch/cross.png') ?>" />
-            <svg id="algolia-glass" xmlns="http://www.w3.org/2000/svg" class="magnifying-glass" width="24" height="24" viewBox="0 0 128 128" >
-                <g transform="scale(4)">
-                    <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
-                    <circle stroke-width="3" cx="12" cy="12" r="10.5" fill="none"></circle>
-                    <path d="M23.646 20.354l-3.293 3.293c-.195.195-.195.512 0 .707l7.293 7.293c.195.195.512.195.707 0l3.293-3.293c.195-.195.195-.512 0-.707l-7.293-7.293c-.195-.195-.512-.195-.707 0z" ></path>
-                </g>
-            </svg>
+            <span class="clear-cross clear-query-autocomplete"></span>
+            <span id="algolia-glass" class="magnifying-glass" width="24" height="24"></span>
         </div>
     </form>
 <?php endif; ?>

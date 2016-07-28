@@ -10,15 +10,13 @@ $group_id = $session->getCustomerGroupId();
 $currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
 $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
 
-$image_base_url = Mage::getBaseUrl();
-
 ?>
 
 <!-- Product hit template -->
 <script type="text/template" id="autocomplete_products_template">
     <a class="algoliasearch-autocomplete-hit" href="{{url}}">
         {{#thumbnail_url}}
-            <div class="thumb"><img src="<?php echo $image_base_url; ?>{{thumbnail_url}}" /></div>
+            <div class="thumb"><img src="{{thumbnail_url}}" /></div>
         {{/thumbnail_url}}
 
         <div class="info">
