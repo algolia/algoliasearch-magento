@@ -4,13 +4,13 @@
 #
 ####################################
 
-Algolia_Algoliasearch.xml                   app/etc/modules/Algolia_Algoliasearch.xml
-code                                        app/code/community/Algolia/Algoliasearch/
-design/frontend/layout/algoliasearch.xml    app/design/frontend/base/default/layout/algoliasearch.xml
-design/frontend/template                    app/design/frontend/base/default/template/algoliasearch
-design/adminhtml/layout/algoliasearch.xml   app/design/adminhtml/default/default/layout/algoliasearch.xml
-design/adminhtml/template                   app/design/adminhtml/default/default/template/algoliasearch
-locale/en_US/Algolia_Algoliasearch.csv      app/locale/en_US/Algolia_Algoliasearch.csv
-skin                                        skin/frontend/base/default/algoliasearch
-js                                          js/algoliasearch
-lib/AlgoliaSearch                           lib/AlgoliaSearch/
+app/etc/modules/Algolia_Algoliasearch.xml                           app/etc/modules/Algolia_Algoliasearch.xml
+app/code/community/Algolia/Algoliasearch/                           app/code/community/Algolia/Algoliasearch/
+app/design/frontend/base/default/layout/algoliasearch.xml           app/design/frontend/base/default/layout/algoliasearch.xml
+app/design/frontend/base/default/template/algoliasearch/            app/design/frontend/base/default/template/algoliasearch/
+app/design/adminhtml/default/default/layout/algoliasearch.xml       app/design/adminhtml/default/default/layout/algoliasearch.xml
+app/design/adminhtml/default/default/template/algoliasearch/        app/design/adminhtml/default/default/template/algoliasearch/
+app/locale/en_US/Algolia_Algoliasearch.csv                          app/locale/en_US/Algolia_Algoliasearch.csv
+skin/frontend/base/default/algoliasearch/                           skin/frontend/base/default/algoliasearch/
+js/algoliasearch/                                                   js/algoliasearch/
+lib/AlgoliaSearch/                                                  lib/AlgoliaSearch/
