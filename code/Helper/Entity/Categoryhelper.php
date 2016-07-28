@@ -69,6 +69,8 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         }
 
         $additionalAttr[] = 'include_in_menu';
+        $additionalAttr[] = 'image';
+        $additionalAttr[] = 'thumbnail';
 
         $categories
             ->addPathFilter($storeRootCategoryPath)
@@ -143,11 +145,6 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
             $path .= $this->getCategoryName($categoryId, $storeId);
         }
 
-        $image_url = null;
-        try {
-            $image_url = $category->getImageUrl();
-        } catch (Exception $e) { /* no image, no default: not fatal */
-        }
         $data = [
             'objectID'        => $category->getId(),
             'name'            => $category->getName(),
@@ -160,8 +157,16 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
             'product_count'   => $category->getProductCount(),
         ];
 
-        if (!empty($image_url)) {
-            $data['image_url'] = $image_url;
+        try {
+            $imageUrl = $this->getThumbnailUrl($category) ?: $category->getImageUrl();
+            if ($imageUrl) {
+                /** @var Algolia_Algoliasearch_Helper_Image $imageHelper */
+                $imageHelper = Mage::helper('algoliasearch/image');
+
+                $data['image_url'] = $imageHelper->removeProtocol($imageUrl);
+            }
+        } catch (\Exception $e) {
+            // no image, no default, not fatal
         }
 
         foreach ($this->config->getCategoryAdditionalAttributes($storeId) as $attribute) {
@@ -202,5 +207,15 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         }
 
         return self::$_rootCategoryId;
+    }
+
+    private function getThumbnailUrl($category)
+    {
+        $url = false;
+        if ($image = $category->getThumbnail()) {
+            $url = Mage::getBaseUrl('media').'catalog/category/'.$image;
+        }
+
+        return $url;
     }
 }

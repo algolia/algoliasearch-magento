@@ -712,12 +712,12 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $customData['categories_without_path'] = $categories;
 
-        /** @var Algolia_Algoliasearch_Helper_Image $image_helper */
-        $image_helper = Mage::helper('algoliasearch/image');
+        /** @var Algolia_Algoliasearch_Helper_Image $imageHelper */
+        $imageHelper = Mage::helper('algoliasearch/image');
 
         if (false === isset($defaultData['thumbnail_url'])) {
             /** @var Algolia_Algoliasearch_Helper_Image $thumb */
-            $thumb = $image_helper->init($product, 'thumbnail')->resize(75, 75);
+            $thumb = $imageHelper->init($product, 'thumbnail')->resize(75, 75);
 
             try {
                 $customData['thumbnail_url'] = $thumb->toString();
@@ -725,16 +725,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $this->logger->log($e->getMessage());
                 $this->logger->log($e->getTraceAsString());
 
-                $baseUrl = Mage::getBaseUrl();
                 $placeholderUrl = Mage::getDesign()->getSkinUrl($thumb->getPlaceholder());
 
-                $customData['thumbnail_url'] = str_replace($baseUrl, '', $placeholderUrl);
+                $customData['thumbnail_url'] = $imageHelper->removeProtocol($placeholderUrl);
             }
         }
 
         if (false === isset($defaultData['image_url'])) {
             /** @var Algolia_Algoliasearch_Helper_Image $image */
-            $image = $image_helper->init($product, $this->config->getImageType())
+            $image = $imageHelper->init($product, $this->config->getImageType())
                          ->resize($this->config->getImageWidth(), $this->config->getImageHeight());
 
             try {
@@ -743,10 +742,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $this->logger->log($e->getMessage());
                 $this->logger->log($e->getTraceAsString());
 
-                $baseUrl = Mage::getBaseUrl();
                 $placeholderUrl = Mage::getDesign()->getSkinUrl($image->getPlaceholder());
 
-                $customData['image_url'] = str_replace($baseUrl, '', $placeholderUrl);
+                $customData['image_url'] = $imageHelper->removeProtocol($placeholderUrl);
             }
 
             if ($this->isAttributeEnabled($additionalAttributes, 'media_gallery')) {
@@ -755,7 +753,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $customData['media_gallery'] = [];
 
                 foreach ($product->getMediaGalleryImages() as $image) {
-                    $customData['media_gallery'][] = str_replace(['https://', 'http://'], '//', $image->getUrl());
+                    $customData['media_gallery'][] = $imageHelper->removeProtocol($image->getUrl());
                 }
             }
         }
