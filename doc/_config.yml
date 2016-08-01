@@ -10,12 +10,12 @@ host: 0.0.0.0
 
 # Navigation
 navigation:
- - text: Documentation
+ - text: Magento 1 Documentation
    url: /documentation/
+ - text: Magento 2 Documentation
+   url: /m2-documentation/
  - text: FAQ
    url: /faq/
-# - text: Developers
-#   url: /developers/
  - text: About
    url: /about/
 
