@@ -7,12 +7,12 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_CategoryAdditionalAtt
 {
     public function __construct()
     {
-        $this->settings = [
-            'columns' => [
-                'attribute' => [
+        $this->settings = array(
+            'columns' => array(
+                'attribute' => array(
                     'label'   => 'Attribute',
                     'options' => function () {
-                        $options = [];
+                        $options = array();
 
                         /** @var Algolia_Algoliasearch_Helper_Entity_Categoryhelper $category_helper */
                         $category_helper = Mage::helper('algoliasearch/entity_categoryhelper');
@@ -26,35 +26,35 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_CategoryAdditionalAtt
                     },
                     'rowMethod' => 'getAttribute',
                     'width'     => 160,
-                ],
-                'searchable' => [
+                ),
+                'searchable' => array(
                     'label'   => 'Searchable',
-                    'options' => [
+                    'options' => array(
                         '1' => 'Yes',
                         '0' => 'No',
-                    ],
+                    ),
                     'rowMethod' => 'getSearchable',
-                ],
-                'retrievable' => [
+                ),
+                'retrievable' => array(
                     'label'   => 'Retrievable',
-                    'options' => [
+                    'options' => array(
                         '1' => 'Yes',
                         '0' => 'No',
-                    ],
+                    ),
                     'rowMethod' => 'getRetrievable',
-                ],
-                'order' => [
+                ),
+                'order' => array(
                     'label'   => 'Ordered',
-                    'options' => [
+                    'options' => array(
                         'ordered'   => 'Ordered',
                         'unordered' => 'Unordered',
-                    ],
+                    ),
                     'rowMethod' => 'getOrder',
-                ],
-            ],
+                ),
+            ),
             'buttonLabel' => 'Add Attribute',
             'addAfter'    => false,
-        ];
+        );
 
         parent::__construct();
     }

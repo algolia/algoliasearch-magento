@@ -114,7 +114,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $number_of_results = min($this->config->getNumberOfProductResults($storeId), 1000);
         }
 
-        $answer = $this->algolia_helper->query($index_name, $query, [
+        $answer = $this->algolia_helper->query($index_name, $query, array(
             'hitsPerPage'            => $number_of_results, // retrieve all the hits (hard limit is 1000)
             'attributesToRetrieve'   => 'objectID',
             'attributesToHighlight'  => '',
@@ -122,9 +122,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'numericFilters'         => 'visibility_search=1',
             'removeWordsIfNoResults' => $this->config->getRemoveWordsIfNoResult($storeId),
             'analyticsTags'          => 'backend-search',
-        ]);
+        ));
 
-        $data = [];
+        $data = array();
 
         foreach ($answer['hits'] as $i => $hit) {
             $productId = $hit['objectID'];
@@ -352,7 +352,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $this->algolia_helper->setSettings($index_name, $this->suggestion_helper->getIndexSettings($storeId));
         }
 
-        $indexData = [];
+        $indexData = array();
 
         /** @var Mage_CatalogSearch_Model_Query $suggestion */
         foreach ($collection as $suggestion) {
@@ -397,7 +397,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $index_name = $this->category_helper->getIndexName($storeId);
 
-        $indexData = [];
+        $indexData = array();
 
         /** @var $category Mage_Catalog_Model_Category */
         foreach ($collection as $category) {
@@ -430,16 +430,16 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
-    protected function getProductsRecords($storeId, $collection, $potentiallyDeletedProductsIds = [])
+    protected function getProductsRecords($storeId, $collection, $potentiallyDeletedProductsIds = array())
     {
-        $productsToIndex = [];
-        $productsToRemove = [];
+        $productsToIndex = array();
+        $productsToRemove = array();
 
         // In $potentiallyDeletedProductsIds there might be IDs of deleted products which will not be in a collection
         if (is_array($potentiallyDeletedProductsIds)) {
             $potentiallyDeletedProductsIds = array_combine($potentiallyDeletedProductsIds, $potentiallyDeletedProductsIds);
         } else {
-            $potentiallyDeletedProductsIds = [];
+            $potentiallyDeletedProductsIds = array();
         }
 
         $this->logger->start('CREATE RECORDS '.$this->logger->getStoreName($storeId));
@@ -459,7 +459,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             if (isset($productsToIndex[$productId]) || isset($productsToRemove[$productId])) {
                 continue;
             }
-            
+
             if ($product->isDeleted() === true
                 || $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED
                 || (int) $product->getVisibility() <= Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE
@@ -477,10 +477,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $this->logger->stop('CREATE RECORDS '.$this->logger->getStoreName($storeId));
 
-        return [
-            'toIndex' => $productsToIndex,
+        return array(
+            'toIndex'  => $productsToIndex,
             'toRemove' => array_unique($productsToRemove),
-        ];
+        );
     }
 
     public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null, $productIds = null, $useTmpIndex = false)
@@ -557,7 +557,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $this->logger->log('Product IDs: '.implode(', ', $indexData['toRemove']));
             $this->logger->stop('REMOVE FROM ALGOLIA');
         }
-
 
         unset($indexData);
 

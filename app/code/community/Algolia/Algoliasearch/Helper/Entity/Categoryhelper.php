@@ -12,8 +12,8 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
 
     public function getIndexSettings($storeId)
     {
-        $attributesToIndex = [];
-        $unretrievableAttributes = [];
+        $attributesToIndex = array();
+        $unretrievableAttributes = array();
 
         foreach ($this->config->getCategoryAdditionalAttributes($storeId) as $attribute) {
             if ($attribute['searchable'] == '1') {
@@ -31,22 +31,22 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
 
         $customRankings = $this->config->getCategoryCustomRanking($storeId);
 
-        $customRankingsArr = [];
+        $customRankingsArr = array();
 
         foreach ($customRankings as $ranking) {
             $customRankingsArr[] = $ranking['order'].'('.$ranking['attribute'].')';
         }
 
         // Default index settings
-        $indexSettings = [
+        $indexSettings = array(
             'attributesToIndex'       => array_values(array_unique($attributesToIndex)),
             'customRanking'           => $customRankingsArr,
             'unretrievableAttributes' => $unretrievableAttributes,
-        ];
+        );
 
         // Additional index settings from event observer
         $transport = new Varien_Object($indexSettings);
-        Mage::dispatchEvent('algolia_index_settings_prepare', ['store_id' => $storeId, 'index_settings' => $transport]);
+        Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport));
         $indexSettings = $transport->getData();
 
         $this->algolia_helper->mergeSettings($this->getIndexName($storeId), $indexSettings);
@@ -62,7 +62,7 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
 
         $unserializedCategorysAttrs = $this->config->getCategoryAdditionalAttributes($storeId);
 
-        $additionalAttr = [];
+        $additionalAttr = array();
 
         foreach ($unserializedCategorysAttrs as $attr) {
             $additionalAttr[] = $attr['attribute'];
@@ -78,11 +78,11 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
             ->addUrlRewriteToResult()
             ->addIsActiveFilter()
             ->setStoreId($storeId)
-            ->addAttributeToSelect(array_merge(['name'], $additionalAttr))
-            ->addFieldToFilter('level', ['gt' => 1]);
+            ->addAttributeToSelect(array_merge(array('name'), $additionalAttr))
+            ->addFieldToFilter('level', array('gt' => 1));
 
         if ($categoryIds) {
-            $categories->addFieldToFilter('entity_id', ['in' => $categoryIds]);
+            $categories->addFieldToFilter('entity_id', array('in' => $categoryIds));
         }
 
         return $categories;
@@ -91,22 +91,22 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
     public function getAllAttributes()
     {
         if (is_null(self::$_categoryAttributes)) {
-            self::$_categoryAttributes = [];
+            self::$_categoryAttributes = array();
 
             /** @var $config Mage_Eav_Model_Config */
             $config = Mage::getSingleton('eav/config');
 
             $allAttributes = $config->getEntityAttributeCodes('catalog_category');
 
-            $categoryAttributes = array_merge($allAttributes, ['product_count']);
+            $categoryAttributes = array_merge($allAttributes, array('product_count'));
 
-            $excludedAttributes = [
+            $excludedAttributes = array(
                 'all_children', 'available_sort_by', 'children', 'children_count', 'custom_apply_to_products',
                 'custom_design', 'custom_design_from', 'custom_design_to', 'custom_layout_update', 'custom_use_parent_settings',
                 'default_sort_by', 'display_mode', 'filter_price_range', 'global_position', 'image', 'include_in_menu', 'is_active',
                 'is_always_include_in_menu', 'is_anchor', 'landing_page', 'level', 'lower_cms_block',
                 'page_layout', 'path_in_store', 'position', 'small_image', 'thumbnail', 'url_key', 'url_path',
-                'visible_in_menu', ];
+                'visible_in_menu', );
 
             $categoryAttributes = array_diff($categoryAttributes, $excludedAttributes);
 
@@ -133,7 +133,7 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         $category->setProductCount($productCollection->getSize());
 
         $transport = new Varien_Object();
-        Mage::dispatchEvent('algolia_category_index_before', ['category' => $category, 'custom_data' => $transport]);
+        Mage::dispatchEvent('algolia_category_index_before', array('category' => $category, 'custom_data' => $transport));
         $customData = $transport->getData();
 
         $category->getUrlInstance()->setStore($storeId);
@@ -145,17 +145,17 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
             $path .= $this->getCategoryName($categoryId, $storeId);
         }
 
-        $data = [
+        $data = array(
             'objectID'        => $category->getId(),
             'name'            => $category->getName(),
             'path'            => $path,
             'level'           => $category->getLevel(),
             'url'             => $category->getUrl(),
             'include_in_menu' => $category->getIncludeInMenu(),
-            '_tags'           => ['category'],
+            '_tags'           => array('category'),
             'popularity'      => 1,
             'product_count'   => $category->getProductCount(),
-        ];
+        );
 
         try {
             $imageUrl = $this->getThumbnailUrl($category) ?: $category->getImageUrl();

@@ -54,7 +54,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
 
     protected function castProductObject(&$productData)
     {
-        $nonCastableAttributes = ['sku', 'name', 'description'];
+        $nonCastableAttributes = array('sku', 'name', 'description');
 
         foreach ($productData as $key => &$data) {
             if (in_array($key, $nonCastableAttributes, true) === true) {
@@ -150,7 +150,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
     public function getCategories()
     {
         if (is_null(self::$_activeCategories)) {
-            self::$_activeCategories = [];
+            self::$_activeCategories = array();
 
             /** @var Mage_Catalog_Model_Resource_Category $resource */
             $resource = Mage::getResourceModel('catalog/category');
@@ -160,12 +160,12 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
                 $coreResource = Mage::getSingleton('core/resource');
                 $connection = $coreResource->getConnection('core_read');
 
-                $select = $connection->select()->from(['backend' => $attribute->getBackendTable()], [
+                $select = $connection->select()->from(array('backend' => $attribute->getBackendTable()), array(
                         'key' => new Zend_Db_Expr("CONCAT(backend.store_id, '-', backend.entity_id)"),
                         'category.path',
                         'backend.value',
-                    ])->join(['category' => $resource->getTable('catalog/category')],
-                        'backend.entity_id = category.entity_id', [])
+                    ))->join(array('category' => $resource->getTable('catalog/category')),
+                        'backend.entity_id = category.entity_id', array())
                                      ->where('backend.entity_type_id = ?', $attribute->getEntityTypeId())
                                      ->where('backend.attribute_id = ?', $attribute->getAttributeId())
                                      ->order('backend.store_id')->order('backend.entity_id');
@@ -191,7 +191,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
         $storeId = intval($storeId);
 
         if (is_null(self::$_categoryNames)) {
-            self::$_categoryNames = [];
+            self::$_categoryNames = array();
 
             $resource = Mage::getResourceModel('catalog/category');
             /** @var $resource Mage_Catalog_Model_Resource_Category */
@@ -200,10 +200,10 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
                 $coreResource = Mage::getSingleton('core/resource');
                 $connection = $coreResource->getConnection('core_read');
 
-                $select = $connection->select()->from(['backend' => $attribute->getBackendTable()],
-                        [new Zend_Db_Expr("CONCAT(backend.store_id, '-', backend.entity_id)"), 'backend.value'])
-                                     ->join(['category' => $resource->getTable('catalog/category')],
-                                         'backend.entity_id = category.entity_id', [])
+                $select = $connection->select()->from(array('backend' => $attribute->getBackendTable()),
+                        array(new Zend_Db_Expr("CONCAT(backend.store_id, '-', backend.entity_id)"), 'backend.value'))
+                                     ->join(array('category' => $resource->getTable('catalog/category')),
+                                         'backend.entity_id = category.entity_id', array())
                                      ->where('backend.entity_type_id = ?', $attribute->getEntityTypeId())
                                      ->where('backend.attribute_id = ?', $attribute->getAttributeId())
                                      ->where('category.level > ?', 1);
@@ -237,7 +237,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
     {
         /** @var Algolia_Algoliasearch_Helper_Config $config */
         $config = Mage::helper('algoliasearch/config');
-        $store_ids = [];
+        $store_ids = array();
 
         if ($store_id == null) {
             /** @var Mage_Core_Model_Store $store */
@@ -251,7 +251,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
                 }
             }
         } else {
-            $store_ids = [$store_id];
+            $store_ids = array($store_id);
         }
 
         return $store_ids;

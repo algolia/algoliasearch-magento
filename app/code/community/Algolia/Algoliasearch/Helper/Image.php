@@ -36,6 +36,6 @@ class Algolia_Algoliasearch_Helper_Image extends Mage_Catalog_Helper_Image
 
     public function removeProtocol($url)
     {
-        return str_replace(['https://', 'http://'], '//', $url);
+        return str_replace(array('https://', 'http://'), '//', $url);
     }
 }

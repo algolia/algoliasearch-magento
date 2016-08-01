@@ -52,7 +52,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
         foreach ($ids as $id) {
             if (is_array($category_ids) == false) {
-                $category_ids = [$category_ids];
+                $category_ids = array($category_ids);
             }
 
             $by_page = $this->config->getNumberOfElementByPage();
@@ -60,11 +60,11 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             if (is_array($category_ids) && count($category_ids) > $by_page) {
                 foreach (array_chunk($category_ids, $by_page) as $chunk) {
                     $this->addToQueue('algoliasearch/observer', 'removeCategories',
-                        ['store_id' => $id, 'category_ids' => $chunk], count($chunk));
+                        array('store_id' => $id, 'category_ids' => $chunk), count($chunk));
                 }
             } else {
                 $this->addToQueue('algoliasearch/observer', 'removeCategories',
-                    ['store_id' => $id, 'category_ids' => $category_ids], count($category_ids));
+                    array('store_id' => $id, 'category_ids' => $category_ids), count($category_ids));
             }
 
             return $this;
@@ -110,7 +110,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
                 continue;
             }
 
-            $this->addToQueue('algoliasearch/observer', 'rebuildPageIndex', ['store_id' => $store->getId()], 1);
+            $this->addToQueue('algoliasearch/observer', 'rebuildPageIndex', array('store_id' => $store->getId()), 1);
         }
     }
 
@@ -133,7 +133,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             }
 
             $this->addToQueue('algoliasearch/observer', 'rebuildAdditionalSectionsIndex',
-                ['store_id' => $store->getId()], 1);
+                array('store_id' => $store->getId()), 1);
         }
     }
 
@@ -160,12 +160,12 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             $nb_page = ceil($size / $by_page);
 
             for ($i = 1; $i <= $nb_page; $i++) {
-                $data = ['store_id' => $store->getId(), 'page_size' => $by_page, 'page' => $i];
+                $data = array('store_id' => $store->getId(), 'page_size' => $by_page, 'page' => $i);
                 $this->addToQueue('algoliasearch/observer', 'rebuildSuggestionIndex', $data, 1);
             }
 
             $this->addToQueue('algoliasearch/observer', 'moveStoreSuggestionIndex',
-                ['store_id' => $store->getId()], 1);
+                array('store_id' => $store->getId()), 1);
         }
 
         return $this;
@@ -195,14 +195,14 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
             if ($store->getIsActive()) {
                 $useTmpIndex = $this->config->isQueueActive($storeId);
-                $this->_rebuildProductIndex($storeId, [], $useTmpIndex);
+                $this->_rebuildProductIndex($storeId, array(), $useTmpIndex);
 
                 if ($this->config->isQueueActive($storeId)) {
-                    $this->addToQueue('algoliasearch/observer', 'moveProductsTmpIndex', ['store_id' => $storeId], 1);
+                    $this->addToQueue('algoliasearch/observer', 'moveProductsTmpIndex', array('store_id' => $storeId), 1);
                 }
             } else {
                 $this->addToQueue('algoliasearch/observer', 'deleteProductsStoreIndices',
-                    ['store_id' => $storeId], 1);
+                    array('store_id' => $storeId), 1);
             }
         }
     }
@@ -227,10 +227,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
             if ($store->getIsActive()) {
                 $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex',
-                    ['store_id' => $store->getId(), 'category_ids' => []], 1);
+                    array('store_id' => $store->getId(), 'category_ids' => array()), 1);
             } else {
                 $this->addToQueue('algoliasearch/observer', 'deleteCategoriesStoreIndices',
-                    ['store_id' => $store->getId()], 1);
+                    array('store_id' => $store->getId()), 1);
             }
         }
     }
@@ -261,18 +261,18 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             $nb_page = ceil($size / $by_page);
 
             for ($i = 1; $i <= $nb_page; $i++) {
-                $data = [
+                $data = array(
                     'store_id'     => $storeId,
                     'category_ids' => $categoryIds,
                     'page_size'    => $by_page,
                     'page'         => $i,
-                ];
+                );
 
                 $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex', $data, $by_page);
             }
         } else {
             $this->addToQueue('algoliasearch/observer', 'rebuildCategoryIndex',
-                ['store_id' => $storeId, 'category_ids' => $categoryIds], count($categoryIds));
+                array('store_id' => $storeId, 'category_ids' => $categoryIds), count($categoryIds));
         }
 
         return $this;
@@ -287,24 +287,24 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             if (!empty($productIds)) {
                 $size = max(count($productIds), $size);
             }
-            
+
             $by_page = $this->config->getNumberOfElementByPage();
             $nb_page = ceil($size / $by_page);
 
             for ($i = 1; $i <= $nb_page; $i++) {
-                $data = [
+                $data = array(
                     'store_id'      => $storeId,
                     'product_ids'   => $productIds,
                     'page_size'     => $by_page,
                     'page'          => $i,
                     'use_tmp_index' => $useTmpIndex,
-                ];
+                );
 
                 $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex', $data, $by_page);
             }
         } else {
             $this->addToQueue('algoliasearch/observer', 'rebuildProductIndex',
-                ['store_id' => $storeId, 'product_ids' => $productIds], count($productIds));
+                array('store_id' => $storeId, 'product_ids' => $productIds), count($productIds));
         }
 
         return $this;

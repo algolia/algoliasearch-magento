@@ -7,16 +7,16 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_AdditionalSections ex
 {
     public function __construct()
     {
-        $this->settings = [
-            'columns' => [
-                'name' => [
+        $this->settings = array(
+            'columns' => array(
+                'name' => array(
                     'label'   => 'Section',
                     'options' => function () {
-                        $options = [];
+                        $options = array();
 
-                        $sections = [
-                            ['name' => 'pages', 'label' => 'Pages'],
-                        ];
+                        $sections = array(
+                            array('name' => 'pages', 'label' => 'Pages'),
+                        );
 
                         /** @var Algolia_Algoliasearch_Helper_Config $config */
                         $config = Mage::helper('algoliasearch/config');
@@ -27,10 +27,10 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_AdditionalSections ex
                                 continue;
                             }
 
-                            $sections[] = [
+                            $sections[] = array(
                                 'name'  => $attribute['attribute'],
                                 'label' => $attribute['label'] ? $attribute['label'] : $attribute['attribute']
-                            ];
+                            );
                         }
 
                         foreach ($sections as $section) {
@@ -41,20 +41,20 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_AdditionalSections ex
                     },
                     'rowMethod' => 'getName',
                     'width'     => 130,
-                ],
-                'label' => [
+                ),
+                'label' => array(
                     'label' => 'Label',
                     'style' => 'width: 100px;',
-                ],
-                'hitsPerPage' => [
+                ),
+                'hitsPerPage' => array(
                     'label' => 'Hits per page',
                     'style' => 'width: 100px;',
                     'class' => 'required-entry input-text validate-number',
-                ],
-            ],
+                ),
+            ),
             'buttonLabel' => 'Add Section',
             'addAfter'    => false,
-        ];
+        );
 
         parent::__construct();
     }

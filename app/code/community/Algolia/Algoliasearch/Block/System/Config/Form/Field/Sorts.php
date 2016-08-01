@@ -7,12 +7,12 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Algolia
 {
     public function __construct()
     {
-        $this->settings = [
-            'columns' => [
-                'attribute' => [
+        $this->settings = array(
+            'columns' => array(
+                'attribute' => array(
                     'label'   => 'Attribute',
                     'options' => function () {
-                        $options = [];
+                        $options = array();
 
                         /** @var Algolia_Algoliasearch_Helper_Config $config */
                         $config = Mage::helper('algoliasearch/config');
@@ -26,23 +26,23 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Sorts extends Algolia
                     },
                     'rowMethod' => 'getAttribute',
                     'width'     => 160,
-                ],
-                'sort' => [
+                ),
+                'sort' => array(
                     'label'   => 'Sort',
-                    'options' => [
+                    'options' => array(
                         'asc'  => 'Ascending',
                         'desc' => 'Descending',
-                    ],
+                    ),
                     'rowMethod' => 'getSort',
-                ],
-                'label' => [
+                ),
+                'label' => array(
                     'label' => 'Label',
                     'style' => 'width: 200px;',
-                ],
-            ],
+                ),
+            ),
             'buttonLabel' => 'Add Sorting Attribute',
             'addAfter'    => false,
-        ];
+        );
 
         parent::__construct();
     }

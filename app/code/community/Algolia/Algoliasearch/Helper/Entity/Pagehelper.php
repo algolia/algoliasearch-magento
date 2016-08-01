@@ -9,10 +9,10 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
 
     public function getIndexSettings($storeId)
     {
-        return [
-            'attributesToIndex'   => ['slug', 'name', 'unordered(content)'],
-            'attributesToSnippet' => ['content:7'],
-        ];
+        return array(
+            'attributesToIndex'   => array('slug', 'name', 'unordered(content)'),
+            'attributesToSnippet' => array('content:7'),
+        );
     }
 
     public function getPages($storeId)
@@ -31,14 +31,14 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
             $excluded_page = $excluded_page['pages'];
         }
 
-        $pages = [];
+        $pages = array();
 
         foreach ($ids as $key => $value) {
             if (in_array($value['value'], $excluded_pages)) {
                 continue;
             }
 
-            $page_obj = [];
+            $page_obj = array();
 
             $page_obj['slug'] = $value['value'];
             $page_obj['name'] = $value['label'];

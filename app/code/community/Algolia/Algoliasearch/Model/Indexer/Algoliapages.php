@@ -18,7 +18,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliapages extends Algolia_Algoliase
         $this->config = Mage::helper('algoliasearch/config');
     }
 
-    protected $_matchedEntities = [];
+    protected $_matchedEntities = array();
 
     protected function _getResource()
     {

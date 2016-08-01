@@ -7,12 +7,12 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_CustomRankingProductA
 {
     public function __construct()
     {
-        $this->settings = [
-            'columns' => [
-                'attribute' => [
+        $this->settings = array(
+            'columns' => array(
+                'attribute' => array(
                     'label'   => 'Attribute',
                     'options' => function () {
-                        $options = [];
+                        $options = array();
 
                         /** @var Algolia_Algoliasearch_Helper_Config $config */
                         $config = Mage::helper('algoliasearch/config');
@@ -25,19 +25,19 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_CustomRankingProductA
                         return $options;
                     },
                     'rowMethod' => 'getAttribute',
-                ],
-                'order' => [
+                ),
+                'order' => array(
                     'label'   => 'Asc / Desc',
-                    'options' => [
+                    'options' => array(
                         'desc' => 'Descending',
                         'asc'  => 'Ascending',
-                    ],
+                    ),
                     'rowMethod' => 'getOrder',
-                ],
-            ],
+                ),
+            ),
             'buttonLabel' => 'Add Ranking Criterion',
             'addAfter'    => false,
-        ];
+        );
 
         parent::__construct();
     }

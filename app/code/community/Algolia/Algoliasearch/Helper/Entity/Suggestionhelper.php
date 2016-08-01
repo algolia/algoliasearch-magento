@@ -12,23 +12,23 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
 
     public function getIndexSettings($storeId)
     {
-        return [
-            'attributesToIndex'    => ['query'],
-            'customRanking'        => ['desc(popularity)', 'desc(number_of_results)', 'asc(date)'],
+        return array(
+            'attributesToIndex'    => array('query'),
+            'customRanking'        => array('desc(popularity)', 'desc(number_of_results)', 'asc(date)'),
             'typoTolerance'        => false,
-            'attributesToRetrieve' => ['query'],
-        ];
+            'attributesToRetrieve' => array('query'),
+        );
     }
 
     public function getObject(Mage_CatalogSearch_Model_Query $suggestion)
     {
-        $suggestion_obj = [
+        $suggestion_obj = array(
             'objectID'          => $suggestion->getData('query_id'),
             'query'             => $suggestion->getData('query_text'),
             'number_of_results' => (int) $suggestion->getData('num_results'),
             'popularity'        => (int) $suggestion->getData('popularity'),
             'updated_at'        => (int) strtotime($suggestion->getData('updated_at')),
-        ];
+        );
 
         return $suggestion_obj;
     }
@@ -55,7 +55,7 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
 
                 $collection->load();
 
-                $suggestions = [];
+                $suggestions = array();
 
                 /** @var $suggestion Mage_Catalog_Model_Category */
                 foreach ($collection as $suggestion) {
@@ -67,9 +67,9 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
                 $this->_popularQueries = array_slice($suggestions, 0, 9);
                 try { //save to cache
                     $cacheContent = serialize($this->_popularQueries);
-                    $tags = [
+                    $tags = array(
                         Mage_CatalogSearch_Model_Query::CACHE_TAG,
-                    ];
+                    );
 
                     Mage::app()->saveCache($cacheContent, $this->_popularQueriesCacheId, $tags, 604800);
                 } catch (Exception $e) {

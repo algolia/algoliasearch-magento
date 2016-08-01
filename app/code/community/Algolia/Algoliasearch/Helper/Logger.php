@@ -6,8 +6,8 @@ class Algolia_Algoliasearch_Helper_Logger extends Mage_Core_Helper_Abstract
     protected $config;
 
     protected $enabled;
-    protected $timers = [];
-    protected $stores = [];
+    protected $timers = array();
+    protected $stores = array();
 
     public function __construct()
     {
