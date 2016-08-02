@@ -350,7 +350,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getAttributesToRetrieve($group_id)
     {
         if (false === $this->isCustomerGroupsEnabled()) {
-            return [];
+            return array();
         }
 
         $attributes = [];
