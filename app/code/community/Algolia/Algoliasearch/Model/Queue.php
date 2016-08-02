@@ -33,13 +33,13 @@ class Algolia_Algoliasearch_Model_Queue
     public function add($class, $method, $data, $data_size)
     {
         // Insert a row for the new job
-        $this->db->insert($this->table, [
+        $this->db->insert($this->table, array(
             'class'     => $class,
             'method'    => $method,
             'data'      => json_encode($data),
             'data_size' => $data_size,
             'pid'       => null,
-        ]);
+        ));
     }
 
     public function runCron()
@@ -104,7 +104,7 @@ class Algolia_Algoliasearch_Model_Queue
             return $a['job_id'] - $b['job_id'];
         });
 
-        $jobs = [];
+        $jobs = array();
 
         $current_job = array_shift($old_jobs);
         $next_job = null;
@@ -147,13 +147,13 @@ class Algolia_Algoliasearch_Model_Queue
         $limit = $full_reindex ? 1 : $limit;
 
         $element_count = 0;
-        $jobs = [];
+        $jobs = array();
         $offset = 0;
         $max_size = $this->config->getNumberOfElementByPage() * $limit;
 
         while ($element_count < $max_size) {
             $data = $this->db->query($this->db->select()->from($this->table, '*')->where('pid IS NULL')
-                                              ->order(['job_id'])->limit($limit, $limit * $offset));
+                                              ->order(array('job_id'))->limit($limit, $limit * $offset));
             $data = $data->fetchAll();
 
             $offset++;

@@ -76,15 +76,17 @@ abstract class Algolia_Algoliasearch_Model_Indexer_Abstract extends Mage_Index_M
     }
 
     /**
-     * Check whether a product is composite
+     * Check whether a product is composite.
      *
      * @param int $productId
+     *
      * @return bool
      */
     protected function _isProductComposite($productId)
     {
         /** @var Mage_Catalog_Model_Product $product */
         $product = Mage::getModel('catalog/product')->load($productId);
+
         return $product->isComposite();
     }
 }

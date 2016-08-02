@@ -128,8 +128,8 @@ if ($config->isInstantEnabled() && $isSearchPage) {
     </script>';
 }
 
-$algoliaJsConfig = [
-    'instant' => [
+$algoliaJsConfig = array(
+    'instant' => array(
         'enabled' => $config->isInstantEnabled(),
         'selector' => $config->getInstantSelector(),
         'isAddToCartEnabled' => $config->isAddToCartEnable(),
@@ -139,15 +139,15 @@ $algoliaJsConfig = [
         'content' => $content,
         'imgHtml' => $imgHtml,
         'hasFacets' => count($config->getFacets()) > 0,
-    ],
-    'autocomplete' => [
+    ),
+    'autocomplete' => array(
         'enabled' => $config->isAutoCompleteEnabled(),
         'selector' => $config->getAutocompleteSelector(),
         'sections' => $config->getAutocompleteSections(),
         'nbOfProductsSuggestions' => $config->getNumberOfProductsSuggestions(),
         'nbOfCategoriesSuggestions' => $config->getNumberOfCategoriesSuggestions(),
         'nbOfQueriesSuggestions' => $config->getNumberOfQueriesSuggestions(),
-    ],
+    ),
     'extensionVersion' => $config->getExtensionVersion(),
     'applicationId' => $config->getApplicationID(),
     'indexName' => $productHelper->getBaseIndexName(),
@@ -163,21 +163,21 @@ $algoliaJsConfig = [
     'currencySymbol' => $currencySymbol,
     'maxValuesPerFacet' => (int) $config->getMaxValuesPerFacet(),
     'autofocus' => true,
-    'request' => [
+    'request' => array(
         'query' => html_entity_decode($query),
         'refinementKey' => $refinementKey,
         'refinementValue' => $refinementValue,
         'path' => $path,
         'formKey' => Mage::getSingleton('core/session')->getFormKey(),
-    ],
+    ),
     'showCatsNotIncludedInNavigation' => $config->showCatsNotIncludedInNavigation(),
     'showSuggestionsOnNoResultsPage' => $config->showSuggestionsOnNoResultsPage(),
     'baseUrl' => $baseUrl,
     'popularQueries' => $config->getPopularQueries(),
-    'urls' => [
+    'urls' => array(
         'logo' => $this->getSkinUrl('algoliasearch/algolia-logo.png'),
-    ],
-    'translations' => [
+    ),
+    'translations' => array(
         'to' => $this->__('to'),
         'or' => $this->__('or'),
         'go' => $this->__('Go'),
@@ -199,8 +199,8 @@ $algoliaJsConfig = [
         'categories' => $this->__('Categories'),
         'products' => $this->__('Products'),
         'searchBy' => $this->__('Search by'),
-    ],
-];
+    ),
+);
 
 ?>
 

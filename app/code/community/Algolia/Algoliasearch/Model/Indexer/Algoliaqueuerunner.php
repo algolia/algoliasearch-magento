@@ -17,7 +17,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliaqueuerunner extends Mage_Index_
         $this->queue = Mage::getSingleton('algoliasearch/queue');
     }
 
-    protected $_matchedEntities = [];
+    protected $_matchedEntities = array();
 
     protected function _getResource()
     {

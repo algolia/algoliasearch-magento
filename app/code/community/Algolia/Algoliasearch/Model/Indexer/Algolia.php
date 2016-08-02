@@ -10,7 +10,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Algolia_Algoliasearch_
     /** @var Algolia_Algoliasearch_Helper_Logger */
     protected $logger;
 
-    public static $product_categories = [];
+    public static $product_categories = array();
     protected static $credential_error = false;
 
     public function __construct()
@@ -21,34 +21,34 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Algolia_Algoliasearch_
         $this->logger = Mage::helper('algoliasearch/logger');
     }
 
-    protected $_matchedEntities = [
-        Mage_Catalog_Model_Product::ENTITY => [
+    protected $_matchedEntities = array(
+        Mage_Catalog_Model_Product::ENTITY => array(
             Mage_Index_Model_Event::TYPE_SAVE,
             Mage_Index_Model_Event::TYPE_MASS_ACTION,
             Mage_Index_Model_Event::TYPE_DELETE,
-        ],
-        Mage_Catalog_Model_Resource_Eav_Attribute::ENTITY => [
+        ),
+        Mage_Catalog_Model_Resource_Eav_Attribute::ENTITY => array(
             Mage_Index_Model_Event::TYPE_SAVE,
             Mage_Index_Model_Event::TYPE_DELETE,
-        ],
-        Mage_Core_Model_Store::ENTITY => [
+        ),
+        Mage_Core_Model_Store::ENTITY => array(
             Mage_Index_Model_Event::TYPE_SAVE,
             Mage_Index_Model_Event::TYPE_DELETE,
-        ],
-        Mage_Core_Model_Store_Group::ENTITY => [
+        ),
+        Mage_Core_Model_Store_Group::ENTITY => array(
             Mage_Index_Model_Event::TYPE_SAVE,
-        ],
-        Mage_Core_Model_Config_Data::ENTITY => [
+        ),
+        Mage_Core_Model_Config_Data::ENTITY => array(
             Mage_Index_Model_Event::TYPE_SAVE,
-        ],
-        Mage_Catalog_Model_Convert_Adapter_Product::ENTITY => [
+        ),
+        Mage_Catalog_Model_Convert_Adapter_Product::ENTITY => array(
             Mage_Index_Model_Event::TYPE_SAVE,
-        ],
-        Mage_Catalog_Model_Category::ENTITY => [
+        ),
+        Mage_Catalog_Model_Category::ENTITY => array(
             Mage_Index_Model_Event::TYPE_SAVE,
             Mage_Index_Model_Event::TYPE_DELETE,
-        ],
-    ];
+        ),
+    );
 
     public function getName()
     {

@@ -9,9 +9,9 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
 
     public function getIndexSettings($storeId)
     {
-        return [
-            'attributesToIndex' => ['value'],
-        ];
+        return array(
+            'attributesToIndex' => array('value'),
+        );
     }
 
     public function getAttributeValues($storeId, $section)
@@ -24,11 +24,11 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
         /** @var Mage_Catalog_Model_Resource_Product_Collection $products */
         $products = Mage::getResourceModel('catalog/product_collection')->addStoreFilter($storeId)
                         ->addAttributeToFilter('visibility',
-                            ['in' => $catalogProductVisibility->getVisibleInSearchIds()])
+                            array('in' => $catalogProductVisibility->getVisibleInSearchIds()))
                         ->addAttributeToFilter('status',
-                            ['eq' => Mage_Catalog_Model_Product_Status::STATUS_ENABLED])
-                        ->addAttributeToFilter($attributeCode, ['notnull' => true])
-                        ->addAttributeToFilter($attributeCode, ['neq' => ''])
+                            array('eq' => Mage_Catalog_Model_Product_Status::STATUS_ENABLED))
+                        ->addAttributeToFilter($attributeCode, array('notnull' => true))
+                        ->addAttributeToFilter($attributeCode, array('neq' => ''))
                         ->addAttributeToSelect($attributeCode);
 
         $usedAttributeValues = array_keys(array_flip(// array unique
@@ -48,19 +48,19 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
         }
 
         if ($values && is_array($values) == false) {
-            $values = [$values];
+            $values = array($values);
         }
 
         $values = array_map(function ($value) use ($section, $storeId) {
-            $record = [
+            $record = array(
                 'objectID' => $value,
                 'value'    => $value,
-            ];
+            );
 
             $transport = new Varien_Object($record);
 
             Mage::dispatchEvent('algolia_additional_section_item_index_before',
-                ['section' => $section, 'record' => $transport, 'store_id' => $storeId]);
+                array('section' => $section, 'record' => $transport, 'store_id' => $storeId));
 
             $record = $transport->getData();
 

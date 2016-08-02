@@ -3,7 +3,7 @@
 abstract class Algolia_Algoliasearch_Block_System_Config_Form_Field_AbstractField extends Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
 {
     protected $settings;
-    protected $selectFields = [];
+    protected $selectFields = array();
 
     public function __construct()
     {
@@ -12,7 +12,7 @@ abstract class Algolia_Algoliasearch_Block_System_Config_Form_Field_AbstractFiel
         }
 
         foreach ($this->settings['columns'] as $columnName => $columnSettings) {
-            $fieldSettings = [];
+            $fieldSettings = array();
 
             if (isset($columnSettings['label'])) {
                 $fieldSettings['label'] = Mage::helper('adminhtml')->__($columnSettings['label']);

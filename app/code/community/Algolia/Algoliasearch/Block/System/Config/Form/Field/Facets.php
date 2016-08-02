@@ -7,12 +7,12 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Algoli
 {
     public function __construct()
     {
-        $this->settings = [
-            'columns' => [
-                'attribute' => [
+        $this->settings = array(
+            'columns' => array(
+                'attribute' => array(
                     'label'   => 'Attribute',
                     'options' => function () {
-                        $options = [];
+                        $options = array();
 
                         /** @var Algolia_Algoliasearch_Helper_Entity_Producthelper $product_helper */
                         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
@@ -26,25 +26,25 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Algoli
                     },
                     'rowMethod' => 'getAttribute',
                     'width'     => 160,
-                ],
-                'type' => [
+                ),
+                'type' => array(
                     'label'   => 'Facet type',
-                    'options' => [
+                    'options' => array(
                         'conjunctive' => 'Conjunctive',
                         'disjunctive' => 'Disjunctive',
                         'slider'      => 'Slider',
                         'priceRanges' => 'Price Ranges',
-                    ],
+                    ),
                     'rowMethod' => 'getType',
-                ],
-                'label' => [
+                ),
+                'label' => array(
                     'label' => 'Label',
                     'style' => 'width: 100px;',
-                ],
-            ],
+                ),
+            ),
             'buttonLabel' => 'Add Facet',
             'addAfter'    => false,
-        ];
+        );
 
         parent::__construct();
     }

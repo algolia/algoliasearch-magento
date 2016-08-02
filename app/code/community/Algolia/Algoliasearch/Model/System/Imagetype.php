@@ -6,10 +6,10 @@ class Algolia_Algoliasearch_Model_System_Imagetype
 {
     public function toOptionArray()
     {
-        return [
-            ['value' => 'image',         'label' => Mage::helper('core')->__('Base Image')],
-            ['value' => 'small_image',   'label' => Mage::helper('core')->__('Small Image')],
-            ['value' => 'thumbnail',     'label' => Mage::helper('core')->__('Thumbnail')],
-        ];
+        return array(
+            array('value' => 'image',         'label' => Mage::helper('core')->__('Base Image')),
+            array('value' => 'small_image',   'label' => Mage::helper('core')->__('Small Image')),
+            array('value' => 'thumbnail',     'label' => Mage::helper('core')->__('Thumbnail')),
+        );
     }
 }

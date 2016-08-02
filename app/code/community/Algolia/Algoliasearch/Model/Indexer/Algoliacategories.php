@@ -16,12 +16,12 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Algolia_Algo
         $this->config = Mage::helper('algoliasearch/config');
     }
 
-    protected $_matchedEntities = [
-        Mage_Catalog_Model_Category::ENTITY => [
+    protected $_matchedEntities = array(
+        Mage_Catalog_Model_Category::ENTITY => array(
             Mage_Index_Model_Event::TYPE_SAVE,
             Mage_Index_Model_Event::TYPE_DELETE,
-        ],
-    ];
+        ),
+    );
 
     public function getName()
     {
@@ -68,18 +68,18 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Algolia_Algo
 
                 if (!$category->getData('is_active')) {
                     $event->addNewData('catalogsearch_delete_category_id',
-                        array_merge([$category->getId()], $category->getAllChildren(true)));
+                        array_merge(array($category->getId()), $category->getAllChildren(true)));
 
                     if ($productIds) {
                         $event->addNewData('catalogsearch_update_product_id', $productIds);
                     }
                 } elseif ($productIds) {
                     $event->addNewData('catalogsearch_update_product_id', $productIds);
-                    $event->addNewData('catalogsearch_update_category_id', [$category->getId()]);
+                    $event->addNewData('catalogsearch_update_category_id', array($category->getId()));
                 } elseif ($movedCategoryId = $category->getMovedCategoryId()) {
-                    $event->addNewData('catalogsearch_update_category_id', [$movedCategoryId]);
+                    $event->addNewData('catalogsearch_update_category_id', array($movedCategoryId));
                 } else {
-                    $event->addNewData('catalogsearch_update_category_id', [$category->getId()]);
+                    $event->addNewData('catalogsearch_update_category_id', array($category->getId()));
                 }
 
                 break;

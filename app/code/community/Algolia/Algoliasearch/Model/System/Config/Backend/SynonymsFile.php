@@ -4,6 +4,6 @@ class Algolia_Algoliasearch_Model_System_Config_Backend_SynonymsFile extends Mag
 {
     protected function _getAllowedExtensions()
     {
-        return ['json'];
+        return array('json');
     }
 }
