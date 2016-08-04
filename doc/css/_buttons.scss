@@ -1,0 +1,57 @@
+.btn {
+  display: inline-block;
+  color: #fff;
+  border: 1px solid darken(#CB7D22, 5%);
+  background: $magento-color;
+  height: 40px;
+  line-height: 40px;
+  padding: 0 1em;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 12px;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  transition: background 0.1s ease;
+  cursor: pointer;
+  margin-right: 16px;
+
+  &:hover {
+    background: lighten($magento-color, 10%);
+    color: #fff
+  }
+
+  &:active,
+  &:focus {
+    border: 1px solid darken(#CB7D22, 15%);
+    background: darken($magento-color, 10%);
+  }
+}
+
+.btn-transparent{
+  background: transparent;
+  border-color: #fff;
+}
+
+.btn-white{
+  background: #fff;
+  border-color: darken(#fff, 5%);
+  color: $magento-color;
+
+  &:hover {
+    background: darken(white, 10%);
+    color: $magento-color
+  }
+
+  &:active,
+  &:focus {
+    border: 1px solid darken(white, 20%);
+    background: darken(white, 15%);
+  }
+}
+
+.btn.btn-cta {
+  padding: 0 4em;
+  margin: 32px 8px;
+}

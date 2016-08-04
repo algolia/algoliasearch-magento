@@ -4,28 +4,49 @@ navbar-brand-class: auto-hide
 ---
 
 .main-content
-  .jumbotron
+  .hero-header.jumbotron
     .container
-      %h1
-        %img{src: '{{site.baseurl}}/img/algolia-logo.svg', class: 'jumbotron-algolia_logo'}
-        for
-        %img{src: '{{site.baseurl}}/img/magento-logo.png', class: 'jumbotron-magento_logo'}
+      .magento-1
+        %h1
+          %img.jumbotron-algolia_logo{:src => "https://res.cloudinary.com/hilnmyskv/image/upload/v1461180079/logo-algolia-dark.svg"}/
+          for
+          %img.jumbotron-magento_logo{:src => "http://res.cloudinary.com/hilnmyskv/image/upload/v1470238602/magento-white-logo-white_ngqfvg.svg"}/
+          %span.vnum 1
+        .row
+          .col-md-12.text-center
+            %p As-You-Type Auto-Complete and Instant Search Results Page, all Customizable & Open-Source.
+        .latest-version
+          Latest version:
+          %b 1.6.1
+        .buttons
+          %a.btn.btn-white{:href => "https://magento.algolia.com"}
+            Try it live
+          %a.btn.btn-white{:href => "http://www.magentocommerce.com/magento-connect/algolia-search-extension.html"}
+            Install the extension now
+        .badges
+          <iframe src="https://ghbtns.com/github-btn.html?user=algolia&repo=algoliasearch-magento&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
+          %img{src: 'https://img.shields.io/badge/magento-1.6.2%2B-blue.svg', :title => "Magento versions supported"}
 
-      .row
-        .col-sm-6.col-sm-offset-3.text-center
-          %p As-You-Type Auto-Complete and Instant Search Results Page, all Customizable & Open-Source.
+      .magento-2
+        %h1
+          %img.jumbotron-algolia_logo{:src => "http://res.cloudinary.com/hilnmyskv/image/upload/logo-algolia.svg"}/
+          for
+          %img.jumbotron-magento_logo{:src => "http://res.cloudinary.com/hilnmyskv/image/upload/v1470148513/magento-black_gxoagf.svg"}/
+          %span.vnum 2
+        .row
+          .col-md-12.text-center
+            %p As-You-Type Auto-Complete and Instant Search Results Page, all Customizable & Open-Source.
+        .latest-version
+          Latest version:
+          %b 1.0.0
+        .buttons
+          %a.btn{:href => "https://magento.algolia.com", :disabled => "true"}
+            Try it live
+          %a.btn{:href => "https://github.com/algolia/algoliasearch-magento-2"}
+            Install the extension now
 
-      .latest-version Latest version: <b>{{ site.version }}</b>
-
-      .buttons
-        %a.btn.btn-primary{href: 'https://magento.algolia.com'}
-          Try it live
-        %a.btn.btn-primary.btn-primary-full{href: 'http://www.magentocommerce.com/magento-connect/algolia-search-extension.html'}
-          Install the extension now
-
-    .badges
-      <iframe src="https://ghbtns.com/github-btn.html?user=algolia&repo=algoliasearch-magento&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
-      %img{src: 'https://img.shields.io/badge/magento-1.6.2%2B-blue.svg', :title => "Magento versions supported"}
+        .badges
+          <iframe src="https://ghbtns.com/github-btn.html?user=algolia&repo=algoliasearch-magento-2&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
 
   .page-section.the-why
     .container
