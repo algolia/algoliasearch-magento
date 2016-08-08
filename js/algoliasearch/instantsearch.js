@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			}
 		});
 		
-		search.client.addAlgoliaAgent('Magento ' + algoliaConfig.extensionVersion);
+		search.client.addAlgoliaAgent('Magento integration (' + algoliaConfig.extensionVersion + ')');
 		
 		/**
 		 * Custom widget - this widget is used to refine results for search page or catalog page
