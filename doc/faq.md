@@ -158,7 +158,7 @@ But you can always limit a scope of Visual Merchandiser usage and use it only fo
 
 ## I'm using Magento 2. Is the extension compatible?
 
-No, the extension is not compatible, but we have Magento 2 extension currently in beta. You can find it here: [https://github.com/algolia/algoliasearch-magento-2](https://github.com/algolia/algoliasearch-magento-2).
-Remember, the Magento 2 extension is still in beta and it's not recommended to use it in production unless you really know what you are doing.
+No, the extension is not compatible, but we have extension for Magento 2 as well!
+You can find it here: [https://github.com/algolia/algoliasearch-magento-2](https://github.com/algolia/algoliasearch-magento-2).
 
-Any feedback on Magento 2 extension is very appreciated. You can submit an issue on GitHub repository or send us any email on [support+magento@algolia.com](mailto:support+magento@algolia.com).
+Any feedback on Magento 2 extension is very appreciated. You can submit an issue on [GitHub repository](https://github.com/algolia/algoliasearch-magento-2) or send us an e-mail on [support+magento@algolia.com](mailto:support+magento@algolia.com).
