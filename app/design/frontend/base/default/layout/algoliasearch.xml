@@ -51,9 +51,7 @@
 
     <algolia_search_handle_with_topsearch>
         <reference name="top.search">
-            <action method="setTemplate"><template>algoliasearch/internals/templateloader.phtml</template></action>
-
-            <block type="core/template" template="algoliasearch/autocomplete.phtml" as="algolia-autocomplete" name="algolia-autocomplete"/>
+            <action method="setTemplate"><template>algoliasearch/autocomplete.phtml</template></action>
         </reference>
     </algolia_search_handle_with_topsearch>
 
