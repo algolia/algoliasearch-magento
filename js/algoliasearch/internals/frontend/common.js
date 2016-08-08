@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
 					name: i,
 					templates: {
 						suggestion: function (hit) {
-							hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.value + '&refinement_key=' + section.name;
+							hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(hit.value) + '&refinement_key=' + section.name;
 							return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
 						}
 					}
