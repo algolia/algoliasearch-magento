@@ -139,6 +139,23 @@ When the whole page is rendered in your client's web browser it cannot respect y
 - **SEO:**
 The extenstion supports only backend search for regular search page and these results can be indexed by search engines like Google, Bing, etc... But because of the frontend implementantion instant search page results on category page cannot be indexed. But there is a workaround. Search parameters of the instant search page are pushed into page's URL. So it is possible to implement backend search base on the URL parameters so the instant search pages can be indexed. But the extension inself do not support this feature out of the box for now.
 
+## Can I have different ordering of products on category pages with instant search? (e.g. with Visual Merchandiser)
+
+Yes, this is definitelly doable, but you have to be aware that you'll need to create more records in Algolia indices.
+Algolia is designed for searching and for providing the best relevancy on search queries. With this being said there are some limitations regarding sorting the results according specific attributes. 
+
+First, you need to create a custom attribute with Virtual Merchandiser position which reflects the product's ranking with it's category. And push it to Algolia within products' records.
+In case you have each product in only one category you can push to Algolia this attribute and then you can just set this attribute as the very first attribute for custom ranking and you are done.
+
+If you have product in multiple categories and within each category it has a different ranking it becomes a bit tricky. 
+This use-case can be handled only by slave indices when you have one index per category and in each of these indices you have a different ranking strategy. 
+To achieve that you need to create a custom attribute with Virtual Merchandiser position for each category. Then you should create as many sort / slave indices as many VM custom attributes you have.
+Next you will have to update your JavaScript code to target the correct index for each browsed category. 
+
+It’s definitelly not optimal solution as you would have huge amount of records in Algolia and as well it’s not good for Algolia’s performance. But this is the only way how to achieve that.
+
+But you can always limit a scope of Visual Merchandiser usage and use it only for your main categories or use the same sorting strategy across all your categories.
+
 ## I'm using Magento 2. Is the extension compatible?
 
 No, the extension is not compatible, but we have Magento 2 extension currently in beta. You can find it here: [https://github.com/algolia/algoliasearch-magento-2](https://github.com/algolia/algoliasearch-magento-2).
