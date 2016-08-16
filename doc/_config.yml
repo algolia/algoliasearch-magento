@@ -10,8 +10,6 @@ host: 0.0.0.0
 
 # Navigation
 navigation:
- - text: Documentation
-   url: /documentation/
  - text: FAQ
    url: /faq/
 # - text: Developers

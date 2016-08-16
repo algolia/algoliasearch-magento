@@ -9,7 +9,7 @@
       <a class='ac-nav-brand-title' href='/magento/' title='Home'>Magento</a>
     </div>
     <div class='ac-nav-menu'>
-      <div class='ac-nav-searchbox'>
+      <div class='ac-nav-searchbox desktop-only'>
         <form class='searchbox form search-form' id='docsearch-form' novalidate='novalidate' onsubmit='return false;' style='visibility:hidden;height:0'>
           <div class='searchbox__wrapper' role='search'>
             <input autocomplete='off' class='searchbox__input' id='doc-search' name='search' placeholder='Search in the doc' required='required' type='search'>
@@ -34,15 +34,36 @@
       </div>
       <ul class='ac-nav-menu-list'>
         {% assign url = page.url %}
+        <li class="ac-nav-menu-list-item {% if url == link.url %}active{% endif %}">
+          <a href="#" title="--- Documentations --- " data-toggle-dropdown='dropdown-2'>Documentation</a>
+          <ul class='simple-dropdown' id='dropdown-2'>
+              <li>
+                <a data-path="{{ site.baseurl }}/documentation" data-current="{% if url == '/documentation' %}true{% endif %}" href="{{ site.baseurl }}/documentation" title="Documentation Magento 1">Documentation magento 1</a>
+              </li>
+              <li>
+                <a data-path="{{ site.baseurl }}/m2-documentation" data-current="{% if url == '/m2-documentation' %}true{% endif %}" href="{{ site.baseurl }}/m2-documentation" title="Documentation Magento 2">Documentation magento 2</a>
+              </li>
+            </ul>
+        </li>
+        <a href="#" title="------------------------" style="display: none;"></a> <!-- This empty link is just here to improve format the select dropdown -->
         {% for link in site.navigation %}
         <li class="ac-nav-menu-list-item {% if url == link.url %}active{% endif %}">
-          <a data-path="{{ site.baseurl }}{{ link.url }}" href="{{ site.baseurl }}{{ link.url }}" title="{{ link.title }}">{{ link.text }}</a>
+          <a href="{{ site.baseurl }}{{ link.url }}" data-current="{% if url == link.url %}true{% endif %}" data-path="{{ site.baseurl }}{{ link.url }}" title="{{ link.text }}">{{ link.text }}</a>
+        </li>
         </li>
         {% endfor %}
         <li class='ac-nav-menu-list-icon'>
-          <a class='ac-icon' href='https://github.com/algolia/algoliasearch-magento' title='GitHub repository'>
-            <span class='ac-icon ac-icon-github'></span>
+          <a class='ac-icon' href='#' title='--- GitHub repositories ---' data-toggle-dropdown='dropdown-1'>
+            <svg class="ac-icon"><use xlink:href="#github-icon" class="icon-white"></use></svg>
           </a>
+            <ul class='simple-dropdown' id='dropdown-1'>
+              <li>
+                <a href='https://github.com/algolia/algoliasearch-magento' title="Github repository for Magento 1"><svg class="ac-icon "><use xlink:href="#github-icon" class="icon-black"></use></svg> Magento 1</a>
+              </li>
+              <li>
+                <a href='https://github.com/algolia/algoliasearch-magento-2' title="Github repository for Magento 2"><svg class="ac-icon "><use xlink:href="#github-icon" class="icon-black"></use></svg> Magento 2</a>
+              </li>
+            </ul>
         </li>
       </ul>
     </div>

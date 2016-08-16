@@ -323,3 +323,20 @@ sub {
   border: none;
 }
 
+
+// mobile classes
+.mobile-only {
+  display: none;
+
+  @media (max-width: $screen-sm) {
+    display: block;
+  }
+}
+
+.desktop-only {
+  display: none;
+
+  @media (min-width: $screen-sm) {
+    display: block;
+  }
+}

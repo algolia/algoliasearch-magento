@@ -1,0 +1,86 @@
+ul.simple-dropdown {
+  position: absolute;
+  left: 0;
+  top: 3.65em;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  font-size: 14px;
+  text-align: left;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: white;
+  border: none;
+  padding: 0;
+  box-shadow: 0 1px 4px 0 rgba(31,59,93,0.5);
+  animation-name: fadeInDown;
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  will-change: opacity, transform;
+
+  li {
+    border-bottom: solid 1px #eee;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    max-height: 50px;
+
+
+    &:hover {
+      background: #f9f9f9;
+    }
+
+    svg.ac-icon {
+      position: relative;
+      top: -15px;
+      left: -1em;
+      height: 50px !important;
+    }
+  }
+
+  a {
+    text-transform: none;
+    margin: 0;
+    width: 100%;
+    border: none;
+    color: #325f96;
+    display: block;
+    padding: 1em 2em;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857;
+    color: #333333;
+    white-space: nowrap;
+    font-size: 1em;
+  }
+
+  &.opened {
+    display: block;
+  }
+}
+
+
+#dropdown-1 {
+  left: -100px;
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -50%, 0);
+  }
+  20% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}

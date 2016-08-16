@@ -9,29 +9,32 @@ $(document).ready(function(){
       $('.searchbox__reset').addClass('hide')
   });
 
-  function responsiveNavigation() {
-    var navigation = document.querySelector('.ac-nav');
-    var links = navigation.querySelectorAll('a');
-    var navigationAsSelect = document.createElement('select');
+ 'use strict';
 
-    if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
-      navigationAsSelect.classList.add('display-on-small', 'device');
-    } else {
-      navigationAsSelect.classList.add('display-on-small');
-    }
+function responsiveNavigation() {
+  var navigation = document.querySelector('.ac-nav');
+  var links = navigation.querySelectorAll('a');
+  var navigationAsSelect = document.createElement('select');
 
-    for (var i = 0; i < links.length; i++) {
-      var option = document.createElement('option');
-      option.text = links[i].title;
-      option.value = links[i].href;
-      option.selected = true;
-      navigationAsSelect.appendChild(option);
-    }
-
-    navigation.appendChild(navigationAsSelect);
-    navigation.addEventListener('change', function () {
-      return window.location = e.target.value;
-    });
+  if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
+    navigationAsSelect.classList.add('display-on-small', 'device');
+  } else {
+    navigationAsSelect.classList.add('display-on-small');
   }
-  responsiveNavigation();
+
+  for (var i = 0; i < links.length; i++) {
+    var option = document.createElement('option');
+    option.text = links[i].title;
+    option.value = links[i].href;
+    option.selected = links[i].getAttribute('data-current') === 'true';
+    navigationAsSelect.appendChild(option);
+  }
+
+  navigation.appendChild(navigationAsSelect);
+  navigation.addEventListener('change', function (e) {
+    return window.location = e.target.value;
+  });
+}
+responsiveNavigation();
+
 });
