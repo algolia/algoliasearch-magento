@@ -4,6 +4,11 @@ title: Magento 2 Documentation
 permalink: /m2-documentation/
 ---
 
+<small>
+The extension officially supports only 2.0.X versions of Magento. 
+It's possible to use it for versions >= 2.1.0, but some unexpected issues might appear. When you experience that, please [open an issue](https://github.com/algolia/algoliasearch-magento-2/issues/new).
+</small>
+
 # Getting started
 
 ## Create an Algolia account
