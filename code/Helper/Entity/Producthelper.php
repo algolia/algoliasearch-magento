@@ -584,14 +584,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
     }
 
-    protected function getValueOrValueText(Mage_Catalog_Model_Product $product, $name, Mage_Catalog_Model_Resource_Eav_Attribute $resource)
+    protected function getValueOrValueText(Mage_Catalog_Model_Product $product, $name, Mage_Catalog_Model_Resource_Eav_Attribute $resource, boolean $index_no_value)
     {
         $value_text = $product->getAttributeText($name);
         if (!$value_text) {
             $value_text = $resource->getFrontend()->getValue($product);
         }
 
-        return $value_text == Mage::helper('catalog')->__('No') ? null : $value_text;
+        return $value_text == Mage::helper('catalog')->__('No') && $index_no_value == false ? null : $value_text;
     }
 
     public function getObject(Mage_Catalog_Model_Product $product)
@@ -828,6 +828,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $value = $product->getData($attribute_name);
 
+            // To be more compatible (no backend save required after update), if index_no_value isn't set it's true
+            $index_no_value = !isset($attribute['index_no_value']) || $attribute['index_no_value'] == 1 ? true : false;
+
             /** @var Mage_Catalog_Model_Resource_Eav_Attribute $attribute_resource */
             $attribute_resource = $product->getResource()->getAttribute($attribute_name);
 
@@ -842,7 +845,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     if ($value === null) {
                         $values = [];
                     } else {
-                        $values = [$this->getValueOrValueText($product, $attribute_name, $attribute_resource)];
+                        $values = [$this->getValueOrValueText($product, $attribute_name, $attribute_resource, $index_no_value)];
                     }
 
                     $all_sub_products_out_of_stock = true;
@@ -860,7 +863,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         if ($value) {
                             $values[] = $this->getValueOrValueText($sub_product, $attribute_name,
-                                $attribute_resource);
+                                $attribute_resource, $index_no_value);
                         }
                     }
 
@@ -874,7 +877,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $customData['in_stock'] = 0;
                     }
                 } elseif (!is_array($value)) {
-                    $value = $this->getValueOrValueText($product, $attribute_name, $attribute_resource);
+                    $value = $this->getValueOrValueText($product, $attribute_name, $attribute_resource, $index_no_value);
                 }
 
                 if ($value && !isset($customData[$attribute_name])) {

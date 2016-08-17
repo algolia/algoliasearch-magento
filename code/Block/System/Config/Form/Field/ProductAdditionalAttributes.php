@@ -51,6 +51,14 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_ProductAdditionalAttr
                     ],
                     'rowMethod' => 'getOrder',
                 ],
+                'index_no_value' => [
+                    'label'   => 'Index the default empty attribute value (No or N/A)',
+                    'options' => [
+                        '1'     => 'Yes',
+                        '0'     => 'No',
+                    ],
+                    'rowMethod' => 'getIndexNoValue',
+                ],
             ],
             'buttonLabel' => 'Add Attribute',
             'addAfter'    => false,
