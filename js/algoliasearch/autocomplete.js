@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		 * Docs: https://www.algolia.com/doc/javascript
 		 **/
 		var algolia_client = algoliaBundle.algoliasearch(algoliaConfig.applicationId, algoliaConfig.apiKey);
-		algolia_client.addAlgoliaAgent('Magento ' + algoliaConfig.extensionVersion);
+		algolia_client.addAlgoliaAgent('Magento integration (' + algoliaConfig.extensionVersion + ')');
 		
 		/** Add products and categories that are required sections **/
 		var nb_cat = algoliaConfig.autocomplete.nbOfCategoriesSuggestions >= 1 ? algoliaConfig.autocomplete.nbOfCategoriesSuggestions : 2;
