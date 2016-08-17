@@ -329,6 +329,12 @@ h2 {
   font-weight: 300;
   color: #FFF;
 
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+
   p, ul {
     text-align: left;
   }
@@ -360,6 +366,7 @@ h2 {
 
   .col-sm-4 {
     margin-bottom: 2em;
+    flex: 33%;
   }
 
   .showcase {
