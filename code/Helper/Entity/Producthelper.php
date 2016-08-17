@@ -584,7 +584,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
     }
 
-    protected function getValueOrValueText(Mage_Catalog_Model_Product $product, $name, Mage_Catalog_Model_Resource_Eav_Attribute $resource, boolean $index_no_value)
+    protected function getValueOrValueText(Mage_Catalog_Model_Product $product, $name, Mage_Catalog_Model_Resource_Eav_Attribute $resource, $index_no_value)
     {
         $value_text = $product->getAttributeText($name);
         if (!$value_text) {
