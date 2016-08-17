@@ -591,7 +591,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $value_text = $resource->getFrontend()->getValue($product);
         }
 
-        return $value_text;
+        return $value_text == Mage::helper('catalog')->__('No') ? null : $value_text;
     }
 
     public function getObject(Mage_Catalog_Model_Product $product)
