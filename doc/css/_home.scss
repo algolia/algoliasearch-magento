@@ -119,8 +119,7 @@ h2 {
   background: linear-gradient(#1990C1, #1d3657);
   position: relative;
   color: #fff;
-
-
+  overflow: hidden;
 
   &:before {
     content: '';
@@ -367,6 +366,10 @@ h2 {
   .col-sm-4 {
     margin-bottom: 2em;
     flex: 33%;
+
+    @media (max-width: $bp-small) {
+      flex: 50%
+    }
   }
 
   .showcase {

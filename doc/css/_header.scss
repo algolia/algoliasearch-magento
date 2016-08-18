@@ -163,6 +163,7 @@
     position: absolute;
     top: 16px;
     right: 8px;
+    max-width: 180px;
 
     &:not(.device) {
       background: linear-gradient(#efefef, #ccc);
