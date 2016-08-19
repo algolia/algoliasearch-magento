@@ -414,9 +414,10 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
             }
 
             $attrs[] = array(
-                'attribute'   => $facet['attribute'],
-                'searchable'  => '0',
-                'retrievable' => '1',
+                'attribute'         => $facet['attribute'],
+                'searchable'        => '0',
+                'retrievable'       => '1',
+                'index_no_value'    => '1',
             );
         }
 
