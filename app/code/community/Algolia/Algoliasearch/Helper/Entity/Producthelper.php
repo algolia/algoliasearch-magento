@@ -863,7 +863,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     }
 
                     if (is_array($values) && count($values) > 0) {
-                        $customData[$attribute_name] = array_values(array_unique($values));
+                        $customData[$attribute_name] = array_values(array_unique($values, SORT_REGULAR));
                     }
 
                     // Set main product out of stock if all
