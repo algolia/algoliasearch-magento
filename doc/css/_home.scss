@@ -83,6 +83,23 @@ h2 {
 
 
 
+/* LEAD GEN
+// ------------------------- */
+.page-section.lead-gen {
+  width: 100%;
+  margin: auto;
+  text-align: center;
+  float: left;
+  top: -48px;
+  position: relative;
+  border-bottom: 2px solid $magento-orange;
+
+  .btn {
+    min-width: 240px;
+  }
+}
+
+
 /* THE WHY
 // ------------------------- */
 .the-why p {
