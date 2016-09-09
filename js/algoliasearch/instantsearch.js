@@ -156,16 +156,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			algoliaBundle.instantsearch.widgets.hits({
 				container: '#instant-search-results-container',
 				templates: {
-					item: $('#instant-hit-template').html()
+					allItems: $('#instant-hit-template').html()
 				},
 				transformData: {
-					item: function (hit) {
-						hit = transformHit(hit, algoliaConfig.priceKey);
-						hit.isAddToCartEnabled = algoliaConfig.instant.isAddToCartEnabled;
+					allItems: function (results) {
+						for (var i = 0; i < results.hits.length; i++) {
+							results.hits[i] = transformHit(results.hits[i], algoliaConfig.priceKey);
+							results.hits[i].isAddToCartEnabled = algoliaConfig.instant.isAddToCartEnabled;
+							
+							results.hits[i].algoliaConfig = window.algoliaConfig;
+						}
 						
-						hit.algoliaConfig = window.algoliaConfig;
-						
-						return hit;
+						return results;
 					}
 				},
 				hitsPerPage: algoliaConfig.hitsPerPage
