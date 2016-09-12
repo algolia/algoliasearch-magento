@@ -1,0 +1,219 @@
+<?php
+
+/** @var Algolia_Algoliasearch_Helper_Config $config */
+$config = Mage::helper('algoliasearch/config');
+
+/** @var Mage_CatalogSearch_Helper_Data $catalogSearchHelper */
+$catalogSearchHelper = $this->helper('catalogsearch');
+
+/** @var Algolia_Algoliasearch_Helper_Data $algoliaSearchHelper */
+$algoliaSearchHelper = $this->helper('algoliasearch');
+
+/** @var Algolia_Algoliasearch_Helper_Entity_Producthelper $productHelper **/
+$productHelper = Mage::helper('algoliasearch/entity_producthelper');
+
+/** @var Algolia_Algoliasearch_Helper_Algoliahelper $algoliaHelper **/
+$algoliaHelper = Mage::helper('algoliasearch/algoliahelper');
+
+$baseUrl = rtrim(Mage::getBaseUrl(), '/');
+
+$isSearchPage = false;
+$isCategoryPage = false;
+
+/** @var Mage_Core_Model_App $app */
+$app = Mage::app();
+
+/** @var Mage_Core_Model_Store $store */
+$store = $app->getStore();
+$storeId = $store->getId();
+
+$currencyCode = $store->getCurrentCurrencyCode();
+$currencySymbol = $app->getLocale()->currency($currencyCode)->getSymbol();
+
+/** @var Mage_Customer_Model_Session $session */
+$session = Mage::getSingleton('customer/session');
+$customerGroupId = $session->getCustomerGroupId();
+
+$priceKey = $config->isCustomerGroupsEnabled($storeId) ? '.'.$currencyCode.'.group_'.$customerGroupId : '.'.$currencyCode.'.default';
+
+$query = '';
+$refinementKey = '';
+$refinementValue = '';
+$path = '';
+
+$title = '';
+$description = '';
+$content = '';
+$imgHtml = '';
+
+if ($config->isInstantEnabled() && $config->replaceCategories() && $app->getRequest()->getControllerName() == 'category') {
+    $category = Mage::registry('current_category');
+
+    /**
+     * Handle category replacement
+     */
+    if ($category && $category->getDisplayMode() !== 'PAGE') {
+        $category->getUrlInstance()->setStore($storeId);
+
+        foreach ($category->getPathIds() as $treeCategoryId) {
+            if ($path != '') {
+                $path .= ' /// ';
+            }
+
+            $path .= $productHelper->getCategoryName($treeCategoryId, $storeId);
+        }
+
+        $indexName = $productHelper->getIndexName($storeId);
+        $category_url = $category->getUrl($category);
+        $isSearchPage = true;
+        $isCategoryPage = true;
+    }
+
+    /**
+     * Handle category static header
+     */
+    $title = $category->getName();
+
+    if ($category && $category->getDisplayMode() !== 'PAGE') {
+        $category->getUrlInstance()->setStore(Mage::app()->getStore()->getStoreId());
+
+        if ($category->getDisplayMode() == 'PRODUCTS_AND_PAGE') {
+            $page = $category->getLandingPage();
+            $cms_block = Mage::getModel('cms/block')->load($page);
+
+            $description = $category->getDescription();
+            $content = $this->getLayout()->createBlock('cms/block')->setBlockId($page)->toHtml();
+
+            if ($category->getImageUrl()) {
+                $imgHtml = '<p class="category-image"><img src="'.$category->getImageUrl().'" alt="'.$this->escapeHtml($category->getName()).'" title="'.$this->escapeHtml($category->getName()).'" /></p>';
+                $imgHtml = $this->helper('catalog/output')->categoryAttribute($category, $imgHtml, 'image');
+            }
+        }
+    }
+}
+
+/**
+ * Handle search
+ */
+if ($config->isInstantEnabled()) {
+    $pageIdentifier = $app->getFrontController()->getAction()->getFullActionName();
+
+    if ($pageIdentifier === 'catalogsearch_result_index') {
+        $query = $catalogSearchHelper->getEscapedQueryText();
+
+        if ($query == '__empty__') {
+            $query = '';
+        }
+
+        $productHelper = Mage::helper('algoliasearch/entity_producthelper');
+
+        $refinementKey = $app->getRequest()->getParam('refinement_key');
+        if ($refinementKey !== null) {
+            $refinementValue = $query;
+            $query = '';
+        }
+        else {
+            $refinementKey = '';
+        }
+
+        $isSearchPage = true;
+    }
+}
+
+// Hide the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS.
+if ($config->isInstantEnabled() && $isSearchPage) {
+    echo '
+    <script>
+        document.write(\'<style type="text/css"> ' . $config->getInstantSelector() . '{display:none}</style>\');
+    </script>';
+}
+
+$algoliaJsConfig = array(
+    'instant' => array(
+        'enabled' => $config->isInstantEnabled(),
+        'selector' => $config->getInstantSelector(),
+        'isAddToCartEnabled' => $config->isAddToCartEnable(),
+        'showStaticContent' => ($title || $imgHtml || $description || $content),
+        'title' => $title,
+        'description' => $description,
+        'content' => $content,
+        'imgHtml' => $imgHtml,
+        'hasFacets' => count($config->getFacets()) > 0,
+    ),
+    'autocomplete' => array(
+        'enabled' => $config->isAutoCompleteEnabled(),
+        'selector' => $config->getAutocompleteSelector(),
+        'sections' => $config->getAutocompleteSections(),
+        'nbOfProductsSuggestions' => $config->getNumberOfProductsSuggestions(),
+        'nbOfCategoriesSuggestions' => $config->getNumberOfCategoriesSuggestions(),
+        'nbOfQueriesSuggestions' => $config->getNumberOfQueriesSuggestions(),
+    ),
+    'extensionVersion' => $config->getExtensionVersion(),
+    'applicationId' => $config->getApplicationID(),
+    'indexName' => $productHelper->getBaseIndexName(),
+    'apiKey' => $algoliaHelper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $config->getAttributesToRetrieve($customerGroupId)),
+    'facets' => $config->getFacets(),
+    'hitsPerPage' => (int) $config->getNumberOfProductResults(),
+    'sortingIndices' => array_values($config->getSortingIndices()),
+    'isSearchPage' => $isSearchPage,
+    'isCategoryPage' => $isCategoryPage,
+    'removeBranding' => $config->isRemoveBranding(),
+    'priceKey' => $priceKey,
+    'currencyCode' => $currencyCode,
+    'currencySymbol' => $currencySymbol,
+    'maxValuesPerFacet' => (int) $config->getMaxValuesPerFacet(),
+    'autofocus' => true,
+    'request' => array(
+        'query' => html_entity_decode($query),
+        'refinementKey' => $refinementKey,
+        'refinementValue' => $refinementValue,
+        'path' => $path,
+        'formKey' => Mage::getSingleton('core/session')->getFormKey(),
+    ),
+    'showCatsNotIncludedInNavigation' => $config->showCatsNotIncludedInNavigation(),
+    'showSuggestionsOnNoResultsPage' => $config->showSuggestionsOnNoResultsPage(),
+    'baseUrl' => $baseUrl,
+    'popularQueries' => $config->getPopularQueries(),
+    'urls' => array(
+        'logo' => $this->getSkinUrl('algoliasearch/algolia-logo.png'),
+    ),
+    'translations' => array(
+        'to' => $this->__('to'),
+        'or' => $this->__('or'),
+        'go' => $this->__('Go'),
+        'in' => $this->__('in'),
+        'popularQueries' => $this->__('You can try one of the popular search queries'),
+        'seeAll' => $this->__('See all products'),
+        'allDepartments' => $this->__('All departments'),
+        'seeIn' => $this->__('See products in'),
+        'orIn' => $this->__('or in'),
+        'noProducts' => $this->__('No products for query'),
+        'noResults' => $this->__('No results'),
+        'refine' => $this->__('Refine'),
+        'selectedFilters' => $this->__('Selected Filters'),
+        'clearAll' => $this->__('Clear all'),
+        'previousPage' => $this->__('Previous page'),
+        'nextPage' => $this->__('Next page'),
+        'searchFor' => $this->__('Search for products'),
+        'relevance' => $this->__('Relevance'),
+        'categories' => $this->__('Categories'),
+        'products' => $this->__('Products'),
+        'searchBy' => $this->__('Search by'),
+    ),
+);
+
+?>
+
+<script>
+    window.algoliaConfig = <?php echo json_encode($algoliaJsConfig); ?>;
+</script>
+
+<!--[if lte IE 9]>
+<script>
+    document.addEventListener("DOMContentLoaded", function(e) {
+        algoliaBundle.$(function ($) {
+            window.algoliaConfig.autofocus = false;
+        });
+    });
+</script>
+<![endif]-->

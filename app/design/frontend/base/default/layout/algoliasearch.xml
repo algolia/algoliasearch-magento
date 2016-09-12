@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<layout>
+    <algolia_search_handle>
+        <reference name="head">
+            <block type="core/template" before="js" template="algoliasearch/internals/configuration.phtml" name="algolia-configuration"/>
+
+            <action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>
+
+            <action method="addJs"><script>algoliasearch/internals/frontend/Function.prototype.bind.js</script></action>
+            <action method="addJs"><script>algoliasearch/internals/frontend/algoliaBundle.min.js</script></action>
+            <action method="addJs"><script>algoliasearch/internals/frontend/common.js</script></action>
+
+            <action method="addJs"><script>algoliasearch/instantsearch.js</script></action>
+            <action method="addJs"><script>algoliasearch/autocomplete.js</script></action>
+
+            <block type="core/text" name="algolia-polyfill">
+                <action method="setText">
+                    <text>
+                        <![CDATA[
+                            <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+                            <!--[if lte IE 9]>
+                                <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+                            <![endif]-->
+                        ]]>
+                    </text>
+                </action>
+            </block>
+        </reference>
+
+        <reference name="before_body_end">
+            <!-- Multi-category Autocomplete templates -->
+            <block type="core/template" template="algoliasearch/autocomplete/product.phtml" name="algolia-autocomplete-product"/>
+            <block type="core/template" template="algoliasearch/autocomplete/category.phtml" name="algolia-autocomplete-category"/>
+            <block type="core/template" template="algoliasearch/autocomplete/page.phtml" name="algolia-autocomplete-page"/>
+            <block type="core/template" template="algoliasearch/autocomplete/attribute.phtml" name="algolia-autocomplete-attribute"/>
+            <block type="core/template" template="algoliasearch/autocomplete/suggestion.phtml" name="algolia-autocomplete-suggestion"/>
+            <block type="core/template" template="algoliasearch/autocomplete/menu.phtml" name="algolia-autocomplete-menu"/>
+
+            <!-- Instant search results page templates -->
+            <block type="core/template" template="algoliasearch/instantsearch/wrapper.phtml" name="algolia-instantsearch-wrapper"/>
+            <block type="core/template" template="algoliasearch/instantsearch/hit.phtml" name="algolia-instantsearch-hit"/>
+            <block type="core/template" template="algoliasearch/instantsearch/stats.phtml" name="algolia-instantsearch-stats"/>
+            <block type="core/template" template="algoliasearch/instantsearch/refinementsItem.phtml" name="algolia-instantsearch-refinements-item"/>
+            <block type="core/template" template="algoliasearch/instantsearch/currentRefinements.phtml" name="algolia-instantsearch-current-refinments"/>
+        </reference>
+
+        <reference name="content">
+            <block type="core/template" before="content" template="algoliasearch/internals/beforecontent.phtml" name="algolia-beforecontent"/>
+        </reference>
+    </algolia_search_handle>
+
+    <algolia_search_handle_with_topsearch>
+        <reference name="top.search">
+            <action method="setTemplate"><template>algoliasearch/autocomplete.phtml</template></action>
+        </reference>
+    </algolia_search_handle_with_topsearch>
+
+    <algolia_search_handle_no_topsearch>
+        <reference name="head">
+            <block type="core/template" template="algoliasearch/autocomplete.phtml" name="algolia-autocomplete"/>
+        </reference>
+    </algolia_search_handle_no_topsearch>
+</layout>

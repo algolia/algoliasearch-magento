@@ -1,0 +1,15 @@
+<?php
+
+/** @var Algolia_Algoliasearch_Helper_Config $config */
+$config = Mage::helper('algoliasearch/config');
+
+?>
+
+<script>var algoliaSearchExtentionsVersion = "<?php echo $config->getExtensionVersion(); ?>"</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        algoliaAdminBundle.$(function ($) {
+            $('p.note').css('width', '100%');
+        });
+    });
+</script>
