@@ -83,7 +83,6 @@
 
   .ac-nav-menu li svg {
     position: relative;
-    top: 6px;
     width: 28px;
     height: 36px;
     float: left;
@@ -121,6 +120,10 @@
         display: none;
       }
     }
+
+    @media (max-width: 960px) {
+      display: none;
+    }
   }
 
   .ac-nav-menu-list {
@@ -135,6 +138,7 @@
 
     .ac-nav-menu-list-item,
     .ac-nav-menu-list-icon {
+      position: relative;
       float: left;
       padding: 0 14px;
       font-size: 14px;
@@ -159,6 +163,7 @@
     position: absolute;
     top: 16px;
     right: 8px;
+    max-width: 180px;
 
     &:not(.device) {
       background: linear-gradient(#efefef, #ccc);
