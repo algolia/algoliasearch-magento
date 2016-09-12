@@ -13,10 +13,11 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
     public function getIndexSettings($storeId)
     {
         return array(
-            'attributesToIndex'    => array('query'),
-            'customRanking'        => array('desc(popularity)', 'desc(number_of_results)', 'asc(date)'),
-            'typoTolerance'        => false,
-            'attributesToRetrieve' => array('query'),
+            'attributesToIndex'      => array('query'),
+            'customRanking'          => array('desc(popularity)', 'desc(number_of_results)', 'asc(date)'),
+            'typoTolerance'          => false,
+            'attributesToRetrieve'   => array('query'),
+            'removeWordsIfNoResults' => 'lastWords',
         );
     }
 
