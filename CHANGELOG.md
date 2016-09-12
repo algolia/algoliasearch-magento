@@ -1,5 +1,36 @@
 ## Change Log
 
+### 1.7.0
+
+#### FEATURES
+- Option to choose if attributes' "No" values should or shouldn't be indexed (#554)
+
+#### UPDATES
+- Optimized front-end - **BC break** (#507, #531)
+	- All JS code except the extension's config and JS templates was moved to separate JS files
+	- Reduced the size of inline HTML code
+	- Better caching abilities
+	- Better readability of the code
+	- Removed templateloader.phtml file
+        - Use `allItems` template in hits widget instead of single `item` (#553)
+- Restored support of PHP 5.3 (#524)
+- The extension now follows the standart file structure as Magento (#517)
+- All extension's assets were move to CSS files as SVGs (#521)
+	- Small visual updates in icons
+	- Supports retina displays now
+- New versions of [instantsearch.js](https://github.com/algolia/instantsearch.js) and [autocomplete.js](https://github.com/algolia/autocomplete.js) libraries (#549)
+- PHP API client updated to 1.10.2 version (#529)
+- The extension follows new Algolia's UA convention (#530)
+- Updated [FAQ](https://community.algolia.com/magento/faq/) (#509, #519, #525, #536)
+
+#### FIXES
+- Fixed issue with CDN images (#518)
+	- Whole images' URLs are now indexed 
+	- **BC break!** It's mandatory to reindex all your data
+- Fixed issue with overriding `top.search` block (#531)
+- Encoded query attribute within additional sections in autocomplete menu (#534)
+- Fixed notices from `array_unique` (#552)
+
 ### 1.6.1
 
 #### UPDATES
