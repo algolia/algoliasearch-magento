@@ -191,6 +191,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				}
 			},
 			render: function (data) {
+				var $infosContainer = $('#algolia-right-container').find('.infos');
+				
 				if (data.results.hits.length === 0) {
 					var content = '<div class="no-results">';
 					content += '<div><b>' + algoliaConfig.translations.noProducts + ' "' + $("<div>").text(data.results.query).html() + '</b>"</div>';
@@ -206,6 +208,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					content += '</div>';
 					
 					$('#instant-search-results-container').html(content);
+					
+					$infosContainer.addClass('hidden');
+				}
+				else {
+					$infosContainer.removeClass('hidden');
 				}
 			}
 		});

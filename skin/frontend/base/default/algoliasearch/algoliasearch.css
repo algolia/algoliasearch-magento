@@ -1489,3 +1489,7 @@ a.ais-current-refined-values--link:hover
   clear: both;
   content: '';
 }
+
+#algolia-right-container .infos.hidden {
+	display: none;
+}
