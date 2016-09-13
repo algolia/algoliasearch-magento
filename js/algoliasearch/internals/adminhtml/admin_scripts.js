@@ -21,14 +21,15 @@ algoliaAdminBundle.$(function($) {
 		var latestVersion = payload.name;
 
 		if(compareVersion(algoliaSearchExtentionsVersion, latestVersion) > 0) {
-			$('.content-header h3').after('</td><td style="font-size: 1.25em; color: #D83900; padding: 3px 8px; border: 1px solid;">' +
+			$('.content-header h3').after('</td><td style="font-size: 1.25em; color: rgb(58, 151, 202); padding: 3px 8px; border: 1px solid;">' +
 				'<span style="font-size: 30px; position: relative; top: 5px;">⚠</span>' +
 				' You are using old version of Algolia extension. ' +
 				'Latest version of the extension is '+latestVersion+'. ' +
 				'You can get it on ' +
 				'<a href="https://www.magentocommerce.com/magento-connect/search-algolia-search.html" target="_blank">Magento Connect</a>.<br />' +
-				'<small style="color: #2f2f2f; font-size: .8em; padding-left: 36px;">' +
-				'It\'s highly recommended to update your version to avoid any unexpecting issues and to get new features.' +
+				'<small style="color: #2f2f2f; font-size: .8em; padding-left: 36px; display: inline-block">' +
+				'It\'s highly recommended to update your version to avoid any unexpecting issues and to get new features.<br />' +
+				'<i>If you are happy with the extension, please rate the extension on <a href="https://www.magentocommerce.com/magento-connect/search-algolia-search.html" target="_blank">Magento Connect</a>.</i>' +
 				'</small></td>');
 		}
 	});
