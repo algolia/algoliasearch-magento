@@ -118,6 +118,17 @@ if ($config->isInstantEnabled()) {
 
         $isSearchPage = true;
     }
+
+    /** @var Algolia_Algoliasearch_Helper_Logger $logger */
+    $logger = Mage::helper('algoliasearch/logger');
+    if ($logger->isEnable() && $config->indexWholeCategoryTree() === false) {
+        foreach ($config->getFacets() as $facet) {
+            if ($facet['attribute'] === 'categories') {
+                $logger->log('!! Warning !! You have enabled categories\' hierarchical widget but you do not index whole categories tree. The widget does not display correct data.');
+                break;
+            }
+        }
+    }
 }
 
 // Hide the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS.
