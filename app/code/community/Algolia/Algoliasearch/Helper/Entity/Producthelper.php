@@ -16,6 +16,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         'tax_class_id', // Needed for tax calculation
     );
 
+    private $excludedAttrsFromBundledProducts = array(
+        'news_from_date',
+        'news_to_date',
+        'special_price',
+        'special_from_date',
+        'special_to_date',
+    );
+
     protected function getIndexNameSuffix()
     {
         return '_products';
@@ -848,20 +856,22 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                     $all_sub_products_out_of_stock = true;
 
-                    foreach ($sub_products as $sub_product) {
-                        $isInStock = (int) $sub_product->getStockItem()->getIsInStock();
+                    if ($type !== 'bundle' || in_array($attribute_name, $this->excludedAttrsFromBundledProducts, true) === false) {
+                        foreach ($sub_products as $sub_product) {
+                            $isInStock = (int)$sub_product->getStockItem()->getIsInStock();
 
-                        if ($isInStock == false && $this->config->indexOutOfStockOptions($product->getStoreId()) == false) {
-                            continue;
-                        }
+                            if ($isInStock == false && $this->config->indexOutOfStockOptions($product->getStoreId()) == false) {
+                                continue;
+                            }
 
-                        $all_sub_products_out_of_stock = false;
+                            $all_sub_products_out_of_stock = false;
 
-                        $value = $sub_product->getData($attribute_name);
+                            $value = $sub_product->getData($attribute_name);
 
-                        if ($value) {
-                            $values[] = $this->getValueOrValueText($sub_product, $attribute_name,
-                                $attribute_resource, $index_no_value);
+                            if ($value) {
+                                $values[] = $this->getValueOrValueText($sub_product, $attribute_name,
+                                    $attribute_resource, $index_no_value);
+                            }
                         }
                     }
 
