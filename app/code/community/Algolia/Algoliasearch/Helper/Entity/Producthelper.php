@@ -36,6 +36,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 'path',
                 'categories',
                 'categories_without_path',
+                'main_categories',
                 'description',
                 'ordered_qty',
                 'total_ordered',
@@ -687,6 +688,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             array_unique(array_map('serialize', $categories_with_path)));
 
         $categories_hierarchical = array();
+        $mainCategories = array();
 
         $level_name = 'level';
 
@@ -697,10 +699,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
 
                 $categories_hierarchical[$level_name.$i][] = implode(' /// ', array_slice($category, 0, $i + 1));
+                $mainCategories[$level_name.$i][] = $category[$i];
             }
         }
 
         foreach ($categories_hierarchical as &$level) {
+            $level = array_values(array_unique($level));
+        }
+
+        foreach ($mainCategories as &$level) {
             $level = array_values(array_unique($level));
         }
 
@@ -709,8 +716,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         $customData['categories'] = $categories_hierarchical;
-
         $customData['categories_without_path'] = $categories;
+
+        if ($this->isAttributeEnabled($additionalAttributes, 'main_categories')) {
+            $customData['main_categories'] = $mainCategories;
+        }
 
         /** @var Algolia_Algoliasearch_Helper_Image $imageHelper */
         $imageHelper = Mage::helper('algoliasearch/image');
