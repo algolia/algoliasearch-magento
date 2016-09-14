@@ -50,6 +50,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IMAGE_HEIGHT = 'algoliasearch/image/height';
     const XML_PATH_IMAGE_TYPE = 'algoliasearch/image/type';
 
+    const ENABLE_SYNONYMS = 'algoliasearch/synonyms/enable_synonyms';
     const SYNONYMS = 'algoliasearch/synonyms/synonyms';
     const ONEWAY_SYNONYMS = 'algoliasearch/synonyms/oneway_synonyms';
     const SYNONYMS_FILE = 'algoliasearch/synonyms/synonyms_file';
@@ -512,6 +513,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getExtensionVersion()
     {
         return (string) Mage::getConfig()->getNode()->modules->Algolia_Algoliasearch->version;
+    }
+
+    public function isEnabledSynonyms($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ENABLE_SYNONYMS, $storeId);
     }
 
     public function getSynonyms($storeId = null)
