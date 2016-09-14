@@ -698,6 +698,15 @@ a.ais-current-refined-values--link:hover
   left: 5px;
  }
 
+#algolia-autocomplete-container .aa-suggestions svg.algolia-glass-suggestion.magnifying-glass {
+	position: absolute;
+	right: auto;
+	left: 5px;
+	top: 7px;
+	fill: #A6A6A6;
+	stroke: #A6A6A6;
+}
+
 #algolia-searchbox .magnifying-glass {
   position: absolute;
   right: 10px;

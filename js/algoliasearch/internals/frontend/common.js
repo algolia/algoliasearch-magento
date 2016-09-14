@@ -145,24 +145,33 @@ document.addEventListener("DOMContentLoaded", function (e) {
 			}
 			else if (section.name === "suggestions") {
 				/** Popular queries/suggestions **/
-				var suggestions_index = algolia_client.initIndex(algoliaConfig.indexName + "_suggestions");
-				var products_index = algolia_client.initIndex(algoliaConfig.indexName + "_products");
+				var suggestions_index = algolia_client.initIndex(algoliaConfig.indexName + "_suggestions"),
+					products_index = algolia_client.initIndex(algoliaConfig.indexName + "_products"),
+					suggestionsSource;
+				
+				if (algoliaConfig.autocomplete.displaySuggestionsCategories == true) {
+					suggestionsSource = $.fn.autocomplete.sources.popularIn(suggestions_index, {
+						hitsPerPage: section.hitsPerPage
+						}, {
+							source: 'query',
+							index: products_index,
+							facets: ['categories.level0'],
+							hitsPerPage: 0,
+							typoTolerance: false,
+							maxValuesPerFacet: 1,
+							analytics: false
+						}, {
+							includeAll: true,
+							allTitle: algoliaConfig.translations.allDepartments
+						});
+				} else {
+					suggestionsSource = $.fn.autocomplete.sources.hits(suggestions_index, {
+						hitsPerPage: section.hitsPerPage
+					});
+				}
 
 				source = {
-					source: $.fn.autocomplete.sources.popularIn(suggestions_index, {
-						hitsPerPage: section.hitsPerPage
-					}, {
-						source: 'query',
-						index: products_index,
-						facets: ['categories.level0'],
-						hitsPerPage: 0,
-						typoTolerance: false,
-						maxValuesPerFacet: 1,
-						analytics: false
-					}, {
-						includeAll: true,
-						allTitle: algoliaConfig.translations.allDepartments
-					}),
+					source: suggestionsSource,
 					displayKey: 'query',
 					name: section.name,
 					templates: {
