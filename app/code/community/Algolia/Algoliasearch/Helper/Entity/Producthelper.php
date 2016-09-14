@@ -331,40 +331,42 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
         }
 
-        if ($synonymsFile = $this->config->getSynonymsFile($storeId)) {
-            $synonymsToSet = json_decode(file_get_contents($synonymsFile));
-        } else {
-            $synonymsToSet = array();
+        if ($this->config->isEnabledSynonyms($storeId) === true) {
+            if ($synonymsFile = $this->config->getSynonymsFile($storeId)) {
+                $synonymsToSet = json_decode(file_get_contents($synonymsFile));
+            } else {
+                $synonymsToSet = array();
 
-            $synonyms = $this->config->getSynonyms($storeId);
-            foreach ($synonyms as $objectID => $synonym) {
-                if (!trim($synonym['synonyms'])) {
-                    continue;
+                $synonyms = $this->config->getSynonyms($storeId);
+                foreach ($synonyms as $objectID => $synonym) {
+                    if (!trim($synonym['synonyms'])) {
+                        continue;
+                    }
+
+                    $synonymsToSet[] = array(
+                        'objectID' => $objectID,
+                        'type' => 'synonym',
+                        'synonyms' => $this->explodeSynomyms($synonym['synonyms']),
+                    );
                 }
 
-                $synonymsToSet[] = array(
-                    'objectID' => $objectID,
-                    'type'     => 'synonym',
-                    'synonyms' => $this->explodeSynomyms($synonym['synonyms']),
-                );
-            }
+                $onewaySynonyms = $this->config->getOnewaySynonyms($storeId);
+                foreach ($onewaySynonyms as $objectID => $onewaySynonym) {
+                    if (!trim($onewaySynonym['input']) || !trim($onewaySynonym['synonyms'])) {
+                        continue;
+                    }
 
-            $onewaySynonyms = $this->config->getOnewaySynonyms($storeId);
-            foreach ($onewaySynonyms as $objectID => $onewaySynonym) {
-                if (!trim($onewaySynonym['input']) || !trim($onewaySynonym['synonyms'])) {
-                    continue;
+                    $synonymsToSet[] = array(
+                        'objectID' => $objectID,
+                        'type' => 'oneWaySynonym',
+                        'input' => $onewaySynonym['input'],
+                        'synonyms' => $this->explodeSynomyms($onewaySynonym['synonyms']),
+                    );
                 }
-
-                $synonymsToSet[] = array(
-                    'objectID' => $objectID,
-                    'type'     => 'oneWaySynonym',
-                    'input'    => $onewaySynonym['input'],
-                    'synonyms' => $this->explodeSynomyms($onewaySynonym['synonyms']),
-                );
             }
+
+            $this->algolia_helper->setSynonyms($this->getIndexName($storeId, $saveToTmpIndicesToo), $synonymsToSet);
         }
-
-        $this->algolia_helper->setSynonyms($this->getIndexName($storeId, $saveToTmpIndicesToo), $synonymsToSet);
     }
 
     protected function getFields($store)

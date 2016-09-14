@@ -204,6 +204,9 @@
                 <height>265</height>
                 <type>image</type>
             </image>
+            <synonyms>
+                <enable_synonyms>1</enable_synonyms>
+            </synonyms>
             <advanced>
                 <remove_words_if_no_result>allOptional</remove_words_if_no_result>
                 <partial_update>0</partial_update>

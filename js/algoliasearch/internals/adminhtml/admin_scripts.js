@@ -55,4 +55,24 @@ algoliaAdminBundle.$(function($) {
 			return parseInt(n, 10);
 		});
 	}
+	
+	var $enableSynonymsSelect = $('#algoliasearch_synonyms_enable_synonyms');
+	
+	handleSynonymsElements($enableSynonymsSelect.val());
+	
+	$enableSynonymsSelect.change(function() {
+		var val = $(this).val();
+		
+		handleSynonymsElements(val);
+	});
+	
+	function handleSynonymsElements(value) {
+		var $synonymsRows = $('#row_algoliasearch_synonyms_synonyms, #row_algoliasearch_synonyms_oneway_synonyms, #row_algoliasearch_synonyms_synonyms_file');
+		
+		if(value == 1) {
+			$synonymsRows.show();
+		} else {
+			$synonymsRows.hide();
+		}
+	}
 });
