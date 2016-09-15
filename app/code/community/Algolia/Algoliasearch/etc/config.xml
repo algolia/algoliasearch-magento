@@ -170,6 +170,7 @@
                 <results_limit>1000</results_limit>
                 <show_suggestions_on_no_result_page>1</show_suggestions_on_no_result_page>
                 <index_out_of_stock_options>0</index_out_of_stock_options>
+                <index_whole_category_tree>1</index_whole_category_tree>
             </products>
             <instant>
                 <replace_categories>1</replace_categories>

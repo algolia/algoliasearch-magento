@@ -688,9 +688,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
         }
 
-        foreach ($categories_with_path as $result) {
-            for ($i = count($result) - 1; $i > 0; $i--) {
-                $categories_with_path[] = array_slice($result, 0, $i);
+        if ($this->config->indexWholeCategoryTree($product->getStoreId())) {
+            foreach ($categories_with_path as $result) {
+                for ($i = count($result) - 1; $i > 0; $i--) {
+                    $categories_with_path[] = array_slice($result, 0, $i);
+                }
             }
         }
 
@@ -702,14 +704,24 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $level_name = 'level';
 
+        /** @var array $category */
         foreach ($categories_with_path as $category) {
-            for ($i = 0; $i < count($category); $i++) {
+            $categoriesCount = count($category);
+
+            for ($i = 0; $i < $categoriesCount; $i++) {
                 if (isset($categories_hierarchical[$level_name.$i]) === false) {
                     $categories_hierarchical[$level_name.$i] = array();
                 }
 
-                $categories_hierarchical[$level_name.$i][] = implode(' /// ', array_slice($category, 0, $i + 1));
                 $mainCategories[$level_name.$i][] = $category[$i];
+
+                if ($this->config->indexWholeCategoryTree($product->getStoreId())) {
+                    $categories_hierarchical[$level_name.$i][] = implode(' /// ', array_slice($category, 0, $i + 1));
+                } else {
+                    if ($i === ($categoriesCount - 1)) {
+                        $categories_hierarchical[$level_name.$i][] = implode(' /// ', $category);
+                    }
+                }
             }
         }
 

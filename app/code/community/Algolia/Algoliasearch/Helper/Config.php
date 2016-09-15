@@ -36,6 +36,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const RESULTS_LIMIT = 'algoliasearch/products/results_limit';
     const SHOW_SUGGESTIONS_NO_RESULTS = 'algoliasearch/products/show_suggestions_on_no_result_page';
     const INDEX_OUT_OF_STOCK_OPTIONS = 'algoliasearch/products/index_out_of_stock_options';
+    const INDEX_WHOLE_CATEGORY_TREE = 'algoliasearch/products/index_whole_category_tree';
 
     const CATEGORY_ATTRIBUTES = 'algoliasearch/categories/category_additional_attributes2';
     const INDEX_PRODUCT_COUNT = 'algoliasearch/categories/index_product_count';
@@ -71,6 +72,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function indexOutOfStockOptions($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::INDEX_OUT_OF_STOCK_OPTIONS, $storeId);
+    }
+
+    public function indexWholeCategoryTree($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::INDEX_WHOLE_CATEGORY_TREE, $storeId);
     }
 
     public function showCatsNotIncludedInNavigation($storeId = null)
