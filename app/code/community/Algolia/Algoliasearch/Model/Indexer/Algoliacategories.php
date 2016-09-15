@@ -64,11 +64,23 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Algolia_Algo
 
                 /** @var Mage_Catalog_Model_Category $category*/
                 $category = $event->getDataObject();
-                $productIds = $category->getAffectedProductIds();
+
+                $productIds = array();
+                if ($this->config->indexAllCategoryProductsOnCategoryUpdate()) {
+                    $categories = array_merge(array($category->getId()), $category->getAllChildren(true));
+
+                    $collection = Mage::getResourceModel('catalog/product_collection');
+                    $collection->joinField('category_id', 'catalog/category_product', 'category_id', 'product_id = entity_id', null, 'left');
+                    $collection->addAttributeToFilter('category_id', array('in' => $categories));
+
+                    $productIds = $collection->getAllIds();
+                } elseif ($this->config->indexProductOnCategoryProductsUpdate()) {
+                    $productIds = $category->getAffectedProductIds();
+                }
 
                 if (!$category->getData('is_active')) {
-                    $event->addNewData('catalogsearch_delete_category_id',
-                        array_merge(array($category->getId()), $category->getAllChildren(true)));
+                    $categories = array_merge(array($category->getId()), $category->getAllChildren(true));
+                    $event->addNewData('catalogsearch_delete_category_id', $categories);
 
                     if ($productIds) {
                         $event->addNewData('catalogsearch_update_product_id', $productIds);
@@ -150,7 +162,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Algolia_Algo
          * If we have added any new products to a category then we need to
          * update these products in Algolia indices.
          */
-        if ($this->config->indexProductOnCategoryProductsUpdate() && !empty($data['catalogsearch_update_product_id'])) {
+        if (!empty($data['catalogsearch_update_product_id'])) {
             $this->reindexSpecificProducts($data['catalogsearch_update_product_id']);
         }
     }
