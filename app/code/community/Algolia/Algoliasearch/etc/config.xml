@@ -187,6 +187,7 @@
                 <sections>a:1:{s:18:"_1450089283397_397";a:3:{s:4:"name";s:5:"pages";s:5:"label";s:5:"Pages";s:11:"hitsPerPage";s:1:"2";}}</sections>
                 <min_popularity>1000</min_popularity>
                 <min_number_of_results>2</min_number_of_results>
+                <display_categories_with_suggestions>1</display_categories_with_suggestions>
                 <render_template_directives>1</render_template_directives>
             </autocomplete>
             <categories>

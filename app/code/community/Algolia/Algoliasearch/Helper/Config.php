@@ -28,6 +28,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const EXCLUDED_PAGES = 'algoliasearch/autocomplete/excluded_pages';
     const MIN_POPULARITY = 'algoliasearch/autocomplete/min_popularity';
     const MIN_NUMBER_OF_RESULTS = 'algoliasearch/autocomplete/min_number_of_results';
+    const DISPLAY_SUGGESTIONS_CATEGORIES = 'algoliasearch/autocomplete/display_categories_with_suggestions';
     const RENDER_TEMPLATE_DIRECTIVES = 'algoliasearch/autocomplete/render_template_directives';
 
     const NUMBER_OF_PRODUCT_RESULTS = 'algoliasearch/products/number_product_results';
@@ -117,6 +118,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function showSuggestionsOnNoResultsPage($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::SHOW_SUGGESTIONS_NO_RESULTS, $storeId);
+    }
+
+    public function displaySuggestionsCategories($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::DISPLAY_SUGGESTIONS_CATEGORIES, $storeId);
     }
 
     public function isEnabledFrontEnd($storeId = null)
