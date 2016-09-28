@@ -51,6 +51,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 'stock_qty',
                 'rating_summary',
                 'media_gallery',
+                'in_stock',
             ), $allAttributes);
 
             $excludedAttributes = $this->getExcludedAttributes();
