@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		 **/
 		var search = algoliaBundle.instantsearch({
 			appId: algoliaConfig.applicationId,
-			apiKey: algoliaConfig.apiKey,
+			apiKey: algoliaConfig.instant.apiKey,
 			indexName: algoliaConfig.indexName + '_products',
 			urlSync: {
 				useHash: true,
@@ -74,13 +74,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			init: function (data) {
 				if (algoliaConfig.request.refinementKey.length > 0) {
 					data.helper.toggleRefine(algoliaConfig.request.refinementKey, algoliaConfig.request.refinementValue);
-				}
-				
-				if (algoliaConfig.isCategoryPage) {
-					data.helper.addNumericRefinement('visibility_catalog', '=', 1);
-				}
-				else {
-					data.helper.addNumericRefinement('visibility_search', '=', 1);
 				}
 			},
 			render: function (data) {

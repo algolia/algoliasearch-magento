@@ -139,9 +139,49 @@ if ($config->isInstantEnabled() && $isSearchPage) {
     </script>';
 }
 
+/**
+ * Generate API keys
+ * Docs: https://www.algolia.com/doc/api-client/php/api-keys#generate-key
+ */
+$attributesToRetrieve = $config->getAttributesToRetrieve($customerGroupId);
+
+if ($attributesToRetrieve) {
+    $instantsearchApiKeyParams['attributesToRetrieve'] = $attributesToRetrieve;
+    $autocompleteApiKeyParams['attributesToRetrieve'] = $attributesToRetrieve;
+}
+
+/**
+ * Add custom instantsearch filter restrictions into $instantsearchApiKeyParams['filters'] variable
+ * Filters doc: https://www.algolia.com/doc/api-client/php/parameters#filters
+ * Example: 'in_stock=1 AND color:Black' (color must be set as attribute for faceting)
+ */
+$instantsearchApiKeyParams['filters'] = '';
+
+// Force to retrieve only searchable products on instant-search page
+$instantsearchApiKeyParams['numericFilters'] = 'visibility_search=1';
+if ($isCategoryPage) {
+    // Force to retrieve only products from catalog in replace-category pages
+    $instantsearchApiKeyParams['numericFilters'] = 'visibility_catalog=1';
+}
+
+$instantsearchApiKey = $algoliaHelper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $instantsearchApiKeyParams);
+
+/**
+ * Add custom autocomplete filter restrictions into $autocompleteApiKeyParams['filters'] variable
+ * Filters doc: https://www.algolia.com/doc/api-client/php/parameters#filters
+ * Example: 'in_stock=1 AND color:Black' (color must be set as attribute for faceting)
+ */
+$autocompleteApiKeyParams['filters'] = '';
+
+// Force to retrieve only searchable products in autocomplete menu
+$autocompleteApiKeyParams['numericFilters'] = 'visibility_search=1';
+
+$autocompleteApiKey = $algoliaHelper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $autocompleteApiKeyParams);
+
 $algoliaJsConfig = array(
     'instant' => array(
         'enabled' => $config->isInstantEnabled(),
+        'apiKey' => $instantsearchApiKey,
         'selector' => $config->getInstantSelector(),
         'isAddToCartEnabled' => $config->isAddToCartEnable(),
         'showStaticContent' => ($title || $imgHtml || $description || $content),
@@ -153,6 +193,7 @@ $algoliaJsConfig = array(
     ),
     'autocomplete' => array(
         'enabled' => $config->isAutoCompleteEnabled(),
+        'apiKey' => $autocompleteApiKey,
         'selector' => $config->getAutocompleteSelector(),
         'sections' => $config->getAutocompleteSections(),
         'nbOfProductsSuggestions' => $config->getNumberOfProductsSuggestions(),
@@ -163,7 +204,6 @@ $algoliaJsConfig = array(
     'extensionVersion' => $config->getExtensionVersion(),
     'applicationId' => $config->getApplicationID(),
     'indexName' => $productHelper->getBaseIndexName(),
-    'apiKey' => $algoliaHelper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $config->getAttributesToRetrieve($customerGroupId)),
     'facets' => $config->getFacets(),
     'hitsPerPage' => (int) $config->getNumberOfProductResults(),
     'sortingIndices' => array_values($config->getSortingIndices()),

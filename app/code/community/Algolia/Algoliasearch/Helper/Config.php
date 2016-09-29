@@ -406,7 +406,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
             $attributes[] = 'price.'.$currency.'.special_to_date';
         }
 
-        return array('attributesToRetrieve' => $attributes);
+        return $attributes;
     }
 
     public function getCategoryAdditionalAttributes($storeId = null)
