@@ -14,6 +14,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         'thumbnail',
         'msrp_enabled', // NEEDED to handle msrp behavior
         'tax_class_id', // Needed for tax calculation
+        'price_type', // Needed for bundle prices
     );
 
     private $excludedAttrsFromBundledProducts = array(
