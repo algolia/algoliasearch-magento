@@ -51,14 +51,14 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_ProductAdditionalAttr
                     ),
                     'rowMethod' => 'getOrder',
                 ),
-                'index_no_value' => [
+                'index_no_value' => array(
                     'label'   => 'Index empty value',
-                    'options' => [
+                    'options' => array(
                         '1'     => 'Yes',
                         '0'     => 'No',
-                    ],
+                    ),
                     'rowMethod' => 'getIndexNoValue',
-                ],
+                ),
             ),
             'buttonLabel' => 'Add Attribute',
             'addAfter'    => false,
