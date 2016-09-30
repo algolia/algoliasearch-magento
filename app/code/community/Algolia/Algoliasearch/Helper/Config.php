@@ -465,24 +465,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getCategoryCustomRanking($storeId = null)
     {
-        $attrs = unserialize(Mage::getStoreConfig(self::CATEGORY_CUSTOM_RANKING, $storeId));
-
-        if (is_array($attrs)) {
-            return $attrs;
-        }
-
-        return array();
+        return $this->getCustomRanking(self::CATEGORY_CUSTOM_RANKING, $storeId);
     }
 
     public function getProductCustomRanking($storeId = null)
     {
-        $attrs = unserialize(Mage::getStoreConfig(self::PRODUCT_CUSTOM_RANKING, $storeId));
-
-        if (is_array($attrs)) {
-            return $attrs;
-        }
-
-        return array();
+        return $this->getCustomRanking(self::PRODUCT_CUSTOM_RANKING, $storeId);
     }
 
     public function getCurrency($storeId = null)
@@ -568,5 +556,22 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return Mage::getBaseDir('media').'/algoliasearch-admin-config-uploads/'.$filename;
+    }
+
+    private function getCustomRanking($configName, $storeId = null)
+    {
+        $attrs = unserialize(Mage::getStoreConfig($configName, $storeId));
+
+        if (is_array($attrs)) {
+            foreach ($attrs as $index => $attr) {
+                if ($attr['attribute'] == 'custom_attribute') {
+                    $attrs[$index]['attribute'] = $attr['custom_attribute'];
+                }
+            }
+
+            return $attrs;
+        }
+
+        return array();
     }
 }

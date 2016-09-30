@@ -448,7 +448,8 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
+                                Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br /><br />
+                                In case you want to use attribute which cannot be selected from the select box (eg. attribute indexed from outside of Magento), you can use "[use custom attribute]" option and write the name of the attribute into the new text field.<br /><br />
                                 <span class="algolia-config-warning">&#9888;</span> All attributes used here must have been initially included in the Attributes configuration panel.
                                 ]]>
                             </comment>
@@ -539,7 +540,8 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Choose here the attributes that reflect the popularity of your categories (number of products, total number of sales of the category,etc.).<br />
+                                Choose here the attributes that reflect the popularity of your categories (number of products, total number of sales of the category,etc.).<br /><br />
+                                In case you want to use attribute which cannot be selected from the select box (eg. attribute indexed from outside of Magento), you can use "[use custom attribute]" option and write the name of the attribute into the new text field.<br /><br />
                                 <span class="algolia-config-warning">&#9888;</span> All attributes used here must have been included before in the Attributes chart.
                                 ]]>
                             </comment>

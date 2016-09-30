@@ -22,9 +22,16 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_CustomRankingCategory
                             $options[$attribute['attribute']] = $attribute['attribute'];
                         }
 
+                        $options['custom_attribute'] = '[use custom attribute]';
+
                         return $options;
                     },
                     'rowMethod' => 'getAttribute',
+                    'width' => 150,
+                ),
+                'custom_attribute' => array(
+                    'label' => 'Custom attribute',
+                    'style' => 'width: 120px;',
                 ),
                 'order' => array(
                     'label'   => 'Asc / Desc',

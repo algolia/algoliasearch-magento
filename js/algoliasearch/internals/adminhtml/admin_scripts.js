@@ -75,4 +75,33 @@ algoliaAdminBundle.$(function($) {
 			$synonymsRows.hide();
 		}
 	}
+	
+	var $customRankingRows = $('#row_algoliasearch_products_custom_ranking_product_attributes, #row_algoliasearch_categories_custom_ranking_category_attributes');
+	initCustomRankings($customRankingRows);
+	
+	$customRankingRows.on('click', 'button[id^="addToEndBtn"]', function (e) {
+		initCustomRankings($customRankingRows);
+	});
+	
+	$customRankingRows.on('change', 'select[name$="[attribute]"]', function (e) {
+		handleCustomRankingCustomAttributes($(this));
+	});
+	
+	function initCustomRankings($customRankingRows) {
+		$customRankingRows.find('table select[name$="[attribute]"]').each(function(e) {
+			handleCustomRankingCustomAttributes($(this));
+		});
+	}
+	
+	function handleCustomRankingCustomAttributes($selectBox) {
+		var selectValue = $selectBox.val(),
+			$input = $selectBox.parent('td').next().find('input[type="text"]');
+		
+		if(selectValue !== 'custom_attribute') {
+			$input.hide();
+		}
+		else {
+			$input.show();
+		}
+	}
 });
