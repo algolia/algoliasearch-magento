@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		 * Initialise Algolia client
 		 * Docs: https://www.algolia.com/doc/javascript
 		 **/
-		var algolia_client = algoliaBundle.algoliasearch(algoliaConfig.applicationId, algoliaConfig.apiKey);
+		var algolia_client = algoliaBundle.algoliasearch(algoliaConfig.applicationId, algoliaConfig.autocomplete.apiKey);
 		algolia_client.addAlgoliaAgent('Magento integration (' + algoliaConfig.extensionVersion + ')');
 		
 		/** Add products and categories that are required sections **/
