@@ -170,11 +170,10 @@ $instantsearchApiKey = $algoliaHelper->generateSearchSecuredApiKey($config->getS
  * Add custom autocomplete filter restrictions into $autocompleteApiKeyParams['filters'] variable
  * Filters doc: https://www.algolia.com/doc/api-client/php/parameters#filters
  * Example: 'in_stock=1 AND color:Black' (color must be set as attribute for faceting)
+ *
+ * Beware: Those filters are applied to all your autocomplete queries (products, categories, pages, ...)!
  */
 $autocompleteApiKeyParams['filters'] = '';
-
-// Force to retrieve only searchable products in autocomplete menu
-$autocompleteApiKeyParams['numericFilters'] = 'visibility_search=1';
 
 $autocompleteApiKey = $algoliaHelper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $autocompleteApiKeyParams);
 
