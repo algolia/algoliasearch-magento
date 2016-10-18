@@ -44,8 +44,18 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 'name',
                 'path',
                 'categories',
+                'categories.level0',
+                'categories.level1',
+                'categories.level2',
+                'categories.level3',
+                'categories.level4',
                 'categories_without_path',
                 'main_categories',
+                'main_categories.level0',
+                'main_categories.level1',
+                'main_categories.level2',
+                'main_categories.level3',
+                'main_categories.level4',
                 'description',
                 'ordered_qty',
                 'total_ordered',
@@ -117,7 +127,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     public function isAttributeEnabled($additionalAttributes, $attr_name)
     {
         foreach ($additionalAttributes as $attr) {
-            if ($attr['attribute'] === $attr_name) {
+            $additionalAttribute = substr($attr['attribute'], 0, strpos($attr['attribute'], '.'));
+            if ($additionalAttribute === $attr_name) {
                 return true;
             }
         }
@@ -202,7 +213,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $unretrievableAttributes[] = $attribute['attribute'];
             }
 
-            if ($attribute['attribute'] == 'categories') {
+            if ($attribute['attribute'] == 'categories' && $attribute['searchable'] == '1') {
                 $attributesToIndex[] = $attribute['order'] == 'ordered' ? 'categories_without_path' : 'unordered(categories_without_path)';
             }
         }
