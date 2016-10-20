@@ -46,8 +46,8 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_ProductAdditionalAttr
                 'order' => array(
                     'label'   => 'Ordered',
                     'options' => array(
-                        'ordered'   => 'Ordered',
                         'unordered' => 'Unordered',
+                        'ordered'   => 'Ordered',
                     ),
                     'rowMethod' => 'getOrder',
                 ),
