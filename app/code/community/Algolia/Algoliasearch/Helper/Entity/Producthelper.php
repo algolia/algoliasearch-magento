@@ -127,7 +127,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     public function isAttributeEnabled($additionalAttributes, $attr_name)
     {
         foreach ($additionalAttributes as $attr) {
-            $additionalAttribute = substr($attr['attribute'], 0, strpos($attr['attribute'], '.'));
+            $additionalAttribute = $attr['attribute'];
+
+            $dotPosition = strpos($attr['attribute'], '.');
+            if ($dotPosition !== false) {
+                $additionalAttribute = substr($attr['attribute'], 0, $dotPosition);
+            }
+
             if ($additionalAttribute === $attr_name) {
                 return true;
             }
