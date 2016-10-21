@@ -28,6 +28,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const EXCLUDED_PAGES = 'algoliasearch/autocomplete/excluded_pages';
     const MIN_POPULARITY = 'algoliasearch/autocomplete/min_popularity';
     const MIN_NUMBER_OF_RESULTS = 'algoliasearch/autocomplete/min_number_of_results';
+    const DISPLAY_SUGGESTIONS_CATEGORIES = 'algoliasearch/autocomplete/display_categories_with_suggestions';
     const RENDER_TEMPLATE_DIRECTIVES = 'algoliasearch/autocomplete/render_template_directives';
 
     const NUMBER_OF_PRODUCT_RESULTS = 'algoliasearch/products/number_product_results';
@@ -36,6 +37,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const RESULTS_LIMIT = 'algoliasearch/products/results_limit';
     const SHOW_SUGGESTIONS_NO_RESULTS = 'algoliasearch/products/show_suggestions_on_no_result_page';
     const INDEX_OUT_OF_STOCK_OPTIONS = 'algoliasearch/products/index_out_of_stock_options';
+    const INDEX_WHOLE_CATEGORY_TREE = 'algoliasearch/products/index_whole_category_tree';
 
     const CATEGORY_ATTRIBUTES = 'algoliasearch/categories/category_additional_attributes2';
     const INDEX_PRODUCT_COUNT = 'algoliasearch/categories/index_product_count';
@@ -50,6 +52,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IMAGE_HEIGHT = 'algoliasearch/image/height';
     const XML_PATH_IMAGE_TYPE = 'algoliasearch/image/type';
 
+    const ENABLE_SYNONYMS = 'algoliasearch/synonyms/enable_synonyms';
     const SYNONYMS = 'algoliasearch/synonyms/synonyms';
     const ONEWAY_SYNONYMS = 'algoliasearch/synonyms/oneway_synonyms';
     const SYNONYMS_FILE = 'algoliasearch/synonyms/synonyms_file';
@@ -61,6 +64,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const REMOVE_BRANDING = 'algoliasearch/advanced/remove_branding';
     const AUTOCOMPLETE_SELECTOR = 'algoliasearch/advanced/autocomplete_selector';
     const INDEX_PRODUCT_ON_CATEGORY_PRODUCTS_UPDATE = 'algoliasearch/advanced/index_product_on_category_products_update';
+    const INDEX_ALL_CATEGORY_PRODUCTS_ON_CATEGORY_UPDATE = 'algoliasearch/advanced/index_all_category_product_on_category_update';
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
@@ -70,6 +74,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function indexOutOfStockOptions($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::INDEX_OUT_OF_STOCK_OPTIONS, $storeId);
+    }
+
+    public function indexWholeCategoryTree($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::INDEX_WHOLE_CATEGORY_TREE, $storeId);
     }
 
     public function showCatsNotIncludedInNavigation($storeId = null)
@@ -92,6 +101,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfigFlag(self::INDEX_PRODUCT_ON_CATEGORY_PRODUCTS_UPDATE, $storeId);
     }
 
+    public function indexAllCategoryProductsOnCategoryUpdate($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::INDEX_ALL_CATEGORY_PRODUCTS_ON_CATEGORY_UPDATE, $storeId);
+    }
+
     public function getNumberOfQueriesSuggestions($storeId = null)
     {
         return Mage::getStoreConfig(self::NB_OF_QUERIES_SUGGESTIONS, $storeId);
@@ -110,6 +124,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function showSuggestionsOnNoResultsPage($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::SHOW_SUGGESTIONS_NO_RESULTS, $storeId);
+    }
+
+    public function displaySuggestionsCategories($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::DISPLAY_SUGGESTIONS_CATEGORIES, $storeId);
     }
 
     public function isEnabledFrontEnd($storeId = null)
@@ -387,7 +406,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
             $attributes[] = 'price.'.$currency.'.special_to_date';
         }
 
-        return array('attributesToRetrieve' => $attributes);
+        return $attributes;
     }
 
     public function getCategoryAdditionalAttributes($storeId = null)
@@ -446,24 +465,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getCategoryCustomRanking($storeId = null)
     {
-        $attrs = unserialize(Mage::getStoreConfig(self::CATEGORY_CUSTOM_RANKING, $storeId));
-
-        if (is_array($attrs)) {
-            return $attrs;
-        }
-
-        return array();
+        return $this->getCustomRanking(self::CATEGORY_CUSTOM_RANKING, $storeId);
     }
 
     public function getProductCustomRanking($storeId = null)
     {
-        $attrs = unserialize(Mage::getStoreConfig(self::PRODUCT_CUSTOM_RANKING, $storeId));
-
-        if (is_array($attrs)) {
-            return $attrs;
-        }
-
-        return array();
+        return $this->getCustomRanking(self::PRODUCT_CUSTOM_RANKING, $storeId);
     }
 
     public function getCurrency($storeId = null)
@@ -514,6 +521,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return (string) Mage::getConfig()->getNode()->modules->Algolia_Algoliasearch->version;
     }
 
+    public function isEnabledSynonyms($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ENABLE_SYNONYMS, $storeId);
+    }
+
     public function getSynonyms($storeId = null)
     {
         $synonyms = unserialize(Mage::getStoreConfig(self::SYNONYMS, $storeId));
@@ -544,5 +556,22 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return Mage::getBaseDir('media').'/algoliasearch-admin-config-uploads/'.$filename;
+    }
+
+    private function getCustomRanking($configName, $storeId = null)
+    {
+        $attrs = unserialize(Mage::getStoreConfig($configName, $storeId));
+
+        if (is_array($attrs)) {
+            foreach ($attrs as $index => $attr) {
+                if ($attr['attribute'] == 'custom_attribute') {
+                    $attrs[$index]['attribute'] = $attr['custom_attribute'];
+                }
+            }
+
+            return $attrs;
+        }
+
+        return array();
     }
 }

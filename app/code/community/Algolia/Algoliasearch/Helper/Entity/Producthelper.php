@@ -14,6 +14,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         'thumbnail',
         'msrp_enabled', // NEEDED to handle msrp behavior
         'tax_class_id', // Needed for tax calculation
+        'price_type', // Needed for bundle prices
+    );
+
+    private $excludedAttrsFromBundledProducts = array(
+        'news_from_date',
+        'news_to_date',
+        'special_price',
+        'special_from_date',
+        'special_to_date',
     );
 
     protected function getIndexNameSuffix()
@@ -35,13 +44,25 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 'name',
                 'path',
                 'categories',
+                'categories.level0',
+                'categories.level1',
+                'categories.level2',
+                'categories.level3',
+                'categories.level4',
                 'categories_without_path',
+                'main_categories',
+                'main_categories.level0',
+                'main_categories.level1',
+                'main_categories.level2',
+                'main_categories.level3',
+                'main_categories.level4',
                 'description',
                 'ordered_qty',
                 'total_ordered',
                 'stock_qty',
                 'rating_summary',
                 'media_gallery',
+                'in_stock',
             ), $allAttributes);
 
             $excludedAttributes = $this->getExcludedAttributes();
@@ -106,7 +127,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     public function isAttributeEnabled($additionalAttributes, $attr_name)
     {
         foreach ($additionalAttributes as $attr) {
-            if ($attr['attribute'] === $attr_name) {
+            $additionalAttribute = $attr['attribute'];
+
+            $dotPosition = strpos($attr['attribute'], '.');
+            if ($dotPosition !== false) {
+                $additionalAttribute = substr($attr['attribute'], 0, $dotPosition);
+            }
+
+            if ($additionalAttribute === $attr_name) {
                 return true;
             }
         }
@@ -191,7 +219,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $unretrievableAttributes[] = $attribute['attribute'];
             }
 
-            if ($attribute['attribute'] == 'categories') {
+            if ($attribute['attribute'] == 'categories' && $attribute['searchable'] == '1') {
                 $attributesToIndex[] = $attribute['order'] == 'ordered' ? 'categories_without_path' : 'unordered(categories_without_path)';
             }
         }
@@ -331,40 +359,42 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
         }
 
-        if ($synonymsFile = $this->config->getSynonymsFile($storeId)) {
-            $synonymsToSet = json_decode(file_get_contents($synonymsFile));
-        } else {
-            $synonymsToSet = array();
+        if ($this->config->isEnabledSynonyms($storeId) === true) {
+            if ($synonymsFile = $this->config->getSynonymsFile($storeId)) {
+                $synonymsToSet = json_decode(file_get_contents($synonymsFile));
+            } else {
+                $synonymsToSet = array();
 
-            $synonyms = $this->config->getSynonyms($storeId);
-            foreach ($synonyms as $objectID => $synonym) {
-                if (!trim($synonym['synonyms'])) {
-                    continue;
+                $synonyms = $this->config->getSynonyms($storeId);
+                foreach ($synonyms as $objectID => $synonym) {
+                    if (!trim($synonym['synonyms'])) {
+                        continue;
+                    }
+
+                    $synonymsToSet[] = array(
+                        'objectID' => $objectID,
+                        'type' => 'synonym',
+                        'synonyms' => $this->explodeSynomyms($synonym['synonyms']),
+                    );
                 }
 
-                $synonymsToSet[] = array(
-                    'objectID' => $objectID,
-                    'type'     => 'synonym',
-                    'synonyms' => $this->explodeSynomyms($synonym['synonyms']),
-                );
-            }
+                $onewaySynonyms = $this->config->getOnewaySynonyms($storeId);
+                foreach ($onewaySynonyms as $objectID => $onewaySynonym) {
+                    if (!trim($onewaySynonym['input']) || !trim($onewaySynonym['synonyms'])) {
+                        continue;
+                    }
 
-            $onewaySynonyms = $this->config->getOnewaySynonyms($storeId);
-            foreach ($onewaySynonyms as $objectID => $onewaySynonym) {
-                if (!trim($onewaySynonym['input']) || !trim($onewaySynonym['synonyms'])) {
-                    continue;
+                    $synonymsToSet[] = array(
+                        'objectID' => $objectID,
+                        'type' => 'oneWaySynonym',
+                        'input' => $onewaySynonym['input'],
+                        'synonyms' => $this->explodeSynomyms($onewaySynonym['synonyms']),
+                    );
                 }
-
-                $synonymsToSet[] = array(
-                    'objectID' => $objectID,
-                    'type'     => 'oneWaySynonym',
-                    'input'    => $onewaySynonym['input'],
-                    'synonyms' => $this->explodeSynomyms($onewaySynonym['synonyms']),
-                );
             }
+
+            $this->algolia_helper->setSynonyms($this->getIndexName($storeId, $saveToTmpIndicesToo), $synonymsToSet);
         }
-
-        $this->algolia_helper->setSynonyms($this->getIndexName($storeId, $saveToTmpIndicesToo), $synonymsToSet);
     }
 
     protected function getFields($store)
@@ -677,9 +707,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
         }
 
-        foreach ($categories_with_path as $result) {
-            for ($i = count($result) - 1; $i > 0; $i--) {
-                $categories_with_path[] = array_slice($result, 0, $i);
+        if ($this->config->indexWholeCategoryTree($product->getStoreId())) {
+            foreach ($categories_with_path as $result) {
+                for ($i = count($result) - 1; $i > 0; $i--) {
+                    $categories_with_path[] = array_slice($result, 0, $i);
+                }
             }
         }
 
@@ -687,20 +719,36 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             array_unique(array_map('serialize', $categories_with_path)));
 
         $categories_hierarchical = array();
+        $mainCategories = array();
 
         $level_name = 'level';
 
+        /** @var array $category */
         foreach ($categories_with_path as $category) {
-            for ($i = 0; $i < count($category); $i++) {
+            $categoriesCount = count($category);
+
+            for ($i = 0; $i < $categoriesCount; $i++) {
                 if (isset($categories_hierarchical[$level_name.$i]) === false) {
                     $categories_hierarchical[$level_name.$i] = array();
                 }
 
-                $categories_hierarchical[$level_name.$i][] = implode(' /// ', array_slice($category, 0, $i + 1));
+                $mainCategories[$level_name.$i][] = $category[$i];
+
+                if ($this->config->indexWholeCategoryTree($product->getStoreId())) {
+                    $categories_hierarchical[$level_name.$i][] = implode(' /// ', array_slice($category, 0, $i + 1));
+                } else {
+                    if ($i === ($categoriesCount - 1)) {
+                        $categories_hierarchical[$level_name.$i][] = implode(' /// ', $category);
+                    }
+                }
             }
         }
 
         foreach ($categories_hierarchical as &$level) {
+            $level = array_values(array_unique($level));
+        }
+
+        foreach ($mainCategories as &$level) {
             $level = array_values(array_unique($level));
         }
 
@@ -709,8 +757,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         $customData['categories'] = $categories_hierarchical;
-
         $customData['categories_without_path'] = $categories;
+
+        if ($this->isAttributeEnabled($additionalAttributes, 'main_categories')) {
+            $customData['main_categories'] = $mainCategories;
+        }
 
         /** @var Algolia_Algoliasearch_Helper_Image $imageHelper */
         $imageHelper = Mage::helper('algoliasearch/image');
@@ -848,20 +899,22 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                     $all_sub_products_out_of_stock = true;
 
-                    foreach ($sub_products as $sub_product) {
-                        $isInStock = (int) $sub_product->getStockItem()->getIsInStock();
+                    if ($type !== 'bundle' || in_array($attribute_name, $this->excludedAttrsFromBundledProducts, true) === false) {
+                        foreach ($sub_products as $sub_product) {
+                            $isInStock = (int)$sub_product->getStockItem()->getIsInStock();
 
-                        if ($isInStock == false && $this->config->indexOutOfStockOptions($product->getStoreId()) == false) {
-                            continue;
-                        }
+                            if ($isInStock == false && $this->config->indexOutOfStockOptions($product->getStoreId()) == false) {
+                                continue;
+                            }
 
-                        $all_sub_products_out_of_stock = false;
+                            $all_sub_products_out_of_stock = false;
 
-                        $value = $sub_product->getData($attribute_name);
+                            $value = $sub_product->getData($attribute_name);
 
-                        if ($value) {
-                            $values[] = $this->getValueOrValueText($sub_product, $attribute_name,
-                                $attribute_resource, $index_no_value);
+                            if ($value) {
+                                $values[] = $this->getValueOrValueText($sub_product, $attribute_name,
+                                    $attribute_resource, $index_no_value);
+                            }
                         }
                     }
 

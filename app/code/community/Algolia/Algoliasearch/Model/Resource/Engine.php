@@ -240,6 +240,8 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         $storeIds = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
         $by_page = $this->config->getNumberOfElementByPage();
 
+        $productIds = array_values(array_unique($productIds));
+
         foreach ($storeIds as $storeId) {
             if (is_array($productIds) && count($productIds) > $by_page) {
                 foreach (array_chunk($productIds, $by_page) as $chunk) {

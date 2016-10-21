@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.7.0</version>
+            <version>1.7.1</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -165,11 +165,12 @@
             </credentials>
             <products>
                 <number_product_results>9</number_product_results>
-                <product_additional_attributes>a:10:{s:18:"_1427959997377_377";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960012597_597";a:4:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961262735_735";a:4:{s:9:"attribute";s:10:"categories";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1447846016385_385";a:4:{s:9:"attribute";s:5:"color";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961324936_936";a:4:{s:9:"attribute";s:3:"sku";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427962021621_621";a:4:{s:9:"attribute";s:5:"price";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427977839554_554";a:4:{s:9:"attribute";s:11:"ordered_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}s:18:"_1428566173508_508";a:4:{s:9:"attribute";s:9:"stock_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}s:17:"_1433929490023_23";a:4:{s:9:"attribute";s:14:"rating_summary";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1436178594492_492";a:4:{s:9:"attribute";s:10:"created_at";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:7:"ordered";}}</product_additional_attributes>
+                <product_additional_attributes>a:10:{s:18:"_1427959997377_377";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427960012597_597";a:4:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961262735_735";a:4:{s:9:"attribute";s:10:"categories";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1447846016385_385";a:4:{s:9:"attribute";s:5:"color";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961324936_936";a:4:{s:9:"attribute";s:3:"sku";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427962021621_621";a:4:{s:9:"attribute";s:5:"price";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427977839554_554";a:4:{s:9:"attribute";s:11:"ordered_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:9:"unordered";}s:18:"_1428566173508_508";a:4:{s:9:"attribute";s:9:"stock_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:9:"unordered";}s:17:"_1433929490023_23";a:4:{s:9:"attribute";s:14:"rating_summary";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1436178594492_492";a:4:{s:9:"attribute";s:10:"created_at";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:9:"unordered";}}</product_additional_attributes>
                 <custom_ranking_product_attributes>a:1:{s:18:"_1427960305274_274";a:2:{s:9:"attribute";s:11:"ordered_qty";s:5:"order";s:4:"desc";}}</custom_ranking_product_attributes>
                 <results_limit>1000</results_limit>
                 <show_suggestions_on_no_result_page>1</show_suggestions_on_no_result_page>
                 <index_out_of_stock_options>0</index_out_of_stock_options>
+                <index_whole_category_tree>1</index_whole_category_tree>
             </products>
             <instant>
                 <replace_categories>1</replace_categories>
@@ -186,11 +187,12 @@
                 <sections>a:1:{s:18:"_1450089283397_397";a:3:{s:4:"name";s:5:"pages";s:5:"label";s:5:"Pages";s:11:"hitsPerPage";s:1:"2";}}</sections>
                 <min_popularity>1000</min_popularity>
                 <min_number_of_results>2</min_number_of_results>
+                <display_categories_with_suggestions>1</display_categories_with_suggestions>
                 <render_template_directives>1</render_template_directives>
             </autocomplete>
             <categories>
                 <number_category_suggestions>5</number_category_suggestions>
-                <category_additional_attributes2>a:7:{s:18:"_1427960339954_954";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427960354437_437";a:4:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961004989_989";a:4:{s:9:"attribute";s:11:"description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961205511_511";a:4:{s:9:"attribute";s:10:"meta_title";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961216134_134";a:4:{s:9:"attribute";s:13:"meta_keywords";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}s:18:"_1427961216916_916";a:4:{s:9:"attribute";s:16:"meta_description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427977778338_338";a:4:{s:9:"attribute";s:13:"product_count";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:7:"ordered";}}</category_additional_attributes2>
+                <category_additional_attributes2>a:7:{s:18:"_1427960339954_954";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427960354437_437";a:4:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961004989_989";a:4:{s:9:"attribute";s:11:"description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961205511_511";a:4:{s:9:"attribute";s:10:"meta_title";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961216134_134";a:4:{s:9:"attribute";s:13:"meta_keywords";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961216916_916";a:4:{s:9:"attribute";s:16:"meta_description";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427977778338_338";a:4:{s:9:"attribute";s:13:"product_count";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}}</category_additional_attributes2>
                 <custom_ranking_category_attributes>a:1:{s:18:"_1427961035192_192";a:2:{s:9:"attribute";s:13:"product_count";s:5:"order";s:4:"desc";}}</custom_ranking_category_attributes>
                 <show_cats_not_included_in_navigation>0</show_cats_not_included_in_navigation>
             </categories>
@@ -204,6 +206,9 @@
                 <height>265</height>
                 <type>image</type>
             </image>
+            <synonyms>
+                <enable_synonyms>1</enable_synonyms>
+            </synonyms>
             <advanced>
                 <remove_words_if_no_result>allOptional</remove_words_if_no_result>
                 <partial_update>0</partial_update>
@@ -211,6 +216,7 @@
                 <remove_branding>0</remove_branding>
                 <autocomplete_selector>.algolia-search-input</autocomplete_selector>
                 <index_product_on_category_products_update>1</index_product_on_category_products_update>
+                <index_all_category_product_on_category_update>0</index_all_category_product_on_category_update>
             </advanced>
             <product_map>
                 <!--

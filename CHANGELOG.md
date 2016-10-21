@@ -1,5 +1,38 @@
 ## Change Log
 
+### 1.7.1
+
+#### FEATURES
+- Option to stop the extension from overriding synonyms (#580)
+- New attribute `main_categories` which contains product's category structure without path (#581)
+- Option to index only categories where product actually is without it's parent categories (#584)
+	- **Breaks hierarchical widget, use wisely**
+- Option to display popular queries (suggestions) without categories (#586)
+- Option to reindex all category's products on category save (#598)
+- Option to use non-selectable attribute as custom ranking by writing it's name in configuration (#603)
+- Added categories' level attributes to Products' Attributes select boxes so it's possible to use specific levels for relevancy purposes (#621)
+
+#### UPDATES
+- Improved relevancy for suggestions by setting [removeWordsIfNoResults](https://www.algolia.com/doc/api-client/php/parameters#removewordsifnoresults) to `lastWords` (#575)
+- All CSS selectors were prefixed with Algolia containers and unused styles were removed (#578)
+	- **BC break** - please check the look & feel of your results
+- The note about new version is less agressive and does not feel as error anymore (#579)
+- Bundled products now does not take news dates and special price dates from it's sub-products (#580)
+- New versions of [instantsearch.js](https://github.com/algolia/instantsearch.js) and [autocomplete.js](https://github.com/algolia/autocomplete.js) libraries (#588)
+- Column `data` in `algoliasearch_queue` table changed to LONGTEXT (#596, #597)
+- Optimized number of products processed by removing duplicate products from processing (#599)
+- Enable to select `in_stock` attribute as attribute for faceting (#602)
+- Updated PHP client (#611)
+- Updated "Disable extension" label (#619)
+- Searchable attributes are set as Unordered by default (#624)
+
+#### FIXES
+- Info panel with sorting selectbox is now hidden on no results (#576)
+- Issue with decimal numbers displayed in current price refinements (#588)
+- PHP 5.3 compatibility (#605, #608)
+- Displaying all products by clearing all filters by clearAll instantsearch.js widget on instant search category page (#604, #609)
+- Fixed bug when `categories_without_path` was always set as searchable attribute (#621)
+
 ### 1.7.0
 
 #### FEATURES

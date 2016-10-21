@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		 **/
 		var search = algoliaBundle.instantsearch({
 			appId: algoliaConfig.applicationId,
-			apiKey: algoliaConfig.apiKey,
+			apiKey: algoliaConfig.instant.apiKey,
 			indexName: algoliaConfig.indexName + '_products',
 			urlSync: {
 				useHash: true,
@@ -74,13 +74,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			init: function (data) {
 				if (algoliaConfig.request.refinementKey.length > 0) {
 					data.helper.toggleRefine(algoliaConfig.request.refinementKey, algoliaConfig.request.refinementValue);
-				}
-				
-				if (algoliaConfig.isCategoryPage) {
-					data.helper.addNumericRefinement('visibility_catalog', '=', 1);
-				}
-				else {
-					data.helper.addNumericRefinement('visibility_search', '=', 1);
 				}
 			},
 			render: function (data) {
@@ -191,6 +184,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				}
 			},
 			render: function (data) {
+				var $infosContainer = $('#algolia-right-container').find('.infos');
+				
 				if (data.results.hits.length === 0) {
 					var content = '<div class="no-results">';
 					content += '<div><b>' + algoliaConfig.translations.noProducts + ' "' + $("<div>").text(data.results.query).html() + '</b>"</div>';
@@ -206,6 +201,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					content += '</div>';
 					
 					$('#instant-search-results-container').html(content);
+					
+					$infosContainer.addClass('hidden');
+				}
+				else {
+					$infosContainer.removeClass('hidden');
 				}
 			}
 		});

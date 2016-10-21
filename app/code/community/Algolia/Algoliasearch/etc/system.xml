@@ -4,7 +4,7 @@
         <algoliasearch translate="label" module="algoliasearch">
             <label>
                 <![CDATA[
-                Algolia Search 1.7.0
+                Algolia Search 1.7.1
                 <style>
                     .algoliasearch-admin-menu span {
                         padding-left: 38px !important;
@@ -64,7 +64,7 @@
                     </comment>
                     <fields>
                         <enable_backend translate="label comment">
-                            <label>Enable Indexing</label>
+                            <label>Enable Extension</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>0</sort_order>
@@ -239,6 +239,24 @@
                                 ]]>
                             </comment>
                         </min_number_of_results>
+                        <display_categories_with_suggestions translate="label comment">
+                            <label>Display categories with suggestions?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                If set to Yes, suggestion will be displayed like:<br />
+                                - Suggestion in All departments<br />
+                                - Suggestion in [most popular category<br />
+                                - Suggestion<br /><br />
+                                If set to No, suggestions will be displayed without "All departments" and most popular category.
+                                ]]>
+                            </comment>
+                        </display_categories_with_suggestions>
                         <sections>
                             <label>Additional Sections</label>
                             <frontend_model>algoliasearch/system_config_form_field_additionalSections</frontend_model>
@@ -430,7 +448,8 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br />
+                                Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br /><br />
+                                In case you want to use attribute which cannot be selected from the select box (eg. attribute indexed from outside of Magento), you can use "[use custom attribute]" option and write the name of the attribute into the new text field.<br /><br />
                                 <span class="algolia-config-warning">&#9888;</span> All attributes used here must have been initially included in the Attributes configuration panel.
                                 ]]>
                             </comment>
@@ -463,6 +482,23 @@
                                 ]]>
                             </comment>
                         </index_out_of_stock_options>
+                        <index_whole_category_tree translate="label comment">
+                            <label>Index whole category tree of product</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    Choose here if you want to index whole category tree of the product. If you select "No", only real categories of the product will be indexed.<br /><br />
+                                    For example if you have categories with structure "Men &raquo; Blazers" and product belongs only to "Blazers", by default categories "Men" and "Men &raquo; Blazers" will be indexed.
+                                    By selecting "No" only "Men &raquo; Blazers" will be indexed.<br /><br />
+                                    <span class="algolia-config-warning">&#9888;</span> Beware that selecting "No" will break hierarchical menu widget on instant search page.
+                                ]]>
+                            </comment>
+                        </index_whole_category_tree>
                     </fields>
                 </products>
                 <categories translate="label">
@@ -504,7 +540,8 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Choose here the attributes that reflect the popularity of your categories (number of products, total number of sales of the category,etc.).<br />
+                                Choose here the attributes that reflect the popularity of your categories (number of products, total number of sales of the category,etc.).<br /><br />
+                                In case you want to use attribute which cannot be selected from the select box (eg. attribute indexed from outside of Magento), you can use "[use custom attribute]" option and write the name of the attribute into the new text field.<br /><br />
                                 <span class="algolia-config-warning">&#9888;</span> All attributes used here must have been included before in the Attributes chart.
                                 ]]>
                             </comment>
@@ -648,6 +685,20 @@
                         ]]>
                     </comment>
                     <fields>
+                        <enable_synonyms translate="label comment">
+                            <label>Enable Synonyms management</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                If set to No, synonyms will be managed only in Algolia's dashboard and won't get overriden by Magento
+                                ]]>
+                            </comment>
+                        </enable_synonyms>
                         <synonyms translate="label comment">
                             <label>Synonyms</label>
                             <frontend_model>algoliasearch/system_config_form_field_synonyms</frontend_model>
@@ -804,6 +855,22 @@
                                 ]]>
                             </comment>
                         </index_product_on_category_products_update>
+                        <index_all_category_product_on_category_update translate="label comment">
+                            <label>Update all category products on category update</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                This feature enables the extension to automatically update the product index when category is updated.
+                                By default the feature is turned off. <br />
+                                This feature should not be enabled all the time as it generates large amount of operations. It should be enabled only when category is renamed / moved / etc... and it's products need to be reindexed.
+                                ]]>
+                            </comment>
+                        </index_all_category_product_on_category_update>
                     </fields>
                 </advanced>
             </groups>

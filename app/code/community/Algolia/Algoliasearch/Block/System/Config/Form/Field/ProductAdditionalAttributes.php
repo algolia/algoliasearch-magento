@@ -46,19 +46,19 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_ProductAdditionalAttr
                 'order' => array(
                     'label'   => 'Ordered',
                     'options' => array(
-                        'ordered'   => 'Ordered',
                         'unordered' => 'Unordered',
+                        'ordered'   => 'Ordered',
                     ),
                     'rowMethod' => 'getOrder',
                 ),
-                'index_no_value' => [
+                'index_no_value' => array(
                     'label'   => 'Index empty value',
-                    'options' => [
+                    'options' => array(
                         '1'     => 'Yes',
                         '0'     => 'No',
-                    ],
+                    ),
                     'rowMethod' => 'getIndexNoValue',
-                ],
+                ),
             ),
             'buttonLabel' => 'Add Attribute',
             'addAfter'    => false,
