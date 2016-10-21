@@ -84,6 +84,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				})
 				.on('autocomplete:updated', function (e) {
 					fixAutocompleteCssHeight(menu);
+				}).on('autocomplete:selected', function (e, suggestion, dataset) {
+					location.assign(suggestion.url);
 				});
 			
 			$(window).resize(function () {
