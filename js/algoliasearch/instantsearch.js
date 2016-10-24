@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					}
 					
 					content += '</div>';
-					content += algoliaConfig.translations.or + ' <a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__">' + algoliaConfig.translations.seeAll + '</a>'
+					content += algoliaConfig.translations.or + ' <a href="' + algoliaConfig.baseUrl + '/catalogsearch/result/?q=__empty__">' + algoliaConfig.translations.seeAll + '</a>';
 					
 					content += '</div>';
 					
