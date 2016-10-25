@@ -422,26 +422,22 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getProductAdditionalAttributes($storeId = null)
     {
-        $attrs = unserialize(Mage::getStoreConfig(self::PRODUCT_ATTRIBUTES, $storeId));
+        $attributes = unserialize(Mage::getStoreConfig(self::PRODUCT_ATTRIBUTES, $storeId));
+
         $facets = unserialize(Mage::getStoreConfig(self::FACETS, $storeId));
+        $attributes = $this->addIndexableAttributes($attributes, $facets, '0');
 
-        foreach ((array) $facets as $facet) {
-            foreach ((array) $attrs as $attr) {
-                if ($facet['attribute'] == $attr['attribute']) {
-                    continue 2;
-                }
-            }
+        $sorts = unserialize(Mage::getStoreConfig(self::SORTING_INDICES, $storeId));
+        $attributes = $this->addIndexableAttributes($attributes, $sorts, '0');
 
-            $attrs[] = array(
-                'attribute'         => $facet['attribute'],
-                'searchable'        => '0',
-                'retrievable'       => '1',
-                'index_no_value'    => '1',
-            );
-        }
+        $customRankings = unserialize(Mage::getStoreConfig(self::PRODUCT_CUSTOM_RANKING, $storeId));
+        $customRankings = array_filter($customRankings, function ($customRanking) {
+            return $customRanking['attribute'] != 'custom_attribute';
+        });
+        $attributes = $this->addIndexableAttributes($attributes, $customRankings, '0', '0');
 
-        if (is_array($attrs)) {
-            return $attrs;
+        if (is_array($attributes)) {
+            return $attributes;
         }
 
         return array();
@@ -573,5 +569,25 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return array();
+    }
+
+    private function addIndexableAttributes($attributes, $addedAttributes, $searchable = '1', $retrievable = '1', $indexNoValue = '1')
+    {
+        foreach ((array) $addedAttributes as $addedAttribute) {
+            foreach ((array) $attributes as $attribute) {
+                if ($addedAttribute['attribute'] == $attribute['attribute']) {
+                    continue 2;
+                }
+            }
+
+            $attributes[] = array(
+                'attribute'         => $addedAttribute['attribute'],
+                'searchable'        => $searchable,
+                'retrievable'       => $retrievable,
+                'index_no_value'    => $indexNoValue,
+            );
+        }
+
+        return $attributes;
     }
 }
