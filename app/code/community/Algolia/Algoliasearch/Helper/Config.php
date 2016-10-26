@@ -353,7 +353,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getAPIKey($storeId = null)
     {
-        return trim(Mage::getStoreConfig(self::API_KEY, $storeId));
+        /** @var Mage_Core_Helper_Data $coreHelper */
+        $coreHelper = Mage::helper('core');
+
+        $encrypted = trim(Mage::getStoreConfig(self::API_KEY, $storeId));
+
+        return $coreHelper->decrypt($encrypted);
     }
 
     public function getSearchOnlyAPIKey($storeId = null)
