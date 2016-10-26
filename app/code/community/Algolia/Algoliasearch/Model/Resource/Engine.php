@@ -171,13 +171,17 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         return $this;
     }
 
-    public function rebuildProducts()
+    public function rebuildProducts($reindexStoreId = null)
     {
         $this->saveSettings(true);
 
         /** @var Mage_Core_Model_Store $store */
         foreach (Mage::app()->getStores() as $store) {
             $storeId = $store->getId();
+
+            if ($reindexStoreId !== null && $storeId != $reindexStoreId) {
+                continue;
+            }
 
             if ($this->config->isEnabledBackend($storeId) === false) {
                 if (php_sapi_name() === 'cli') {
