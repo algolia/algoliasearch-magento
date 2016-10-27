@@ -48,7 +48,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		 * For rendering instant search page is used Algolia's instantsearch.js library
 		 * Docs: https://community.algolia.com/instantsearch.js/documentation/
 		 **/
-		var search = algoliaBundle.instantsearch({
+		
+		var instantsearchOptions = {
 			appId: algoliaConfig.applicationId,
 			apiKey: algoliaConfig.instant.apiKey,
 			indexName: algoliaConfig.indexName + '_products',
@@ -56,7 +57,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				useHash: true,
 				trackedParameters: ['query', 'page', 'attribute:*', 'index']
 			}
-		});
+		};
+		
+		if (typeof algoliaHookBeforeInstantsearchInit == 'function') {
+			instantsearchOptions = algoliaHookBeforeInstantsearchInit(instantsearchOptions);
+		}
+		
+		var search = algoliaBundle.instantsearch(instantsearchOptions);
 		
 		search.client.addAlgoliaAgent('Magento integration (' + algoliaConfig.extensionVersion + ')');
 		
@@ -294,6 +301,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			}
 		};
 		
+		if (typeof algoliaHookAfterCustomAttributeFacetsAdd == 'function') {
+			customAttributeFacet = algoliaHookAfterCustomAttributeFacetsAdd(customAttributeFacet);
+		}
+		
 		/** Add all facet widgets to instatnsearch object **/
 		
 		window.getFacetWidget = function (facet, templates) {
@@ -361,8 +372,14 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			}
 		};
 		
+		var facets = algoliaConfig.facets;
+		
+		if (typeof algoliaHookBeforeFacetWidgetsAdd == 'function') {
+			facets = algoliaHookBeforeFacetWidgetsAdd(facets);
+		}
+		
 		var wrapper = document.getElementById('instant-search-facets-container');
-		$.each(algoliaConfig.facets, function (i, facet) {
+		$.each(facets, function (i, facet) {
 			
 			if (facet.attribute.indexOf("price") !== -1)
 				facet.attribute = facet.attribute + algoliaConfig.priceKey;
@@ -403,6 +420,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		function startInstantSearch() {
 			if(isStarted == true) {
 				return;
+			}
+			
+			if (typeof algoliaHookBeforeInstantsearchStart == 'function') {
+				search = algoliaHookBeforeInstantsearchStart(search);
 			}
 			
 			search.start();

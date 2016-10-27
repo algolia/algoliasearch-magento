@@ -257,6 +257,9 @@ $algoliaJsConfig = array(
 
 <script>
     window.algoliaConfig = <?php echo json_encode($algoliaJsConfig); ?>;
+    if (typeof algoliaHookAfterConfigLoad == 'function') {
+        window.algoliaConfig = algoliaHookAfterConfigLoad(algoliaConfig);
+    }
 </script>
 
 <!--[if lte IE 9]>
