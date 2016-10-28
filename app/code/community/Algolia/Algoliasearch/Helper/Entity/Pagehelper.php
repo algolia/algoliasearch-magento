@@ -10,7 +10,7 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
     public function getIndexSettings($storeId)
     {
         return array(
-            'attributesToIndex'   => array('slug', 'name', 'unordered(content)'),
+            'attributesToIndex'   => array('unordered(slug)', 'unordered(name)', 'unordered(content)'),
             'attributesToSnippet' => array('content:7'),
         );
     }

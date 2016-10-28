@@ -52,7 +52,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
             $session = Mage::getSingleton('adminhtml/session');
             $session->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
 
-            return;
+            return null;
         }
 
         /* Avoid Indexing twice */
@@ -60,13 +60,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
             return $this;
         }
 
-        if ($storeId == null) {
-            foreach (Mage::app()->getStores() as $id => $store) {
-                $this->engine->rebuildProductIndex($id, null);
-            }
-        } else {
-            $this->engine->rebuildProductIndex($storeId, null);
-        }
+        $this->engine->rebuildProducts($storeId);
 
         return $this;
     }

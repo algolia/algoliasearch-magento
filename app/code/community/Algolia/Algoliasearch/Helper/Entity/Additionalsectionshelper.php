@@ -10,7 +10,7 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
     public function getIndexSettings($storeId)
     {
         return array(
-            'attributesToIndex' => array('value'),
+            'attributesToIndex' => array('unordered(value)'),
         );
     }
 

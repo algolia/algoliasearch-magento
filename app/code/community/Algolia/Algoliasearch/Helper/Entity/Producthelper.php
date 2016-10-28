@@ -25,6 +25,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         'special_to_date',
     );
 
+    private $noAttributes = array();
+
     protected function getIndexNameSuffix()
     {
         return '_products';
@@ -614,14 +616,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
     }
 
-    protected function getValueOrValueText(Mage_Catalog_Model_Product $product, $name, Mage_Catalog_Model_Resource_Eav_Attribute $resource, $index_no_value)
+    protected function getValueOrValueText(Mage_Catalog_Model_Product $product, $name, Mage_Catalog_Model_Resource_Eav_Attribute $resource)
     {
         $value_text = $product->getAttributeText($name);
         if (!$value_text) {
             $value_text = $resource->getFrontend()->getValue($product);
         }
 
-        return $value_text == Mage::helper('catalog')->__('No') && $index_no_value == false ? null : $value_text;
+        return $value_text;
     }
 
     public function getObject(Mage_Catalog_Model_Product $product)
@@ -869,6 +871,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
         }
 
+        $this->setNoAttributes($additionalAttributes);
+
         foreach ($additionalAttributes as $attribute) {
             $attribute_name = $attribute['attribute'];
             if (isset($customData[$attribute_name])) {
@@ -876,9 +880,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
 
             $value = $product->getData($attribute_name);
-
-            // To be more compatible (no backend save required after update), if index_no_value isn't set it's true
-            $index_no_value = !isset($attribute['index_no_value']) || $attribute['index_no_value'] == 1 ? true : false;
 
             /** @var Mage_Catalog_Model_Resource_Eav_Attribute $attribute_resource */
             $attribute_resource = $product->getResource()->getAttribute($attribute_name);
@@ -894,7 +895,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     if ($value === null) {
                         $values = array();
                     } else {
-                        $values = array($this->getValueOrValueText($product, $attribute_name, $attribute_resource, $index_no_value));
+                        $values = array($this->getValueOrValueText($product, $attribute_name, $attribute_resource));
                     }
 
                     $all_sub_products_out_of_stock = true;
@@ -912,8 +913,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                             $value = $sub_product->getData($attribute_name);
 
                             if ($value) {
-                                $values[] = $this->getValueOrValueText($sub_product, $attribute_name,
-                                    $attribute_resource, $index_no_value);
+                                $values[] = $this->getValueOrValueText($sub_product, $attribute_name, $attribute_resource);
                             }
                         }
                     }
@@ -928,7 +928,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $customData['in_stock'] = 0;
                     }
                 } elseif (!is_array($value)) {
-                    $value = $this->getValueOrValueText($product, $attribute_name, $attribute_resource, $index_no_value);
+                    $value = $this->getValueOrValueText($product, $attribute_name, $attribute_resource);
                 }
 
                 if ($value && !isset($customData[$attribute_name])) {
@@ -957,6 +957,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $this->castProductObject($customData);
 
+        $customData = $this->clearNoValues($customData);
+
         $this->logger->stop('CREATE RECORD '.$product->getId().' '.$this->logger->getStoreName($product->storeId));
 
         return $customData;
@@ -975,5 +977,29 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     private function explodeSynomyms($synonyms)
     {
         return array_map('trim', explode(',', $synonyms));
+    }
+
+    private function setNoAttributes($attributes)
+    {
+        foreach ($attributes as $attribute) {
+            if ($attribute['index_no_value'] !== '1') {
+                $this->noAttributes[$attribute['attribute']] = 1;
+            }
+        }
+    }
+
+    private function clearNoValues($customData, $rootLevel = true)
+    {
+        foreach ($customData as $attribute => $value) {
+            if (is_array($value) && $rootLevel && isset($this->noAttributes[$attribute])) {
+                $customData[$attribute] = $this->clearNoValues($value, false);
+            }
+
+            if (($rootLevel !== true || isset($this->noAttributes[$attribute])) && $value === Mage::helper('catalog')->__('No')) {
+                unset($customData[$attribute]);
+            }
+        }
+
+        return $customData;
     }
 }
