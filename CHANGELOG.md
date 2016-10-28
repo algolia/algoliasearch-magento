@@ -1,4 +1,22 @@
-## Change Log
+## CHANGE LOG
+
+### 1.7.2
+
+#### FEATURES
+- Ability to select sort and ranking attributes from all attributes, not only indexed ones. Those attributes are indexed automatically with proper settings (searchable, retrievable, ...) (#632)
+- Swedish translation (#613)
+
+#### UPDATES
+- "No"/empty values can now be removed from all attributes, not only from attributes fetched from children products (#623)
+- Ability to select autocomplete menu item by hitting Enter (#626)
+- For better relevancy hardcoded searchable attributes (in pages, suggestions, additional sections ...) set as `unordered` (#634)
+
+#### FIXES
+- Missing semicolon in instantsearch.js file (#630)
+- Product reindexing when using `catalogsearch_fulltext` indexer name (#633)
+- Hide API key from configuration's HTML code (#637)
+- Fixed fatal error on delete product (#640)
+- Fixed untranslatable hard-coded strings in stats widget template (#641)
 
 ### 1.7.1
 
