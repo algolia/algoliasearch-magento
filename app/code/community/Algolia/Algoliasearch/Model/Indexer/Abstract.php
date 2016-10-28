@@ -87,6 +87,14 @@ abstract class Algolia_Algoliasearch_Model_Indexer_Abstract extends Mage_Index_M
         /** @var Mage_Catalog_Model_Product $product */
         $product = Mage::getModel('catalog/product')->loadByAttribute('entity_id', $productId);
 
+        if ($product === false) {
+            return false;
+        }
+
+        if (!$product->getId()) {
+            return false;
+        }
+
         return $product->isComposite();
     }
 }
