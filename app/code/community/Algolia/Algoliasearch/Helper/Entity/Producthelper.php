@@ -261,6 +261,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $customRankingsArr[] = $ranking['order'].'('.$ranking['attribute'].')';
         }
 
+        if ($this->config->replaceCategories($storeId) && !in_array('categories', $attributesForFaceting, true)) {
+            $attributesForFaceting[] = 'categories';
+        }
+
         $indexSettings = array(
             'attributesToIndex'       => array_values(array_unique($attributesToIndex)),
             'customRanking'           => $customRankingsArr,
