@@ -196,8 +196,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
         }
 
-        Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before',
-            array('store' => $storeId, 'collection' => $products));
+        $transport = new Varien_Object($products);
+        Mage::dispatchEvent('algolia_rebuild_store_product_index_collection_load_before', array('store' => $storeId, 'collection' => $transport)); // Only for backward compatibility
+        Mage::dispatchEvent('algolia_after_products_collection_build', array('store' => $storeId, 'collection' => $transport));
+        $products = $transport->getData();
 
         return $products;
     }
@@ -272,8 +274,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         // Additional index settings from event observer
         $transport = new Varien_Object($indexSettings);
-        Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport));
-
+        Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport)); // Only for backward compatibility
+        Mage::dispatchEvent('algolia_products_index_before_set_settings', array('store_id' => $storeId, 'index_settings' => $transport));
         $indexSettings = $transport->getData();
 
         $indexName = $this->getIndexName($storeId);
@@ -634,9 +636,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $defaultData = array();
 
         $transport = new Varien_Object($defaultData);
-
         Mage::dispatchEvent('algolia_product_index_before', array('product' => $product, 'custom_data' => $transport));
-
         $defaultData = $transport->getData();
 
         $defaultData = is_array($defaultData) ? $defaultData : explode('|', $defaultData);
@@ -946,6 +946,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             unset($customData['price']);
         }
 
+        // Only for backward compatibility
         $transport = new Varien_Object($customData);
         Mage::dispatchEvent('algolia_subproducts_index',
             array('custom_data' => $transport, 'sub_products' => $sub_products));
@@ -958,6 +959,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $this->castProductObject($customData);
 
         $customData = $this->clearNoValues($customData);
+
+        $transport = new Varien_Object($customData);
+        Mage::dispatchEvent('algolia_after_create_product_object', array('product_data' => $transport, 'sub_products' => $sub_products));
+        $customData = $transport->getData();
 
         $this->logger->stop('CREATE RECORD '.$product->getId().' '.$this->logger->getStoreName($product->storeId));
 
