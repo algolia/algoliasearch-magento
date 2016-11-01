@@ -843,6 +843,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         if (false === isset($defaultData['in_stock'])) {
             $stockItem = $product->getStockItem();
 
+            // getStockItem isn't always available
+            if (is_object($stockItem) === false) {
+                $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
+            }
+
             $customData['in_stock'] = (int) $stockItem->getIsInStock();
         }
 
@@ -902,7 +907,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                     if ($type !== 'bundle' || in_array($attribute_name, $this->excludedAttrsFromBundledProducts, true) === false) {
                         foreach ($sub_products as $sub_product) {
-                            $isInStock = (int)$sub_product->getStockItem()->getIsInStock();
+
+                            $stockItem = $sub_product->getStockItem();
+
+                            // getStockItem isn't always available
+                            if (is_object($stockItem) === false) {
+                                $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($sub_product);
+                            }
+                            $isInStock = (int)$stockItem->getIsInStock();
 
                             if ($isInStock == false && $this->config->indexOutOfStockOptions($product->getStoreId()) == false) {
                                 continue;
