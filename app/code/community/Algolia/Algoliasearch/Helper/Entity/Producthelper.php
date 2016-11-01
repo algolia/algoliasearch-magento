@@ -907,7 +907,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                     if ($type !== 'bundle' || in_array($attribute_name, $this->excludedAttrsFromBundledProducts, true) === false) {
                         foreach ($sub_products as $sub_product) {
-
                             $stockItem = $sub_product->getStockItem();
 
                             // getStockItem isn't always available
