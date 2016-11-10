@@ -982,7 +982,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     private function setNoAttributes($attributes)
     {
         foreach ($attributes as $attribute) {
-            if ($attribute['index_no_value'] !== '1') {
+            if (isset($attribute['index_no_value']) && $attribute['index_no_value'] !== '1') {
                 $this->noAttributes[$attribute['attribute']] = 1;
             }
         }
