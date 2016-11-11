@@ -529,6 +529,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 'entity_pk_value=entity_id', '{{table}}.store_id='.$storeId, 'left');
         }
 
+        Mage::dispatchEvent(
+            'algolia_rebuild_store_product_index_page_collection_load_before',
+            array('collection' => $collection)
+        );
+        
         $this->logger->start('LOADING '.$this->logger->getStoreName($storeId).' collection page '.$page.', pageSize '.$pageSize);
 
         $collection->load();
