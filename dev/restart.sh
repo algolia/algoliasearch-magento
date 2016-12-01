@@ -108,6 +108,9 @@ case "$MAGENTO_VERSION" in
   19)
     MAGENTO_VERSION=1.9.2.1
     ;;
+  193)
+    MAGENTO_VERSION=1.9.3.1
+    ;;
   18)
     MAGENTO_VERSION=1.8.1
     ;;
