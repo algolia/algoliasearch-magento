@@ -1,7 +1,6 @@
 <?php
 
-class Algolia_Algoliasearch_Model_Resource_Fulltext_Collection
-    extends Mage_CatalogSearch_Model_Resource_Fulltext_Collection
+class Algolia_Algoliasearch_Model_Resource_Fulltext_Collection extends Mage_CatalogSearch_Model_Resource_Fulltext_Collection
 {
     /**
      * Get found products ids
