@@ -14,8 +14,8 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext_Collection extends Mage_Cata
         }
         
         $query = $this->_getQuery();
-        if (is_null($this->_foundData) && !empty($query)) {
-            $data = $this->getAlgoliaData($query);
+        if (is_null($this->_foundData) && !empty($query) && $query instanceof Mage_CatalogSearch_Model_Query) {
+            $data = $this->getAlgoliaData($query->getQueryText());
             if (false === $data) {
                 return parent::getFoundIds();
             }
