@@ -40,6 +40,7 @@ $query = '';
 $refinementKey = '';
 $refinementValue = '';
 $path = '';
+$level = '';
 
 $title = '';
 $description = '';
@@ -55,12 +56,17 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && $app->getRequ
     if ($category && $category->getDisplayMode() !== 'PAGE') {
         $category->getUrlInstance()->setStore($storeId);
 
+        $level = -1;
         foreach ($category->getPathIds() as $treeCategoryId) {
             if ($path != '') {
                 $path .= ' /// ';
             }
 
             $path .= $productHelper->getCategoryName($treeCategoryId, $storeId);
+
+            if ($path) {
+                $level++;
+            }
         }
 
         $indexName = $productHelper->getIndexName($storeId);
@@ -95,6 +101,11 @@ if ($config->isInstantEnabled() && $config->replaceCategories() && $app->getRequ
 /**
  * Handle search
  */
+
+$facets = $config->getFacets();
+
+$areCategoriesInFacets = false;
+
 if ($config->isInstantEnabled()) {
     $pageIdentifier = $app->getFrontController()->getAction()->getFullActionName();
 
@@ -119,15 +130,17 @@ if ($config->isInstantEnabled()) {
         $isSearchPage = true;
     }
 
+    foreach ($facets as $facet) {
+        if ($facet['attribute'] === 'categories') {
+            $areCategoriesInFacets = true;
+            break;
+        }
+    }
+
     /** @var Algolia_Algoliasearch_Helper_Logger $logger */
     $logger = Mage::helper('algoliasearch/logger');
-    if ($logger->isEnable() && $config->indexWholeCategoryTree() === false) {
-        foreach ($config->getFacets() as $facet) {
-            if ($facet['attribute'] === 'categories') {
-                $logger->log('!! Warning !! You have enabled categories\' hierarchical widget but you do not index whole categories tree. The widget does not display correct data.');
-                break;
-            }
-        }
+    if ($logger->isEnable() && $config->indexWholeCategoryTree() === false && $areCategoriesInFacets === true) {
+        $logger->log('!! Warning !! You have enabled categories\' hierarchical widget but you do not index whole categories tree. The widget does not display correct data.');
     }
 }
 
@@ -188,7 +201,7 @@ $algoliaJsConfig = array(
         'description' => $description,
         'content' => $content,
         'imgHtml' => $imgHtml,
-        'hasFacets' => count($config->getFacets()) > 0,
+        'hasFacets' => count($facets) > 0,
     ),
     'autocomplete' => array(
         'enabled' => $config->isAutoCompleteEnabled(),
@@ -203,7 +216,8 @@ $algoliaJsConfig = array(
     'extensionVersion' => $config->getExtensionVersion(),
     'applicationId' => $config->getApplicationID(),
     'indexName' => $productHelper->getBaseIndexName(),
-    'facets' => $config->getFacets(),
+    'facets' => $facets,
+    'areCategoriesInFacets' => $areCategoriesInFacets,
     'hitsPerPage' => (int) $config->getNumberOfProductResults(),
     'sortingIndices' => array_values($config->getSortingIndices()),
     'isSearchPage' => $isSearchPage,
@@ -219,6 +233,7 @@ $algoliaJsConfig = array(
         'refinementKey' => $refinementKey,
         'refinementValue' => $refinementValue,
         'path' => $path,
+        'level' => $level,
         'formKey' => Mage::getSingleton('core/session')->getFormKey(),
     ),
     'showCatsNotIncludedInNavigation' => $config->showCatsNotIncludedInNavigation(),
