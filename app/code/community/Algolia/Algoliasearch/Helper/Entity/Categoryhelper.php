@@ -86,9 +86,7 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
             $categories->addFieldToFilter('entity_id', array('in' => $categoryIds));
         }
 
-        $transport = new Varien_Object($categories);
-        Mage::dispatchEvent('algolia_after_categories_collection_build', array('store' => $storeId, 'collection' => $transport));
-        $categories = $transport->getData();
+        Mage::dispatchEvent('algolia_after_categories_collection_build', array('store' => $storeId, 'collection' => $categories));
 
         return $categories;
     }
@@ -137,7 +135,9 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
 
         $category->setProductCount($productCollection->getSize());
 
-        $transport = new Varien_Object();
+        $customData = array();
+
+        $transport = new Varien_Object($customData);
         Mage::dispatchEvent('algolia_category_index_before', array('category' => $category, 'custom_data' => $transport));
         $customData = $transport->getData();
 

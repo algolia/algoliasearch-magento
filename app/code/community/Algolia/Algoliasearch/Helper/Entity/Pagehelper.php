@@ -29,9 +29,7 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
         /** @var Mage_Cms_Model_Resource_Page_Collection $pages */
         $pages = $cmsPage->getCollection()->addStoreFilter($storeId)->addFieldToFilter('is_active', 1);
 
-        $transport = new Varien_Object($pages);
-        Mage::dispatchEvent('algolia_after_pages_collection_build', array('store' => $storeId, 'collection' => $transport));
-        $pages = $transport->getData();
+        Mage::dispatchEvent('algolia_after_pages_collection_build', array('store' => $storeId, 'collection' => $pages));
 
         $ids = $pages->toOptionArray();
 

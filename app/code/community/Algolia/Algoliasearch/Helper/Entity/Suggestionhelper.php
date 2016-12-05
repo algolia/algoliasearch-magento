@@ -102,9 +102,7 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
 
         $collection->getSelect()->where('num_results >= '.$this->config->getMinNumberOfResults().' AND popularity >= '.$this->config->getMinPopularity().' AND query_text != "__empty__"');
 
-        $transport = new Varien_Object($collection);
-        Mage::dispatchEvent('algolia_after_suggestions_collection_build', array('store' => $storeId, 'collection' => $transport));
-        $collection = $transport->getData();
+        Mage::dispatchEvent('algolia_after_suggestions_collection_build', array('store' => $storeId, 'collection' => $collection));
 
         return $collection;
     }
