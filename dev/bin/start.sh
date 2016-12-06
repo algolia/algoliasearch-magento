@@ -23,6 +23,7 @@ chown -R www-data:www-data /var/www/htdocs/media
 
 if [ $INSTALL_ALGOLIA == Yes ]; then
   /root/bin/modman repair --force algoliasearch-magento
+  /root/bin/modman repair --force algoliasearch-magento-extend-module-skeleton
 
   # reindex whole index
   n98-magerun --root-dir=/var/www/htdocs index:reindex algolia_search_indexer
@@ -31,6 +32,7 @@ if [ $INSTALL_ALGOLIA == Yes ]; then
   n98-magerun --root-dir=/var/www/htdocs index:reindex search_indexer_suggest
 else
   /root/bin/modman undeploy algoliasearch-magento
+  /root/bin/modman undeploy algoliasearch-magento-extend-module-skeleton
 fi
 
 # Again in case root created some folder with root:root

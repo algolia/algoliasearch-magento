@@ -150,6 +150,7 @@ echo ""
 
 docker run -p $EXPOSED_PORT:80 \
   -v "`pwd`/..":/var/www/htdocs/.modman/algoliasearch-magento \
+  -v "`pwd`/../../algoliasearch-magento-extend-module-skeleton":/var/www/htdocs/.modman/algoliasearch-magento-extend-module-skeleton \
   -e APPLICATION_ID=$APPLICATION_ID \
   -e SEARCH_ONLY_API_KEY=$SEARCH_ONLY_API_KEY \
   -e API_KEY=$API_KEY \
