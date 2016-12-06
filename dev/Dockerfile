@@ -59,6 +59,7 @@ RUN service mysql start && n98-magerun --root-dir=/var/www/htdocs config:set adm
 # algoliasearch-magento setup
 RUN cd /tmp && curl -s -L -O https://raw.github.com/colinmollenhour/modman/master/modman-installer && chmod +x modman-installer && ./modman-installer
 RUN cd /var/www/htdocs && /root/bin/modman init && /root/bin/modman clone https://github.com/algolia/algoliasearch-magento && rm -rf .modman/algoliasearch-magento
+RUN cd /var/www/htdocs && /root/bin/modman clone https://github.com/algolia/algoliasearch-magento-extend-module-skeleton && rm -rf .modman/algoliasearch-magento-extend-module-skeleton
 
 # start script
 COPY ./bin/start.sh /usr/local/bin/start.sh
