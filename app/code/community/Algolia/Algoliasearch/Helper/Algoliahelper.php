@@ -182,4 +182,32 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
 
         $index->batchSynonyms($synonyms, true, true);
     }
+
+    public function copySynonyms($fromIndexName, $toIndexName)
+    {
+        $fromIndex = $this->getIndex($fromIndexName);
+        $toIndex = $this->getIndex($toIndexName);
+
+        $synonymsToSet = array();
+
+        $hitsPerPage = 100;
+        $page = 0;
+        do {
+            $fetchedSynonyms = $fromIndex->searchSynonyms('', array(), $page, $hitsPerPage);
+            foreach ($fetchedSynonyms['hits'] as $hit) {
+                unset($hit['_highlightResult']);
+
+                $synonymsToSet[] = $hit;
+            }
+
+            $page++;
+        } while (($page * $hitsPerPage) < $fetchedSynonyms['nbHits']);
+
+        if (empty($synonymsToSet)) {
+            $toIndex->clearSynonyms(true);
+            return;
+        }
+
+        $toIndex->batchSynonyms($synonymsToSet, true, true);
+    }
 }

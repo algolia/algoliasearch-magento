@@ -47,6 +47,7 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         // Additional index settings from event observer
         $transport = new Varien_Object($indexSettings);
         Mage::dispatchEvent('algolia_index_settings_prepare', array('store_id' => $storeId, 'index_settings' => $transport));
+        Mage::dispatchEvent('algolia_categories_index_before_set_settings', array('store_id' => $storeId, 'index_settings' => $transport));
         $indexSettings = $transport->getData();
 
         $this->algolia_helper->mergeSettings($this->getIndexName($storeId), $indexSettings);
@@ -84,6 +85,8 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         if ($categoryIds) {
             $categories->addFieldToFilter('entity_id', array('in' => $categoryIds));
         }
+
+        Mage::dispatchEvent('algolia_after_categories_collection_build', array('store' => $storeId, 'collection' => $categories));
 
         return $categories;
     }
@@ -132,7 +135,9 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
 
         $category->setProductCount($productCollection->getSize());
 
-        $transport = new Varien_Object();
+        $customData = array();
+
+        $transport = new Varien_Object($customData);
         Mage::dispatchEvent('algolia_category_index_before', array('category' => $category, 'custom_data' => $transport));
         $customData = $transport->getData();
 
@@ -192,6 +197,10 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         foreach ($data as &$data0) {
             $data0 = $this->try_cast($data0);
         }
+
+        $transport = new Varien_Object($data);
+        Mage::dispatchEvent('algolia_after_create_category_object', array('category' => $transport));
+        $data = $transport->getData();
 
         return $data;
     }
