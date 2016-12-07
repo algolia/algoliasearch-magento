@@ -108,6 +108,9 @@ case "$MAGENTO_VERSION" in
   19)
     MAGENTO_VERSION=1.9.2.1
     ;;
+  193)
+    MAGENTO_VERSION=1.9.3.1
+    ;;
   18)
     MAGENTO_VERSION=1.8.1
     ;;
@@ -147,6 +150,7 @@ echo ""
 
 docker run -p $EXPOSED_PORT:80 \
   -v "`pwd`/..":/var/www/htdocs/.modman/algoliasearch-magento \
+  -v "`pwd`/../../algoliasearch-magento-extend-module-skeleton":/var/www/htdocs/.modman/algoliasearch-magento-extend-module-skeleton \
   -e APPLICATION_ID=$APPLICATION_ID \
   -e SEARCH_ONLY_API_KEY=$SEARCH_ONLY_API_KEY \
   -e API_KEY=$API_KEY \
@@ -155,5 +159,6 @@ docker run -p $EXPOSED_PORT:80 \
   -e INSTALL_ALGOLIA=$INSTALL_ALGOLIA \
   -e MAKE_RELEASE=$MAKE_RELEASE \
   -d \
+  --dns=208.67.222.222 \
   --name algoliasearch-magento \
   -t algolia/algoliasearch-magento
