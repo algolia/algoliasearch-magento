@@ -530,8 +530,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         Mage::dispatchEvent(
-            'algolia_rebuild_store_product_index_page_collection_load_before',
-            array('collection' => $collection)
+            'algolia_before_products_collection_load',
+            array('collection' => $collection, 'store' => $storeId)
         );
         
         $this->logger->start('LOADING '.$this->logger->getStoreName($storeId).' collection page '.$page.', pageSize '.$pageSize);
