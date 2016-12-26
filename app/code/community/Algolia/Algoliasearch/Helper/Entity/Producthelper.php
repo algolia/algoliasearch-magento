@@ -204,16 +204,16 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     public function setSettings($storeId, $saveToTmpIndicesToo = false)
     {
-        $attributesToIndex = array();
+        $searchableAttributes = array();
         $unretrievableAttributes = array();
         $attributesForFaceting = array();
 
         foreach ($this->config->getProductAdditionalAttributes($storeId) as $attribute) {
             if ($attribute['searchable'] == '1') {
                 if ($attribute['order'] == 'ordered') {
-                    $attributesToIndex[] = $attribute['attribute'];
+                    $searchableAttributes[] = $attribute['attribute'];
                 } else {
-                    $attributesToIndex[] = 'unordered('.$attribute['attribute'].')';
+                    $searchableAttributes[] = 'unordered('.$attribute['attribute'].')';
                 }
             }
 
@@ -222,13 +222,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
 
             if ($attribute['attribute'] == 'categories' && $attribute['searchable'] == '1') {
-                $attributesToIndex[] = $attribute['order'] == 'ordered' ? 'categories_without_path' : 'unordered(categories_without_path)';
+                $searchableAttributes[] = $attribute['order'] == 'ordered' ? 'categories_without_path' : 'unordered(categories_without_path)';
             }
         }
 
         $customRankings = $this->config->getProductCustomRanking($storeId);
 
-        $customRankingsArr = array();
+        $customRankingAttributes = array();
 
         $facets = $this->config->getFacets();
 
@@ -258,7 +258,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         foreach ($customRankings as $ranking) {
-            $customRankingsArr[] = $ranking['order'].'('.$ranking['attribute'].')';
+            $customRankingAttributes[] = $ranking['order'].'('.$ranking['attribute'].')';
         }
 
         if ($this->config->replaceCategories($storeId) && !in_array('categories', $attributesForFaceting, true)) {
@@ -266,8 +266,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         $indexSettings = array(
-            'attributesToIndex'       => array_values(array_unique($attributesToIndex)),
-            'customRanking'           => $customRankingsArr,
+            'searchableAttributes'    => array_values(array_unique($searchableAttributes)),
+            'customRanking'           => $customRankingAttributes,
             'unretrievableAttributes' => $unretrievableAttributes,
             'attributesForFaceting'   => $attributesForFaceting,
             'maxValuesPerFacet'       => (int) $this->config->getMaxValuesPerFacet($storeId),

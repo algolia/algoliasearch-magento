@@ -84,6 +84,16 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         } catch (\Exception $e) {
         }
 
+        if (isset($settings['attributesToIndex'])) {
+            $settings['searchableAttributes'] = $settings['attributesToIndex'];
+            unset($settings['attributesToIndex']);
+        }
+
+        if (isset($onlineSettings['attributesToIndex'])) {
+            $onlineSettings['searchableAttributes'] = $onlineSettings['attributesToIndex'];
+            unset($onlineSettings['attributesToIndex']);
+        }
+
         $removes = array('slaves');
 
         foreach ($removes as $remove) {
