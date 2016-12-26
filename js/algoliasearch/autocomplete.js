@@ -74,6 +74,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				debug: false
 			};
 			
+			if (isMobile() === true) {
+				// Set debug to true, to be able to remove keyboard and be able to scroll in autocomplete menu
+				options.debug = true;
+			}
+			
 			if (algoliaConfig.removeBranding === false) {
 				options.templates.footer = '<div class="footer_algolia"><span>' +algoliaConfig.translations.searchBy + '</span> <a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="' +algoliaConfig.urls.logo + '" /></a></div>';
 			}
