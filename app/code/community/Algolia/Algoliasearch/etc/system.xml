@@ -194,7 +194,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of products (>=1) suggested in the autocomplete dropdown. Default value is 6</comment>
+                            <comment>The number of products (0 to disable it) suggested in the autocomplete dropdown. Default value is 6.</comment>
                         </nb_of_products_suggestions>
                         <nb_of_categories_suggestions translate="label comment">
                             <label>Number of categories</label>
@@ -204,7 +204,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of categories (>=1) suggested in the autocomplete dropdown. Default value is 2</comment>
+                            <comment>The number of categories (0 to disable it) suggested in the autocomplete dropdown. Default value is 2.</comment>
                         </nb_of_categories_suggestions>
                         <nb_of_queries_suggestions>
                             <label>Number of queries</label>
@@ -214,7 +214,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of queries suggestions (0 to disabled it) suggested in the autocomplete dropdown. Default value is 0</comment>
+                            <comment>The number of queries suggestions (0 to disabled it) suggested in the autocomplete dropdown. Default value is 0.</comment>
                         </nb_of_queries_suggestions>
                         <min_popularity translate="label comment">
                             <label>Min query popularity</label>

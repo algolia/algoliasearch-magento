@@ -26,19 +26,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		var algolia_client = algoliaBundle.algoliasearch(algoliaConfig.applicationId, algoliaConfig.autocomplete.apiKey);
 		algolia_client.addAlgoliaAgent('Magento integration (' + algoliaConfig.extensionVersion + ')');
 		
-		/** Add products and categories that are required sections **/
-		var nb_cat = algoliaConfig.autocomplete.nbOfCategoriesSuggestions >= 1 ? algoliaConfig.autocomplete.nbOfCategoriesSuggestions : 0;
-		var nb_pro = algoliaConfig.autocomplete.nbOfProductsSuggestions >= 1 ? algoliaConfig.autocomplete.nbOfProductsSuggestions : 0;
-		var nb_que = algoliaConfig.autocomplete.nbOfQueriesSuggestions >= 1 ? algoliaConfig.autocomplete.nbOfQueriesSuggestions : 0;
+		/** Add autocomplete menu sections **/
+		if (algoliaConfig.autocomplete.nbOfProductsSuggestions > 0) {
+			algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: algoliaConfig.autocomplete.nbOfProductsSuggestions, label: algoliaConfig.translations.products, name: "products"});
+		}
 		
-		if (nb_que > 0) {
-			algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_que, label: '', name: "suggestions"});
+		if (algoliaConfig.autocomplete.nbOfCategoriesSuggestions > 0) {
+			algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: algoliaConfig.autocomplete.nbOfCategoriesSuggestions, label: algoliaConfig.translations.categories, name: "categories"});
 		}
-		if (nb_cat > 0) {
-			algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_cat, label: algoliaConfig.translations.categories, name: "categories"});
-		}
-		if (nb_pro > 0) {		
-			algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_pro, label: algoliaConfig.translations.products, name: "products"});
+		
+		if (algoliaConfig.autocomplete.nbOfQueriesSuggestions > 0) {
+			algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: algoliaConfig.autocomplete.nbOfQueriesSuggestions, label: '', name: "suggestions"});
 		}
 		
 		/** Setup autocomplete data sources **/
