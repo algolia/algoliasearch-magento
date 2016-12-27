@@ -13,7 +13,7 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
     public function getIndexSettings($storeId)
     {
         $indexSettings = array(
-            'attributesToIndex'      => array('unordered(query)'),
+            'searchableAttributes'   => array('unordered(query)'),
             'customRanking'          => array('desc(popularity)', 'desc(number_of_results)', 'asc(date)'),
             'typoTolerance'          => false,
             'attributesToRetrieve'   => array('query'),

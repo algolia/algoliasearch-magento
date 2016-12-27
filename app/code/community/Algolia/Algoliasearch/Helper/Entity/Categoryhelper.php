@@ -12,15 +12,15 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
 
     public function getIndexSettings($storeId)
     {
-        $attributesToIndex = array();
+        $searchableAttributes = array();
         $unretrievableAttributes = array();
 
         foreach ($this->config->getCategoryAdditionalAttributes($storeId) as $attribute) {
             if ($attribute['searchable'] == '1') {
                 if ($attribute['order'] == 'ordered') {
-                    $attributesToIndex[] = $attribute['attribute'];
+                    $searchableAttributes[] = $attribute['attribute'];
                 } else {
-                    $attributesToIndex[] = 'unordered('.$attribute['attribute'].')';
+                    $searchableAttributes[] = 'unordered('.$attribute['attribute'].')';
                 }
             }
 
@@ -39,7 +39,7 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
 
         // Default index settings
         $indexSettings = array(
-            'attributesToIndex'       => array_values(array_unique($attributesToIndex)),
+            'searchableAttributes'    => array_values(array_unique($searchableAttributes)),
             'customRanking'           => $customRankingsArr,
             'unretrievableAttributes' => $unretrievableAttributes,
         );
