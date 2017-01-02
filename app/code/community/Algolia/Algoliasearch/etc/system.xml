@@ -8,11 +8,17 @@
                 <style>
                     .algoliasearch-admin-menu span {
                         padding-left: 38px !important;
-                        background: url("/skin/frontend/base/default/algoliasearch/algolia-admin-menu.png") 20px 4px no-repeat !important;
+                        background: url("/skin/frontend/base/default/algoliasearch/algolia-admin-menu.svg") !important;
+                        background-position: 17px 5px !important;
+                        background-repeat: no-repeat !important;
+                        background-size: 16px 16px !important;
                         border-bottom: 1px dotted #636363;
                     }
                     .algoliasearch-admin-menu.active span {
-                        background: white url("/skin/frontend/base/default/algoliasearch/algolia-admin-menu.png") 20px 4px no-repeat !important;
+                        background: white url("/skin/frontend/base/default/algoliasearch/algolia-admin-menu.svg") !important;
+                        background-position: 17px 5px !important;
+                        background-repeat: no-repeat !important;
+                        background-size: 16px 16px !important;
                         border-bottom: none;
                     }
 
