@@ -290,12 +290,12 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         /*
-         * Handle Slaves
+         * Handle replicas
          */
         $sorting_indices = $this->config->getSortingIndices();
 
         if (count($sorting_indices) > 0) {
-            $slaves = array();
+            $replicas = array();
 
             foreach ($sorting_indices as $values) {
                 if ($this->config->isCustomerGroupsEnabled($storeId) && $values['attribute'] === 'price') {
@@ -304,18 +304,18 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         $suffix_index_name = 'group_'.$group_id;
 
-                        $slaves[] = $this->getIndexName($storeId).'_'.$values['attribute'].'_'.$suffix_index_name.'_'.$values['sort'];
+                        $replicas[] = $this->getIndexName($storeId).'_'.$values['attribute'].'_'.$suffix_index_name.'_'.$values['sort'];
                     }
                 } else {
                     if ($values['attribute'] === 'price') {
-                        $slaves[] = $this->getIndexName($storeId).'_'.$values['attribute'].'_default_'.$values['sort'];
+                        $replicas[] = $this->getIndexName($storeId).'_'.$values['attribute'].'_default_'.$values['sort'];
                     } else {
-                        $slaves[] = $this->getIndexName($storeId).'_'.$values['attribute'].'_'.$values['sort'];
+                        $replicas[] = $this->getIndexName($storeId).'_'.$values['attribute'].'_'.$values['sort'];
                     }
                 }
             }
 
-            $this->algolia_helper->setSettings($this->getIndexName($storeId), array('slaves' => $slaves));
+            $this->algolia_helper->setSettings($this->getIndexName($storeId), array('replicas' => $replicas));
 
             foreach ($sorting_indices as $values) {
                 if ($this->config->isCustomerGroupsEnabled($storeId) && $values['attribute'] === 'price') {

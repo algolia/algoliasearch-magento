@@ -94,7 +94,7 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
             unset($onlineSettings['attributesToIndex']);
         }
 
-        $removes = array('slaves');
+        $removes = array('slaves', 'replicas');
 
         foreach ($removes as $remove) {
             if (isset($onlineSettings[$remove])) {
