@@ -151,9 +151,11 @@ class Algolia_Algoliasearch_Model_Queue
         $offset = 0;
         $max_size = $this->config->getNumberOfElementByPage() * $limit;
 
+        $this->db->beginTransaction();
+
         while ($element_count < $max_size) {
             $data = $this->db->query($this->db->select()->from($this->table, '*')->where('pid IS NULL')
-                                              ->order(array('job_id'))->limit($limit, $limit * $offset));
+                                              ->order(array('job_id'))->limit($limit, $limit * $offset)->forUpdate());
             $data = $data->fetchAll();
 
             $offset++;
@@ -185,6 +187,8 @@ class Algolia_Algoliasearch_Model_Queue
 
         // Reserve all new jobs since last run
         $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = ".$pid.' WHERE job_id >= '.$first_id." AND job_id <= $last_id");
+
+        $this->db->commit();
 
         foreach ($jobs as &$job) {
             $job['data'] = json_decode($job['data'], true);
