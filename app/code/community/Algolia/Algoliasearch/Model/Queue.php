@@ -151,44 +151,53 @@ class Algolia_Algoliasearch_Model_Queue
         $offset = 0;
         $max_size = $this->config->getNumberOfElementByPage() * $limit;
 
-        $this->db->beginTransaction();
+        try {
+            $this->db->beginTransaction();
 
-        while ($element_count < $max_size) {
-            $data = $this->db->query($this->db->select()->from($this->table, '*')->where('pid IS NULL')
-                                              ->order(array('job_id'))->limit($limit, $limit * $offset)->forUpdate());
-            $data = $data->fetchAll();
+            while ($element_count < $max_size) {
+                $data = $this->db->query($this->db->select()->from($this->table, '*')->where('pid IS NULL')
+                                                  ->order(array('job_id'))->limit($limit, $limit * $offset)
+                                                  ->forUpdate());
+                $data = $data->fetchAll();
 
-            $offset++;
+                $offset++;
 
-            if (count($data) <= 0) {
-                break;
-            }
+                if (count($data) <= 0) {
+                    break;
+                }
 
-            foreach ($data as $job) {
-                $job_size = (int) $job['data_size'];
+                foreach ($data as $job) {
+                    $job_size = (int)$job['data_size'];
 
-                if ($element_count + $job_size <= $max_size) {
-                    $jobs[] = $job;
-                    $element_count += $job_size;
-                } else {
-                    break 2;
+                    if ($element_count + $job_size <= $max_size) {
+                        $jobs[] = $job;
+                        $element_count += $job_size;
+                    } else {
+                        break 2;
+                    }
                 }
             }
+
+            if (count($jobs) <= 0) {
+                $this->db->commit();
+
+                return;
+            }
+
+            $first_id = $jobs[0]['job_id'];
+            $last_id = $jobs[count($jobs) - 1]['job_id'];
+
+            $pid = getmypid();
+
+            // Reserve all new jobs since last run
+            $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = ".$pid.' WHERE job_id >= '.$first_id." AND job_id <= $last_id");
+
+            $this->db->commit();
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+
+            throw $e;
         }
-
-        if (count($jobs) <= 0) {
-            return;
-        }
-
-        $first_id = $jobs[0]['job_id'];
-        $last_id = $jobs[count($jobs) - 1]['job_id'];
-
-        $pid = getmypid();
-
-        // Reserve all new jobs since last run
-        $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = ".$pid.' WHERE job_id >= '.$first_id." AND job_id <= $last_id");
-
-        $this->db->commit();
 
         foreach ($jobs as &$job) {
             $job['data'] = json_decode($job['data'], true);
