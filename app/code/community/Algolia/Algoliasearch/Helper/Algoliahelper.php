@@ -84,7 +84,17 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         } catch (\Exception $e) {
         }
 
-        $removes = array('slaves');
+        if (isset($settings['attributesToIndex'])) {
+            $settings['searchableAttributes'] = $settings['attributesToIndex'];
+            unset($settings['attributesToIndex']);
+        }
+
+        if (isset($onlineSettings['attributesToIndex'])) {
+            $onlineSettings['searchableAttributes'] = $onlineSettings['attributesToIndex'];
+            unset($onlineSettings['attributesToIndex']);
+        }
+
+        $removes = array('slaves', 'replicas');
 
         foreach ($removes as $remove) {
             if (isset($onlineSettings[$remove])) {
@@ -181,5 +191,33 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         }
 
         $index->batchSynonyms($synonyms, true, true);
+    }
+
+    public function copySynonyms($fromIndexName, $toIndexName)
+    {
+        $fromIndex = $this->getIndex($fromIndexName);
+        $toIndex = $this->getIndex($toIndexName);
+
+        $synonymsToSet = array();
+
+        $hitsPerPage = 100;
+        $page = 0;
+        do {
+            $fetchedSynonyms = $fromIndex->searchSynonyms('', array(), $page, $hitsPerPage);
+            foreach ($fetchedSynonyms['hits'] as $hit) {
+                unset($hit['_highlightResult']);
+
+                $synonymsToSet[] = $hit;
+            }
+
+            $page++;
+        } while (($page * $hitsPerPage) < $fetchedSynonyms['nbHits']);
+
+        if (empty($synonymsToSet)) {
+            $toIndex->clearSynonyms(true);
+            return;
+        }
+
+        $toIndex->batchSynonyms($synonymsToSet, true, true);
     }
 }

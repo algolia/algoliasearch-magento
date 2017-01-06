@@ -12,18 +12,24 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
 
     public function getIndexSettings($storeId)
     {
-        return array(
-            'attributesToIndex'      => array('unordered(query)'),
+        $indexSettings = array(
+            'searchableAttributes'   => array('unordered(query)'),
             'customRanking'          => array('desc(popularity)', 'desc(number_of_results)', 'asc(date)'),
             'typoTolerance'          => false,
             'attributesToRetrieve'   => array('query'),
             'removeWordsIfNoResults' => 'lastWords',
         );
+
+        $transport = new Varien_Object($indexSettings);
+        Mage::dispatchEvent('algolia_suggestions_index_before_set_settings', array('store_id' => $storeId, 'index_settings' => $transport));
+        $indexSettings = $transport->getData();
+
+        return $indexSettings;
     }
 
     public function getObject(Mage_CatalogSearch_Model_Query $suggestion)
     {
-        $suggestion_obj = array(
+        $suggestionObject = array(
             'objectID'          => $suggestion->getData('query_id'),
             'query'             => $suggestion->getData('query_text'),
             'number_of_results' => (int) $suggestion->getData('num_results'),
@@ -31,7 +37,11 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
             'updated_at'        => (int) strtotime($suggestion->getData('updated_at')),
         );
 
-        return $suggestion_obj;
+        $transport = new Varien_Object($suggestionObject);
+        Mage::dispatchEvent('algolia_after_create_suggestion_object', array('suggestion' => $transport));
+        $suggestionObject = $transport->getData();
+
+        return $suggestionObject;
     }
 
     public function getPopularQueries($storeId)
@@ -91,6 +101,8 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
                             ->setStoreId($storeId);
 
         $collection->getSelect()->where('num_results >= '.$this->config->getMinNumberOfResults().' AND popularity >= '.$this->config->getMinPopularity().' AND query_text != "__empty__"');
+
+        Mage::dispatchEvent('algolia_after_suggestions_collection_build', array('store' => $storeId, 'collection' => $collection));
 
         return $collection;
     }
