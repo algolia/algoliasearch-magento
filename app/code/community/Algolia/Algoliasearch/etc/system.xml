@@ -4,15 +4,21 @@
         <algoliasearch translate="label" module="algoliasearch">
             <label>
                 <![CDATA[
-                Algolia Search 1.7.1
+                Algolia Search 1.7.2
                 <style>
                     .algoliasearch-admin-menu span {
                         padding-left: 38px !important;
-                        background: url("/skin/frontend/base/default/algoliasearch/algolia-admin-menu.png") 20px 4px no-repeat !important;
+                        background: url("/skin/frontend/base/default/algoliasearch/algolia-admin-menu.svg") !important;
+                        background-position: 17px 5px !important;
+                        background-repeat: no-repeat !important;
+                        background-size: 16px 16px !important;
                         border-bottom: 1px dotted #636363;
                     }
                     .algoliasearch-admin-menu.active span {
-                        background: white url("/skin/frontend/base/default/algoliasearch/algolia-admin-menu.png") 20px 4px no-repeat !important;
+                        background: white url("/skin/frontend/base/default/algoliasearch/algolia-admin-menu.svg") !important;
+                        background-position: 17px 5px !important;
+                        background-repeat: no-repeat !important;
+                        background-size: 16px 16px !important;
                         border-bottom: none;
                     }
 
@@ -118,7 +124,7 @@
                         </application_id>
                         <api_key translate="label">
                             <label>Admin API key</label>
-                            <frontend_type>obscure</frontend_type>
+                            <frontend_type>password</frontend_type>
                             <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
                             <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
@@ -194,7 +200,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of products (>=1) suggested in the autocomplete dropdown. Default value is 6</comment>
+                            <comment>The number of products (0 to disable it) suggested in the autocomplete dropdown. Default value is 6.</comment>
                         </nb_of_products_suggestions>
                         <nb_of_categories_suggestions translate="label comment">
                             <label>Number of categories</label>
@@ -204,7 +210,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of categories (>=1) suggested in the autocomplete dropdown. Default value is 2</comment>
+                            <comment>The number of categories (0 to disable it) suggested in the autocomplete dropdown. Default value is 2.</comment>
                         </nb_of_categories_suggestions>
                         <nb_of_queries_suggestions>
                             <label>Number of queries</label>
@@ -214,7 +220,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>The number of queries suggestions (0 to disabled it) suggested in the autocomplete dropdown. Default value is 0</comment>
+                            <comment>The number of queries suggestions (0 to disabled it) suggested in the autocomplete dropdown. Default value is 0.</comment>
                         </nb_of_queries_suggestions>
                         <min_popularity translate="label comment">
                             <label>Min query popularity</label>
@@ -261,7 +267,7 @@
                         <sections>
                             <label>Additional Sections</label>
                             <frontend_model>algoliasearch/system_config_form_field_additionalSections</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <backend_model>algoliasearch/system_config_backend_serialized_array</backend_model>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -277,7 +283,7 @@
                         <excluded_pages translate="label comment">
                             <label>Excluded Pages</label>
                             <frontend_model>algoliasearch/system_config_form_field_excludedPages</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <backend_model>algoliasearch/system_config_backend_serialized_array</backend_model>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -331,7 +337,7 @@
                         <facets>
                             <label>Facets</label>
                             <frontend_model>algoliasearch/system_config_form_field_facets</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <backend_model>algoliasearch/system_config_backend_serialized_array</backend_model>
                             <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -351,7 +357,7 @@
                         <sorts>
                             <label>Sorts</label>
                             <frontend_model>algoliasearch/system_config_form_field_sorts</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <backend_model>algoliasearch/system_config_backend_serialized_array</backend_model>
                             <sort_order>50</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -426,7 +432,7 @@
                         <product_additional_attributes translate="label comment">
                             <label>Attributes</label>
                             <frontend_model>algoliasearch/system_config_form_field_productAdditionalAttributes</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <backend_model>algoliasearch/system_config_backend_serialized_array</backend_model>
                             <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -442,7 +448,7 @@
                         <custom_ranking_product_attributes translate="label comment">
                             <label>Ranking</label>
                             <frontend_model>algoliasearch/system_config_form_field_customRankingProductAttributes</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <backend_model>algoliasearch/system_config_backend_serialized_array</backend_model>
                             <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -519,7 +525,7 @@
                         <category_additional_attributes2 translate="label comment">
                             <label>Attributes</label>
                             <frontend_model>algoliasearch/system_config_form_field_categoryAdditionalAttributes</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <backend_model>algoliasearch/system_config_backend_serialized_array</backend_model>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -534,7 +540,7 @@
                         <custom_ranking_category_attributes translate="label comment">
                             <label>Ranking</label>
                             <frontend_model>algoliasearch/system_config_form_field_customRankingCategoryAttributes</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <backend_model>algoliasearch/system_config_backend_serialized_array</backend_model>
                             <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -703,7 +709,7 @@
                         <synonyms translate="label comment">
                             <label>Synonyms</label>
                             <frontend_model>algoliasearch/system_config_form_field_synonyms</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <backend_model>algoliasearch/system_config_backend_serialized_array</backend_model>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -720,7 +726,7 @@
                         <oneway_synonyms translate="label comment">
                             <label>One-way Synonyms</label>
                             <frontend_model>algoliasearch/system_config_form_field_onewaySynonyms</frontend_model>
-                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <backend_model>algoliasearch/system_config_backend_serialized_array</backend_model>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>

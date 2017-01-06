@@ -9,9 +9,15 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
 
     public function getIndexSettings($storeId)
     {
-        return array(
-            'attributesToIndex' => array('unordered(value)'),
+        $indexSettings = array(
+            'searchableAttributes' => array('unordered(value)'),
         );
+
+        $transport = new Varien_Object($indexSettings);
+        Mage::dispatchEvent('algolia_additional_sections_index_before_set_settings', array('store_id' => $storeId, 'index_settings' => $transport));
+        $indexSettings = $transport->getData();
+
+        return $indexSettings;
     }
 
     public function getAttributeValues($storeId, $section)
@@ -58,10 +64,8 @@ class Algolia_Algoliasearch_Helper_Entity_Additionalsectionshelper extends Algol
             );
 
             $transport = new Varien_Object($record);
-
-            Mage::dispatchEvent('algolia_additional_section_item_index_before',
-                array('section' => $section, 'record' => $transport, 'store_id' => $storeId));
-
+            Mage::dispatchEvent('algolia_additional_section_item_index_before', array('section' => $section, 'record' => $transport, 'store_id' => $storeId)); // Only for backward compatibility
+            Mage::dispatchEvent('algolia_additional_section_items_before_index', array('section' => $section, 'record' => $transport, 'store_id' => $storeId));
             $record = $transport->getData();
 
             return $record;

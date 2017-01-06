@@ -26,17 +26,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		var algolia_client = algoliaBundle.algoliasearch(algoliaConfig.applicationId, algoliaConfig.autocomplete.apiKey);
 		algolia_client.addAlgoliaAgent('Magento integration (' + algoliaConfig.extensionVersion + ')');
 		
-		/** Add products and categories that are required sections **/
-		var nb_cat = algoliaConfig.autocomplete.nbOfCategoriesSuggestions >= 1 ? algoliaConfig.autocomplete.nbOfCategoriesSuggestions : 2;
-		var nb_pro = algoliaConfig.autocomplete.nbOfProductsSuggestions >= 1 ? algoliaConfig.autocomplete.nbOfProductsSuggestions : 6;
-		var nb_que = algoliaConfig.autocomplete.nbOfQueriesSuggestions >= 0 ? algoliaConfig.autocomplete.nbOfQueriesSuggestions : 0;
-		
-		if (nb_que > 0) {
-			algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_que, label: '', name: "suggestions"});
+		/** Add autocomplete menu sections **/
+		if (algoliaConfig.autocomplete.nbOfProductsSuggestions > 0) {
+			algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: algoliaConfig.autocomplete.nbOfProductsSuggestions, label: algoliaConfig.translations.products, name: "products"});
 		}
 		
-		algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_cat, label: algoliaConfig.translations.categories, name: "categories"});
-		algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: nb_pro, label: algoliaConfig.translations.products, name: "products"});
+		if (algoliaConfig.autocomplete.nbOfCategoriesSuggestions > 0) {
+			algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: algoliaConfig.autocomplete.nbOfCategoriesSuggestions, label: algoliaConfig.translations.categories, name: "categories"});
+		}
+		
+		if (algoliaConfig.autocomplete.nbOfQueriesSuggestions > 0) {
+			algoliaConfig.autocomplete.sections.unshift({ hitsPerPage: algoliaConfig.autocomplete.nbOfQueriesSuggestions, label: '', name: "suggestions"});
+		}
 		
 		/** Setup autocomplete data sources **/
 		var sources = [],
@@ -74,8 +75,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				debug: false
 			};
 			
+			if (isMobile() === true) {
+				// Set debug to true, to be able to remove keyboard and be able to scroll in autocomplete menu
+				options.debug = true;
+			}
+			
 			if (algoliaConfig.removeBranding === false) {
-				options.templates.footer = '<div class="footer_algolia"><span>' +algoliaConfig.translations.searchBy + '</span> <a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" target="_blank"><img src="' +algoliaConfig.urls.logo + '" /></a></div>';
+				options.templates.footer = '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" title="Search by Algolia" target="_blank"><img src="' +algoliaConfig.urls.logo + '" alt="Search by Algolia" /></a></div>';
 			}
 			
 			if (typeof algoliaHookBeforeAutocompleteStart == 'function') {

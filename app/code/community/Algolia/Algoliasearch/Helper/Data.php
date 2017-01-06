@@ -529,6 +529,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 'entity_pk_value=entity_id', '{{table}}.store_id='.$storeId, 'left');
         }
 
+        Mage::dispatchEvent(
+            'algolia_before_products_collection_load',
+            array('collection' => $collection, 'store' => $storeId)
+        );
+        
         $this->logger->start('LOADING '.$this->logger->getStoreName($storeId).' collection page '.$page.', pageSize '.$pageSize);
 
         $collection->load();
@@ -624,5 +629,11 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         return json_encode($translated);
+    }
+    
+    public function isX3Version()
+    {
+        return Mage::EDITION_ENTERPRISE === Mage::getEdition() && version_compare(Mage::getVersion(), '1.14.3', '>=') ||
+               Mage::EDITION_COMMUNITY === Mage::getEdition() && version_compare(Mage::getVersion(), '1.9.3', '>=');
     }
 }

@@ -637,7 +637,7 @@ a.ais-current-refined-values--link:hover
   width: 100%;
   padding: 10px;
   text-align: center;
-  bottom: 4px;
+  bottom: 7px;
   left: 4px;
   font-size: 13px;
 }
@@ -662,6 +662,7 @@ a.ais-current-refined-values--link:hover
   display: inline;
   height: 1.5em;
   vertical-align: bottom;
+  max-width: 130px;
 }
 
 /**

@@ -82,6 +82,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				if (algoliaConfig.request.refinementKey.length > 0) {
 					data.helper.toggleRefine(algoliaConfig.request.refinementKey, algoliaConfig.request.refinementValue);
 				}
+				
+				if (algoliaConfig.areCategoriesInFacets === false && algoliaConfig.request.path.length > 0) {
+					var facet = 'categories.level' + algoliaConfig.request.level;
+
+					data.helper.state.facets.push(facet);
+					data.helper.toggleRefine(facet, algoliaConfig.request.path);
+				}
 			},
 			render: function (data) {
 				if (!algoliaConfig.isSearchPage) {
