@@ -4,15 +4,17 @@ class Algolia_Algoliasearch_Model_System_Config_Backend_Serialized_Array extends
 {
     protected function _afterLoad()
     {
-        if (Mage::getEdition() !== 'Community' || version_compare(Mage::getVersion(), '1.9.3.0', '<') === true) {
-            parent::_afterLoad();
+        /** @var Algolia_Algoliasearch_Helper_Data $helper */
+        $helper = Mage::helper('algoliasearch');
+        if ($helper->isX3Version()) {
+            if (!is_array($this->getValue())) {
+                $value = $this->getValue();
+                $this->setValue(empty($value) ? false : unserialize($value));
+            }
 
             return;
         }
 
-        if (!is_array($this->getValue())) {
-            $value = $this->getValue();
-            $this->setValue(empty($value) ? false : unserialize($value));
-        }
+        parent::_afterLoad();
     }
 }
