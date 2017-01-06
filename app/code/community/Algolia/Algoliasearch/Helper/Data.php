@@ -633,6 +633,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     
     public function isX3Version()
     {
+        if (method_exists('Mage', 'getEdition') === false) {
+            return false;
+        }
+            
         return Mage::EDITION_ENTERPRISE === Mage::getEdition() && version_compare(Mage::getVersion(), '1.14.3', '>=') ||
                Mage::EDITION_COMMUNITY === Mage::getEdition() && version_compare(Mage::getVersion(), '1.9.3', '>=');
     }
