@@ -1,5 +1,32 @@
 ## CHANGE LOG
 
+### 1.8.0
+
+#### FEATURES
+- Added new custom event `algolia_before_products_collection_load` which is triggered before products' collection loads (#666)
+- Ability to remove categories or products from autocomplete menu (#702)
+
+#### UPDATES
+- Empty values of `color` attribute are not indexed by default (#651)
+- Custom events were review and renamed. New events were added to `setSettings` methods for difeerent datatypes. Old events are still present to keep backward compatibility. (#652)
+- Compatibility with Magento >= 1.9.3 CC and >= 1.14.3 EE (#678, #688)
+- **BC Break** - Removed `Varien_Object` transport object from events which are passing objects and not arrays (#669)
+- The latest version of PHP API client with new retry strategy (#698)
+- Change input type for Admin API key from `obscure` to `password` as it caused issues on different platforms (#695)
+- New versions of Algolia javascript libraries (#696)
+- The latest version of Algolia PHP API client (#698)
+- The extension now sends `searchableAttributes` index setting instead of deprecated `attributesToIndex` (#708)
+  - **BC Break** - if you use `attributesToIndex` somewhere in your Magento-related code (ie. events) change it to `searchableAttributes`
+- The extension now sends `replicas` index setting instead of deprecated `slaves` (#712)
+
+#### FIXES
+- There is no need to explicitly set `categories` attribute as facet when "Replace category pages by Instant Search" set to "Yes" (#650)
+- Reindexing with indexing queue enabled now preserves set synonyms via Algolia dashboard (#693)
+- Small warning fix (#664)
+- Autocomplete menu on mobile is now not hiding when keyboard is hidden (#709)
+- Fetching data in queue runner now runs in isolated transaction so the jobs won't be performed twice (#713)
+  - Solves the issue when double move operation of TMP indices wiped out the index settings
+
 ### 1.7.2
 
 #### FEATURES
