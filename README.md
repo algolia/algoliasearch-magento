@@ -7,12 +7,13 @@ This extension replaces the default search of Magento with a typo-tolerant, fast
 
 See features and benefits of [Algolia Search Extension for Magento](https://community.algolia.com/magento).
 
-![Latest version](https://img.shields.io/badge/latest-1.7.2-green.svg)
+![Latest version](https://img.shields.io/badge/latest-1.8.0-green.svg)
 ![Magento 1.6.2](https://img.shields.io/badge/magento-1.6.2-blue.svg)
 ![Magento 1.7.1](https://img.shields.io/badge/magento-1.7.1-blue.svg)
 ![Magento 1.8.1](https://img.shields.io/badge/magento-1.8.1-blue.svg)
 ![Magento 1.9.2](https://img.shields.io/badge/magento-1.9.2-blue.svg)
-![PHP >= 5.4](https://img.shields.io/badge/php-%3E=5.4-green.svg)
+![Magento 1.9.3](https://img.shields.io/badge/magento-1.9.3-blue.svg)
+![PHP >= 5.3](https://img.shields.io/badge/php-%3E=5.3-green.svg)
 
 Documentation
 --------------
@@ -42,27 +43,27 @@ Contribute to the Extension
 
 ### 1. Docker (recommended)
 
-The easiest way to setup your development environment is to use [Docker](https://www.docker.com/). If you're a Mac user, use [boot2docker](http://boot2docker.io/) to run docker containers.
+The easiest way to setup your development environment is to use [Docker](https://www.docker.com/). If you're a Mac user, use [Docker for Mac](https://docs.docker.com/engine/installation/mac/) to run Docker containers.
 
-#### Setup the docker instance
+#### Setup the Docker instance
 
-Just run the following script to setup a running Magento 1.9.1 instance with some sample data & the Algolia Search extension installed:
+Just run the following script to setup a running Magento 1.9.2 instance with some sample data & the Algolia Search extension installed:
 
 ```sh
 $ ./dev/restart.sh -a YourApplicationID \
                -k YourAdminAPIKey \
                -s YourSearchOnlyAPIKey \
                -p YourIndexPrefix \
-               -b http://`boot2docker ip`/ # change that if you're not using boot2docker
+               -b http://`docker ip`/
 ```
 
 #### Administration panel
 
-Administration login is `admin` with password `magentorocks1` and you can access it from `http://[boot2docker ip]/admin`.
+Administration login is `admin` with password `magentorocks1` and you can access it from `http://[docker ip]/admin`.
 
-#### Phpmyadmin
+#### phpMyAdmin
 
-A phpmyadmin instance is available from `http://[boot2docker ip]/phpmyadmin`
+A phpMyAdmin instance is available from `http://[docker ip]/phpmyadmin`
 
 #### Shell
 
