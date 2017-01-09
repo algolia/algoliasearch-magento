@@ -137,19 +137,19 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         return $data;
     }
 
-    public function removeCategories($ids, $store_id = null)
+    public function removeCategories($ids, $storeId = null)
     {
-        $store_ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($store_id);
+        $storeIds = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
 
-        foreach ($store_ids as $store_id) {
-            if ($this->config->isEnabledBackend($store_id) === false) {
-                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store_id));
+        foreach ($storeIds as $storeId) {
+            if ($this->config->isEnabledBackend($storeId) === false) {
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
                 continue;
             }
 
-            $index_name = $this->category_helper->getIndexName($store_id);
+            $indexName = $this->category_helper->getIndexName($storeId);
 
-            $this->algolia_helper->deleteObjects($ids, $index_name);
+            $this->algolia_helper->deleteObjects($ids, $indexName);
         }
     }
 

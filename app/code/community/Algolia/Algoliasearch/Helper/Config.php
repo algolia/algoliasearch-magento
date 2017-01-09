@@ -7,6 +7,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const ENABLE_FRONTEND = 'algoliasearch/credentials/enable_frontend';
     const ENABLE_BACKEND = 'algoliasearch/credentials/enable_backend';
+    const ENABLE_AUTOMATIC_INDEXING = 'algoliasearch/credentials/enable_automatic_indexing';
     const IS_POPUP_ENABLED = 'algoliasearch/credentials/is_popup_enabled';
     const APPLICATION_ID = 'algoliasearch/credentials/application_id';
     const API_KEY = 'algoliasearch/credentials/api_key';
@@ -141,6 +142,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function isEnabledBackend($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::ENABLE_BACKEND, $storeId);
+    }
+
+    public function isEnabledAutomaticIndexing($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ENABLE_AUTOMATIC_INDEXING, $storeId);
     }
 
     public function makeSeoRequest($storeId = null)
