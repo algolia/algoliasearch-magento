@@ -442,6 +442,17 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $potentiallyDeletedProductsIds = array();
         }
 
+        $productIds = array();
+
+        /** @var Mage_Catalog_Model_Product $products */
+        foreach ($collection as $products) {
+            $productIds[] = $products->getId();
+        }
+
+        /** @var Algolia_Algoliasearch_Helper_IndexChecker $indexChecker */
+        $indexChecker = Mage::helper('algoliasearch/indexChecker');
+        $indexChecker->checkIndexers($storeId, $productIds);
+
         $this->logger->start('CREATE RECORDS '.$this->logger->getStoreName($storeId));
         $this->logger->log(count($collection).' product records to create');
 

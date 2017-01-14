@@ -15,6 +15,8 @@ class Algolia_Algoliasearch_Model_Queue
     protected $logger;
 
     protected $by_page;
+    
+    private $noOfFailedJobs = 0;
 
     public function __construct()
     {
@@ -143,6 +145,15 @@ class Algolia_Algoliasearch_Model_Queue
 
     public function run($limit)
     {
+        // Clear jobs with crossed max retries count
+        $retryLimit = $this->config->getRetryLimit();
+        if ($retryLimit > 0) {
+            $where = $this->db->quoteInto('retries > ?', $retryLimit);
+            $this->db->delete($this->table, $where);
+        } else {
+            $this->db->delete($this->table, 'retries > max_retries');
+        }
+
         $full_reindex = ($limit === -1);
         $limit = $full_reindex ? 1 : $limit;
 
@@ -207,12 +218,22 @@ class Algolia_Algoliasearch_Model_Queue
 
         // Run all reserved jobs
         foreach ($jobs as $job) {
+            // If there are some failed jobs before move, we want to skip the move as most probably not all products have prices reindexed and therefore are not indexed yet in TMP index
+            if ($job['method'] === 'moveProductsTmpIndex' && $this->noOfFailedJobs > 0) {
+                continue;
+            }
+
             try {
                 $model = Mage::getSingleton($job['class']);
                 $method = $job['method'];
                 $model->$method(new Varien_Object($job['data']));
-            } catch (Exception $e) {
-                // Increment retries and log error information
+            } catch (\Exception $e) {
+                $this->noOfFailedJobs++;
+
+                // Increment retries, set the job ID back to NULL
+                $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = NULL, retries = retries + 1 WHERE job_id = ".$job['job_id']);
+
+                // log error information
                 $this->logger->log("Queue processing {$job['pid']} [KO]: Mage::getSingleton({$job['class']})->{$job['method']}(".json_encode($job['data']).')');
                 $this->logger->log(date('c').' ERROR: '.get_class($e).": '{$e->getMessage()}' in {$e->getFile()}:{$e->getLine()}\n"."Stack trace:\n".$e->getTraceAsString());
             }
