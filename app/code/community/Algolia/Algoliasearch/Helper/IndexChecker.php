@@ -27,14 +27,6 @@ class Algolia_Algoliasearch_Helper_IndexChecker extends Mage_Core_Helper_Abstrac
         if ($this->configHelper->isQueueActive($storeId) === false) {
             return;
         }
-        
-        if (method_exists('Mage', 'getEdition') === false) {
-            return;
-        }
-
-        if (Mage::getEdition() !== Mage::EDITION_ENTERPRISE) {
-            return;
-        }
 
         if (!is_array($productIds)) {
             $productIds = array($productIds);
