@@ -358,10 +358,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         foreach ($collection as $suggestion) {
             $suggestion->setStoreId($storeId);
 
-            $suggestion_obj = $this->suggestion_helper->getObject($suggestion);
+            $suggestionObject = $this->suggestion_helper->getObject($suggestion);
 
-            if (strlen($suggestion_obj['query']) >= 3) {
-                array_push($indexData, $suggestion_obj);
+            if (strlen($suggestionObject['query']) >= 3) {
+                array_push($indexData, $suggestionObject);
             }
         }
 
@@ -407,10 +407,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $category->setStoreId($storeId);
 
-            $category_obj = $this->category_helper->getObject($category);
+            $categoryObject = $this->category_helper->getObject($category);
 
-            if ($category_obj['product_count'] > 0) {
-                array_push($indexData, $category_obj);
+            if ($categoryObject['product_count'] > 0) {
+                array_push($indexData, $categoryObject);
             }
         }
 
@@ -469,8 +469,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 continue;
             }
 
-            $json = $this->product_helper->getObject($product);
-            $productsToIndex[$productId] = $json;
+            $productObject = $this->product_helper->getObject($product);
+            $productsToIndex[$productId] = $productObject;
         }
 
         $productsToRemove = array_merge($productsToRemove, $potentiallyDeletedProductsIds);
