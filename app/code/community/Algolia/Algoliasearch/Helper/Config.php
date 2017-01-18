@@ -36,6 +36,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const PRODUCT_CUSTOM_RANKING = 'algoliasearch/products/custom_ranking_product_attributes';
     const RESULTS_LIMIT = 'algoliasearch/products/results_limit';
     const SHOW_SUGGESTIONS_NO_RESULTS = 'algoliasearch/products/show_suggestions_on_no_result_page';
+    const INDEX_VISIBILITY = 'algoliasearch/products/index_visibility';
     const INDEX_OUT_OF_STOCK_OPTIONS = 'algoliasearch/products/index_out_of_stock_options';
     const INDEX_WHOLE_CATEGORY_TREE = 'algoliasearch/products/index_whole_category_tree';
 
@@ -70,6 +71,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
 
     protected $_productTypeMap = array();
+
+    public function indexVisibility($storeId = null)
+    {
+        return Mage::getStoreConfig(self::INDEX_VISIBILITY, $storeId);
+    }
 
     public function indexOutOfStockOptions($storeId = null)
     {

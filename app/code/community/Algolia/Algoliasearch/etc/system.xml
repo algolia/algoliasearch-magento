@@ -475,6 +475,22 @@
                                 ]]>
                             </comment>
                         </show_suggestions_on_no_result_page>
+                        <index_visibility translate="label comment">
+                            <label>Index products with visibility:</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>algoliasearch/system_indexVisibility</source_model>
+                            <sort_order>55</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    Choose which products you want to index (search for) in Algolia.
+                                    <br />
+                                    <span class="algolia-config-warning">&#9888;</span> If you select "Only products visible in Search" and you have enabled "Replace categories pages", you might miss some products on category pages.
+                                ]]>
+                            </comment>
+                        </index_visibility>
                         <index_out_of_stock_options translate="label comment">
                             <label>Index out of stock options for configurable products</label>
                             <frontend_type>select</frontend_type>

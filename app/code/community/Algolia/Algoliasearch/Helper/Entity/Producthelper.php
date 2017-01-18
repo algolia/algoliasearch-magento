@@ -157,10 +157,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         if ($only_visible) {
-            /** @var Mage_Catalog_Model_Product_Visibility $catalog_productVisibility */
-            $catalog_productVisibility = Mage::getSingleton('catalog/product_visibility');
+            $visibilityAttributeValues = $this->getVisibilityAttributeValues($storeId);
 
-            $products = $products->addAttributeToFilter('visibility', array('in' => $catalog_productVisibility->getVisibleInSiteIds()));
+            $products = $products->addAttributeToFilter('visibility', array('in' => $visibilityAttributeValues));
             $products = $products->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
         }
 
@@ -981,6 +980,39 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $products = $products->addStoreFilter($storeId);
 
         return $products->getAllIds();
+    }
+
+    public function shouldIndexProductByItsVisibility(Mage_Catalog_Model_Product $product, $storeId)
+    {
+        $productVisibility = (int) $product->getVisibility();
+        $indexVisibility = $this->config->indexVisibility($storeId);
+
+        $shouldIndex = ($productVisibility > Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE);
+
+        if ($indexVisibility === 'only_search') {
+            $shouldIndex = ($productVisibility === Mage_Catalog_Model_Product_Visibility::VISIBILITY_IN_SEARCH || $productVisibility === Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
+        } elseif ($indexVisibility === 'only_catalog') {
+            $shouldIndex = ($productVisibility === Mage_Catalog_Model_Product_Visibility::VISIBILITY_IN_CATALOG || $productVisibility === Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
+        }
+
+        return $shouldIndex;
+    }
+
+    private function getVisibilityAttributeValues($storeId)
+    {
+        $indexVisibility = $this->config->indexVisibility($storeId);
+
+        /** @var Mage_Catalog_Model_Product_Visibility $catalog_productVisibility */
+        $catalog_productVisibility = Mage::getSingleton('catalog/product_visibility');
+
+        $visibilityMethod = 'getVisibleInSiteIds';
+        if ($indexVisibility === 'only_search') {
+            $visibilityMethod = 'getVisibleInSearchIds';
+        } elseif ($indexVisibility === 'only_catalog') {
+            $visibilityMethod = 'getVisibleInCatalogIds';
+        }
+
+        return $catalog_productVisibility->{$visibilityMethod}();
     }
 
     private function explodeSynomyms($synonyms)
