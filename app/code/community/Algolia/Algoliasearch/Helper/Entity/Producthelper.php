@@ -952,7 +952,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         // Only for backward compatibility
         $transport = new Varien_Object($customData);
-        Mage::dispatchEvent('algolia_subproducts_index', array('custom_data' => $transport, 'sub_products' => $sub_products));
+        Mage::dispatchEvent('algolia_subproducts_index', array('custom_data' => $transport, 'sub_products' => $sub_products, 'productObject' => $product));
         $customData = $transport->getData();
 
         $customData = array_merge($customData, $defaultData);
@@ -964,7 +964,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $customData = $this->clearNoValues($customData);
 
         $transport = new Varien_Object($customData);
-        Mage::dispatchEvent('algolia_after_create_product_object', array('product_data' => $transport, 'sub_products' => $sub_products));
+        Mage::dispatchEvent('algolia_after_create_product_object', array('product_data' => $transport, 'sub_products' => $sub_products, 'productObject' => $product));
         $customData = $transport->getData();
 
         $this->logger->stop('CREATE RECORD '.$product->getId().' '.$this->logger->getStoreName($product->storeId));
