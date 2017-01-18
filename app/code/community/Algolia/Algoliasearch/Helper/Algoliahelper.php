@@ -109,52 +109,11 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         return $onlineSettings;
     }
 
-    public function handleTooBigRecords(&$objects, $index_name)
+    public function addObjects($objects, $indexName)
     {
-        $long_attributes = array('description', 'short_description', 'meta_description', 'content');
+        $this->prepareRecords($objects, $indexName);
 
-        $good_size = true;
-
-        $ids = array();
-
-        foreach ($objects as $key => &$object) {
-            $size = mb_strlen(json_encode($object));
-
-            if ($size > 20000) {
-                $good_size = false;
-
-                foreach ($long_attributes as $attribute) {
-                    if (isset($object[$attribute])) {
-                        unset($object[$attribute]);
-                        $ids[$index_name.' objectID('.$object['objectID'].')'] = true;
-                    }
-                }
-
-                $size = mb_strlen(json_encode($object));
-
-                if ($size > 20000) {
-                    unset($objects[$key]);
-                }
-            }
-        }
-
-        if (count($objects) <= 0) {
-            return;
-        }
-
-        if ($good_size === false) {
-            /** @var Mage_Adminhtml_Model_Session $session */
-            $session = Mage::getSingleton('adminhtml/session');
-            $session->addError('Algolia reindexing : You have some records ('.implode(',',
-                        array_keys($ids)).') that are too big. They have either been truncated or skipped');
-        }
-    }
-
-    public function addObjects($objects, $index_name)
-    {
-        $this->handleTooBigRecords($objects, $index_name);
-
-        $index = $this->getIndex($index_name);
+        $index = $this->getIndex($indexName);
 
         if ($this->config->isPartialUpdateEnabled()) {
             $index->partialUpdateObjects($objects);
@@ -219,5 +178,57 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         }
 
         $toIndex->batchSynonyms($synonymsToSet, true, true);
+    }
+
+    private function prepareRecords(&$objects, $indexName)
+    {
+        $currentCET = new DateTime('now', new DateTimeZone('Europe/Paris'));
+        $currentCET = $currentCET->format('Y-m-d H:i:s');
+
+        $modifiedIds = array();
+
+        foreach ($objects as $key => &$object) {
+            $object['algoliaLastUpdateAtCET'] = $currentCET;
+
+            $previousObject = $object;
+
+            $this->handleTooBigRecord($object);
+
+            if ($previousObject !== $object) {
+                $modifiedIds[] = $indexName.' objectID('.$previousObject['objectID'].')';
+            }
+
+            if ($object === false) {
+                unset($objects[$key]);
+                continue;
+            }
+        }
+
+        if (!empty($modifiedIds)) {
+            /** @var Mage_Adminhtml_Model_Session $session */
+            $session = Mage::getSingleton('adminhtml/session');
+            $session->addWarning('Algolia reindexing : You have some records ('.implode(',', $modifiedIds).') that are too big. They have either been truncated or skipped');
+        }
+    }
+
+    public function handleTooBigRecord(&$object)
+    {
+        $longAttributes = array('description', 'short_description', 'meta_description', 'content');
+
+        $size = mb_strlen(json_encode($object));
+
+        if ($size > 20000) {
+            foreach ($longAttributes as $attribute) {
+                if (isset($object[$attribute])) {
+                    unset($object[$attribute]);
+                }
+            }
+
+            $size = mb_strlen(json_encode($object));
+
+            if ($size > 20000) {
+                $object = false;
+            }
+        }
     }
 }
