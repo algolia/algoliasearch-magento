@@ -1,4 +1,4 @@
-FROM occitech/magento:php5.5-apache
+FROM occitech/magento:php7.0.0-apache
 
 # packages configuration
 RUN echo 'mysql-server mysql-server/root_password password P4ssw0rd' | debconf-set-selections
@@ -22,9 +22,6 @@ RUN docker-php-ext-install mysqli
 RUN chsh -s /bin/zsh
 RUN sh -x -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | grep -v 'set -e')"
 COPY bin/.zshrc /root/.zshrc
-
-# Set correct document root
-RUN sed -i -e 's/\/var\/www\/html/\/var\/www\/htdocs/' /etc/apache2/sites-enabled/000-default.conf
 
 COPY bin/php.ini /usr/local/etc/php/php.ini
 RUN cd /tmp && curl -O https://phpmyadmin-downloads-532693.c.cdn77.org/phpMyAdmin/4.4.9/phpMyAdmin-4.4.9-english.tar.gz && tar xvf phpMyAdmin-4.4.9-english.tar.gz && mv phpMyAdmin-4.4.9-english /var/www/htdocs/phpmyadmin
