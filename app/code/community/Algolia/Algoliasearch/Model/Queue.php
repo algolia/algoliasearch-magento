@@ -6,6 +6,8 @@ class Algolia_Algoliasearch_Model_Queue
     const ERROR_LOG = 'algoliasearch_queue_errors.log';
 
     protected $table;
+
+    /** @var Magento_Db_Adapter_Pdo_Mysql */
     protected $db;
 
     /** @var Algolia_Algoliasearch_Helper_Config */
@@ -180,6 +182,7 @@ class Algolia_Algoliasearch_Model_Queue
 
             if (count($jobs) <= 0) {
                 $this->db->commit();
+                $this->db->closeConnection();
 
                 return;
             }
@@ -195,6 +198,7 @@ class Algolia_Algoliasearch_Model_Queue
             $this->db->commit();
         } catch (\Exception $e) {
             $this->db->rollBack();
+            $this->db->closeConnection();
 
             throw $e;
         }
@@ -224,6 +228,9 @@ class Algolia_Algoliasearch_Model_Queue
 
         if ($full_reindex) {
             $this->run(-1);
+            return;
         }
+
+        $this->db->closeConnection();
     }
 }
