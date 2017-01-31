@@ -70,7 +70,8 @@ COPY ./bin/makeRelease.php /var/www/htdocs/makeRelease.php
 RUN sed -i 's/name="login\[username\]" value=""/name="login[username]" value="admin"/g' /var/www/htdocs/app/design/adminhtml/default/default/template/login.phtml && \
 	sed -i 's/name="login\[password\]" class="required-entry input-text" value=""/name="login[password]" class="required-entry input-text" value="magentorocks1"/g' /var/www/htdocs/app/design/adminhtml/default/default/template/login.phtml && \
 	sed -i 's/<\/script>/Event.observe(window, "load", function() {$("loginForm").submit();});<\/script>/g' /var/www/htdocs/app/design/adminhtml/default/default/template/login.phtml && \
-	sed -i "s/#ini_set('display_errors', 1);/ini_set('display_errors', 1);error_reporting(E_ALL);Mage::setIsDeveloperMode(true);/g" /var/www/htdocs/index.php
+	sed -i "s/#ini_set('display_errors', 1);/ini_set('display_errors', 1);error_reporting(E_ALL);Mage::setIsDeveloperMode(true);/g" /var/www/htdocs/index.php && \
+	sed -i "s/\$out .= \$this->getBlock(\$callback\[0\])->\$callback\[1\]()/\$out .= \$this->getBlock(\$callback\[0\])->{\$callback\[1\]}()/g" /var/www/htdocs/app/code/core/Mage/Core/Model/Layout.php
 
 # GO
 EXPOSE 80
