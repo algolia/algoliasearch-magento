@@ -46,7 +46,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext_Collection extends Mage_Cata
         $storeId = Mage::app()->getStore()->getId();
 
         if (!$config->getApplicationID() || !$config->getAPIKey() || $config->isEnabledFrontEnd($storeId) === false) {
-            return parent::getFoundIds();
+            return false;
         }
 
         $data = array();
