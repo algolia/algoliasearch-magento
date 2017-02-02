@@ -1,10 +1,21 @@
 {
-    "name":"algolia/algoliasearch-magento",
-    "type":"magento-module",
-    "license":"MIT",
-    "homepage":"https://github.com/algolia/algoliasearch-magento",
-    "description":"Algolia Search for Magento",
-    "require":{
-        "magento-hackathon/magento-composer-installer":"*"
-    }
+	"name": "algolia/algoliasearch-magento",
+	"type": "magento-module",
+	"license": "MIT",
+	"homepage": "https://github.com/algolia/algoliasearch-magento",
+	"description": "Algolia Search for Magento",
+	"require": {
+		"magento-hackathon/magento-composer-installer": "*"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^5.7"
+	},
+	"extra": {
+		"magento-root-dir": "/var/www/htdocs"
+	},
+	"autoload": {
+		"psr-4": {
+			"": "tests/"
+		}
+	}
 }

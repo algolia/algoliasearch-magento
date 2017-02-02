@@ -73,6 +73,18 @@ You can execute a shell inside the container with the following command:
 $ docker exec -i -t algoliasearch-magento /bin/bash
 ```
 
+#### Run the tests
+
+Just run the following script to create a Magento container and launch the tests directly:
+
+```sh
+$ ./dev/runTests.sh -a YourApplicationID \
+               -k YourAdminAPIKey \
+               -s YourSearchOnlyAPIKey \
+               -p YourIndexPrefix \
+               -b http://`docker ip`/
+```
+
 ### 2. Modman
 
 If you do not want to use docker. You can use [modman](https://github.com/colinmollenhour/modman) (a module manager for Magento) by running the following commands:

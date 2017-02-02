@@ -143,37 +143,43 @@ class Algolia_Algoliasearch_Model_Queue
         return $jobs;
     }
 
-    public function run($limit)
+    public function run($maxJobs)
     {
-        $full_reindex = ($limit === -1);
-        $limit = $full_reindex ? 1 : $limit;
+        $isFullReindex = ($maxJobs === -1);
+        $limit = $isFullReindex ? $this->config->getNumberOfJobToRun() : $maxJobs;
 
-        $element_count = 0;
         $jobs = array();
+
+        $actualBatchSize = 0;
+        $maxBatchSize = $this->config->getNumberOfElementByPage() * $limit;
+
         $offset = 0;
-        $max_size = $this->config->getNumberOfElementByPage() * $limit;
 
         try {
             $this->db->beginTransaction();
 
-            while ($element_count < $max_size) {
+            while ($actualBatchSize < $maxBatchSize) {
                 $data = $this->db->query($this->db->select()->from($this->table, '*')->where('pid IS NULL')
                                                   ->order(array('job_id'))->limit($limit, $limit * $offset)
                                                   ->forUpdate());
                 $data = $data->fetchAll();
+                $rowsCount = count($data);
 
                 $offset++;
 
-                if (count($data) <= 0) {
+                if ($rowsCount <= 0) {
+                    break;
+                } elseif ($rowsCount == $maxJobs) {
+                    $jobs = $data;
                     break;
                 }
 
                 foreach ($data as $job) {
-                    $job_size = (int)$job['data_size'];
+                    $jobSize = (int) $job['data_size'];
 
-                    if ($element_count + $job_size <= $max_size) {
+                    if ($actualBatchSize + $jobSize <= $maxBatchSize) {
                         $jobs[] = $job;
-                        $element_count += $job_size;
+                        $actualBatchSize += $jobSize;
                     } else {
                         break 2;
                     }
@@ -187,13 +193,13 @@ class Algolia_Algoliasearch_Model_Queue
                 return;
             }
 
-            $first_id = $jobs[0]['job_id'];
-            $last_id = $jobs[count($jobs) - 1]['job_id'];
+            $firstJobsId = $jobs[0]['job_id'];
+            $lastJobsId = $jobs[count($jobs) - 1]['job_id'];
 
             $pid = getmypid();
 
             // Reserve all new jobs since last run
-            $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = ".$pid.' WHERE job_id >= '.$first_id." AND job_id <= $last_id");
+            $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = ".$pid.' WHERE job_id >= '.$firstJobsId." AND job_id <= $lastJobsId");
 
             $this->db->commit();
         } catch (\Exception $e) {
@@ -226,7 +232,7 @@ class Algolia_Algoliasearch_Model_Queue
         $where = $this->db->quoteInto('pid = ?', $pid);
         $this->db->delete($this->table, $where);
 
-        if ($full_reindex) {
+        if ($isFullReindex) {
             $this->run(-1);
             return;
         }

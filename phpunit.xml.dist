@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true" bootstrap="tests/bootstrap.php">
+    <testsuites>
+        <testsuite name="PHPUnit">
+            <directory>tests/</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">app/</directory>
+            <exclude>
+                <directory suffix=".php">app/code/community/Algolia/Algoliasearch/Block/</directory>
+                <directory suffix=".php">app/code/community/Algolia/Algoliasearch/Model/System/</directory>
+                <directory suffix=".php">app/code/community/Algolia/Algoliasearch/sql/</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+    <logging>
+        <!-- <log type="coverage-html" target="coverage-report" /> -->
+        <log type="coverage-clover" target="coverage.cov" />
+    </logging>
+</phpunit>

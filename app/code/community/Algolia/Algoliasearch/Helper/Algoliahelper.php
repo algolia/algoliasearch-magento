@@ -12,6 +12,12 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
     /** @var Algolia_Algoliasearch_Helper_Config */
     protected $config;
 
+    /** @var string */
+    private $lastUsedIndexName;
+
+    /** @var int */
+    private $lastTaskId;
+
     public function __construct()
     {
         $this->config = Mage::helper('algoliasearch/config');
@@ -46,41 +52,58 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         return $this->client->listIndexes();
     }
 
-    public function query($index_name, $q, $params)
+    public function query($indexName, $q, $params)
     {
-        return $this->client->initIndex($index_name)->search($q, $params);
+        return $this->client->initIndex($indexName)->search($q, $params);
     }
 
     public function setSettings($indexName, $settings)
     {
         $index = $this->getIndex($indexName);
 
-        $index->setSettings($settings);
+        $res = $index->setSettings($settings);
+
+        $this->lastUsedIndexName = $indexName;
+        $this->lastTaskId = $res['taskID'];
     }
 
-    public function deleteIndex($index_name)
+    public function clearIndex($indexName)
     {
-        $this->client->deleteIndex($index_name);
+        $res =$this->getIndex($indexName)->clearIndex();
+
+        $this->lastUsedIndexName = $indexName;
+        $this->lastTaskId = $res['taskID'];
     }
 
-    public function deleteObjects($ids, $index_name)
+    public function deleteIndex($indexName)
     {
-        $index = $this->getIndex($index_name);
-
-        $index->deleteObjects($ids);
+        $this->client->deleteIndex($indexName);
     }
 
-    public function moveIndex($index_name_tmp, $index_name)
+    public function deleteObjects($ids, $indexName)
     {
-        $this->client->moveIndex($index_name_tmp, $index_name);
+        $index = $this->getIndex($indexName);
+
+        $res = $index->deleteObjects($ids);
+
+        $this->lastUsedIndexName = $indexName;
+        $this->lastTaskId = $res['taskID'];
     }
 
-    public function mergeSettings($index_name, $settings)
+    public function moveIndex($tmpIndexName, $indexName)
+    {
+        $res = $this->client->moveIndex($tmpIndexName, $indexName);
+
+        $this->lastUsedIndexName = $indexName;
+        $this->lastTaskId = $res['taskID'];
+    }
+
+    public function mergeSettings($indexName, $settings)
     {
         $onlineSettings = array();
 
         try {
-            $onlineSettings = $this->getIndex($index_name)->getSettings();
+            $onlineSettings = $this->getIndex($indexName)->getSettings();
         } catch (\Exception $e) {
         }
 
@@ -116,15 +139,18 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $index = $this->getIndex($indexName);
 
         if ($this->config->isPartialUpdateEnabled()) {
-            $index->partialUpdateObjects($objects);
+            $res = $index->partialUpdateObjects($objects);
         } else {
-            $index->addObjects($objects);
+            $res = $index->addObjects($objects);
         }
+
+        $this->lastUsedIndexName = $indexName;
+        $this->lastTaskId = $res['taskID'];
     }
 
-    public function setSynonyms($index_name, $synonyms)
+    public function setSynonyms($indexName, $synonyms)
     {
-        $index = $this->getIndex($index_name);
+        $index = $this->getIndex($indexName);
 
         /*
          * Placeholders and alternative corrections are handled directly in Algolia dashboard.
@@ -144,12 +170,13 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         } while (($page * $hitsPerPage) < $complexSynonyms['nbHits']);
 
         if (empty($synonyms)) {
-            $index->clearSynonyms(true);
-
-            return;
+            $res = $index->clearSynonyms(true);
+        } else {
+            $res = $index->batchSynonyms($synonyms, true, true);
         }
 
-        $index->batchSynonyms($synonyms, true, true);
+        $this->lastUsedIndexName = $indexName;
+        $this->lastTaskId = $res['taskID'];
     }
 
     public function copySynonyms($fromIndexName, $toIndexName)
@@ -173,11 +200,22 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         } while (($page * $hitsPerPage) < $fetchedSynonyms['nbHits']);
 
         if (empty($synonymsToSet)) {
-            $toIndex->clearSynonyms(true);
+            $res = $toIndex->clearSynonyms(true);
+        } else {
+            $res = $toIndex->batchSynonyms($synonymsToSet, true, true);
+        }
+
+        $this->lastUsedIndexName = $toIndex;
+        $this->lastTaskId = $res['taskID'];
+    }
+
+    public function waitLastTask()
+    {
+        if (!isset($this->lastUsedIndexName) || !isset($this->lastTaskId)) {
             return;
         }
 
-        $toIndex->batchSynonyms($synonymsToSet, true, true);
+        $this->client->initIndex($this->lastUsedIndexName)->waitTask($this->lastTaskId);
     }
 
     private function prepareRecords(&$objects, $indexName)
