@@ -77,7 +77,10 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
 
     public function deleteIndex($indexName)
     {
-        $this->client->deleteIndex($indexName);
+        $res = $this->client->deleteIndex($indexName);
+
+        $this->lastUsedIndexName = $indexName;
+        $this->lastTaskId = $res['taskID'];
     }
 
     public function deleteObjects($ids, $indexName)
