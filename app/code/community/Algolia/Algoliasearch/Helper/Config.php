@@ -67,6 +67,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const INDEX_PRODUCT_ON_CATEGORY_PRODUCTS_UPDATE = 'algoliasearch/advanced/index_product_on_category_products_update';
     const INDEX_ALL_CATEGORY_PRODUCTS_ON_CATEGORY_UPDATE = 'algoliasearch/advanced/index_all_category_product_on_category_update';
 
+    const ENABLE_PERSONALIZATION = 'algoliasearch/personalization/enable_personalization';
+
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
 
@@ -563,6 +565,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return Mage::getBaseDir('media').'/algoliasearch-admin-config-uploads/'.$filename;
+    }
+
+    public function isPersonalizationEnabled($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ENABLE_PERSONALIZATION, $storeId);
     }
 
     private function getCustomRanking($configName, $storeId = null)

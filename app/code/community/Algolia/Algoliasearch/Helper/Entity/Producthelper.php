@@ -2,6 +2,8 @@
 
 class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algoliasearch_Helper_Entity_Helper
 {
+    private $readDb;
+
     protected static $_productAttributes;
     protected static $_currencies;
 
@@ -26,6 +28,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     );
 
     private $noAttributes = array();
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        /** @var Mage_Core_Model_Resource $coreResource */
+        $coreResource = Mage::getSingleton('core/resource');
+        $this->readDb = $coreResource->getConnection('core_read');
+    }
 
     protected function getIndexNameSuffix()
     {
@@ -262,6 +273,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if ($this->config->replaceCategories($storeId) && !in_array('categories', $attributesForFaceting, true)) {
             $attributesForFaceting[] = 'categories';
+        }
+
+        if ($this->config->isPersonalizationEnabled($storeId)) {
+            $attributesForFaceting[] = 'personalization_user_id';
         }
 
         $indexSettings = array(
@@ -634,7 +649,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     public function getObject(Mage_Catalog_Model_Product $product)
     {
         $type = $this->config->getMappedProductType($product->getTypeId());
-        $this->logger->start('CREATE RECORD '.$product->getId().' '.$this->logger->getStoreName($product->storeId));
+        $this->logger->start('CREATE RECORD '.$product->getId().' '.$this->logger->getStoreName($product->getStoreId()));
         $this->logger->log('Product type ('.$product->getTypeId().', mapped to: '.$type.')');
 
         $defaultData = array();
@@ -948,6 +963,19 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $this->handlePrice($product, $sub_products, $customData);
         } else {
             unset($customData['price']);
+        }
+
+        if ($this->config->isPersonalizationEnabled($product->getStoreId())) {
+            $sql = $this->readDb->query('SELECT DISTINCT sfo.customer_id 
+                FROM sales_flat_order sfo 
+                JOIN sales_flat_order_item sfoi ON sfo.entity_id = sfoi.order_id 
+                WHERE sfoi.product_id = '.((int)$customData['objectID']).' AND sfo.state = "complete" AND sfo.store_id = '.((int) $product->getStoreId()).' AND sfo.customer_id IS NOT NULL
+                ORDER BY sfo.created_at DESC
+                LIMIT 8000');
+
+            foreach ($sql as $row) {
+                $customData['personalization_user_id'][] = $row['customer_id'];
+            }
         }
 
         // Only for backward compatibility
