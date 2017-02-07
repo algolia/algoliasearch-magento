@@ -28,6 +28,10 @@
                         position: relative;
                         top: 4px;
                     }
+
+                    .comment a {
+                        margin-left: 0 !important;
+                    }
                 </style>
                 ]]>
             </label>
@@ -897,7 +901,7 @@
                     </fields>
                 </advanced>
                 <personalization translate="label">
-                    <label>Personalization - Enterprise-only</label>
+                    <label>Personalization - Algolia Enterprise only</label>
                     <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
                     <sort_order>95</sort_order>
@@ -906,10 +910,11 @@
                     <show_in_store>1</show_in_store>
                     <comment>
                         <![CDATA[
-                        <p><strong>Enterprise-only feature</strong></p>
-                        <p>If you're not on Algolia enterprise plan, please do not enable personalization as it will break down your search.<p>
+                        <p><strong>Algolia Enterprise only feature</strong></p>
+                        <p>If you're not on <a href="https://www.algolia.com/enterprise/">Algolia enterprise plan</a>, please do not enable personalization as it will break down your search.<p>
                         <p>If you want to move to the enterprise plan and be able to use personalization feature, please drop us a line at <a href="mailto:enterprise@algolia.com">enterprise@algolia.com</a>.<p>
                         <br>
+                        <p>Personalization documentation: [[FIXME LINK TO DOCS]]</p>
                         <hr>
                         <br>
                         ]]>
@@ -924,6 +929,36 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </enable_personalization>
+                        <min_category_items_for_boost translate="label comment">
+                            <label>Min. purchased items from category for boost</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                <p>Default value is 10. To disabled category boost put -1.</p>
+                                ]]>
+                            </comment>
+                            <depends><enable_personalization>1</enable_personalization></depends>
+                        </min_category_items_for_boost>
+                        <dont_boost_more_than_categories translate="label comment">
+                            <label>But don't boost more categories for a single user than ...</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                <p>Default value is 3.</p>
+                                ]]>
+                            </comment>
+                            <depends><enable_personalization>1</enable_personalization></depends>
+                        </dont_boost_more_than_categories>
                     </fields>
                 </personalization>
             </groups>

@@ -2,8 +2,6 @@
 
 class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algoliasearch_Helper_Entity_Helper
 {
-    private $readDb;
-
     protected static $_productAttributes;
     protected static $_currencies;
 
@@ -28,15 +26,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     );
 
     private $noAttributes = array();
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        /** @var Mage_Core_Model_Resource $coreResource */
-        $coreResource = Mage::getSingleton('core/resource');
-        $this->readDb = $coreResource->getConnection('core_read');
-    }
 
     protected function getIndexNameSuffix()
     {
@@ -963,19 +952,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $this->handlePrice($product, $sub_products, $customData);
         } else {
             unset($customData['price']);
-        }
-
-        if ($this->config->isPersonalizationEnabled($product->getStoreId())) {
-            $sql = $this->readDb->query('SELECT DISTINCT sfo.customer_id 
-                FROM sales_flat_order sfo 
-                JOIN sales_flat_order_item sfoi ON sfo.entity_id = sfoi.order_id 
-                WHERE sfoi.product_id = '.((int)$customData['objectID']).' AND sfo.state = "complete" AND sfo.store_id = '.((int) $product->getStoreId()).' AND sfo.customer_id IS NOT NULL
-                ORDER BY sfo.created_at DESC
-                LIMIT 8000');
-
-            foreach ($sql as $row) {
-                $customData['personalization_user_id'][] = $row['customer_id'];
-            }
         }
 
         // Only for backward compatibility

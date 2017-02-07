@@ -68,6 +68,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const INDEX_ALL_CATEGORY_PRODUCTS_ON_CATEGORY_UPDATE = 'algoliasearch/advanced/index_all_category_product_on_category_update';
 
     const ENABLE_PERSONALIZATION = 'algoliasearch/personalization/enable_personalization';
+    const MIN_CATEGORY_ITEMS_FOR_BOOST = 'algoliasearch/personalization/min_category_items_for_boost';
+    const DONT_BOOST_MORE_CATEGORIES_THAN = 'algoliasearch/personalization/dont_boost_more_than_categories';
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
@@ -570,6 +572,16 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function isPersonalizationEnabled($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::ENABLE_PERSONALIZATION, $storeId);
+    }
+
+    public function getMinCategoryPurchasesForBoost($storeId = null)
+    {
+        return Mage::getStoreConfig(self::MIN_CATEGORY_ITEMS_FOR_BOOST, $storeId);
+    }
+
+    public function dontBoostMoreCategoriesThan($storeId = null)
+    {
+        return Mage::getStoreConfig(self::DONT_BOOST_MORE_CATEGORIES_THAN, $storeId);
     }
 
     private function getCustomRanking($configName, $storeId = null)

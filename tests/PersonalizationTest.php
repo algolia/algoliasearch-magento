@@ -12,8 +12,11 @@ class PersonalizationTest extends TestCase
 
         setConfig('algoliasearch/personalization/enable_personalization', '1');
 
-        $indexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
-        $indexer->reindexAll();
+        $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
+        $productIndexer->reindexAll();
+
+        $personalizationIndexer = new Algolia_Algoliasearch_Model_Indexer_Algoliapersonalization();
+        $personalizationIndexer->reindexAll();
 
         /** @var Algolia_Algoliasearch_Helper_Algoliahelper $algoliaHelper */
         $algoliaHelper = Mage::helper('algoliasearch/algoliahelper');
@@ -26,7 +29,7 @@ class PersonalizationTest extends TestCase
 
         $record = $index->getObject(558);
         $this->assertTrue(isset($record['personalization_user_id']), 'Attribute "personalization_user_id" should be set to the product, but its not.');
-        $this->assertEquals(array('135'), $record['personalization_user_id']);
+        $this->assertEquals(array(135), $record['personalization_user_id']);
     }
 
     public function testNonPersonalization()
@@ -51,5 +54,31 @@ class PersonalizationTest extends TestCase
 
         $record = $index->getObject(558);
         $this->assertFalse(isset($record['personalization_user_id']), 'Attribute "personalization_user_id" should not be set to the product, but it is.');
+    }
+
+    public function testOutputOfDsiabledIndexer()
+    {
+        setConfig('algoliasearch/personalization/enable_personalization', '0');
+
+        ob_start();
+
+        $indexer = new Algolia_Algoliasearch_Model_Indexer_Algoliapersonalization();
+        $indexer->reindexAll();
+
+        $contents = trim(ob_get_clean());
+
+        $this->assertEquals("[ALGOLIA] INDEXING IS DISABLED FOR 1 (English)
+[ALGOLIA] INDEXING IS DISABLED FOR 2 (French)
+[ALGOLIA] INDEXING IS DISABLED FOR 3 (German)", $contents);
+
+        /** @var Mage_Adminhtml_Model_Session $session */
+        $session = Mage::getSingleton('adminhtml/session');
+
+        /** @var Mage_Core_Model_Message_Warning[] $messages */
+        $messages = $session->getMessages()->getItemsByType('warning');
+
+        $this->assertEquals('[ALGOLIA] INDEXING IS DISABLED FOR 1 (English)', $messages[0]->getCode());
+        $this->assertEquals('[ALGOLIA] INDEXING IS DISABLED FOR 2 (French)', $messages[1]->getCode());
+        $this->assertEquals('[ALGOLIA] INDEXING IS DISABLED FOR 3 (German)', $messages[2]->getCode());
     }
 }
