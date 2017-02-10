@@ -53,6 +53,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IMAGE_HEIGHT = 'algoliasearch/image/height';
     const XML_PATH_IMAGE_TYPE = 'algoliasearch/image/type';
 
+    const ENABLE_ANALYTICS = 'algoliasearch/analytics/enable_analytics';
+    const ANALYTICS_DELAY = 'algoliasearch/analytics/delay';
+    const ANALYTICS_TRIGGER_ON_UI_INTERACTION = 'algoliasearch/analytics/trigger_on_ui_interaction';
+    const ANALYTICS_PUSH_INITIAL_SEARCH = 'algoliasearch/analytics/push_initial_search';
+
     const ENABLE_SYNONYMS = 'algoliasearch/synonyms/enable_synonyms';
     const SYNONYMS = 'algoliasearch/synonyms/synonyms';
     const ONEWAY_SYNONYMS = 'algoliasearch/synonyms/oneway_synonyms';
@@ -526,6 +531,26 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getExtensionVersion()
     {
         return (string) Mage::getConfig()->getNode()->modules->Algolia_Algoliasearch->version;
+    }
+
+    public function isEnabledAnalytics($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ENABLE_ANALYTICS, $storeId);
+    }
+
+    public function getAnalyticsDelay($storeId = null)
+    {
+        return (int) Mage::getStoreConfig(self::ANALYTICS_DELAY, $storeId);
+    }
+
+    public function getTriggerOnUIInteraction($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ANALYTICS_TRIGGER_ON_UI_INTERACTION, $storeId);
+    }
+
+    public function getPushInitialSearch($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ANALYTICS_PUSH_INITIAL_SEARCH, $storeId);
     }
 
     public function isEnabledSynonyms($storeId = null)
