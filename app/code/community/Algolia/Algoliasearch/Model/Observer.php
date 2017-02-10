@@ -39,6 +39,11 @@ class Algolia_Algoliasearch_Model_Observer
 
     public function saveSettings($isFullProductReindex = false)
     {
+        if (get_class($isFullProductReindex) === 'Varien_Object') {
+            $eventData = $isFullProductReindex->getData();
+            $isFullProductReindex = $eventData['isFullProductReindex'];
+        }
+
         foreach (Mage::app()->getStores() as $store) {/* @var $store Mage_Core_Model_Store */
             if ($store->getIsActive()) {
                 $saveToTmpIndicesToo = ($isFullProductReindex && $this->config->isQueueActive($store->getId()));

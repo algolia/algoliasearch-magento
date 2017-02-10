@@ -337,8 +337,6 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function saveSettings($isFullProductReindex = false)
     {
-        /** @var Algolia_Algoliasearch_Model_Observer $observer */
-        $observer = Mage::getSingleton('algoliasearch/observer');
-        $observer->saveSettings($isFullProductReindex);
+        $this->addToQueue('algoliasearch/observer', 'saveSettings', array('isFullProductReindex' => $isFullProductReindex), 1);
     }
 }

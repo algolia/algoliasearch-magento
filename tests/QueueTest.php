@@ -30,12 +30,22 @@ class QueueTest extends TestCase
 
         $rows = $this->readConnection->query('SELECT * FROM algoliasearch_queue')->fetchAll();
 
-        $this->assertEquals(6, count($rows));
+        $this->assertEquals(7, count($rows));
 
+        $first = true;
         foreach ($rows as $row) {
             $this->assertEquals('algoliasearch/observer', $row['class']);
 
-            if ($row['job_id'] % 2 === 1) {
+            if ($first === true) {
+                $this->assertEquals('saveSettings', $row['method']);
+                $this->assertEquals(1, $row['data_size']);
+
+                $first = false;
+
+                continue;
+            }
+
+            if ($row['job_id'] % 2 === 0) {
                 $this->assertEquals('rebuildProductIndex', $row['method']);
                 $this->assertEquals(100, $row['data_size']);
             } else {
@@ -57,8 +67,8 @@ class QueueTest extends TestCase
 
         $queue = new Algolia_Algoliasearch_Model_Queue();
 
-        // Run the first three jobs - batch, move, batch
-        $queue->run(3);
+        // Run the first four jobs - saveSettings, batch, move, batch
+        $queue->run(4);
 
         $algoliaHelper->waitLastTask();
 
@@ -131,5 +141,55 @@ class QueueTest extends TestCase
         $this->assertTrue($existsDefaultProdIndex, 'Default product production index does not exists and it should');
         $this->assertTrue($existsFrenchProdIndex, 'French products production index does not exists and it should');
         $this->assertTrue($existsGermanProdIndex, 'German products production index does not exists and it should');
+    }
+
+    public function testSettings()
+    {
+        setConfig('algoliasearch/queue/active', '1');
+
+        resetConfigs(array(
+            'instant/facets',
+            'products/product_additional_attributes',
+        ));
+
+        $this->writeConnection->query('TRUNCATE TABLE algoliasearch_queue');
+
+        // Reindex products multiple times
+        $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
+        $productIndexer->reindexAll();
+        $productIndexer->reindexAll();
+        $productIndexer->reindexAll();
+
+        $rows = $this->readConnection->query('SELECT * FROM algoliasearch_queue')->fetchAll();
+        $this->assertEquals(21, count($rows));
+
+        // Process the whole queue
+        $queueRunner = new Algolia_Algoliasearch_Model_Indexer_Algoliaqueuerunner();
+        $queueRunner->reindexAll();
+        $queueRunner->reindexAll();
+        $queueRunner->reindexAll();
+
+        $rows = $this->readConnection->query('SELECT * FROM algoliasearch_queue')->fetchAll();
+        $this->assertEquals(0, count($rows));
+
+        /** @var Algolia_Algoliasearch_Helper_Algoliahelper $algoliaHelper */
+        $algoliaHelper = Mage::helper('algoliasearch/algoliahelper');
+        $algoliaHelper->waitLastTask();
+
+        /** @var Algolia_Algoliasearch_Helper_Config $config */
+        $config = Mage::helper('algoliasearch/config');
+        $indexPrefix = $config->getIndexPrefix();
+
+        $settings = $algoliaHelper->getIndex($indexPrefix.'default_products')->getSettings();
+        $this->assertFalse(empty($settings['attributesForFaceting']), 'AttributesForFacetting should be set, but they are not.');
+        $this->assertFalse(empty($settings['searchableAttributes']), 'SearchableAttributes should be set, but they are not.');
+
+        $settings = $algoliaHelper->getIndex($indexPrefix.'french_products')->getSettings();
+        $this->assertFalse(empty($settings['attributesForFaceting']), 'AttributesForFacetting should be set, but they are not.');
+        $this->assertFalse(empty($settings['searchableAttributes']), 'SearchableAttributes should be set, but they are not.');
+
+        $settings = $algoliaHelper->getIndex($indexPrefix.'german_products')->getSettings();
+        $this->assertFalse(empty($settings['attributesForFaceting']), 'AttributesForFacetting should be set, but they are not.');
+        $this->assertFalse(empty($settings['searchableAttributes']), 'SearchableAttributes should be set, but they are not.');
     }
 }
