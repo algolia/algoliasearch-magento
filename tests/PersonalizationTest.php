@@ -25,7 +25,7 @@ class PersonalizationTest extends TestCase
         $index = $algoliaHelper->getIndex($indexPrefix.'default_products');
 
         $settings = $index->getSettings();
-        $this->assertTrue(in_array('personalization_user_id', $settings['attributesForFaceting'], true), 'Attribute "personalization_user_id" should be set as attribute for faceting, but its not.');
+        $this->assertTrue(in_array('onlyFilter(personalization_user_id)', $settings['attributesForFaceting'], true), 'Attribute "personalization_user_id" should be set as attribute for faceting, but its not.');
 
         $record = $index->getObject(558);
         $this->assertTrue(isset($record['personalization_user_id']), 'Attribute "personalization_user_id" should be set to the product, but its not.');

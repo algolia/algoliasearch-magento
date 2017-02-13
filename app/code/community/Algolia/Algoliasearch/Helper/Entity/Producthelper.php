@@ -265,7 +265,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         if ($this->config->isPersonalizationEnabled($storeId)) {
-            $attributesForFaceting[] = 'personalization_user_id';
+            $attributesForFaceting[] = 'onlyFilter(personalization_user_id)';
         }
 
         $indexSettings = array(
