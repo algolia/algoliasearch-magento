@@ -45,15 +45,17 @@ class Algolia_Algoliasearch_Helper_Personalization extends Mage_Core_Helper_Abst
             $storeId = $store->getId();
 
             if ($this->config->isEnabledBackend($storeId) === false || $this->config->isPersonalizationEnabled($storeId) === false || $store->getIsActive() === false) {
+                $errorMessage = '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId);
+
                 if (php_sapi_name() === 'cli') {
-                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId)."\n";
+                    echo $errorMessage."\n";
                 }
 
                 /** @var Mage_Adminhtml_Model_Session $session */
                 $session = Mage::getSingleton('adminhtml/session');
-                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
+                $session->addWarning($errorMessage);
 
-                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
+                $this->logger->log($errorMessage);
 
                 continue;
             }
@@ -71,12 +73,28 @@ class Algolia_Algoliasearch_Helper_Personalization extends Mage_Core_Helper_Abst
             FROM '.$this->tableNamePrefix.'sales_flat_order_item sfoi 
             JOIN '.$this->tableNamePrefix.'sales_flat_order sfo ON sfoi.order_id = sfo.entity_id 
             WHERE sfo.state = "complete" AND sfo.store_id = '.((int) $storeId).' AND sfo.customer_id IS NOT NULL
-            ORDER BY sfo.created_at DESC
-            LIMIT 8000';
+            ORDER BY sfo.created_at DESC';
+
         $results = $this->readDb->query($query);
 
+        $iterator = array();
         foreach ($results as $result) {
-            $this->products[$result['product_id']][$result['customer_id']] = true;
+            $productId = $result['product_id'];
+
+            if (!isset($iterator[$productId])) {
+                $iterator[$productId] = 1;
+            } else {
+                $iterator[$productId]++;
+            }
+
+            // Do not assign more then 8000 customers to a single product. Limitation of optionalFilters feature.
+            // If you want to increase the limit, contact your Solution Engineer at Algolia.
+            if ($iterator[$productId] >= 8000) {
+                continue;
+            }
+
+            $this->products[$productId][$result['customer_id']] = true;
+
         }
     }
 
