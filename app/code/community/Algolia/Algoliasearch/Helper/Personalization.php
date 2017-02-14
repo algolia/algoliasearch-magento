@@ -19,6 +19,8 @@ class Algolia_Algoliasearch_Helper_Personalization extends Mage_Core_Helper_Abst
 
     private $readDb;
 
+    private $tableNamePrefix;
+
     private $products = array();
 
     public function __construct()
@@ -32,6 +34,8 @@ class Algolia_Algoliasearch_Helper_Personalization extends Mage_Core_Helper_Abst
         /** @var Mage_Core_Model_Resource $coreResource */
         $coreResource = Mage::getSingleton('core/resource');
         $this->readDb = $coreResource->getConnection('core_read');
+
+        $this->tableNamePrefix = Mage::getConfig()->getTablePrefix();
     }
 
     public function reindex()
@@ -64,8 +68,8 @@ class Algolia_Algoliasearch_Helper_Personalization extends Mage_Core_Helper_Abst
     private function handleOrderedProducts($storeId)
     {
         $query = 'SELECT sfoi.product_id, sfo.customer_id 
-            FROM sales_flat_order_item sfoi 
-            JOIN sales_flat_order sfo ON sfoi.order_id = sfo.entity_id 
+            FROM '.$this->tableNamePrefix.'sales_flat_order_item sfoi 
+            JOIN '.$this->tableNamePrefix.'sales_flat_order sfo ON sfoi.order_id = sfo.entity_id 
             WHERE sfo.state = "complete" AND sfo.store_id = '.((int) $storeId).' AND sfo.customer_id IS NOT NULL
             ORDER BY sfo.created_at DESC
             LIMIT 8000';
@@ -94,9 +98,9 @@ class Algolia_Algoliasearch_Helper_Personalization extends Mage_Core_Helper_Abst
         /** @var Mage_Catalog_Model_Category $category */
         foreach ($categories as $category) {
             $query = 'SELECT sfo.customer_id, COUNT(sfoi.product_id) as items_purchased FROM 
-                catalog_category_product ccp 
-                JOIN sales_flat_order_item sfoi ON ccp.product_id = sfoi.product_id
-                JOIN sales_flat_order sfo ON sfoi.order_id = sfo.entity_id
+                '.$this->tableNamePrefix.'catalog_category_product ccp 
+                JOIN '.$this->tableNamePrefix.'sales_flat_order_item sfoi ON ccp.product_id = sfoi.product_id
+                JOIN '.$this->tableNamePrefix.'sales_flat_order sfo ON sfoi.order_id = sfo.entity_id
                 WHERE ccp.category_id = '.((int) $category->getId()).' AND sfo.state = "complete" AND sfo.customer_id IS NOT NULL AND sfo.store_id = '.((int) $storeId).'
                 GROUP BY sfo.customer_id
                 HAVING items_purchased >= '.((int) $this->config->getMinCategoryPurchasesForBoost($storeId));
@@ -144,7 +148,7 @@ class Algolia_Algoliasearch_Helper_Personalization extends Mage_Core_Helper_Abst
 
     private function getCategoryProductIds($categoryId)
     {
-        $query = 'SELECT product_id FROM catalog_category_product WHERE category_id = '.((int) $categoryId);
+        $query = 'SELECT product_id FROM '.$this->tableNamePrefix.'catalog_category_product WHERE category_id = '.((int) $categoryId);
         $ids = $this->readDb->query($query)->fetchAll(7, 0); // Directly fetch values of the first column (product_id)
 
         return $ids;
