@@ -20,6 +20,31 @@ setConfig('algoliasearch/credentials/api_key', Mage::helper('core')->encrypt(get
 
 setConfig('algoliasearch/credentials/index_prefix', getenv('INDEX_PREFIX'));
 
+/**
+ * @param array $configs
+ */
+function resetConfigs($configs = array())
+{
+    $configXmlFile = __DIR__.'/../app/code/community/Algolia/Algoliasearch/etc/config.xml';
+
+    $xml = simplexml_load_file($configXmlFile);
+
+    foreach ($xml->default->algoliasearch->children() as $section => $subsections) {
+        foreach ($subsections as $subsectionName => $subsection) {
+            $shortcut = $section.'/'.$subsectionName;
+
+            if (!empty($configs) && !in_array($shortcut, $configs, true)) {
+                continue;
+            }
+
+            $sectionName = 'algoliasearch/'.$shortcut;
+            $sectionValue = (string) $subsection;
+
+            setConfig($sectionName, $sectionValue);
+        }
+    }
+}
+
 function setConfig($path, $value, $storeId = null)
 {
     if ($storeId === null) {

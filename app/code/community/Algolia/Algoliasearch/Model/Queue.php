@@ -69,7 +69,7 @@ class Algolia_Algoliasearch_Model_Queue
             return false;
         }
 
-        if ($j1['data']['store_id'] !== $j2['data']['store_id']) {
+        if (isset($j1['data']['store_id']) && isset($j2['data']['store_id']) && $j1['data']['store_id'] !== $j2['data']['store_id']) {
             return false;
         }
 
@@ -99,7 +99,7 @@ class Algolia_Algoliasearch_Model_Queue
                 return strcmp($a['class'], $b['class']);
             }
 
-            if ($a['data']['store_id'] !== $b['data']['store_id']) {
+            if (isset($a['data']['store_id']) && isset($b['data']['store_id']) && $a['data']['store_id'] !== $b['data']['store_id']) {
                 return $a['data']['store_id'] > $b['data']['store_id'];
             }
 
