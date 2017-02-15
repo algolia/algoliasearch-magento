@@ -39,7 +39,7 @@ class Algolia_Algoliasearch_Model_Observer
 
     public function saveSettings($isFullProductReindex = false)
     {
-        if (get_class($isFullProductReindex) === 'Varien_Object') {
+        if (is_object($isFullProductReindex) && get_class($isFullProductReindex) === 'Varien_Object') {
             $eventData = $isFullProductReindex->getData();
             $isFullProductReindex = $eventData['isFullProductReindex'];
         }
