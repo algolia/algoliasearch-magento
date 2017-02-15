@@ -223,7 +223,8 @@
                 <index_all_category_product_on_category_update>0</index_all_category_product_on_category_update>
             </advanced>
             <personalization>
-                <enable_personalization>false</enable_personalization>
+                <enable_personalization>0</enable_personalization>
+                <boost_already_purchased_products>1</boost_already_purchased_products>
                 <min_category_items_for_boost>10</min_category_items_for_boost>
                 <dont_boost_more_than_categories>3</dont_boost_more_than_categories>
             </personalization>

@@ -68,6 +68,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const INDEX_ALL_CATEGORY_PRODUCTS_ON_CATEGORY_UPDATE = 'algoliasearch/advanced/index_all_category_product_on_category_update';
 
     const ENABLE_PERSONALIZATION = 'algoliasearch/personalization/enable_personalization';
+    const BOOST_ALREADY_PURCHASED_PRODUCTS = 'algoliasearch/personalization/boost_already_purchased_products';
     const MIN_CATEGORY_ITEMS_FOR_BOOST = 'algoliasearch/personalization/min_category_items_for_boost';
     const DONT_BOOST_MORE_CATEGORIES_THAN = 'algoliasearch/personalization/dont_boost_more_than_categories';
 
@@ -572,6 +573,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function isPersonalizationEnabled($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::ENABLE_PERSONALIZATION, $storeId);
+    }
+
+    public function shouldBoostAlreadyPurchasedProducts($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::BOOST_ALREADY_PURCHASED_PRODUCTS, $storeId);
     }
 
     public function getMinCategoryPurchasesForBoost($storeId = null)

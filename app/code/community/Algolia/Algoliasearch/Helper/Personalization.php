@@ -69,6 +69,10 @@ class Algolia_Algoliasearch_Helper_Personalization extends Mage_Core_Helper_Abst
 
     private function handleOrderedProducts($storeId)
     {
+        if ($this->config->shouldBoostAlreadyPurchasedProducts($storeId) === false) {
+            return;
+        }
+
         $query = 'SELECT sfoi.product_id, sfo.customer_id 
             FROM '.$this->tableNamePrefix.'sales_flat_order_item sfoi 
             JOIN '.$this->tableNamePrefix.'sales_flat_order sfo ON sfoi.order_id = sfo.entity_id 
@@ -94,12 +98,15 @@ class Algolia_Algoliasearch_Helper_Personalization extends Mage_Core_Helper_Abst
             }
 
             $this->products[$productId][$result['customer_id']] = true;
-
         }
     }
 
     private function handleCategories($storeId)
     {
+        if ($this->config->getMinCategoryPurchasesForBoost($storeId) == -1) {
+            return;
+        }
+
         $storeRootCategoryPath = sprintf('%d/%d', $this->categoriesHelper->getRootCategoryId(), Mage::app()->getStore($storeId)->getRootCategoryId());
 
         /* @var Mage_Catalog_Model_Resource_Eav_Mysql4_Category_Collection $categories */
