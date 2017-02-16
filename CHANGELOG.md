@@ -1,5 +1,23 @@
 ## CHANGE LOG
 
+### 1.8.1
+
+#### FEATURES
+- Ability to index only products with specific visibility (Search, Catalog, Both) (#731)
+- Product entity is now passed to a custom events called in `getObject` methods (#733)
+- Dutch translations (#746)
+
+#### UPDATES
+- "releases" directory has been removed from the repository. Release archives will be now added to GitHub releases. (#724)
+- Refined category is now shown in Current refinements section on replaced category page (#725)
+- Queue runner closes DB connection when finished (#736)
+- Dev Docker container now uses PHP 7.0 (#734, #743)
+- The extension is now tested with PHPUnit and checked on TravisCI (#735, #749 )
+
+#### FIXES
+- Fixed wiped out settings from Algolia products' indices (#753, #756)
+- When Algolia is disabled with `algoliasearch/credentials/enable_backend` for a store it's not returning any search results (#742)
+
 ### 1.8.0
 
 #### FEATURES
