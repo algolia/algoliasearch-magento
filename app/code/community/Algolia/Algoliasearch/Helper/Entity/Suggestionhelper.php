@@ -38,7 +38,7 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
         );
 
         $transport = new Varien_Object($suggestionObject);
-        Mage::dispatchEvent('algolia_after_create_suggestion_object', array('suggestion' => $transport));
+        Mage::dispatchEvent('algolia_after_create_suggestion_object', array('suggestion' => $transport, 'suggestionObject' => $suggestion));
         $suggestionObject = $transport->getData();
 
         return $suggestionObject;

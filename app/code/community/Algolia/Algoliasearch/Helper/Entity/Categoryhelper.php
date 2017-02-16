@@ -199,7 +199,7 @@ class Algolia_Algoliasearch_Helper_Entity_Categoryhelper extends Algolia_Algolia
         }
 
         $transport = new Varien_Object($data);
-        Mage::dispatchEvent('algolia_after_create_category_object', array('category' => $transport));
+        Mage::dispatchEvent('algolia_after_create_category_object', array('category' => $transport, 'categoryObject' => $category));
         $data = $transport->getData();
 
         return $data;
