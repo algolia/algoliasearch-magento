@@ -16,7 +16,7 @@ class Algolia_Algoliasearch_Model_Queue
     /** @var Algolia_Algoliasearch_Helper_Logger */
     protected $logger;
 
-    protected $by_page;
+    protected $maxSingleJobDataSize;
 
     private $staticJobMethods = array(
         'saveSettings',
@@ -38,7 +38,7 @@ class Algolia_Algoliasearch_Model_Queue
         $this->config = Mage::helper('algoliasearch/config');
         $this->logger = Mage::helper('algoliasearch/logger');
 
-        $this->by_page = $this->config->getNumberOfElementByPage();
+        $this->maxSingleJobDataSize = $this->config->getNumberOfElementByPage();
     }
 
     public function add($class, $method, $data, $data_size)
@@ -70,79 +70,21 @@ class Algolia_Algoliasearch_Model_Queue
 
     public function run($maxJobs)
     {
-        $isFullReindex = ($maxJobs === -1);
-        $limit = $isFullReindex ? $this->config->getNumberOfJobToRun() : $maxJobs;
+        $pid = getmypid();
 
-        $jobs = array();
+        $jobs = $this->getJobs($maxJobs, $pid);
 
-        $actualBatchSize = 0;
-        $maxBatchSize = $this->config->getNumberOfElementByPage() * $limit;
-
-        $offset = 0;
-
-        try {
-            $this->db->beginTransaction();
-
-            while ($actualBatchSize < $maxBatchSize) {
-                $data = $this->db->query($this->db->select()->from($this->table, '*')->where('pid IS NULL')
-                                                  ->order(array('job_id'))->limit($limit, $limit * $offset)
-                                                  ->forUpdate());
-                $data = $data->fetchAll();
-                $rowsCount = count($data);
-
-                $offset++;
-
-                if ($rowsCount <= 0) {
-                    break;
-                } elseif ($rowsCount == $maxJobs) {
-                    $jobs = $data;
-                    break;
-                }
-
-                foreach ($data as $job) {
-                    $jobSize = (int) $job['data_size'];
-
-                    if ($actualBatchSize + $jobSize <= $maxBatchSize) {
-                        $jobs[] = $job;
-                        $actualBatchSize += $jobSize;
-                    } else {
-                        break 2;
-                    }
-                }
-            }
-
-            if (count($jobs) <= 0) {
-                $this->db->commit();
-                $this->db->closeConnection();
-
-                return;
-            }
-
-            $firstJobsId = $jobs[0]['job_id'];
-            $lastJobsId = $jobs[count($jobs) - 1]['job_id'];
-
-            $pid = getmypid();
-
-            // Reserve all new jobs since last run
-            $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = ".$pid.' WHERE job_id >= '.$firstJobsId." AND job_id <= $lastJobsId");
-
-            $this->db->commit();
-        } catch (\Exception $e) {
-            $this->db->rollBack();
+        if (empty($jobs)) {
             $this->db->closeConnection();
-
-            throw $e;
         }
-
-        $jobs = $this->prepareJobs($jobs);
-        $jobs = $this->sortAndMergeJob($jobs);
 
         // Run all reserved jobs
         foreach ($jobs as $job) {
             try {
                 $model = Mage::getSingleton($job['class']);
                 $method = $job['method'];
-                $model->$method(new Varien_Object($job['data']));
+
+                $model->{$method}(new Varien_Object($job['data']));
             } catch (Exception $e) {
                 // Increment retries and log error information
                 $this->logger->log("Queue processing {$job['pid']} [KO]: Mage::getSingleton({$job['class']})->{$job['method']}(".json_encode($job['data']).')');
@@ -154,12 +96,93 @@ class Algolia_Algoliasearch_Model_Queue
         $where = $this->db->quoteInto('pid = ?', $pid);
         $this->db->delete($this->table, $where);
 
+        $isFullReindex = ($maxJobs === -1);
         if ($isFullReindex) {
             $this->run(-1);
+
             return;
         }
 
         $this->db->closeConnection();
+    }
+
+    private function getJobs($maxJobs, $pid)
+    {
+        $jobs = array();
+
+        $limit = $maxJobs = ($maxJobs === -1) ? $this->config->getNumberOfJobToRun() : $maxJobs;
+        $offset = 0;
+
+        $maxBatchSize = $this->config->getNumberOfElementByPage() * $limit;
+        $actualBatchSize = 0;
+
+        try {
+            $this->db->beginTransaction();
+
+            while ($actualBatchSize < $maxBatchSize) {
+                $data = $this->db->query($this->db->select()->from($this->table, '*')->where('pid IS NULL')
+                                                  ->order(array('job_id'))->limit($limit, $offset)
+                                                  ->forUpdate());
+                $rawJobs = $data->fetchAll();
+                $rowsCount = count($rawJobs);
+
+                if ($rowsCount <= 0) {
+                    break;
+                }
+
+                // If $jobs is empty, it's the first run
+                if (empty($jobs)) {
+                    $firstJobId = $rawJobs[0]['job_id'];
+                }
+
+                $rawJobs = $this->prepareJobs($rawJobs);
+                $rawJobs = array_merge($jobs, $rawJobs);
+                $rawJobs = $this->mergeJobs($rawJobs);
+
+                $rawJobsCount = count($rawJobs);
+
+                $offset += $limit;
+                $limit = max(0, $maxJobs - $rawJobsCount);
+
+                // $jobs will always be completely set from $rawJobs
+                // Without resetting not-merged jobs would be stacked
+                $jobs = array();
+
+                if (count($rawJobs) == $maxJobs) {
+                    $jobs = $rawJobs;
+                    break;
+                }
+
+                foreach ($rawJobs as $job) {
+                    $jobSize = (int) $job['data_size'];
+
+                    if ($actualBatchSize + $jobSize <= $maxBatchSize || empty($jobs)) {
+                        $jobs[] = $job;
+                        $actualBatchSize += $jobSize;
+                    } else {
+                        break 2;
+                    }
+                }
+            }
+
+            $this->db->commit();
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            $this->db->closeConnection();
+
+            throw $e;
+        }
+
+
+        if (isset($firstJobId)) {
+            // Last job has always assigned the last processed ID
+            $lastJobId = $jobs[count($jobs) - 1]['job_id'];
+
+            // Reserve all new jobs since last run
+            $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = ".$pid.' WHERE job_id >= '.$firstJobId." AND job_id <= $lastJobId");
+        }
+
+        return $jobs;
     }
 
     private function prepareJobs($jobs)
@@ -171,42 +194,47 @@ class Algolia_Algoliasearch_Model_Queue
         return $jobs;
     }
 
-    protected function sortAndMergeJob($oldJobs)
+    protected function mergeJobs($oldJobs)
     {
         $oldJobs = $this->sortJobs($oldJobs);
 
         $jobs = array();
 
-        $current_job = array_shift($oldJobs);
-        $next_job = null;
+        $currentJob = array_shift($oldJobs);
+        $nextJob = null;
 
-        while ($current_job !== null) {
+        while ($currentJob !== null) {
             if (count($oldJobs) > 0) {
-                $next_job = array_shift($oldJobs);
+                $nextJob = array_shift($oldJobs);
 
-                if ($this->mergeable($current_job, $next_job)) {
-                    if (isset($current_job['data']['product_ids'])) {
-                        $current_job['data']['product_ids'] = array_merge($current_job['data']['product_ids'], $next_job['data']['product_ids']);
-                    } else {
-                        $current_job['data']['category_ids'] = array_merge($current_job['data']['category_ids'], $next_job['data']['category_ids']);
+                if ($this->mergeable($currentJob, $nextJob)) {
+                    // Use the job_id of the the very last job to properly mark processed jobs
+                    $currentJob['job_id'] = max((int) $currentJob['job_id'], (int) $nextJob['job_id']);
+
+                    if (isset($currentJob['data']['product_ids'])) {
+                        $currentJob['data']['product_ids'] = array_merge($currentJob['data']['product_ids'], $nextJob['data']['product_ids']);
+                        $currentJob['data_size'] = count($currentJob['data']['product_ids']);
+                    } elseif (isset($currentJob['data']['category_ids'])) {
+                        $currentJob['data']['category_ids'] = array_merge($currentJob['data']['category_ids'], $nextJob['data']['category_ids']);
+                        $currentJob['data_size'] = count($currentJob['data']['category_ids']);
                     }
 
                     continue;
                 }
             } else {
-                $next_job = null;
+                $nextJob = null;
             }
 
-            if (isset($current_job['data']['product_ids'])) {
-                $current_job['data']['product_ids'] = array_unique($current_job['data']['product_ids']);
+            if (isset($currentJob['data']['product_ids'])) {
+                $currentJob['data']['product_ids'] = array_unique($currentJob['data']['product_ids']);
             }
 
-            if (isset($current_job['data']['category_ids'])) {
-                $current_job['data']['category_ids'] = array_unique($current_job['data']['category_ids']);
+            if (isset($currentJob['data']['category_ids'])) {
+                $currentJob['data']['category_ids'] = array_unique($currentJob['data']['category_ids']);
             }
 
-            $jobs[] = $current_job;
-            $current_job = $next_job;
+            $jobs[] = $currentJob;
+            $currentJob = $nextJob;
         }
 
         return $jobs;
@@ -214,6 +242,8 @@ class Algolia_Algoliasearch_Model_Queue
 
     private function sortJobs($oldJobs)
     {
+        // Method sorts the jobs and preserves the order of jobs with static methods defined in $this->staticJobMethods
+
         $sortedJobs = array();
 
         $tempSortableJobs = array();
@@ -253,7 +283,7 @@ class Algolia_Algoliasearch_Model_Queue
         return $sortedJobs;
     }
 
-    protected function mergeable($j1, $j2)
+    private function mergeable($j1, $j2)
     {
         if ($j1['class'] !== $j2['class']) {
             return false;
@@ -275,18 +305,18 @@ class Algolia_Algoliasearch_Model_Queue
             return false;
         }
 
-        if (isset($j1['data']['product_ids']) && count($j1['data']['product_ids']) + count($j2['data']['product_ids']) > $this->by_page) {
+        if (isset($j1['data']['product_ids']) && count($j1['data']['product_ids']) + count($j2['data']['product_ids']) > $this->maxSingleJobDataSize) {
             return false;
         }
 
-        if (isset($j1['data']['category_ids']) && count($j1['data']['category_ids']) + count($j2['data']['category_ids']) > $this->by_page) {
+        if (isset($j1['data']['category_ids']) && count($j1['data']['category_ids']) + count($j2['data']['category_ids']) > $this->maxSingleJobDataSize) {
             return false;
         }
 
         return true;
     }
 
-    public function arrayMultisort()
+    private function arrayMultisort()
     {
         $args = func_get_args();
 
