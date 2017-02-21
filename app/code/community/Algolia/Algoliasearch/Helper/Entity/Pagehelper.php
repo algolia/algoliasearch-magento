@@ -74,7 +74,7 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
 
             $pageObject['objectID'] = $page->getId();
             $pageObject['url'] = $cmsPageHelper->getPageUrl($page->getId());
-            $pageObject['content'] = $this->strip($content);
+            $pageObject['content'] = $this->strip($content, array('script', 'style'));
 
             $transport = new Varien_Object($pageObject);
             Mage::dispatchEvent('algolia_after_create_page_object', array('page' => $transport, 'pageObject' => $page));
