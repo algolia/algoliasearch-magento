@@ -230,9 +230,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			var name = facet.attribute;
 			
 			if (name === 'categories') {
-				if (algoliaConfig.isCategoryPage) {
-					return;
-				}
 				name = 'categories.level0';
 			}
 			
@@ -299,10 +296,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					'{{#isRefined}}<span class="cross-circle"></span>{{/isRefined}}' +
 					'<span class="{{cssClasses.count}}">{{#helpers.formatNumber}}{{count}}{{/helpers.formatNumber}}</span></a>' +
 					'</div>';
-				
-				if (algoliaConfig.request.path.length > 0) {
-					hierarchicalMenuParams.rootPath = algoliaConfig.request.path;
-				}
 				
 				return algoliaBundle.instantsearch.widgets.hierarchicalMenu(hierarchicalMenuParams);
 			}
@@ -423,6 +416,34 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			})
 		);
 		
+		if (algoliaConfig.analytics.enabled === true) {
+			if (typeof algoliaAnalyticsPushFunction != 'function') {
+				var algoliaAnalyticsPushFunction = function (formattedParameters, state, results) {
+					var trackedUrl = '/catalogsearch/result/?q=' + state.query + '&' + formattedParameters + '&numberOfHits=' + results.nbHits;
+					
+					// Universal Analytics
+					if (typeof window.ga != 'undefined') {
+						window.ga('set', 'page', trackedUrl);
+						window.ga('send', 'pageView');
+					}
+					
+					// classic Google Analytics
+					if (typeof window._gaq !== 'undefined') {
+						window._gaq.push(['_trackPageview', trackedUrl]);
+					}
+				};
+			}
+			
+			search.addWidget(
+				algoliaBundle.instantsearch.widgets.analytics({
+					pushFunction: algoliaAnalyticsPushFunction,
+					delay: algoliaConfig.analytics.delay,
+					triggerOnUIInteraction: algoliaConfig.analytics.triggerOnUIInteraction,
+					pushInitialSearch: algoliaConfig.analytics.pushInitialSearch
+				})
+			);
+		}
+		
 		var isStarted = false;
 		function startInstantSearch() {
 			if(isStarted == true) {
@@ -434,6 +455,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			}
 			
 			search.start();
+			
+			if (algoliaConfig.request.path.length > 0) {
+				search.helper.toggleRefine('categories.level0', algoliaConfig.request.path).search();
+			}
 			
 			handleInputCrossInstant($(instant_selector));
 			

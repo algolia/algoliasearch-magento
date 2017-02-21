@@ -10,6 +10,7 @@ EXPOSED_PORT=80
 MAGENTO_VERSION=19
 INSTALL_ALGOLIA=Yes
 MAKE_RELEASE=No
+INSTALL_XDEBUG=No
 
 cd `dirname "$0"`
 
@@ -28,6 +29,7 @@ usage() {
   echo "   -v | --magento-version              Magento version [16, 17, 18, 19] (default: 19)" >&2
   echo "   --no-algolia                        Build Magento container without Algolia search extension" >&2
   echo "   --release                           Create Magento Connect release arcive in /var/connect directory" >&2
+  echo "   --xdebug                            Install XDebug inside the container" >&2
 }
 
 while [[ $# > 0 ]]; do
@@ -73,6 +75,10 @@ while [[ $# > 0 ]]; do
       ;;
     --release)
       MAKE_RELEASE=Yes
+      shift
+      ;;
+    --xdebug)
+      INSTALL_XDEBUG=Yes
       shift
       ;;
     -h|--help)
@@ -127,7 +133,8 @@ case "$MAGENTO_VERSION" in
     exit 1
 esac
 
-docker build --build-arg MAGENTO_VERSION=$MAGENTO_VERSION -t algolia/algoliasearch-magento . || exit 1
+docker build --build-arg MAGENTO_VERSION=$MAGENTO_VERSION -t algolia/base-algoliasearch-magento -f Dockerfile.base . || exit 1
+docker build --build-arg INSTALL_XDEBUG=$INSTALL_XDEBUG -t algolia/algoliasearch-magento -f Dockerfile.dev . || exit 1
 
 echo "=============================================================="
 echo "||        DOCKER IMAGE SUCCESSFULLY REBUILT                 ||"
@@ -146,6 +153,7 @@ echo "        EXPOSED PORT: $EXPOSED_PORT"
 echo "     MAGENTO VERSION: $MAGENTO_VERSION"
 echo "     INSTALL ALGOLIA: $INSTALL_ALGOLIA"
 echo "MAKE RELEASE PACKAGE: $MAKE_RELEASE"
+echo "      INSTALL XDEBUG: $INSTALL_XDEBUG"
 echo ""
 
 docker run -p $EXPOSED_PORT:80 \

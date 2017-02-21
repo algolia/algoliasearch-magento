@@ -358,10 +358,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         foreach ($collection as $suggestion) {
             $suggestion->setStoreId($storeId);
 
-            $suggestion_obj = $this->suggestion_helper->getObject($suggestion);
+            $suggestionObject = $this->suggestion_helper->getObject($suggestion);
 
-            if (strlen($suggestion_obj['query']) >= 3) {
-                array_push($indexData, $suggestion_obj);
+            if (strlen($suggestionObject['query']) >= 3) {
+                array_push($indexData, $suggestionObject);
             }
         }
 
@@ -407,10 +407,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $category->setStoreId($storeId);
 
-            $category_obj = $this->category_helper->getObject($category);
+            $categoryObject = $this->category_helper->getObject($category);
 
-            if ($category_obj['product_count'] > 0) {
-                array_push($indexData, $category_obj);
+            if ($categoryObject['product_count'] > 0) {
+                array_push($indexData, $categoryObject);
             }
         }
 
@@ -462,15 +462,15 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             if ($product->isDeleted() === true
                 || $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED
-                || (int) $product->getVisibility() <= Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE
+                || $this->product_helper->shouldIndexProductByItsVisibility($product, $storeId) === false
                 || ($product->getStockItem()->is_in_stock == 0 && !$this->config->getShowOutOfStock($storeId))
             ) {
                 $productsToRemove[$productId] = $productId;
                 continue;
             }
 
-            $json = $this->product_helper->getObject($product);
-            $productsToIndex[$productId] = $json;
+            $productObject = $this->product_helper->getObject($product);
+            $productsToIndex[$productId] = $productObject;
         }
 
         $productsToRemove = array_merge($productsToRemove, $potentiallyDeletedProductsIds);
@@ -633,6 +633,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
     
     public function isX3Version()
     {
+        if (method_exists('Mage', 'getEdition') === false) {
+            return false;
+        }
+            
         return Mage::EDITION_ENTERPRISE === Mage::getEdition() && version_compare(Mage::getVersion(), '1.14.3', '>=') ||
                Mage::EDITION_COMMUNITY === Mage::getEdition() && version_compare(Mage::getVersion(), '1.9.3', '>=');
     }
