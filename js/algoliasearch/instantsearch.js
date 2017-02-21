@@ -460,6 +460,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				search.helper.toggleRefine('categories.level0', algoliaConfig.request.path).search();
 			}
 			
+			if (typeof algoliaHookAfterInstantsearchStart == 'function') {
+				search = algoliaHookAfterInstantsearchStart(search);
+			}
+			
 			handleInputCrossInstant($(instant_selector));
 			
 			var instant_search_bar = $(instant_selector);

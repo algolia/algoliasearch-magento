@@ -274,13 +274,14 @@ $algoliaJsConfig = array(
     ),
 );
 
+$transport = new Varien_Object($algoliaJsConfig);
+Mage::dispatchEvent('algolia_after_create_configuration', array('configuration' => $transport));
+$algoliaJsConfig = $transport->getData();
+
 ?>
 
 <script>
     window.algoliaConfig = <?php echo json_encode($algoliaJsConfig); ?>;
-    if (typeof algoliaHookAfterConfigLoad == 'function') {
-        window.algoliaConfig = algoliaHookAfterConfigLoad(algoliaConfig);
-    }
 </script>
 
 <!--[if lte IE 9]>
