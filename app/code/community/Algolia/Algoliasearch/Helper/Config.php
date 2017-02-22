@@ -75,6 +75,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
 
+    const EXTRA_SETTINGS_PRODUCTS = 'algoliasearch/advanced_settings/products_extra_settings';
+    const EXTRA_SETTINGS_CATEGORIES = 'algoliasearch/advanced_settings/categories_extra_settings';
+    const EXTRA_SETTINGS_PAGES = 'algoliasearch/advanced_settings/pages_extra_settings';
+    const EXTRA_SETTINGS_SUGGESTIONS = 'algoliasearch/advanced_settings/suggestions_extra_settings';
+    const EXTRA_SETTINGS_ADDITIONAL_SECTIONS = 'algoliasearch/advanced_settings/additional_sections_extra_settings';
+
     protected $_productTypeMap = array();
 
     public function indexVisibility($storeId = null)
@@ -588,6 +594,13 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return Mage::getBaseDir('media').'/algoliasearch-admin-config-uploads/'.$filename;
+    }
+
+    public function getExtraSettings($section, $storeId = null)
+    {
+        $constant = 'EXTRA_SETTINGS_'.mb_strtoupper($section);
+
+        return trim(Mage::getStoreConfig(constant('self::'.$constant), $storeId));
     }
 
     private function getCustomRanking($configName, $storeId = null)

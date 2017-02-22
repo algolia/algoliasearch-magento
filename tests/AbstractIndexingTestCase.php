@@ -12,6 +12,11 @@ class AbstractIndexingTestCase extends TestCase
         $this->algoliaHelper = Mage::helper('algoliasearch/algoliahelper');
 
         setConfig('algoliasearch/queue/active', '0');
+
+        $extraSettingsSections = array('products', 'categories', 'pages', 'suggestions');
+        foreach ($extraSettingsSections as $section) {
+            setConfig('algoliasearch/advanced_settings/'.$section.'_extra_settings', '');
+        }
     }
 
     protected function processTest(Algolia_Algoliasearch_Model_Indexer_Abstract $indexer, $indexSuffix, $expectedNbHits, $expectedNbHitsFrench = null, $expectedNbHitsGerman = null)
