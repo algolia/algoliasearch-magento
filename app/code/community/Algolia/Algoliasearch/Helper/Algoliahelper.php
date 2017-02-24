@@ -57,6 +57,11 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         return $this->client->initIndex($indexName)->search($q, $params);
     }
 
+    public function getObjects($indexName, $objectIds)
+    {
+        return $this->getIndex($indexName)->getObjects($objectIds);
+    }
+
     public function setSettings($indexName, $settings)
     {
         $index = $this->getIndex($indexName);
