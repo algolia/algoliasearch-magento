@@ -5,6 +5,11 @@ language: php
 php:
   - '7.0'
 
+branches:
+  only:
+    - master
+    - develop
+
 services:
   - docker
 

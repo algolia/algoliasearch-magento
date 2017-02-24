@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.8.0</version>
+            <version>1.8.1</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -207,6 +207,12 @@
                 <height>265</height>
                 <type>image</type>
             </image>
+            <analytics>
+                <enable_analytics>0</enable_analytics>
+                <delay>3000</delay>
+                <trigger_on_ui_interaction>1</trigger_on_ui_interaction>
+                <push_initial_search>0</push_initial_search>
+            </analytics>
             <synonyms>
                 <enable_synonyms>1</enable_synonyms>
             </synonyms>
