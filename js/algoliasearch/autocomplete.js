@@ -84,6 +84,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				options.templates.footer = '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" title="Search by Algolia" target="_blank"><img src="' +algoliaConfig.urls.logo + '" alt="Search by Algolia" /></a></div>';
 			}
 			
+			if (typeof algoliaHookBeforeAutocompleteStart == 'function') {
+				var hookResult = algoliaHookBeforeAutocompleteStart(sources, options);
+				
+				sources = hookResult.shift();
+				options = hookResult.shift();
+			}
+			
 			/** Bind autocomplete feature to the input */
 			$(this)
 				.autocomplete(options, sources)

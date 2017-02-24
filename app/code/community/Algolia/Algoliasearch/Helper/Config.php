@@ -36,6 +36,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const PRODUCT_CUSTOM_RANKING = 'algoliasearch/products/custom_ranking_product_attributes';
     const RESULTS_LIMIT = 'algoliasearch/products/results_limit';
     const SHOW_SUGGESTIONS_NO_RESULTS = 'algoliasearch/products/show_suggestions_on_no_result_page';
+    const INDEX_VISIBILITY = 'algoliasearch/products/index_visibility';
     const INDEX_OUT_OF_STOCK_OPTIONS = 'algoliasearch/products/index_out_of_stock_options';
     const INDEX_WHOLE_CATEGORY_TREE = 'algoliasearch/products/index_whole_category_tree';
 
@@ -55,6 +56,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IMAGE_HEIGHT = 'algoliasearch/image/height';
     const XML_PATH_IMAGE_TYPE = 'algoliasearch/image/type';
 
+    const ENABLE_ANALYTICS = 'algoliasearch/analytics/enable_analytics';
+    const ANALYTICS_DELAY = 'algoliasearch/analytics/delay';
+    const ANALYTICS_TRIGGER_ON_UI_INTERACTION = 'algoliasearch/analytics/trigger_on_ui_interaction';
+    const ANALYTICS_PUSH_INITIAL_SEARCH = 'algoliasearch/analytics/push_initial_search';
+
     const ENABLE_SYNONYMS = 'algoliasearch/synonyms/enable_synonyms';
     const SYNONYMS = 'algoliasearch/synonyms/synonyms';
     const ONEWAY_SYNONYMS = 'algoliasearch/synonyms/oneway_synonyms';
@@ -73,6 +79,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
 
     protected $_productTypeMap = array();
+
+    public function indexVisibility($storeId = null)
+    {
+        return Mage::getStoreConfig(self::INDEX_VISIBILITY, $storeId);
+    }
 
     public function indexOutOfStockOptions($storeId = null)
     {
@@ -538,6 +549,26 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getExtensionVersion()
     {
         return (string) Mage::getConfig()->getNode()->modules->Algolia_Algoliasearch->version;
+    }
+
+    public function isEnabledAnalytics($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ENABLE_ANALYTICS, $storeId);
+    }
+
+    public function getAnalyticsDelay($storeId = null)
+    {
+        return (int) Mage::getStoreConfig(self::ANALYTICS_DELAY, $storeId);
+    }
+
+    public function getTriggerOnUIInteraction($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ANALYTICS_TRIGGER_ON_UI_INTERACTION, $storeId);
+    }
+
+    public function getPushInitialSearch($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ANALYTICS_PUSH_INITIAL_SEARCH, $storeId);
     }
 
     public function isEnabledSynonyms($storeId = null)

@@ -7,13 +7,15 @@ This extension replaces the default search of Magento with a typo-tolerant, fast
 
 See features and benefits of [Algolia Search Extension for Magento](https://community.algolia.com/magento).
 
-![Latest version](https://img.shields.io/badge/latest-1.8.0-green.svg)
+![Latest version](https://img.shields.io/badge/latest-1.8.1-green.svg)
+[![Build Status](https://travis-ci.org/algolia/algoliasearch-magento.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-magento)
+![PHP >= 5.3](https://img.shields.io/badge/php-%3E=5.3-green.svg)
+
 ![Magento 1.6.2](https://img.shields.io/badge/magento-1.6.2-blue.svg)
 ![Magento 1.7.1](https://img.shields.io/badge/magento-1.7.1-blue.svg)
 ![Magento 1.8.1](https://img.shields.io/badge/magento-1.8.1-blue.svg)
 ![Magento 1.9.2](https://img.shields.io/badge/magento-1.9.2-blue.svg)
 ![Magento 1.9.3](https://img.shields.io/badge/magento-1.9.3-blue.svg)
-![PHP >= 5.3](https://img.shields.io/badge/php-%3E=5.3-green.svg)
 
 Documentation
 --------------
@@ -71,6 +73,18 @@ You can execute a shell inside the container with the following command:
 
 ```sh
 $ docker exec -i -t algoliasearch-magento /bin/bash
+```
+
+#### Run the tests
+
+Just run the following script to create a Magento container and launch the tests directly:
+
+```sh
+$ ./dev/runTests.sh -a YourApplicationID \
+               -k YourAdminAPIKey \
+               -s YourSearchOnlyAPIKey \
+               -p YourIndexPrefix \
+               -b http://`docker ip`/
 ```
 
 ### 2. Modman

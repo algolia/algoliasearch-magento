@@ -358,10 +358,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         foreach ($collection as $suggestion) {
             $suggestion->setStoreId($storeId);
 
-            $suggestion_obj = $this->suggestion_helper->getObject($suggestion);
+            $suggestionObject = $this->suggestion_helper->getObject($suggestion);
 
-            if (strlen($suggestion_obj['query']) >= 3) {
-                array_push($indexData, $suggestion_obj);
+            if (strlen($suggestionObject['query']) >= 3) {
+                array_push($indexData, $suggestionObject);
             }
         }
 
@@ -407,10 +407,10 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $category->setStoreId($storeId);
 
-            $category_obj = $this->category_helper->getObject($category);
+            $categoryObject = $this->category_helper->getObject($category);
 
-            if ($category_obj['product_count'] > 0) {
-                array_push($indexData, $category_obj);
+            if ($categoryObject['product_count'] > 0) {
+                array_push($indexData, $categoryObject);
             }
         }
 
@@ -475,15 +475,15 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             if ($product->isDeleted() === true
                 || $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED
-                || (int) $product->getVisibility() <= Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE
+                || $this->product_helper->shouldIndexProductByItsVisibility($product, $storeId) === false
                 || ($product->getStockItem()->is_in_stock == 0 && !$this->config->getShowOutOfStock($storeId))
             ) {
                 $productsToRemove[$productId] = $productId;
                 continue;
             }
 
-            $json = $this->product_helper->getObject($product);
-            $productsToIndex[$productId] = $json;
+            $productObject = $this->product_helper->getObject($product);
+            $productsToIndex[$productId] = $productObject;
         }
 
         $productsToRemove = array_merge($productsToRemove, $potentiallyDeletedProductsIds);
@@ -554,26 +554,42 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->logger->log('Loaded '.count($collection).' products');
         $this->logger->stop('LOADING '.$this->logger->getStoreName($storeId).' collection page '.$page.', pageSize '.$pageSize);
 
-        $index_name = $this->product_helper->getIndexName($storeId, $useTmpIndex);
+        $indexName = $this->product_helper->getIndexName($storeId, $useTmpIndex);
 
         $indexData = $this->getProductsRecords($storeId, $collection, $productIds);
 
         if (!empty($indexData['toIndex'])) {
             $this->logger->start('ADD/UPDATE TO ALGOLIA');
 
-            $this->algolia_helper->addObjects($indexData['toIndex'], $index_name);
+            $this->algolia_helper->addObjects($indexData['toIndex'], $indexName);
 
             $this->logger->log('Product IDs: '.implode(', ', array_keys($indexData['toIndex'])));
             $this->logger->stop('ADD/UPDATE TO ALGOLIA');
         }
 
         if (!empty($indexData['toRemove'])) {
-            $this->logger->start('REMOVE FROM ALGOLIA');
+            $toRealRemove = array();
 
-            $this->algolia_helper->deleteObjects($indexData['toRemove'], $index_name);
+            if (count($indexData['toRemove']) === 1) {
+                $toRealRemove = $indexData['toRemove'];
+            } else {
+                $indexData['toRemove'] = array_map('strval', $indexData['toRemove']);
+                $objects = $this->algolia_helper->getObjects($indexName, $indexData['toRemove']);
+                foreach ($objects['results'] as $object) {
+                    if (isset($object['objectID'])) {
+                        $toRealRemove[] = $object['objectID'];
+                    }
+                }
+            }
 
-            $this->logger->log('Product IDs: '.implode(', ', $indexData['toRemove']));
-            $this->logger->stop('REMOVE FROM ALGOLIA');
+            if (!empty($toRealRemove)) {
+                $this->logger->start('REMOVE FROM ALGOLIA');
+
+                $this->algolia_helper->deleteObjects($toRealRemove, $indexName);
+                $this->logger->log('Product IDs: '.implode(', ', $toRealRemove));
+
+                $this->logger->stop('REMOVE FROM ALGOLIA');
+            }
         }
 
         unset($indexData);
