@@ -169,11 +169,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfigFlag(self::SHOW_OUT_OF_STOCK, $storeId);
     }
 
-    public function noProcess($storeId = null)
-    {
-        return Mage::getStoreConfigFlag(self::NO_PROCESS, $storeId);
-    }
-
     public function getImageWidth($storeId = null)
     {
         $imageWidth = Mage::getStoreConfig(self::XML_PATH_IMAGE_WIDTH, $storeId);
@@ -218,11 +213,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return array();
-    }
-
-    public function getNumberOfQuerySuggestions($storeId = null)
-    {
-        return Mage::getStoreConfig(self::NUMBER_QUERY_SUGGESTIONS, $storeId);
     }
 
     public function getMinPopularity($storeId = null)
