@@ -48,9 +48,13 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function removeCategories($storeId = null, $category_ids = null)
     {
-        $ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
+        $storeIds = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
 
-        foreach ($ids as $id) {
+        foreach ($storeIds as $storeId) {
+            if ($this->config->isEnabledAutomaticIndexing($storeId) === false) {
+                continue;
+            }
+
             if (is_array($category_ids) == false) {
                 $category_ids = array($category_ids);
             }
@@ -60,11 +64,11 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
             if (is_array($category_ids) && count($category_ids) > $by_page) {
                 foreach (array_chunk($category_ids, $by_page) as $chunk) {
                     $this->addToQueue('algoliasearch/observer', 'removeCategories',
-                        array('store_id' => $id, 'category_ids' => $chunk), count($chunk));
+                        array('store_id' => $storeId, 'category_ids' => $chunk), count($chunk));
                 }
             } else {
                 $this->addToQueue('algoliasearch/observer', 'removeCategories',
-                    array('store_id' => $id, 'category_ids' => $category_ids), count($category_ids));
+                    array('store_id' => $storeId, 'category_ids' => $category_ids), count($category_ids));
             }
 
             return $this;
@@ -75,9 +79,13 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function rebuildCategoryIndex($storeId = null, $categoryIds = null)
     {
-        $ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
+        $storeIds = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
 
-        foreach ($ids as $id) {
+        foreach ($storeIds as $storeId) {
+            if ($this->config->isEnabledAutomaticIndexing($storeId) === false) {
+                continue;
+            }
+
             $by_page = $this->config->getNumberOfElementByPage();
 
             if (is_array($categoryIds) && count($categoryIds) > $by_page) {
@@ -85,7 +93,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
                     $this->_rebuildCategoryIndex($storeId, $chunk);
                 }
             } else {
-                $this->_rebuildCategoryIndex($id, $categoryIds);
+                $this->_rebuildCategoryIndex($storeId, $categoryIds);
             }
         }
 
@@ -247,6 +255,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         $productIds = array_values(array_unique($productIds));
 
         foreach ($storeIds as $storeId) {
+            if ($this->config->isEnabledAutomaticIndexing($storeId) === false) {
+                continue;
+            }
+
             if (is_array($productIds) && count($productIds) > $by_page) {
                 foreach (array_chunk($productIds, $by_page) as $chunk) {
                     $this->_rebuildProductIndex($storeId, $chunk);
