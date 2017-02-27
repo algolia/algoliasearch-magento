@@ -82,22 +82,22 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
     {
         if (!empty($completeRemoveTags)) {
             $dom = new DOMDocument();
-            $dom->loadHTML($s);
+            if (@$dom->loadHTML($s)) {
+                $toRemove = array();
+                foreach ($completeRemoveTags as $tag) {
+                    $removeTags = $dom->getElementsByTagName($tag);
 
-            $toRemove = array();
-            foreach ($completeRemoveTags as $tag) {
-                $removeTags = $dom->getElementsByTagName($tag);
-
-                foreach ($removeTags as $item) {
-                    $toRemove[] = $item;
+                    foreach ($removeTags as $item) {
+                        $toRemove[] = $item;
+                    }
                 }
-            }
 
-            foreach ($toRemove as $item) {
-                $item->parentNode->removeChild($item);
-            }
+                foreach ($toRemove as $item) {
+                    $item->parentNode->removeChild($item);
+                }
 
-            $s = $dom->saveHTML();
+                $s = $dom->saveHTML();
+            }
         }
 
         $s = trim(preg_replace('/\s+/', ' ', $s));
