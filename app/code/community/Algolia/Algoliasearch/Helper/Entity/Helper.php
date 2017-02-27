@@ -264,7 +264,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
         if ($store_id == null) {
             /** @var Mage_Core_Model_Store $store */
             foreach (Mage::app()->getStores() as $store) {
-                if ($config->isEnabledBackend($store->getId()) === false) {
+                if ($config->isEnabledBackend($store->getId()) === false || $config->isEnabledIndexing($store->getId()) === false) {
                     continue;
                 }
 

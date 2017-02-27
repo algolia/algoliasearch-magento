@@ -96,7 +96,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     {
         /** @var Mage_Core_Model_Store $store */
         foreach (Mage::app()->getStores() as $store) {
-            if ($this->config->isEnabledBackend($store->getId()) === false) {
+            if ($this->config->isEnabledBackend($store->getId()) === false || $this->config->isEnabledIndexing($store->getId()) === false) {
                 if (php_sapi_name() === 'cli') {
                     echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
                 }
@@ -118,7 +118,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     {
         /** @var Mage_Core_Model_Store $store */
         foreach (Mage::app()->getStores() as $store) {
-            if ($this->config->isEnabledBackend($store->getId()) === false) {
+            if ($this->config->isEnabledBackend($store->getId()) === false || $this->config->isEnabledIndexing($store->getId()) === false) {
                 if (php_sapi_name() === 'cli') {
                     echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
                 }
@@ -141,7 +141,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     {
         /** @var Mage_Core_Model_Store $store */
         foreach (Mage::app()->getStores() as $store) {
-            if ($this->config->isEnabledBackend($store->getId()) === false) {
+            if ($this->config->isEnabledBackend($store->getId()) === false || $this->config->isEnabledIndexing($store->getId()) === false) {
                 if (php_sapi_name() === 'cli') {
                     echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
                 }
@@ -183,7 +183,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
                 continue;
             }
 
-            if ($this->config->isEnabledBackend($storeId) === false) {
+            if ($this->config->isEnabledBackend($storeId) === false || $this->config->isEnabledIndexing($storeId) === false) {
                 if (php_sapi_name() === 'cli') {
                     echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId)."\n";
                 }
@@ -215,7 +215,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     {
         /** @var Mage_Core_Model_Store $store */
         foreach (Mage::app()->getStores() as $store) {
-            if ($this->config->isEnabledBackend($store->getId()) === false) {
+            if ($this->config->isEnabledBackend($store->getId()) === false || $this->config->isEnabledIndexing($store->getId()) === false) {
                 if (php_sapi_name() === 'cli') {
                     echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
                 }
@@ -318,7 +318,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function prepareEntityIndex($index, $separator = ' ')
     {
-        if ($this->config->isEnabledBackend(Mage::app()->getStore()->getId()) === false) {
+        if ($this->config->isEnabledBackend(Mage::app()->getStore()->getId()) === false || $this->config->isEnabledIndexing(Mage::app()->getStore()->getId()) === false) {
             return parent::prepareEntityIndex($index, $separator);
         }
 

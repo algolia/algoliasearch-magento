@@ -31,7 +31,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
 
     protected function _saveProductIndexes($storeId, $productIndexes)
     {
-        if ($this->config->isEnabledBackend(Mage::app()->getStore()->getId()) === false) {
+        if ($this->config->isEnabledBackend(Mage::app()->getStore()->getId()) === false || $this->config->isEnabledIndexing(Mage::app()->getStore()->getId()) === false) {
             return parent::_saveProductIndexes($storeId, $productIndexes);
         }
 
@@ -43,7 +43,7 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
      */
     public function rebuildIndex($storeId = null, $productIds = null)
     {
-        if ($this->config->isEnabledBackend(Mage::app()->getStore()->getId()) === false) {
+        if ($this->config->isEnabledBackend(Mage::app()->getStore()->getId()) === false || $this->config->isEnabledIndexing(Mage::app()->getStore()->getId()) === false) {
             return parent::rebuildIndex($storeId, $productIds);
         }
 
