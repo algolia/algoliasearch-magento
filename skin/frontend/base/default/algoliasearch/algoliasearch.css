@@ -1212,3 +1212,9 @@ a.ais-current-refined-values--link:hover
 #algolia-right-container .infos.hidden {
 	display: none;
 }
+
+.algolia-clearfix:after {
+	content:"";
+	display:block;
+	clear:both;
+}

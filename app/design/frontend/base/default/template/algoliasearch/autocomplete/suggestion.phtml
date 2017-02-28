@@ -1,6 +1,6 @@
 <!-- Suggestion hit template -->
 <script type="text/template" id="autocomplete_suggestions_template">
-    <a class="algoliasearch-autocomplete-hit" href="{{url}}">
+    <a class="algoliasearch-autocomplete-hit algolia-clearfix" href="{{url}}">
         <svg xmlns="http://www.w3.org/2000/svg" class="algolia-glass-suggestion magnifying-glass" width="24" height="24" viewBox="0 0 128 128" >
             <g transform="scale(2.5)">
                 <path stroke-width="3" d="M19.5 19.582l9.438 9.438"></path>
@@ -15,6 +15,5 @@
                 <span class="text-muted"><?php echo $this->__('in'); ?></span> <span class="category-tag">{{category}}</span>
             {{/category}}
         </div>
-        <div class="clearfix"></div>
     </a>
 </script>
