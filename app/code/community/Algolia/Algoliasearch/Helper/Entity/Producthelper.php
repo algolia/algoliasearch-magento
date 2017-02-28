@@ -73,7 +73,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             foreach ($productAttributes as $attributeCode) {
                 self::$_productAttributes[$attributeCode] = $config->getAttribute('catalog_product', $attributeCode)
-                                                                   ->getFrontendLabel();
+                    ->getFrontendLabel();
             }
         }
 
@@ -235,6 +235,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $directoryCurrency = Mage::getModel('directory/currency');
         $currencies = $directoryCurrency->getConfigAllowCurrencies();
 
+        $store= Mage::getModel('core/store')->load($storeId);
+        $baseCurrencyCode = $store->getBaseCurrencyCode();
+
         foreach ($facets as $facet) {
             if ($facet['attribute'] === 'price') {
                 foreach ($currencies as $currency_code) {
@@ -323,7 +326,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         $suffix_index_name = 'group_'.$group_id;
 
-                        $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'].'.'.$currencies[0].'.'.$suffix_index_name : $values['attribute'];
+                        $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'].'.'.$baseCurrencyCode.'.'.$suffix_index_name : $values['attribute'];
 
                         $mergeSettings['ranking'] = array(
                             $values['sort'].'('.$sort_attribute.')',
@@ -491,14 +494,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         if ($discounted_price !== false) {
                             $customData[$field][$currency_code]['group_'.$group_id] = (double) $taxHelper->getPrice($product,
-                                                                                                      $discounted_price,
-                                                                                                      $with_tax, null,
-                                                                                                      null, null,
-                                                                                                      $product->getStore(),
-                                                                                                      null);
+                                $discounted_price,
+                                $with_tax, null,
+                                null, null,
+                                $product->getStore(),
+                                null);
                             $customData[$field][$currency_code]['group_'.$group_id] = $directoryHelper->currencyConvert($customData[$field][$currency_code]['group_'.$group_id],
-                                                                                              $baseCurrencyCode,
-                                                                                              $currency_code);
+                                $baseCurrencyCode,
+                                $currency_code);
                             $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $store->formatPrice($customData[$field][$currency_code]['group_'.$group_id],
                                 false, $currency_code);
                         } else {
@@ -551,7 +554,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         if (count($sub_products) > 0) {
                             foreach ($sub_products as $sub_product) {
                                 $price = (double) $taxHelper->getPrice($product, $sub_product->getFinalPrice(), $with_tax,
-                                                         null, null, null, $product->getStore(), null);
+                                    null, null, null, $product->getStore(), null);
 
                                 $min = min($min, $price);
                                 $max = max($max, $price);
@@ -674,8 +677,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if (is_array($_categoryIds) && count($_categoryIds) > 0) {
             $categoryCollection = Mage::getResourceModel('catalog/category_collection')->addAttributeToSelect('name')
-                                      ->addAttributeToFilter('entity_id', $_categoryIds)
-                                      ->addFieldToFilter('level', array('gt' => 1))->addIsActiveFilter();
+                ->addAttributeToFilter('entity_id', $_categoryIds)
+                ->addFieldToFilter('level', array('gt' => 1))->addIsActiveFilter();
 
             if ($this->config->showCatsNotIncludedInNavigation($product->getStoreId()) == false) {
                 $categoryCollection->addAttributeToFilter('include_in_menu', '1');
@@ -791,7 +794,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         if (false === isset($defaultData['image_url'])) {
             /** @var Algolia_Algoliasearch_Helper_Image $image */
             $image = $imageHelper->init($product, $this->config->getImageType())
-                         ->resize($this->config->getImageWidth(), $this->config->getImageHeight());
+                ->resize($this->config->getImageWidth(), $this->config->getImageHeight());
 
             try {
                 $customData['image_url'] = $image->toString();
@@ -823,7 +826,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $ids = array();
 
                 $selection = $product->getTypeInstance(true)->getSelectionsCollection($product->getTypeInstance(true)
-                                                                                              ->getOptionsIds($product),
+                    ->getOptionsIds($product),
                     $product);
 
                 foreach ($selection as $option) {
@@ -942,7 +945,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         $msrpEnabled = method_exists(Mage::helper('catalog'), 'canApplyMsrp') ? (bool) Mage::helper('catalog')
-                                                                                          ->canApplyMsrp($product) : false;
+            ->canApplyMsrp($product) : false;
 
         if (false === $msrpEnabled) {
             $this->handlePrice($product, $sub_products, $customData);
