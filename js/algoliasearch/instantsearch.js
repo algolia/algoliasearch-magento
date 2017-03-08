@@ -456,8 +456,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			
 			search.start();
 			
-			if (algoliaConfig.request.path.length > 0) {
-				search.helper.toggleRefine('categories.level0', algoliaConfig.request.path).search();
+			if (algoliaConfig.request.path.length > 0 && 'categories.level0' in search.helper.state.hierarchicalFacetsRefinements === false) {
+				search.helper.toggleRefinement('categories.level0', algoliaConfig.request.path).search();
 			}
 			
 			if (typeof algoliaHookAfterInstantsearchStart == 'function') {
