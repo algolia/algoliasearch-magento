@@ -228,6 +228,12 @@ $algoliaJsConfig = array(
     'currencySymbol' => $currencySymbol,
     'maxValuesPerFacet' => (int) $config->getMaxValuesPerFacet(),
     'autofocus' => true,
+    'analytics' => array(
+        'enabled' => $config->isEnabledAnalytics(),
+        'delay' => $config->getAnalyticsDelay(),
+        'triggerOnUIInteraction' => $config->getTriggerOnUIInteraction(),
+        'pushInitialSearch' => $config->getPushInitialSearch(),
+    ),
     'request' => array(
         'query' => html_entity_decode($query),
         'refinementKey' => $refinementKey,
@@ -267,6 +273,10 @@ $algoliaJsConfig = array(
         'searchBy' => $this->__('Search by'),
     ),
 );
+
+$transport = new Varien_Object($algoliaJsConfig);
+Mage::dispatchEvent('algolia_after_create_configuration', array('configuration' => $transport));
+$algoliaJsConfig = $transport->getData();
 
 ?>
 

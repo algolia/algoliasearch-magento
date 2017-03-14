@@ -84,4 +84,44 @@ class PagesIndexingTest extends AbstractIndexingTestCase
         $extraAttributes = implode(', ', array_keys($hit));
         $this->assertTrue(empty($hit), 'Extra pages attributes ('.$extraAttributes.') are indexed and should not be.');
     }
+
+    public function testStripTags()
+    {
+        $testPageData = array(
+            'title' => 'Test CMS Page Title',
+            'root_template' => 'one_column',
+            'meta_keywords' => 'meta,keywords',
+            'meta_description' => '',
+            'identifier' => 'this-is-the-page-url-'.rand(0,99999999),
+            'content_heading' => 'content heading',
+            'stores' => array(0), //available for all store views
+            'content' => 'Hello Im a test CMS page with script tags and style tags. <script>alert("Foo");</script> <style>.bar { font-weight: bold; }</style>',
+        );
+
+        /** @var Mage_Cms_Model_Page $model */
+        $model = Mage::getModel('cms/page');
+        $model->setData($testPageData);
+
+        /** @var Mage_Cms_Model_Page $page */
+        $testPage = $model->save();
+        $testPageId = $testPage->getId();
+
+        /** @var Algolia_Algoliasearch_Helper_Entity_Pagehelper $pagesHelper */
+        $pagesHelper = Mage::helper('algoliasearch/entity_pagehelper');
+
+        $pages = $pagesHelper->getPages(1);
+        foreach ($pages as $page) {
+            if ($page['objectID'] == $testPageId) {
+                $content = $page['content'];
+
+                $this->assertNotContains('<script>', $content);
+                $this->assertNotContains('alert("Foo");', $content);
+
+                $this->assertNotContains('<style>', $content);
+                $this->assertNotContains('.bar { font-weight: bold; }', $content);
+            }
+        }
+
+        $testPage->delete();
+    }
 }
