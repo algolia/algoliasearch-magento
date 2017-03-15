@@ -436,7 +436,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $productsToRemove = array();
 
         // In $potentiallyDeletedProductsIds there might be IDs of deleted products which will not be in a collection
-        if (is_array($potentiallyDeletedProductsIds)) {
+        if (is_array($potentiallyDeletedProductsIds) && !empty($potentiallyDeletedProductsIds)) {
             $potentiallyDeletedProductsIds = array_combine($potentiallyDeletedProductsIds, $potentiallyDeletedProductsIds);
         } else {
             $potentiallyDeletedProductsIds = array();
