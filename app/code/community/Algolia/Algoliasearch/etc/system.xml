@@ -463,6 +463,16 @@
                             <show_in_store>1</show_in_store>
                             <comment>Choose here if you want to add an "add to cart" button in the template.</comment>
                         </add_to_cart_enable>
+                        <infinite_scroll_enable translate="label comment">
+                            <label>Enable Infinite Scroll</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>This will display a show more button to load more results instead of traditional pagination.</comment>
+                        </infinite_scroll_enable>
                     </fields>
                 </instant>
                 <products translate="label">

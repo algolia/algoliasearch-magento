@@ -21,6 +21,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const MAX_VALUES_PER_FACET = 'algoliasearch/instant/max_values_per_facet';
     const SORTING_INDICES = 'algoliasearch/instant/sorts';
     const XML_ADD_TO_CART_ENABLE = 'algoliasearch/instant/add_to_cart_enable';
+    const INFINITE_SCROLL_ENABLE = 'algoliasearch/instant/infinite_scroll_enable';
 
     const NB_OF_PRODUCTS_SUGGESTIONS = 'algoliasearch/autocomplete/nb_of_products_suggestions';
     const NB_OF_CATEGORIES_SUGGESTIONS = 'algoliasearch/autocomplete/nb_of_categories_suggestions';
@@ -238,6 +239,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function isAddToCartEnable($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::XML_ADD_TO_CART_ENABLE, $storeId);
+    }
+
+    public function isInfiniteScrollEnabled($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::INFINITE_SCROLL_ENABLE, $storeId);
     }
 
     public function isRemoveBranding($storeId = null)
