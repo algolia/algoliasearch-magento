@@ -7,8 +7,6 @@ include __DIR__.'/../../../app/Mage.php';
 
 Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
 
-setConfig('dev/log/active', '1');
-
 // Set Magento's base URLs
 setConfig('web/secure/base_url', getenv('BASE_URL'));
 setConfig('web/unsecure/base_url', getenv('BASE_URL'));
@@ -29,9 +27,17 @@ function resetConfigs($configs = array())
 
     $xml = simplexml_load_file($configXmlFile);
 
+    $credentialsShortcuts = array(
+        'credentials/application_id', 'credentials/api_key', 'credentials/search_only_api_key', 'credentials/index_prefix'
+    );
+
     foreach ($xml->default->algoliasearch->children() as $section => $subsections) {
         foreach ($subsections as $subsectionName => $subsection) {
             $shortcut = $section.'/'.$subsectionName;
+
+            if (in_array($shortcut, $credentialsShortcuts)) {
+                continue;
+            }
 
             if (!empty($configs) && !in_array($shortcut, $configs, true)) {
                 continue;

@@ -2,19 +2,17 @@
 
 class ProductsIndexingTest extends AbstractIndexingTestCase
 {
+    const DEFAULT_PRODUCT_COUNT = 86;
+
     public function testProductsAllVisible()
     {
-        setConfig('algoliasearch/products/index_visibility', 'all');
-        setConfig('cataloginventory/options/show_out_of_stock', '0');
-
         $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
-        $this->processTest($productIndexer, 'products', 86);
+        $this->processTest($productIndexer, 'products', self::DEFAULT_PRODUCT_COUNT);
     }
 
     public function testProductsOnlySearchVisible()
     {
         setConfig('algoliasearch/products/index_visibility', 'only_search');
-        setConfig('cataloginventory/options/show_out_of_stock', '0');
 
         $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
         $this->processTest($productIndexer, 'products', 85);
@@ -23,24 +21,19 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
     public function testProductsOnlyCatalogVisible()
     {
         setConfig('algoliasearch/products/index_visibility', 'only_catalog');
-        setConfig('cataloginventory/options/show_out_of_stock', '0');
 
         $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
-        $this->processTest($productIndexer, 'products', 86);
+        $this->processTest($productIndexer, 'products', self::DEFAULT_PRODUCT_COUNT);
     }
 
     public function testProductsOnInStock()
     {
-        setConfig('algoliasearch/products/index_visibility', 'all');
-        setConfig('cataloginventory/options/show_out_of_stock', '0');
-
         $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
-        $this->processTest($productIndexer, 'products', 86);
+        $this->processTest($productIndexer, 'products', self::DEFAULT_PRODUCT_COUNT);
     }
 
     public function testProductsIncludingOutOfStock()
     {
-        setConfig('algoliasearch/products/index_visibility', 'all');
         setConfig('cataloginventory/options/show_out_of_stock', '1');
 
         $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
@@ -49,10 +42,6 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
 
     public function testDefaultIndexableAttributes()
     {
-        /** @var Algolia_Algoliasearch_Helper_Config $config */
-        $config = Mage::helper('algoliasearch/config');
-        $indexPrefix = $config->getIndexPrefix();
-
         setConfig('algoliasearch/products/product_additional_attributes', serialize(array()));
         setConfig('algoliasearch/instant/facets', serialize(array()));
         setConfig('algoliasearch/instant/sorts', serialize(array()));
@@ -63,7 +52,7 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
 
         $this->algoliaHelper->waitLastTask();
 
-        $results = $this->algoliaHelper->query($indexPrefix.'default_products', '', array('hitsPerPage' => 1));
+        $results = $this->algoliaHelper->query($this->indexPrefix.'default_products', '', array('hitsPerPage' => 1));
         $hit = reset($results['hits']);
 
         $defaultAttributes = array(
@@ -94,9 +83,6 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
 
     public function testIfIndexingCanBeEnabledAndDisabled()
     {
-        // Turn off logging to avoid messages between PHPUnit dots
-        setConfig('algoliasearch/credentials/debug', '0');
-
         setConfig('algoliasearch/credentials/enable_backend', '0');
 
         $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
@@ -105,17 +91,15 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
         setConfig('algoliasearch/credentials/enable_backend', '1');
 
         $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
-        $this->processTest($productIndexer, 'products', 86);
+        $this->processTest($productIndexer, 'products', self::DEFAULT_PRODUCT_COUNT);
     }
 
     public function testProductAreSearchableIfIndexingIsDisabled()
     {
-        // Turn off logging to avoid messages between PHPUnit dots
-        setConfig('algoliasearch/credentials/debug', '0');
-
         setConfig('algoliasearch/credentials/enable_backend', '0');
-        $this->processQueryOneProduct();
 
-        setConfig('algoliasearch/credentials/debug', '1');
+        $resultsDefault = $this->algoliaHelper->query($this->indexPrefix.'default_products', 'lemon flower', array());
+
+        $this->assertEquals(1, $resultsDefault['nbHits']);
     }
 }
