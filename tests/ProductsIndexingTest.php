@@ -2,7 +2,7 @@
 
 class ProductsIndexingTest extends AbstractIndexingTestCase
 {
-    public function testProductsAllVisibile()
+    public function testProductsAllVisible()
     {
         setConfig('algoliasearch/products/index_visibility', 'all');
         setConfig('cataloginventory/options/show_out_of_stock', '0');
@@ -11,7 +11,7 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
         $this->processTest($productIndexer, 'products', 86);
     }
 
-    public function testProductsOnlySearchVisibile()
+    public function testProductsOnlySearchVisible()
     {
         setConfig('algoliasearch/products/index_visibility', 'only_search');
         setConfig('cataloginventory/options/show_out_of_stock', '0');
@@ -20,7 +20,7 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
         $this->processTest($productIndexer, 'products', 85);
     }
 
-    public function testProductsOnlyCatalogVisibile()
+    public function testProductsOnlyCatalogVisible()
     {
         setConfig('algoliasearch/products/index_visibility', 'only_catalog');
         setConfig('cataloginventory/options/show_out_of_stock', '0');

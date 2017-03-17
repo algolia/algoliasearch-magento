@@ -49,7 +49,7 @@ class ConfigTest extends TestCase
         $this->assertEquals(count($facets), $attributesMatched);
     }
 
-    public function testAutomaticalSetOfCategoriesFacet()
+    public function testAutomaticSetOfCategoriesFacet()
     {
         // Remove categories from facets
         $facets = $this->config->getFacets();
