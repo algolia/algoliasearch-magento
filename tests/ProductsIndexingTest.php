@@ -91,4 +91,20 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
         $extraAttributes = implode(', ', array_keys($hit));
         $this->assertTrue(empty($hit), 'Extra products attributes ('.$extraAttributes.') are indexed and should not be.');
     }
+
+    public function testIfIndexingCanBeEnabledAndDisabled()
+    {
+        // Turn off logging to avoid messages between PHPUnit dots
+        setConfig('algoliasearch/credentials/debug', '0');
+
+        setConfig('algoliasearch/credentials/enable_backend', '0');
+
+        $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
+        $this->processTest($productIndexer, 'products', 0);
+
+        setConfig('algoliasearch/credentials/enable_backend', '1');
+
+        $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
+        $this->processTest($productIndexer, 'products', 86);
+    }
 }
