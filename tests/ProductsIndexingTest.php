@@ -107,4 +107,15 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
         $productIndexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
         $this->processTest($productIndexer, 'products', 86);
     }
+
+    public function testProductAreSearchableIfIndexingIsDisabled()
+    {
+        // Turn off logging to avoid messages between PHPUnit dots
+        setConfig('algoliasearch/credentials/debug', '0');
+
+        setConfig('algoliasearch/credentials/enable_backend', '0');
+        $this->processQueryOneProduct();
+
+        setConfig('algoliasearch/credentials/debug', '1');
+    }
 }
