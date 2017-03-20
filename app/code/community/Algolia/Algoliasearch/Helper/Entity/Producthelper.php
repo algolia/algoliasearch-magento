@@ -264,6 +264,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $attributesForFaceting[] = 'categories';
         }
 
+        if ($this->config->isPersonalizationEnabled($storeId)) {
+            $attributesForFaceting[] = 'onlyFilter(personalization_user_id)';
+        }
+
         $indexSettings = array(
             'searchableAttributes'    => array_values(array_unique($searchableAttributes)),
             'customRanking'           => $customRankingAttributes,
@@ -634,7 +638,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     public function getObject(Mage_Catalog_Model_Product $product)
     {
         $type = $this->config->getMappedProductType($product->getTypeId());
-        $this->logger->start('CREATE RECORD '.$product->getId().' '.$this->logger->getStoreName($product->storeId));
+        $this->logger->start('CREATE RECORD '.$product->getId().' '.$this->logger->getStoreName($product->getStoreId()));
         $this->logger->log('Product type ('.$product->getTypeId().', mapped to: '.$type.')');
 
         $defaultData = array();

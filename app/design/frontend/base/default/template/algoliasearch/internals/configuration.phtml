@@ -30,9 +30,10 @@ $storeId = $store->getId();
 $currencyCode = $store->getCurrentCurrencyCode();
 $currencySymbol = $app->getLocale()->currency($currencyCode)->getSymbol();
 
-/** @var Mage_Customer_Model_Session $session */
-$session = Mage::getSingleton('customer/session');
-$customerGroupId = $session->getCustomerGroupId();
+/** @var Mage_Customer_Model_Session $customer */
+$customer = Mage::getSingleton('customer/session');
+$customerId = $customer->getCustomerId();
+$customerGroupId = $customer->getCustomerGroupId();
 
 $priceKey = $config->isCustomerGroupsEnabled($storeId) ? '.'.$currencyCode.'.group_'.$customerGroupId : '.'.$currencyCode.'.default';
 
@@ -144,6 +145,11 @@ if ($config->isInstantEnabled()) {
     }
 }
 
+$optionalFilters = false;
+if ($config->isPersonalizationEnabled($storeId) && $customerId) {
+    $optionalFilters = 'personalization_user_id:'.$customerId;
+}
+
 // Hide the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS.
 if ($config->isInstantEnabled() && $isSearchPage) {
     echo '
@@ -177,6 +183,10 @@ if ($isCategoryPage) {
     $instantsearchApiKeyParams['numericFilters'] = 'visibility_catalog=1';
 }
 
+if ($optionalFilters) {
+    $instantsearchApiKeyParams['optionalFilters'] = $optionalFilters;
+}
+
 $instantsearchApiKey = $algoliaHelper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $instantsearchApiKeyParams);
 
 /**
@@ -187,6 +197,10 @@ $instantsearchApiKey = $algoliaHelper->generateSearchSecuredApiKey($config->getS
  * Beware: Those filters are applied to all your autocomplete queries (products, categories, pages, ...)!
  */
 $autocompleteApiKeyParams['filters'] = '';
+
+if ($optionalFilters) {
+    $autocompleteApiKeyParams['optionalFilters'] = $optionalFilters;
+}
 
 $autocompleteApiKey = $algoliaHelper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $autocompleteApiKeyParams);
 

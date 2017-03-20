@@ -217,6 +217,14 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->lastTaskId = $res['taskID'];
     }
 
+    public function batch($indexName, $data)
+    {
+        $res = $this->getIndex($indexName)->batch($data);
+
+        $this->lastUsedIndexName = $indexName;
+        $this->lastTaskId = $res['taskID'];
+    }
+
     public function waitLastTask()
     {
         if (!isset($this->lastUsedIndexName) || !isset($this->lastTaskId)) {

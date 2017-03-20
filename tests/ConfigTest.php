@@ -22,6 +22,8 @@ class ConfigTest extends TestCase
         $this->observer = Mage::getSingleton('algoliasearch/observer');
         $this->algoliaHelper = Mage::helper('algoliasearch/algoliahelper');
         $this->indexPrefix = $this->config->getIndexPrefix();
+
+        setConfig('algoliasearch/personalization/enable_personalization', '0');
     }
 
     public function testFacets()
