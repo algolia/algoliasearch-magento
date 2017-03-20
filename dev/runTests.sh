@@ -7,6 +7,7 @@ SEARCH_ONLY_API_KEY=
 INDEX_PREFIX=magento_
 BASE_URL=http://mymagentostore.com/
 MAGENTO_VERSION=19
+INSTALL_XDEBUG=No
 
 cd `dirname "$0"`
 
@@ -22,6 +23,7 @@ usage() {
   echo "   -b | --base-url                     The base URL (default: http://mymagentostore.com/)" >&2
   echo "   -h | --help                         Print this help" >&2
   echo "   -v | --magento-version              Magento version [16, 17, 18, 19] (default: 19)" >&2
+  echo "   -x | --xdebug                       Install xdebug in container (for code coverage)" >&2
 }
 
 while [[ $# > 0 ]]; do
@@ -55,6 +57,10 @@ while [[ $# > 0 ]]; do
       ;;
     -v|--magneto-version)
       MAGENTO_VERSION="$2"
+      shift
+      ;;
+    -x|--xdebug)
+      INSTALL_XDEBUG="Yes"
       shift
       ;;
     -h|--help)
@@ -109,7 +115,7 @@ case "$MAGENTO_VERSION" in
 esac
 
 docker build --build-arg MAGENTO_VERSION=$MAGENTO_VERSION -t algolia/base-algoliasearch-magento -f Dockerfile.base . || exit 1
-docker build -t algolia/test-algoliasearch-magento -f Dockerfile.test . || exit 1
+docker build --build-arg INSTALL_XDEBUG=$INSTALL_XDEBUG  -t algolia/test-algoliasearch-magento -f Dockerfile.test . || exit 1
 
 echo "=============================================================="
 echo "||        DOCKER TESTS IMAGE SUCCESSFULLY REBUILT           ||"
@@ -125,6 +131,7 @@ echo " SEARCH_ONLY_API_KEY: $SEARCH_ONLY_API_KEY"
 echo "        INDEX_PREFIX: $INDEX_PREFIX"
 echo "            BASE_URL: $BASE_URL"
 echo "     MAGENTO VERSION: $MAGENTO_VERSION"
+echo "      INSTALL XDEBUG: $INSTALL_XDEBUG"
 echo ""
 
 docker run \
