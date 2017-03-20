@@ -151,8 +151,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function isEnabledFrontEnd($storeId = null)
     {
         // Frontend = Backend + Frontent
-        return Mage::getStoreConfigFlag(self::ENABLE_BACKEND,
-            $storeId) && Mage::getStoreConfigFlag(self::ENABLE_FRONTEND, $storeId);
+        return Mage::getStoreConfigFlag(self::ENABLE_FRONTEND, $storeId);
     }
 
     public function isEnabledBackend($storeId = null)
