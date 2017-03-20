@@ -17,4 +17,4 @@ install:
   - composer install --no-scripts
 
 script:
-  - dev/runTests.sh -a $ALGOLIA_APPLICATION_ID -k $ALGOLIA_API_KEY -s $ALGOLIA_SEARCH_API_KEY -b http://magento.local -p magento1_tests_ -v 193
+  - dev/runTests.sh -a $ALGOLIA_APPLICATION_ID -k $ALGOLIA_API_KEY -s $ALGOLIA_SEARCH_API_KEY -b http://magento.local -p magento1_tests_ -v 193 --xdebug

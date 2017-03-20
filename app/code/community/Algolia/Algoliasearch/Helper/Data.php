@@ -438,7 +438,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $productsToRemove = array();
 
         // In $potentiallyDeletedProductsIds there might be IDs of deleted products which will not be in a collection
-        if (is_array($potentiallyDeletedProductsIds)) {
+        if (is_array($potentiallyDeletedProductsIds) && !empty($potentiallyDeletedProductsIds)) {
             $potentiallyDeletedProductsIds = array_combine($potentiallyDeletedProductsIds, $potentiallyDeletedProductsIds);
         } else {
             $potentiallyDeletedProductsIds = array();
@@ -543,26 +543,42 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->logger->log('Loaded '.count($collection).' products');
         $this->logger->stop('LOADING '.$this->logger->getStoreName($storeId).' collection page '.$page.', pageSize '.$pageSize);
 
-        $index_name = $this->product_helper->getIndexName($storeId, $useTmpIndex);
+        $indexName = $this->product_helper->getIndexName($storeId, $useTmpIndex);
 
         $indexData = $this->getProductsRecords($storeId, $collection, $productIds);
 
         if (!empty($indexData['toIndex'])) {
             $this->logger->start('ADD/UPDATE TO ALGOLIA');
 
-            $this->algolia_helper->addObjects($indexData['toIndex'], $index_name);
+            $this->algolia_helper->addObjects($indexData['toIndex'], $indexName);
 
             $this->logger->log('Product IDs: '.implode(', ', array_keys($indexData['toIndex'])));
             $this->logger->stop('ADD/UPDATE TO ALGOLIA');
         }
 
         if (!empty($indexData['toRemove'])) {
-            $this->logger->start('REMOVE FROM ALGOLIA');
+            $toRealRemove = array();
 
-            $this->algolia_helper->deleteObjects($indexData['toRemove'], $index_name);
+            if (count($indexData['toRemove']) === 1) {
+                $toRealRemove = $indexData['toRemove'];
+            } else {
+                $indexData['toRemove'] = array_map('strval', $indexData['toRemove']);
+                $objects = $this->algolia_helper->getObjects($indexName, $indexData['toRemove']);
+                foreach ($objects['results'] as $object) {
+                    if (isset($object['objectID'])) {
+                        $toRealRemove[] = $object['objectID'];
+                    }
+                }
+            }
 
-            $this->logger->log('Product IDs: '.implode(', ', $indexData['toRemove']));
-            $this->logger->stop('REMOVE FROM ALGOLIA');
+            if (!empty($toRealRemove)) {
+                $this->logger->start('REMOVE FROM ALGOLIA');
+
+                $this->algolia_helper->deleteObjects($toRealRemove, $indexName);
+                $this->logger->log('Product IDs: '.implode(', ', $toRealRemove));
+
+                $this->logger->stop('REMOVE FROM ALGOLIA');
+            }
         }
 
         unset($indexData);
@@ -598,6 +614,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, false);
         Mage::app()->getStore($storeId)
             ->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, false);
+
+        // Init translator so it's available in custom events
+        Mage::app()->getTranslator()->init('frontend', true);
 
         $this->logger->stop('START EMULATION');
 

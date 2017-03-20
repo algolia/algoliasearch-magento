@@ -274,6 +274,10 @@ $algoliaJsConfig = array(
     ),
 );
 
+$transport = new Varien_Object($algoliaJsConfig);
+Mage::dispatchEvent('algolia_after_create_configuration', array('configuration' => $transport));
+$algoliaJsConfig = $transport->getData();
+
 ?>
 
 <script>
