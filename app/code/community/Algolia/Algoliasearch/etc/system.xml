@@ -694,7 +694,7 @@
                     <show_in_store>1</show_in_store>
                     <comment>
                         <![CDATA[
-                        Documentation of Magento analytics: [[ FIXME - add link to docs ]]
+                        Documentation of Magento analytics: <a href="https://community.algolia.com/magento/doc/m1/analytics/" target="_blank">https://community.algolia.com/magento/doc/m1/analytics/</a>
                         <br>
                         <hr>
                         <br>
@@ -711,7 +711,7 @@
                             <show_in_store>1</show_in_store>
                         </enable_analytics>
                         <delay translate="label comment">
-                            <label>Delay (in ms) before triggering the push function after the search</label>
+                            <label>Delay (in milliseconds)</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
                             <sort_order>10</sort_order>
@@ -720,13 +720,14 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
+                                    <p>When the search bar is used, each keystroke triggers a search in Algolia. It’s really good for an instantsearch and as-you-type search UX, but it’s not that good for analytics as it generates a lot of data and brings a lot of noise to the analytics. The delay variable defines how long the widget should wait between keystrokes before pushing data to analytics - only the last search will be pushed.</p>
                                     <p>Default value: 3000</p>
                                 ]]>
                             </comment>
                             <depends><enable_analytics>1</enable_analytics></depends>
                         </delay>
                         <trigger_on_ui_interaction translate="label comment">
-                            <label>Trigger push function before the delay on UI interaction</label>
+                            <label>Trigger the push function before the the delay on UI interaction</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>20</sort_order>
@@ -735,13 +736,14 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
+                                    <p>If the user selects a search result even before the push was trigger (because of the delay variable), the push to analytics might never be called. With this parameter you can trigger a data push to analytics if the user interacts with the search results during the delay.</p>
                                     <p>Default value: Yes</p>
                                 ]]>
                             </comment>
                             <depends><enable_analytics>1</enable_analytics></depends>
                         </trigger_on_ui_interaction>
                         <push_initial_search translate="label comment">
-                            <label>Trigger push function after the initial search</label>
+                            <label>Trigger the push function after the initial search</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>30</sort_order>
@@ -750,6 +752,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
+                                    <p>Sometimes your customers come directly to the search page from a link, so a search is triggered automatically without any action from the user. At the same time, the load of the page triggers standard Google Analytics code to track the page view. By this parameter you can specify if you want to trigger a data push on this kind of search scenario.</p>
                                     <p>Default value: No</p>
                                 ]]>
                             </comment>
