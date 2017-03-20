@@ -612,7 +612,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, false);
         Mage::app()->getStore($storeId)
             ->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, false);
-        
+
+        // Init translator so it's available in custom events
         Mage::app()->getTranslator()->init('frontend', true);
 
         $this->logger->stop('START EMULATION');
