@@ -24,13 +24,8 @@ class PagesIndexingTest extends AbstractIndexingTestCase
         $indexer = new Algolia_Algoliasearch_Model_Indexer_Algoliapages();
         $this->processTest($indexer, 'pages', 8, 7, 7);
 
-
-        /** @var Algolia_Algoliasearch_Helper_Config $config */
-        $config = Mage::helper('algoliasearch/config');
-        $indexPrefix = $config->getIndexPrefix();
-
         foreach (array('default', 'french', 'german') as $store) {
-            $results = $this->algoliaHelper->query($indexPrefix.$store.'_pages', '', array());
+            $results = $this->algoliaHelper->query($this->indexPrefix.$store.'_pages', '', array());
 
             $noRoutePageExists = false;
             $homePageExists = false;
@@ -53,16 +48,12 @@ class PagesIndexingTest extends AbstractIndexingTestCase
 
     public function testDefaultIndexableAttributes()
     {
-        /** @var Algolia_Algoliasearch_Helper_Config $config */
-        $config = Mage::helper('algoliasearch/config');
-        $indexPrefix = $config->getIndexPrefix();
-
         $indexer = new Algolia_Algoliasearch_Model_Indexer_Algoliapages();
         $indexer->reindexAll();
 
         $this->algoliaHelper->waitLastTask();
 
-        $results = $this->algoliaHelper->query($indexPrefix.'default_pages', '', array('hitsPerPage' => 1));
+        $results = $this->algoliaHelper->query($this->indexPrefix.'default_pages', '', array('hitsPerPage' => 1));
         $hit = reset($results['hits']);
 
         $defaultAttributes = array(

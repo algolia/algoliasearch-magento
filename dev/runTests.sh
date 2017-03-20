@@ -24,6 +24,7 @@ usage() {
   echo "   -h | --help                         Print this help" >&2
   echo "   -v | --magento-version              Magento version [16, 17, 18, 19] (default: 19)" >&2
   echo "   -x | --xdebug                       Install xdebug in container (for code coverage)" >&2
+  echo "   -f | --filter                       PHPUnit filter to use" >&2
 }
 
 while [[ $# > 0 ]]; do
@@ -61,6 +62,10 @@ while [[ $# > 0 ]]; do
       ;;
     -x|--xdebug)
       INSTALL_XDEBUG="Yes"
+      shift
+      ;;
+    -f|--filter)
+      FILTER="$2"
       shift
       ;;
     -h|--help)
@@ -132,6 +137,9 @@ echo "        INDEX_PREFIX: $INDEX_PREFIX"
 echo "            BASE_URL: $BASE_URL"
 echo "     MAGENTO VERSION: $MAGENTO_VERSION"
 echo "      INSTALL XDEBUG: $INSTALL_XDEBUG"
+if [ $FILTER ]; then
+    echo "              FILTER: $FILTER"
+fi
 echo ""
 
 docker run \
@@ -142,6 +150,7 @@ docker run \
   -e INDEX_PREFIX=$INDEX_PREFIX \
   -e BASE_URL=$BASE_URL \
   -e TRAVIS=$TRAVIS \
+  -e FILTER=$FILTER \
   --dns=208.67.222.222 \
   --name test-algoliasearch-magento \
   -t algolia/test-algoliasearch-magento

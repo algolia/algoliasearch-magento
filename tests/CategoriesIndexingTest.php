@@ -10,10 +10,6 @@ class CategoriesIndexingTest extends AbstractIndexingTestCase
 
     public function testDefaultIndexableAttributes()
     {
-        /** @var Algolia_Algoliasearch_Helper_Config $config */
-        $config = Mage::helper('algoliasearch/config');
-        $indexPrefix = $config->getIndexPrefix();
-
         setConfig('algoliasearch/categories/category_additional_attributes2', serialize(array()));
 
         $indexer = new Algolia_Algoliasearch_Model_Indexer_Algoliacategories();
@@ -21,7 +17,7 @@ class CategoriesIndexingTest extends AbstractIndexingTestCase
 
         $this->algoliaHelper->waitLastTask();
 
-        $results = $this->algoliaHelper->query($indexPrefix.'default_categories', '', array('hitsPerPage' => 1));
+        $results = $this->algoliaHelper->query($this->indexPrefix.'default_categories', '', array('hitsPerPage' => 1));
         $hit = reset($results['hits']);
 
         $defaultAttributes = array(

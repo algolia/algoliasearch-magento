@@ -5,7 +5,7 @@ echo -e "\e[93m-- Starting Apache and MySQL services --\e[0m"
 service mysql start
 service apache2 start
 
-if [ $TRAVIS == true ]; then
+if [ "$TRAVIS" == true ]; then
   echo -e "\n\e[93m-- Setting the correct rights to Magento files --\e[0m"
   chmod -R 777 /var/www/htdocs
   chown -R www-data:www-data /var/www/htdocs
@@ -34,4 +34,9 @@ chown -R www-data:www-data /var/www/htdocs/media
 # Run tests
 echo -e "\n\e[93m-- Running the tests --\e[0m"
 cd /var/www/htdocs/.modman/algoliasearch-magento
-vendor/bin/phpunit tests
+
+if [ $FILTER ]; then
+    vendor/bin/phpunit tests --filter "$FILTER"
+else
+    vendor/bin/phpunit tests
+fi
