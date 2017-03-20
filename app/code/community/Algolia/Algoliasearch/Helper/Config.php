@@ -243,7 +243,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function isInfiniteScrollEnabled($storeId = null)
     {
-        return Mage::getStoreConfigFlag(self::INFINITE_SCROLL_ENABLE, $storeId);
+        return $this->isInstantEnabled($storeId)
+            && Mage::getStoreConfigFlag(self::INFINITE_SCROLL_ENABLE, $storeId);
     }
 
     public function isRemoveBranding($storeId = null)
