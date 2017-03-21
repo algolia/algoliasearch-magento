@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "postinstall": "if [ ! -f settings.js ]; then cp settings.dist.js settings.js; fi"
+  },
   "devDependencies": {
     "chai": "^3.5.0",
     "wdio-mocha-framework": "^0.5.9",
