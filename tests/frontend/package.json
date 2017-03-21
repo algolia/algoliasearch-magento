@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "postinstall": "if [ ! -f settings.js ]; then cp settings.dist.js settings.js; fi"
+    "postinstall": "if [ ! -f settings.js ]; then cp settings.dist.js settings.js; fi",
+    "test": "wdio ./wdio.conf.js"
   },
   "devDependencies": {
     "chai": "^3.5.0",
