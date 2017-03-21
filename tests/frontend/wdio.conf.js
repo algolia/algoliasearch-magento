@@ -42,7 +42,7 @@ exports.config = {
         // maxInstances can get overwritten per capability. So if you have an in-house Selenium
         // grid with only 5 firefox instances available you can make sure that not more than
         // 5 instances get started at a time.
-        maxInstances: 5,
+        maxInstances: 1,
         screenResolution: "1200x1024",
         browserName: require('./settings').browserName
     }],
@@ -150,8 +150,10 @@ exports.config = {
     before: function (capabilities, specs) {
         var chai = require('chai');
         chai.should();
+        require('./init')(browser);
+        browser.updateConfig('--default');
         browser.windowHandleMaximize();
-    }
+    },
 
     // Hook that gets executed before the suite starts
     // beforeSuite: function (suite) {
@@ -189,8 +191,9 @@ exports.config = {
     //
     // Gets executed after all tests are done. You still have access to all global variables from
     // the test.
-    // after: function (result, capabilities, specs) {
-    // },
+    after: function (result, capabilities, specs) {
+        browser.updateConfig('--default');
+    },
     //
     // Gets executed right after terminating the webdriver session.
     // afterSession: function (config, capabilities, specs) {
@@ -198,6 +201,6 @@ exports.config = {
     //
     // Gets executed after all workers got shut down and the process is about to exit. It is not
     // possible to defer the end of the process using a promise.
-    // onComplete: function(exitCode) {
-    // }
+    onComplete: function(exitCode) {
+    }
 };
