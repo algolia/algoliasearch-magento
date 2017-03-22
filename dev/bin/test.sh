@@ -36,7 +36,7 @@ echo -e "\n\e[93m-- Running the tests --\e[0m"
 cd /var/www/htdocs/.modman/algoliasearch-magento
 
 if [ $FILTER ]; then
-    vendor/bin/phpunit tests --filter "$FILTER"
+    vendor/bin/phpunit tests/backend --filter "$FILTER"
 else
-    vendor/bin/phpunit tests
+    vendor/bin/phpunit tests/backend
 fi

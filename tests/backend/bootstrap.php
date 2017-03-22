@@ -1,9 +1,9 @@
 <?php
 
-include __DIR__.'/../vendor/autoload.php';
+include __DIR__.'/../../vendor/autoload.php';
 
 // Bootstrap Magento
-include __DIR__.'/../../../app/Mage.php';
+include __DIR__.'/../../../../app/Mage.php';
 
 Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
 
@@ -23,7 +23,7 @@ setConfig('algoliasearch/credentials/index_prefix', getenv('INDEX_PREFIX'));
  */
 function resetConfigs($configs = array())
 {
-    $configXmlFile = __DIR__.'/../app/code/community/Algolia/Algoliasearch/etc/config.xml';
+    $configXmlFile = __DIR__.'/../../app/code/community/Algolia/Algoliasearch/etc/config.xml';
 
     $xml = simplexml_load_file($configXmlFile);
 

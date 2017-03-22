@@ -15,7 +15,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"": "tests/"
+			"": "tests/backend/"
 		}
 	}
 }
