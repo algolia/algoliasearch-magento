@@ -1,3 +1,5 @@
+const settings = require('./settings') || require('./settings.dist');
+
 exports.config = {
     
     //
@@ -44,7 +46,7 @@ exports.config = {
         // 5 instances get started at a time.
         maxInstances: 1,
         screenResolution: "1200x1024",
-        browserName: require('./settings').browserName
+        browserName: settings.browserName
     }],
     //
     // ===================
@@ -72,7 +74,7 @@ exports.config = {
     //
     // Set a base URL in order to shorten url command calls. If your url parameter starts
     // with "/", then the base url gets prepended.
-    baseUrl: require('./settings').baseUrl,
+    baseUrl: settings.baseUrl,
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
@@ -106,7 +108,7 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: require('./settings').services,
+    services: settings.services,
     //
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber

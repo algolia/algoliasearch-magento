@@ -1,5 +1,7 @@
+var process = require('process');
+
 module.exports = {
-    baseUrl: 'http://localhost',
+    baseUrl: process.env.BASE_URL || 'http://localhost',
     services: ['phantomjs'], // 'selenium-standalone'
     browserName: 'chrome'
 };
