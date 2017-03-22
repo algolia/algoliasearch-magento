@@ -39,4 +39,5 @@ if [ $FILTER ]; then
     vendor/bin/phpunit tests/backend --filter "$FILTER"
 else
     vendor/bin/phpunit tests/backend
+    (cd tests/frontend/ && npm install && npm run test)
 fi

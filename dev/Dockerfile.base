@@ -10,7 +10,13 @@ RUN systemctl mask mysql && apt-get update && apt-get install -y \
   mysql-server \
   libxml2-dev \
   git-core \
+  bzip2 \
+  libfontconfig \
   wget && systemctl unmask mysql
+
+# Install nodejs 6 for e2e tests
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
+RUN apt-get install -y nodejs
 
 RUN docker-php-ext-install soap
 RUN docker-php-ext-install mysqli
