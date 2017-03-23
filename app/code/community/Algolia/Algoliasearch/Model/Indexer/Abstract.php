@@ -11,7 +11,7 @@ abstract class Algolia_Algoliasearch_Model_Indexer_Abstract extends Mage_Index_M
     {
         parent::__construct();
 
-        $this->engine = new Algolia_Algoliasearch_Model_Resource_Engine();
+        $this->engine = Mage::getResourceModel('algoliasearch/engine');
     }
 
     /**
