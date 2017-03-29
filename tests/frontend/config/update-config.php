@@ -12,26 +12,28 @@ function setPersistantConfig($config)
     $conn = Mage::getSingleton('core/resource')->getConnection('core_write');
 
     foreach ($config as $path => $value) {
-        $conn->query("UPDATE `core_config_data` SET `value`='$value' WHERE path='$path'");
+        $sql = "INSERT INTO core_config_data (scope, scope_id, path, value)
+                    VALUES ('default', 0, '$path', '$value')
+                    ON DUPLICATE KEY UPDATE value='$value'"
+        ;
+        $conn->query($sql);
     }
 }
 
 function getConfigToApply($param) {
     switch ($param) {
         case '--enable-autocomplete':
+            echo "Enabled Autocomplete";
             return [
                 'algoliasearch/credentials/is_popup_enabled' => 1,
                 'algoliasearch/credentials/is_instant_enabled' => 0,
             ];
-            echo "Enabled Autocomplete";
-            break;
         case '--enable-instantsearch':
+            echo "Enabled InstantSearch";
             return [
                 'algoliasearch/credentials/is_popup_enabled' => 0,
                 'algoliasearch/credentials/is_instant_enabled' => 1,
             ];
-            echo "Enabled InstantSearch";
-            break;
         case '--default':
         default:
             return [

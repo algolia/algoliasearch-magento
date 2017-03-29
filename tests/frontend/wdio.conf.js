@@ -1,4 +1,4 @@
-const settings = require('./settings') || require('./settings.dist');
+const settings = require('./settings.dist');
 
 exports.config = {
     

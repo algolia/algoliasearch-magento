@@ -6,7 +6,7 @@ describe('Test Instantsearch features', function () {
         return browser.updateConfig('--enable-instantsearch');
     });
 
-    it('shouldn\'t show Algolia autocomplete form', function () {
-        return browser.url('/').isVisible('.algolia-autocomplete input#search').should.be.false;
+    it('should show Algolia instantsearch input', function () {
+        return browser.url('/women.html').isVisible('.ais-search-box input#search').should.be.true;
     })
 });

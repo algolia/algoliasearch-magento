@@ -2,3 +2,5 @@
 vendor
 composer.lock
 /tests/frontend/settings.js
+tests/frontend/errorShots/
+
