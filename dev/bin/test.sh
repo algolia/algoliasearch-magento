@@ -21,8 +21,8 @@ cd /var/www/htdocs
 n98-magerun --skip-root-check --root-dir=/var/www/htdocs config:set web/unsecure/base_url $BASE_URL
 n98-magerun --skip-root-check --root-dir=/var/www/htdocs config:set web/secure/base_url $BASE_URL
 
-# chmod -R 777 /var/www/htdocs/media
-# chown -R www-data:www-data /var/www/htdocs/media
+chmod -R 777 /var/www/htdocs/media
+chown -R www-data:www-data /var/www/htdocs/media
 
 # Repair Modman simlinks
 # echo -e "\n\e[93m-- Force repairing the Modman symlinks --\e[0m"
@@ -30,8 +30,8 @@ n98-magerun --skip-root-check --root-dir=/var/www/htdocs config:set web/secure/b
 # /root/bin/modman repair --force algoliasearch-magento
 
 # Again in case root created some folder with root:root
-# chmod -R 777 /var/www/htdocs/media
-# chown -R www-data:www-data /var/www/htdocs/media
+chmod -R 777 /var/www/htdocs/media
+chown -R www-data:www-data /var/www/htdocs/media
 
 # Run tests
 echo -e "\n\e[93m-- Running the tests --\e[0m"
@@ -40,7 +40,7 @@ cd /var/www/htdocs/.modman/algoliasearch-magento
 if [ $FILTER ]; then
     vendor/bin/phpunit tests/backend --filter "$FILTER"
 else
-    vendor/bin/phpunit tests/backend
+    # vendor/bin/phpunit tests/backend
     
     cd tests/frontend
     npm install
