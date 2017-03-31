@@ -13,14 +13,16 @@ fi
 
 # GET / to initialize Magento - required before test runs
 echo -e "\n\e[93m-- Fetching the Magento homepage to initialize Magento --\e[0m"
-wget 127.0.0.1
+wget 0.0.0.0
 
-# Apache is not needed for tests
-echo -e "\e[93m-- Stopping the Apache server (not needed for the tests) --\e[0m"
-service apache2 stop
+# set configuration variables & volumes
+echo -e "\n\e[93m-- Configure Magento --\e[0m"
+cd /var/www/htdocs
+n98-magerun --skip-root-check --root-dir=/var/www/htdocs config:set web/unsecure/base_url $BASE_URL
+n98-magerun --skip-root-check --root-dir=/var/www/htdocs config:set web/secure/base_url $BASE_URL
 
-chmod -R 777 /var/www/htdocs/media
-chown -R www-data:www-data /var/www/htdocs/media
+# chmod -R 777 /var/www/htdocs/media
+# chown -R www-data:www-data /var/www/htdocs/media
 
 # Repair Modman simlinks
 # echo -e "\n\e[93m-- Force repairing the Modman symlinks --\e[0m"
@@ -28,8 +30,8 @@ chown -R www-data:www-data /var/www/htdocs/media
 # /root/bin/modman repair --force algoliasearch-magento
 
 # Again in case root created some folder with root:root
-chmod -R 777 /var/www/htdocs/media
-chown -R www-data:www-data /var/www/htdocs/media
+# chmod -R 777 /var/www/htdocs/media
+# chown -R www-data:www-data /var/www/htdocs/media
 
 # Run tests
 echo -e "\n\e[93m-- Running the tests --\e[0m"
@@ -39,5 +41,8 @@ if [ $FILTER ]; then
     vendor/bin/phpunit tests/backend --filter "$FILTER"
 else
     vendor/bin/phpunit tests/backend
-    (cd tests/frontend/ && npm install && npm run test)
+    
+    cd tests/frontend
+    npm install
+    npm run test
 fi

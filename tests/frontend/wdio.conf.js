@@ -153,7 +153,8 @@ exports.config = {
         var chai = require('chai');
         chai.should();
         require('./init')(browser);
-        browser.updateConfig('--default');
+	    browser.updateConfig('--set-credentials');
+	    browser.updateConfig('--default');
         browser.windowHandleMaximize();
     },
 

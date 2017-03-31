@@ -22,6 +22,12 @@ function setPersistantConfig($config)
 
 function getConfigToApply($param) {
     switch ($param) {
+        case '--set-credentials':
+            return [
+                'algoliasearch/credentials/application_id' => getenv('APPLICATION_ID'),
+                'algoliasearch/credentials/search_only_api_key' => getenv('SEARCH_ONLY_API_KEY'),
+                'algoliasearch/credentials/api_key' => Mage::helper('core')->encrypt(getenv('API_KEY')),
+            ];
         case '--enable-autocomplete':
             echo "Enabled Autocomplete";
             return [
