@@ -29,7 +29,7 @@ namespace AlgoliaSearch;
 
 class Version
 {
-    const VALUE = '1.12.1';
+    const VALUE = '1.17.0';
 
     public static $custom_value = '';
 
@@ -39,12 +39,12 @@ class Version
     // Method untouched to keep backward compatibility
     public static function get()
     {
-        return self::VALUE . static::$custom_value;
+        return self::VALUE.static::$custom_value;
     }
 
     public static function getUserAgent()
     {
-        $userAgent = self::$prefixUserAgentSegments . 'Algolia for PHP ('.self::VALUE.')' . static::$suffixUserAgentSegments;
+        $userAgent = self::$prefixUserAgentSegments.'Algolia for PHP ('.self::VALUE.')'.static::$suffixUserAgentSegments;
 
         // Keep backward compatibility
         $userAgent .= static::$custom_value;
@@ -54,11 +54,25 @@ class Version
 
     public static function addPrefixUserAgentSegment($segment, $version)
     {
-        self::$prefixUserAgentSegments = $segment.' ('.$version.'); '.self::$prefixUserAgentSegments;
+        $prefix = $segment.' ('.$version.'); ';
+
+        if (false === mb_strpos(self::getUserAgent(), $prefix)) {
+            self::$prefixUserAgentSegments = $prefix . self::$prefixUserAgentSegments;
+        }
     }
 
     public static function addSuffixUserAgentSegment($segment, $version)
     {
-        self::$suffixUserAgentSegments .= '; '.$segment.' ('.$version.')';
+        $suffix = '; '.$segment.' ('.$version.')';
+
+        if (false === mb_strpos(self::getUserAgent(), $suffix)) {
+            self::$suffixUserAgentSegments .= $suffix;
+        }
+    }
+
+    public static function clearUserAgentSuffixesAndPrefixes()
+    {
+        self::$suffixUserAgentSegments = '';
+        self::$prefixUserAgentSegments = '';
     }
 }
