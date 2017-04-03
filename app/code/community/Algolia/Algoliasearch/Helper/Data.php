@@ -100,6 +100,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         $this->product_helper->setSettings($storeId, $saveToTmpIndicesToo);
+
+        $this->setExtraSettings($storeId, $saveToTmpIndicesToo);
     }
 
     public function getSearchResult($query, $storeId)
@@ -436,7 +438,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $productsToRemove = array();
 
         // In $potentiallyDeletedProductsIds there might be IDs of deleted products which will not be in a collection
-        if (is_array($potentiallyDeletedProductsIds)) {
+        if (is_array($potentiallyDeletedProductsIds) && !empty($potentiallyDeletedProductsIds)) {
             $potentiallyDeletedProductsIds = array_combine($potentiallyDeletedProductsIds, $potentiallyDeletedProductsIds);
         } else {
             $potentiallyDeletedProductsIds = array();
@@ -541,26 +543,42 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         $this->logger->log('Loaded '.count($collection).' products');
         $this->logger->stop('LOADING '.$this->logger->getStoreName($storeId).' collection page '.$page.', pageSize '.$pageSize);
 
-        $index_name = $this->product_helper->getIndexName($storeId, $useTmpIndex);
+        $indexName = $this->product_helper->getIndexName($storeId, $useTmpIndex);
 
         $indexData = $this->getProductsRecords($storeId, $collection, $productIds);
 
         if (!empty($indexData['toIndex'])) {
             $this->logger->start('ADD/UPDATE TO ALGOLIA');
 
-            $this->algolia_helper->addObjects($indexData['toIndex'], $index_name);
+            $this->algolia_helper->addObjects($indexData['toIndex'], $indexName);
 
             $this->logger->log('Product IDs: '.implode(', ', array_keys($indexData['toIndex'])));
             $this->logger->stop('ADD/UPDATE TO ALGOLIA');
         }
 
         if (!empty($indexData['toRemove'])) {
-            $this->logger->start('REMOVE FROM ALGOLIA');
+            $toRealRemove = array();
 
-            $this->algolia_helper->deleteObjects($indexData['toRemove'], $index_name);
+            if (count($indexData['toRemove']) === 1) {
+                $toRealRemove = $indexData['toRemove'];
+            } else {
+                $indexData['toRemove'] = array_map('strval', $indexData['toRemove']);
+                $objects = $this->algolia_helper->getObjects($indexName, $indexData['toRemove']);
+                foreach ($objects['results'] as $object) {
+                    if (isset($object['objectID'])) {
+                        $toRealRemove[] = $object['objectID'];
+                    }
+                }
+            }
 
-            $this->logger->log('Product IDs: '.implode(', ', $indexData['toRemove']));
-            $this->logger->stop('REMOVE FROM ALGOLIA');
+            if (!empty($toRealRemove)) {
+                $this->logger->start('REMOVE FROM ALGOLIA');
+
+                $this->algolia_helper->deleteObjects($toRealRemove, $indexName);
+                $this->logger->log('Product IDs: '.implode(', ', $toRealRemove));
+
+                $this->logger->stop('REMOVE FROM ALGOLIA');
+            }
         }
 
         unset($indexData);
@@ -596,6 +614,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::app()->getStore($storeId)->setConfig(Mage_Catalog_Helper_Product_Flat::XML_PATH_USE_PRODUCT_FLAT, false);
         Mage::app()->getStore($storeId)
             ->setConfig(Mage_Catalog_Helper_Category_Flat::XML_PATH_IS_ENABLED_FLAT_CATALOG_CATEGORY, false);
+
+        // Init translator so it's available in custom events
+        Mage::app()->getTranslator()->init('frontend', true);
 
         $this->logger->stop('START EMULATION');
 
@@ -639,5 +660,44 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             
         return Mage::EDITION_ENTERPRISE === Mage::getEdition() && version_compare(Mage::getVersion(), '1.14.3', '>=') ||
                Mage::EDITION_COMMUNITY === Mage::getEdition() && version_compare(Mage::getVersion(), '1.9.3', '>=');
+    }
+
+    private function setExtraSettings($storeId, $saveToTmpIndicesToo)
+    {
+        $sections = array(
+            'products' => $this->product_helper->getIndexName($storeId),
+            'categories' => $this->category_helper->getIndexName($storeId),
+            'pages' => $this->page_helper->getIndexName($storeId),
+            'suggestions' => $this->suggestion_helper->getIndexName($storeId),
+            'additional_sections' => $this->additionalsections_helper->getIndexName($storeId),
+        );
+
+        $error = array();
+        foreach ($sections as $section => $indexName) {
+            try {
+                $extraSettings = $this->config->getExtraSettings($section, $storeId);
+
+                if ($extraSettings) {
+                    $extraSettings = json_decode($extraSettings, true);
+
+                    $this->algolia_helper->setSettings($indexName, $extraSettings, true);
+
+                    if ($section === 'products' && $saveToTmpIndicesToo === true) {
+                        $this->algolia_helper->setSettings($indexName.'_tmp', $extraSettings, true);
+                    }
+                }
+            } catch (\AlgoliaSearch\AlgoliaException $e) {
+                if (strpos($e->getMessage(), 'Invalid object attributes:') === 0) {
+                    $error[] = 'Extra settings for "'.$section.'" indices were not saved. Error message: "'.$e->getMessage().'"';
+                    continue;
+                }
+
+                throw $e;
+            }
+        }
+
+        if (!empty($error)) {
+            throw new \AlgoliaSearch\AlgoliaException('<br>'.implode('<br> ', $error));
+        }
     }
 }

@@ -1,8 +1,7 @@
 FROM algolia/base-algoliasearch-magento
 
-# Enable XDebug
-RUN pecl install xdebug
-RUN docker-php-ext-enable xdebug
+ARG INSTALL_XDEBUG
+RUN if [ $INSTALL_XDEBUG = Yes ]; then pecl install xdebug && docker-php-ext-enable xdebug; fi
 
 # test script
 COPY ./bin/test.sh /usr/local/bin/test.sh

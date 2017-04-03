@@ -70,7 +70,7 @@
                     </comment>
                     <fields>
                         <enable_backend translate="label comment">
-                            <label>Enable Extension</label>
+                            <label>Enable Indexing</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>0</sort_order>
@@ -79,7 +79,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                If set to No, Algolia extension will simply be disabled.
+                                If set to No, Algolia extension will not index your data automatically.
                                 ]]>
                             </comment>
                         </enable_backend>
@@ -87,11 +87,10 @@
                             <label>Enable Search</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>0</sort_order>
+                            <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <depends><enable_backend>1</enable_backend></depends>
                             <comment>
                                 <![CDATA[
                                 If set to No, search will be done by Magento but indexing will be done by Algolia
@@ -102,11 +101,10 @@
                             <label>Enable Logging</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>0</sort_order>
+                            <sort_order>5</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <depends><enable_backend>1</enable_backend></depends>
                             <comment>
                                 <![CDATA[
                                 NOTICE: Debug logging generates a significant amount of data and can affect performance of indexing
@@ -686,6 +684,82 @@
                         </number_of_job_to_run>
                     </fields>
                 </queue>
+                <analytics translate="label">
+                    <label>Analytics</label>
+                    <expanded>0</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>75</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment>
+                        <![CDATA[
+                        Documentation of Magento analytics: <a href="https://community.algolia.com/magento/doc/m1/analytics/" target="_blank">https://community.algolia.com/magento/doc/m1/analytics/</a>
+                        <br>
+                        <hr>
+                        <br>
+                        ]]>
+                    </comment>
+                    <fields>
+                        <enable_analytics translate="label comment">
+                            <label>Enable Analytics</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enable_analytics>
+                        <delay translate="label comment">
+                            <label>Delay (in milliseconds)</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    <p>When the search bar is used, each keystroke triggers a search in Algolia. It’s really good for an instantsearch and as-you-type search UX, but it’s not that good for analytics as it generates a lot of data and brings a lot of noise to the analytics. The delay variable defines how long the widget should wait between keystrokes before pushing data to analytics - only the last search will be pushed.</p>
+                                    <p>Default value: 3000</p>
+                                ]]>
+                            </comment>
+                            <depends><enable_analytics>1</enable_analytics></depends>
+                        </delay>
+                        <trigger_on_ui_interaction translate="label comment">
+                            <label>Trigger the push function before the the delay on UI interaction</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    <p>If the user selects a search result even before the push was trigger (because of the delay variable), the push to analytics might never be called. With this parameter you can trigger a data push to analytics if the user interacts with the search results during the delay.</p>
+                                    <p>Default value: Yes</p>
+                                ]]>
+                            </comment>
+                            <depends><enable_analytics>1</enable_analytics></depends>
+                        </trigger_on_ui_interaction>
+                        <push_initial_search translate="label comment">
+                            <label>Trigger the push function after the initial search</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    <p>Sometimes your customers come directly to the search page from a link, so a search is triggered automatically without any action from the user. At the same time, the load of the page triggers standard Google Analytics code to track the page view. By this parameter you can specify if you want to trigger a data push on this kind of search scenario.</p>
+                                    <p>Default value: No</p>
+                                ]]>
+                            </comment>
+                            <depends><enable_analytics>1</enable_analytics></depends>
+                        </push_initial_search>
+                    </fields>
+                </analytics>
                 <synonyms translate="label">
                     <label>Synonyms</label>
                     <expanded>0</expanded>
@@ -896,6 +970,84 @@
                         </index_all_category_product_on_category_update>
                     </fields>
                 </advanced>
+                <advanced_settings translate="label">
+                    <label>Advanced - Extra Algolia indices settings</label>
+                    <expanded>0</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment>
+                        <![CDATA[
+                        <p>Here, you can specify additional Algolia indices settings which can be applied only programatically via one of Algolia API clients.</p>
+
+                        <p>
+                        To set an extra settings, please fill the right textarea with JSON where you specify the extra settings.<br />
+                        Example: <code>{"exactOnSingleWordQuery":"word"}</code>
+                        </p>
+
+                        <p>List of possible settings: <a href="https://www.algolia.com/doc/api-client/default/settings/#index-settings-parameters" target="_blank">https://www.algolia.com/doc/api-client/default/settings/#index-settings-parameters</a></p>
+
+                        <p><span class="algolia-config-warning">&#9888;</span> Edit extra settings only when you're sure what you're doing. Bad settings can effect your search functionality and have a bad impact on your relevance.</p>
+                        ]]>
+                    </comment>
+                    <fields>
+                        <products_extra_settings translate="label comment">
+                            <label>Products' indices extra settings</label>
+                            <frontend_type>textarea</frontend_type>
+                            <backend_model>algoliasearch/system_config_backend_ExtraSettings</backend_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </products_extra_settings>
+                    </fields>
+                    <fields>
+                        <categories_extra_settings translate="label comment">
+                            <label>Categories' indices extra settings</label>
+                            <frontend_type>textarea</frontend_type>
+                            <backend_model>algoliasearch/system_config_backend_ExtraSettings</backend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </categories_extra_settings>
+                    </fields>
+                    <fields>
+                        <pages_extra_settings translate="label comment">
+                            <label>Pages' indices extra settings</label>
+                            <frontend_type>textarea</frontend_type>
+                            <backend_model>algoliasearch/system_config_backend_ExtraSettings</backend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </pages_extra_settings>
+                    </fields>
+                    <fields>
+                        <suggestions_extra_settings translate="label comment">
+                            <label>Suggestions' indices extra settings</label>
+                            <frontend_type>textarea</frontend_type>
+                            <backend_model>algoliasearch/system_config_backend_ExtraSettings</backend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </suggestions_extra_settings>
+                    </fields>
+                    <fields>
+                        <additional_sections_extra_settings translate="label comment">
+                            <label>Additional sections' indices extra settings</label>
+                            <frontend_type>textarea</frontend_type>
+                            <backend_model>algoliasearch/system_config_backend_ExtraSettings</backend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </additional_sections_extra_settings>
+                    </fields>
+                </advanced_settings>
             </groups>
         </algoliasearch>
     </sections>

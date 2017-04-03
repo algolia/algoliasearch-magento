@@ -17,7 +17,7 @@ $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreI
     {{#hits}}
         <div class="col-md-4 col-sm-6">
             <div class="result-wrapper">
-                <a href="{{url}}" class="result">
+                <a href="{{url}}" class="result algolia-clearfix">
                     <div class="result-content">
                         <div class="result-thumbnail">
                             {{#image_url}}<img src="{{{ image_url }}}"/>{{/image_url}}
@@ -67,7 +67,6 @@ $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreI
                             {{/isAddToCartEnabled}}
                         </div>
                     </div>
-                    <div class="clearfix"></div>
                 </a>
             </div>
         </div>

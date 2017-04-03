@@ -75,9 +75,9 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function rebuildCategoryIndex($storeId = null, $categoryIds = null)
     {
-        $ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
+        $storeIds = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
 
-        foreach ($ids as $id) {
+        foreach ($storeIds as $storeId) {
             $by_page = $this->config->getNumberOfElementByPage();
 
             if (is_array($categoryIds) && count($categoryIds) > $by_page) {
@@ -85,7 +85,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
                     $this->_rebuildCategoryIndex($storeId, $chunk);
                 }
             } else {
-                $this->_rebuildCategoryIndex($id, $categoryIds);
+                $this->_rebuildCategoryIndex($storeId, $categoryIds);
             }
         }
 

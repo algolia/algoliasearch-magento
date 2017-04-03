@@ -53,6 +53,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IMAGE_HEIGHT = 'algoliasearch/image/height';
     const XML_PATH_IMAGE_TYPE = 'algoliasearch/image/type';
 
+    const ENABLE_ANALYTICS = 'algoliasearch/analytics/enable_analytics';
+    const ANALYTICS_DELAY = 'algoliasearch/analytics/delay';
+    const ANALYTICS_TRIGGER_ON_UI_INTERACTION = 'algoliasearch/analytics/trigger_on_ui_interaction';
+    const ANALYTICS_PUSH_INITIAL_SEARCH = 'algoliasearch/analytics/push_initial_search';
+
     const ENABLE_SYNONYMS = 'algoliasearch/synonyms/enable_synonyms';
     const SYNONYMS = 'algoliasearch/synonyms/synonyms';
     const ONEWAY_SYNONYMS = 'algoliasearch/synonyms/oneway_synonyms';
@@ -69,6 +74,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
+
+    const EXTRA_SETTINGS_PRODUCTS = 'algoliasearch/advanced_settings/products_extra_settings';
+    const EXTRA_SETTINGS_CATEGORIES = 'algoliasearch/advanced_settings/categories_extra_settings';
+    const EXTRA_SETTINGS_PAGES = 'algoliasearch/advanced_settings/pages_extra_settings';
+    const EXTRA_SETTINGS_SUGGESTIONS = 'algoliasearch/advanced_settings/suggestions_extra_settings';
+    const EXTRA_SETTINGS_ADDITIONAL_SECTIONS = 'algoliasearch/advanced_settings/additional_sections_extra_settings';
 
     protected $_productTypeMap = array();
 
@@ -139,9 +150,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function isEnabledFrontEnd($storeId = null)
     {
-        // Frontend = Backend + Frontent
-        return Mage::getStoreConfigFlag(self::ENABLE_BACKEND,
-            $storeId) && Mage::getStoreConfigFlag(self::ENABLE_FRONTEND, $storeId);
+        return Mage::getStoreConfigFlag(self::ENABLE_FRONTEND, $storeId);
     }
 
     public function isEnabledBackend($storeId = null)
@@ -162,11 +171,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getShowOutOfStock($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::SHOW_OUT_OF_STOCK, $storeId);
-    }
-
-    public function noProcess($storeId = null)
-    {
-        return Mage::getStoreConfigFlag(self::NO_PROCESS, $storeId);
     }
 
     public function getImageWidth($storeId = null)
@@ -213,11 +217,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return array();
-    }
-
-    public function getNumberOfQuerySuggestions($storeId = null)
-    {
-        return Mage::getStoreConfig(self::NUMBER_QUERY_SUGGESTIONS, $storeId);
     }
 
     public function getMinPopularity($storeId = null)
@@ -528,6 +527,26 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return (string) Mage::getConfig()->getNode()->modules->Algolia_Algoliasearch->version;
     }
 
+    public function isEnabledAnalytics($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ENABLE_ANALYTICS, $storeId);
+    }
+
+    public function getAnalyticsDelay($storeId = null)
+    {
+        return (int) Mage::getStoreConfig(self::ANALYTICS_DELAY, $storeId);
+    }
+
+    public function getTriggerOnUIInteraction($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ANALYTICS_TRIGGER_ON_UI_INTERACTION, $storeId);
+    }
+
+    public function getPushInitialSearch($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::ANALYTICS_PUSH_INITIAL_SEARCH, $storeId);
+    }
+
     public function isEnabledSynonyms($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::ENABLE_SYNONYMS, $storeId);
@@ -563,6 +582,13 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return Mage::getBaseDir('media').'/algoliasearch-admin-config-uploads/'.$filename;
+    }
+
+    public function getExtraSettings($section, $storeId = null)
+    {
+        $constant = 'EXTRA_SETTINGS_'.mb_strtoupper($section);
+
+        return trim(Mage::getStoreConfig(constant('self::'.$constant), $storeId));
     }
 
     private function getCustomRanking($configName, $storeId = null)
