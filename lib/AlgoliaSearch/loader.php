@@ -33,3 +33,6 @@ require_once __DIR__.'/PlacesIndex.php';
 require_once __DIR__.'/SynonymType.php';
 require_once __DIR__.'/Version.php';
 require_once __DIR__.'/Json.php';
+require_once __DIR__.'/FailingHostsCache.php';
+require_once __DIR__.'/FileFailingHostsCache.php';
+require_once __DIR__.'/InMemoryFailingHostsCache.php';
