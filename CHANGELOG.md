@@ -1,5 +1,32 @@
 ## CHANGE LOG
 
+### 1.9.0
+
+#### FEATURES
+- JavaScript custom events to easily extend extension's front end (#642, [Documentation](https://community.algolia.com/magento/doc/m1/analytics/))
+- Analytics - the extension now uses Magento's GA to measure searches (#754)
+- New queue processing mechanism which makes queue processing much more optimized in terms of Algolia operations and processing time (#757, #775)
+- Create a "debug" script which generates a file with dumped Algolia configuration. This file then can be sent to Algolia's support for easier investigation (#777)
+- Option to send an extra Algolia settings to Algolia indices (#770)
+- Ability to enabled / disable indexing and front end search separatly (#793)
+
+#### UPDATES
+- The extension now completely removes `<script>` and `<style>` tags with its content from CMS pages content (#765)
+- The extension now initializes a Magento translator in order to make it available in custom events' methods (#789)
+- Test container now accepts two parameters (#794):
+    - `--xdebug` to install the container with XDebug
+    - `--filter` to filter running tests
+- `Engine` class is now loaded via `getResourceModel` method (#798)
+
+#### FIXES
+- Fixed `clearfix` class in CSS (#772)
+- Fixed the issue when search box cursor was moved to the end of a search query (#779)
+- Fixes category refinement on category page power by instant search when page reload was performed (#783)
+- Fixed the issue when instant search results stayed on the page even after click on cross in a search box (#784)
+- Fixed the issue when `array_combine()` method could be called with empty array (#790)
+- Fixed pagination on IS page (#805)
+
+
 ### 1.8.1
 
 #### FEATURES
