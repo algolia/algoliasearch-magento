@@ -48,12 +48,12 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
         setConfig('algoliasearch/products/custom_ranking_product_attributes', serialize(array()));
 
         $indexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
-        $indexer->reindexAll();
+        $indexer->reindexSpecificProducts(405);
 
         $this->algoliaHelper->waitLastTask();
 
-        $results = $this->algoliaHelper->query($this->indexPrefix.'default_products', '', array('hitsPerPage' => 1));
-        $hit = reset($results['hits']);
+        $results = $this->algoliaHelper->getObjects($this->indexPrefix.'default_products', array('405'));
+        $hit = reset($results['results']);
 
         $defaultAttributes = array(
             'objectID',
@@ -69,7 +69,6 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
             'price',
             'type_id',
             'algoliaLastUpdateAtCET',
-            '_highlightResult',
         );
 
         foreach ($defaultAttributes as $key => $attribute) {
