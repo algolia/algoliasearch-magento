@@ -73,7 +73,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             foreach ($productAttributes as $attributeCode) {
                 self::$_productAttributes[$attributeCode] = $config->getAttribute('catalog_product', $attributeCode)
-                                                                   ->getFrontendLabel();
+                    ->getFrontendLabel();
             }
         }
 
@@ -212,7 +212,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 if ($attribute['order'] == 'ordered') {
                     $searchableAttributes[] = $attribute['attribute'];
                 } else {
-                    $searchableAttributes[] = 'unordered('.$attribute['attribute'].')';
+                    $searchableAttributes[] = 'unordered(' . $attribute['attribute'] . ')';
                 }
             }
 
@@ -235,17 +235,20 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $directoryCurrency = Mage::getModel('directory/currency');
         $currencies = $directoryCurrency->getConfigAllowCurrencies();
 
+        $store = Mage::getModel('core/store')->load($storeId);
+        $baseCurrencyCode = $store->getBaseCurrencyCode();
+
         foreach ($facets as $facet) {
             if ($facet['attribute'] === 'price') {
                 foreach ($currencies as $currency_code) {
-                    $facet['attribute'] = 'price.'.$currency_code.'.default';
+                    $facet['attribute'] = 'price.' . $currency_code . '.default';
 
                     if ($this->config->isCustomerGroupsEnabled($storeId)) {
                         /** @var Mage_Customer_Model_Group $group */
                         foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group) {
-                            $group_id = (int) $group->getData('customer_group_id');
+                            $group_id = (int)$group->getData('customer_group_id');
 
-                            $attributesForFaceting[] = 'price.'.$currency_code.'.group_'.$group_id;
+                            $attributesForFaceting[] = 'price.' . $currency_code . '.group_' . $group_id;
                         }
                     }
 
@@ -257,7 +260,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         foreach ($customRankings as $ranking) {
-            $customRankingAttributes[] = $ranking['order'].'('.$ranking['attribute'].')';
+            $customRankingAttributes[] = $ranking['order'] . '(' . $ranking['attribute'] . ')';
         }
 
         if ($this->config->replaceCategories($storeId) && !in_array('categories', $attributesForFaceting, true)) {
@@ -265,12 +268,12 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         $indexSettings = array(
-            'searchableAttributes'    => array_values(array_unique($searchableAttributes)),
-            'customRanking'           => $customRankingAttributes,
+            'searchableAttributes' => array_values(array_unique($searchableAttributes)),
+            'customRanking' => $customRankingAttributes,
             'unretrievableAttributes' => $unretrievableAttributes,
-            'attributesForFaceting'   => $attributesForFaceting,
-            'maxValuesPerFacet'       => (int) $this->config->getMaxValuesPerFacet($storeId),
-            'removeWordsIfNoResults'  => $this->config->getRemoveWordsIfNoResult($storeId),
+            'attributesForFaceting' => $attributesForFaceting,
+            'maxValuesPerFacet' => (int)$this->config->getMaxValuesPerFacet($storeId),
+            'removeWordsIfNoResults' => $this->config->getRemoveWordsIfNoResult($storeId),
         );
 
         // Additional index settings from event observer
@@ -285,7 +288,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $this->algolia_helper->setSettings($indexName, $mergeSettings);
         if ($saveToTmpIndicesToo === true) {
-            $this->algolia_helper->setSettings($indexName.'_tmp', $mergeSettings);
+            $this->algolia_helper->setSettings($indexName . '_tmp', $mergeSettings);
         }
 
         /*
@@ -299,17 +302,17 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             foreach ($sorting_indices as $values) {
                 if ($this->config->isCustomerGroupsEnabled($storeId) && $values['attribute'] === 'price') {
                     foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group) {
-                        $group_id = (int) $group->getData('customer_group_id');
+                        $group_id = (int)$group->getData('customer_group_id');
 
-                        $suffix_index_name = 'group_'.$group_id;
+                        $suffix_index_name = 'group_' . $group_id;
 
-                        $replicas[] = $this->getIndexName($storeId).'_'.$values['attribute'].'_'.$suffix_index_name.'_'.$values['sort'];
+                        $replicas[] = $this->getIndexName($storeId) . '_' . $values['attribute'] . '_' . $suffix_index_name . '_' . $values['sort'];
                     }
                 } else {
                     if ($values['attribute'] === 'price') {
-                        $replicas[] = $this->getIndexName($storeId).'_'.$values['attribute'].'_default_'.$values['sort'];
+                        $replicas[] = $this->getIndexName($storeId) . '_' . $values['attribute'] . '_default_' . $values['sort'];
                     } else {
-                        $replicas[] = $this->getIndexName($storeId).'_'.$values['attribute'].'_'.$values['sort'];
+                        $replicas[] = $this->getIndexName($storeId) . '_' . $values['attribute'] . '_' . $values['sort'];
                     }
                 }
             }
@@ -319,14 +322,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             foreach ($sorting_indices as $values) {
                 if ($this->config->isCustomerGroupsEnabled($storeId) && $values['attribute'] === 'price') {
                     foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group) {
-                        $group_id = (int) $group->getData('customer_group_id');
+                        $group_id = (int)$group->getData('customer_group_id');
 
-                        $suffix_index_name = 'group_'.$group_id;
+                        $suffix_index_name = 'group_' . $group_id;
 
-                        $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'].'.'.$currencies[0].'.'.$suffix_index_name : $values['attribute'];
+                        $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'] . '.' . $baseCurrencyCode . '.' . $suffix_index_name : $values['attribute'];
 
                         $mergeSettings['ranking'] = array(
-                            $values['sort'].'('.$sort_attribute.')',
+                            $values['sort'] . '(' . $sort_attribute . ')',
                             'typo',
                             'geo',
                             'words',
@@ -336,14 +339,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                             'custom',
                         );
 
-                        $this->algolia_helper->setSettings($this->getIndexName($storeId).'_'.$values['attribute'].'_'.$suffix_index_name.'_'.$values['sort'],
+                        $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' . $values['attribute'] . '_' . $suffix_index_name . '_' . $values['sort'],
                             $mergeSettings);
                     }
                 } else {
-                    $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'].'.'.$currencies[0].'.'.'default' : $values['attribute'];
+                    $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'] . '.' . $currencies[0] . '.' . 'default' : $values['attribute'];
 
                     $mergeSettings['ranking'] = array(
-                        $values['sort'].'('.$sort_attribute.')',
+                        $values['sort'] . '(' . $sort_attribute . ')',
                         'typo',
                         'geo',
                         'words',
@@ -354,10 +357,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     );
 
                     if ($values['attribute'] === 'price') {
-                        $this->algolia_helper->setSettings($this->getIndexName($storeId).'_'.$values['attribute'].'_default_'.$values['sort'],
+                        $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' . $values['attribute'] . '_default_' . $values['sort'],
                             $mergeSettings);
                     } else {
-                        $this->algolia_helper->setSettings($this->getIndexName($storeId).'_'.$values['attribute'].'_'.$values['sort'],
+                        $this->algolia_helper->setSettings($this->getIndexName($storeId) . '_' . $values['attribute'] . '_' . $values['sort'],
                             $mergeSettings);
                     }
                 }
@@ -470,40 +473,40 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             foreach ($currencies as $currency_code) {
                 $customData[$field][$currency_code] = array();
 
-                $price = (double) $taxHelper->getPrice($product, $product->getPrice(), $with_tax, null, null, null, $product->getStore(), null);
+                $price = (double)$taxHelper->getPrice($product, $product->getPrice(), $with_tax, null, null, null, $product->getStore(), null);
                 $price = $directoryHelper->currencyConvert($price, $baseCurrencyCode, $currency_code);
 
                 $customData[$field][$currency_code]['default'] = $price;
                 $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($price, false, $currency_code);
 
-                $special_price = (double) $taxHelper->getPrice($product, $product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
+                $special_price = (double)$taxHelper->getPrice($product, $product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
                 $special_price = $directoryHelper->currencyConvert($special_price, $baseCurrencyCode, $currency_code);
 
                 if ($customer_groups_enabled) {
                     // If fetch special price for groups
 
                     foreach ($groups as $group) {
-                        $group_id = (int) $group->getData('customer_group_id');
+                        $group_id = (int)$group->getData('customer_group_id');
                         $product->setCustomerGroupId($group_id);
 
                         $discounted_price = $product->getPriceModel()->getFinalPrice(1, $product);
                         $discounted_price = $directoryHelper->currencyConvert($discounted_price, $baseCurrencyCode, $currency_code);
 
                         if ($discounted_price !== false) {
-                            $customData[$field][$currency_code]['group_'.$group_id] = (double) $taxHelper->getPrice($product,
-                                                                                                      $discounted_price,
-                                                                                                      $with_tax, null,
-                                                                                                      null, null,
-                                                                                                      $product->getStore(),
-                                                                                                      null);
-                            $customData[$field][$currency_code]['group_'.$group_id] = $directoryHelper->currencyConvert($customData[$field][$currency_code]['group_'.$group_id],
-                                                                                              $baseCurrencyCode,
-                                                                                              $currency_code);
-                            $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $store->formatPrice($customData[$field][$currency_code]['group_'.$group_id],
+                            $customData[$field][$currency_code]['group_' . $group_id] = (double)$taxHelper->getPrice($product,
+                                $discounted_price,
+                                $with_tax, null,
+                                null, null,
+                                $product->getStore(),
+                                null);
+                            $customData[$field][$currency_code]['group_' . $group_id] = $directoryHelper->currencyConvert($customData[$field][$currency_code]['group_' . $group_id],
+                                $baseCurrencyCode,
+                                $currency_code);
+                            $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $store->formatPrice($customData[$field][$currency_code]['group_' . $group_id],
                                 false, $currency_code);
                         } else {
-                            $customData[$field][$currency_code]['group_'.$group_id] = $customData[$field][$currency_code]['default'];
-                            $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $customData[$field][$currency_code]['default_formated'];
+                            $customData[$field][$currency_code]['group_' . $group_id] = $customData[$field][$currency_code]['default'];
+                            $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $customData[$field][$currency_code]['default_formated'];
                         }
                     }
 
@@ -515,13 +518,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                 if ($customer_groups_enabled) {
                     foreach ($groups as $group) {
-                        $group_id = (int) $group->getData('customer_group_id');
+                        $group_id = (int)$group->getData('customer_group_id');
 
-                        if ($special_price && $special_price < $customData[$field][$currency_code]['group_'.$group_id]) {
-                            $customData[$field][$currency_code]['group_'.$group_id.'_original_formated'] = $customData[$field][$currency_code]['default_formated'];
+                        if ($special_price && $special_price < $customData[$field][$currency_code]['group_' . $group_id]) {
+                            $customData[$field][$currency_code]['group_' . $group_id . '_original_formated'] = $customData[$field][$currency_code]['default_formated'];
 
-                            $customData[$field][$currency_code]['group_'.$group_id] = $special_price;
-                            $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $this->formatPrice($special_price,
+                            $customData[$field][$currency_code]['group_' . $group_id] = $special_price;
+                            $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $this->formatPrice($special_price,
                                 false, $currency_code);
                         }
                     }
@@ -543,15 +546,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $_priceModel = $product->getPriceModel();
 
                         list($min, $max) = $_priceModel->getTotalPrices($product, null, $with_tax, true);
-                        $min = (double) $min;
-                        $max = (double) $max;
+                        $min = (double)$min;
+                        $max = (double)$max;
                     }
 
                     if ($type == 'grouped') {
                         if (count($sub_products) > 0) {
                             foreach ($sub_products as $sub_product) {
-                                $price = (double) $taxHelper->getPrice($product, $sub_product->getFinalPrice(), $with_tax,
-                                                         null, null, null, $product->getStore(), null);
+                                $price = (double)$taxHelper->getPrice($product, $sub_product->getFinalPrice(), $with_tax,
+                                    null, null, null, $product->getStore(), null);
 
                                 $min = min($min, $price);
                                 $max = max($max, $price);
@@ -565,7 +568,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $min = $directoryHelper->currencyConvert($min, $baseCurrencyCode, $currency_code);
                         $max = $directoryHelper->currencyConvert($max, $baseCurrencyCode, $currency_code);
 
-                        $dashed_format = $this->formatPrice($min, false, $currency_code).' - '.$this->formatPrice($max,
+                        $dashed_format = $this->formatPrice($min, false, $currency_code) . ' - ' . $this->formatPrice($max,
                                 false, $currency_code);
 
                         if (isset($customData[$field][$currency_code]['default_original_formated']) === false || $min <= $customData[$field][$currency_code]['default']) {
@@ -581,15 +584,15 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         if ($customer_groups_enabled) {
                             foreach ($groups as $group) {
-                                $group_id = (int) $group->getData('customer_group_id');
+                                $group_id = (int)$group->getData('customer_group_id');
 
-                                if ($min != $max && $min <= $customData[$field][$currency_code]['group_'.$group_id]) {
-                                    $customData[$field][$currency_code]['group_'.$group_id] = 0;
+                                if ($min != $max && $min <= $customData[$field][$currency_code]['group_' . $group_id]) {
+                                    $customData[$field][$currency_code]['group_' . $group_id] = 0;
                                 } else {
-                                    $customData[$field][$currency_code]['group_'.$group_id] = $customData[$field][$currency_code]['default'];
+                                    $customData[$field][$currency_code]['group_' . $group_id] = $customData[$field][$currency_code]['default'];
                                 }
 
-                                $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $dashed_format;
+                                $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $dashed_format;
                             }
                         }
                     }
@@ -605,13 +608,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                     if ($customer_groups_enabled) {
                         foreach ($groups as $group) {
-                            $group_id = (int) $group->getData('customer_group_id');
+                            $group_id = (int)$group->getData('customer_group_id');
 
-                            if ($customData[$field][$currency_code]['group_'.$group_id] == 0) {
-                                $customData[$field][$currency_code]['group_'.$group_id] = $min;
+                            if ($customData[$field][$currency_code]['group_' . $group_id] == 0) {
+                                $customData[$field][$currency_code]['group_' . $group_id] = $min;
 
                                 if ($min === $max) {
-                                    $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $customData[$field][$currency_code]['default_formated'];
+                                    $customData[$field][$currency_code]['group_' . $group_id . '_formated'] = $customData[$field][$currency_code]['default_formated'];
                                 }
                             }
                         }
@@ -634,8 +637,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
     public function getObject(Mage_Catalog_Model_Product $product)
     {
         $type = $this->config->getMappedProductType($product->getTypeId());
-        $this->logger->start('CREATE RECORD '.$product->getId().' '.$this->logger->getStoreName($product->storeId));
-        $this->logger->log('Product type ('.$product->getTypeId().', mapped to: '.$type.')');
+        $this->logger->start('CREATE RECORD ' . $product->getId() . ' ' . $this->logger->getStoreName($product->storeId));
+        $this->logger->log('Product type (' . $product->getTypeId() . ', mapped to: ' . $type . ')');
 
         $defaultData = array();
 
@@ -645,7 +648,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $defaultData = is_array($defaultData) ? $defaultData : explode('|', $defaultData);
 
-        $visibility = (int) $product->getVisibility();
+        $visibility = (int)$product->getVisibility();
 
         /** @var Mage_Catalog_Model_Product_Visibility $catalogProductVisibility */
         $catalogProductVisibility = Mage::getSingleton('catalog/product_visibility');
@@ -653,11 +656,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $visibleInSearch = $catalogProductVisibility->getVisibleInSearchIds();
 
         $customData = array(
-            'objectID'           => $product->getId(),
-            'name'               => $product->getName(),
-            'url'                => $product->getProductUrl(),
-            'visibility_search'  => (int) (in_array($visibility, $visibleInSearch)),
-            'visibility_catalog' => (int) (in_array($visibility, $visibleInCatalog)),
+            'objectID' => $product->getId(),
+            'name' => $product->getName(),
+            'url' => $product->getProductUrl(),
+            'visibility_search' => (int)(in_array($visibility, $visibleInSearch)),
+            'visibility_catalog' => (int)(in_array($visibility, $visibleInCatalog)),
         );
 
         $additionalAttributes = $this->config->getProductAdditionalAttributes($product->getStoreId());
@@ -674,8 +677,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if (is_array($_categoryIds) && count($_categoryIds) > 0) {
             $categoryCollection = Mage::getResourceModel('catalog/category_collection')->addAttributeToSelect('name')
-                                      ->addAttributeToFilter('entity_id', $_categoryIds)
-                                      ->addFieldToFilter('level', array('gt' => 1))->addIsActiveFilter();
+                ->addAttributeToFilter('entity_id', $_categoryIds)
+                ->addFieldToFilter('level', array('gt' => 1))->addIsActiveFilter();
 
             if ($this->config->showCatsNotIncludedInNavigation($product->getStoreId()) == false) {
                 $categoryCollection->addAttributeToFilter('include_in_menu', '1');
@@ -734,17 +737,17 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $categoriesCount = count($category);
 
             for ($i = 0; $i < $categoriesCount; $i++) {
-                if (isset($categories_hierarchical[$level_name.$i]) === false) {
-                    $categories_hierarchical[$level_name.$i] = array();
+                if (isset($categories_hierarchical[$level_name . $i]) === false) {
+                    $categories_hierarchical[$level_name . $i] = array();
                 }
 
-                $mainCategories[$level_name.$i][] = $category[$i];
+                $mainCategories[$level_name . $i][] = $category[$i];
 
                 if ($this->config->indexWholeCategoryTree($product->getStoreId())) {
-                    $categories_hierarchical[$level_name.$i][] = implode(' /// ', array_slice($category, 0, $i + 1));
+                    $categories_hierarchical[$level_name . $i][] = implode(' /// ', array_slice($category, 0, $i + 1));
                 } else {
                     if ($i === ($categoriesCount - 1)) {
-                        $categories_hierarchical[$level_name.$i][] = implode(' /// ', $category);
+                        $categories_hierarchical[$level_name . $i][] = implode(' /// ', $category);
                     }
                 }
             }
@@ -791,7 +794,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         if (false === isset($defaultData['image_url'])) {
             /** @var Algolia_Algoliasearch_Helper_Image $image */
             $image = $imageHelper->init($product, $this->config->getImageType())
-                         ->resize($this->config->getImageWidth(), $this->config->getImageHeight());
+                ->resize($this->config->getImageWidth(), $this->config->getImageHeight());
 
             try {
                 $customData['image_url'] = $image->toString();
@@ -823,7 +826,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $ids = array();
 
                 $selection = $product->getTypeInstance(true)->getSelectionsCollection($product->getTypeInstance(true)
-                                                                                              ->getOptionsIds($product),
+                    ->getOptionsIds($product),
                     $product);
 
                 foreach ($selection as $option) {
@@ -847,31 +850,31 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         if (false === isset($defaultData['in_stock'])) {
             $stockItem = $product->getStockItem();
 
-            $customData['in_stock'] = (int) $stockItem->getIsInStock();
+            $customData['in_stock'] = (int)$stockItem->getIsInStock();
         }
 
         // skip default calculation if we have provided these attributes via the observer in $defaultData
         if (false === isset($defaultData['ordered_qty']) && $this->isAttributeEnabled($additionalAttributes,
                 'ordered_qty')
         ) {
-            $customData['ordered_qty'] = (int) $product->getOrderedQty();
+            $customData['ordered_qty'] = (int)$product->getOrderedQty();
         }
 
         if (false === isset($defaultData['total_ordered']) && $this->isAttributeEnabled($additionalAttributes,
                 'total_ordered')
         ) {
-            $customData['total_ordered'] = (int) $product->getTotalOrdered();
+            $customData['total_ordered'] = (int)$product->getTotalOrdered();
         }
 
         if (false === isset($defaultData['stock_qty']) && $this->isAttributeEnabled($additionalAttributes,
                 'stock_qty')
         ) {
-            $customData['stock_qty'] = (int) $product->getStockQty();
+            $customData['stock_qty'] = (int)$product->getStockQty();
         }
 
         if (Mage::helper('core')->isModuleEnabled('Mage_Review')) {
             if ($this->isAttributeEnabled($additionalAttributes, 'rating_summary')) {
-                $customData['rating_summary'] = (int) $product->getRatingSummary();
+                $customData['rating_summary'] = (int)$product->getRatingSummary();
             }
         }
 
@@ -941,8 +944,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
         }
 
-        $msrpEnabled = method_exists(Mage::helper('catalog'), 'canApplyMsrp') ? (bool) Mage::helper('catalog')
-                                                                                          ->canApplyMsrp($product) : false;
+        $msrpEnabled = method_exists(Mage::helper('catalog'), 'canApplyMsrp') ? (bool)Mage::helper('catalog')
+            ->canApplyMsrp($product) : false;
 
         if (false === $msrpEnabled) {
             $this->handlePrice($product, $sub_products, $customData);
@@ -967,7 +970,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         Mage::dispatchEvent('algolia_after_create_product_object', array('product_data' => $transport, 'sub_products' => $sub_products, 'productObject' => $product));
         $customData = $transport->getData();
 
-        $this->logger->stop('CREATE RECORD '.$product->getId().' '.$this->logger->getStoreName($product->storeId));
+        $this->logger->stop('CREATE RECORD ' . $product->getId() . ' ' . $this->logger->getStoreName($product->storeId));
 
         return $customData;
     }
@@ -984,7 +987,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     public function shouldIndexProductByItsVisibility(Mage_Catalog_Model_Product $product, $storeId)
     {
-        $productVisibility = (int) $product->getVisibility();
+        $productVisibility = (int)$product->getVisibility();
         $indexVisibility = $this->config->indexVisibility($storeId);
 
         $shouldIndex = ($productVisibility > Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE);
