@@ -167,4 +167,23 @@ class ConfigTest extends TestCase
 
         $this->fail('AlgoliaException was not raised');
     }
+
+    public function testRetrievableAttributes()
+    {
+        resetConfigs(array('products/product_additional_attributes', 'categories/category_additional_attributes2'));
+
+        setConfig('algoliasearch/advanced/customer_groups_enable', '0');
+
+        $retrievableAttributes = $this->config->getAttributesToRetrieve(1);
+        $this->assertEmpty($retrievableAttributes);
+
+        setConfig('algoliasearch/advanced/customer_groups_enable', '1');
+
+        $retrievableAttributes = $this->config->getAttributesToRetrieve(1);
+        $this->assertNotEmpty($retrievableAttributes);
+
+        $this->assertContains('objectID', $retrievableAttributes);
+        $this->assertContains('name', $retrievableAttributes);
+        $this->assertContains('product_count', $retrievableAttributes); // Category attribute
+    }
 }

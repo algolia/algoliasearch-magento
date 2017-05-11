@@ -384,7 +384,13 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
         $attributes = array();
         foreach ($this->getProductAdditionalAttributes() as $attribute) {
-            if ($attribute['attribute'] !== 'price') {
+            if ($attribute['attribute'] !== 'price' && $attribute['retrievable'] === '1') {
+                $attributes[] = $attribute['attribute'];
+            }
+        }
+
+        foreach ($this->getCategoryAdditionalAttributes() as $attribute) {
+            if ($attribute['retrievable'] === '1') {
                 $attributes[] = $attribute['attribute'];
             }
         }
@@ -415,6 +421,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
             $attributes[] = 'price.'.$currency.'.special_from_date';
             $attributes[] = 'price.'.$currency.'.special_to_date';
         }
+
+        $attributes = array_unique($attributes);
 
         return $attributes;
     }
