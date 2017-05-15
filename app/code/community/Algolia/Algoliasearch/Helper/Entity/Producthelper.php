@@ -454,6 +454,12 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $directoryCurrency = Mage::getModel('directory/currency');
         $currencies = $directoryCurrency->getConfigAllowCurrencies();
 
+        if (Mage::helper('weee')->getPriceDisplayType($product->getStore()) == 0) {
+            $weeeTaxAmount = Mage::helper('weee')->getAmountForDisplay($product);
+        } else {
+            $weeeTaxAmount = 0;
+        }
+
         $baseCurrencyCode = $store->getBaseCurrencyCode();
 
         $groups = array();
@@ -476,12 +482,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                 $price = (double) $taxHelper->getPrice($product, $product->getPrice(), $with_tax, null, null, null, $product->getStore(), null);
                 $price = $directoryHelper->currencyConvert($price, $baseCurrencyCode, $currency_code);
+                $price += $weeeTaxAmount;
 
                 $customData[$field][$currency_code]['default'] = $price;
                 $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($price, false, $currency_code);
 
                 $special_price = (double) $taxHelper->getPrice($product, $product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
                 $special_price = $directoryHelper->currencyConvert($special_price, $baseCurrencyCode, $currency_code);
+                $special_price += $weeeTaxAmount;
 
                 if ($customer_groups_enabled) {
                     // If fetch special price for groups
@@ -492,6 +500,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         $discounted_price = $product->getPriceModel()->getFinalPrice(1, $product);
                         $discounted_price = $directoryHelper->currencyConvert($discounted_price, $baseCurrencyCode, $currency_code);
+                        $discounted_price += $weeeTaxAmount;
 
                         if ($discounted_price !== false) {
                             $customData[$field][$currency_code]['group_'.$group_id] = (double) $taxHelper->getPrice($product,
