@@ -214,7 +214,7 @@
                 <push_initial_search>0</push_initial_search>
             </analytics>
             <synonyms>
-                <enable_synonyms>1</enable_synonyms>
+                <enable_synonyms>0</enable_synonyms>
             </synonyms>
             <advanced>
                 <remove_words_if_no_result>allOptional</remove_words_if_no_result>
