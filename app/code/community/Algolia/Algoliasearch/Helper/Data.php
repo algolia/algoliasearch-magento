@@ -563,10 +563,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 $toRealRemove = $indexData['toRemove'];
             } else {
                 $indexData['toRemove'] = array_map('strval', $indexData['toRemove']);
-                $objects = $this->algolia_helper->getObjects($indexName, $indexData['toRemove']);
-                foreach ($objects['results'] as $object) {
-                    if (isset($object['objectID'])) {
-                        $toRealRemove[] = $object['objectID'];
+
+                foreach (array_chunk($indexData['toRemove'], 1000) as $chunk) {
+                    $objects = $this->algolia_helper->getObjects($indexName, $chunk);
+                    foreach ($objects['results'] as $object) {
+                        if (isset($object['objectID'])) {
+                            $toRealRemove[] = $object['objectID'];
+                        }
                     }
                 }
             }
