@@ -56,10 +56,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		});
 		
 		/**
-		 * ADD YOUR CUSTOM DATA SOURCE HERE
-		 **/
-		
-		/**
 		 * Setup the autocomplete search input
 		 * For autocomplete feature is used Algolia's autocomplete.js library
 		 * Docs: https://github.com/algolia/autocomplete.js
@@ -85,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			}
 			
 			if (typeof algoliaHookBeforeAutocompleteStart === 'function') {
-				var hookResult = algoliaHookBeforeAutocompleteStart(sources, options);
+				var hookResult = algoliaHookBeforeAutocompleteStart(sources, options, algolia_client);
 				
 				sources = hookResult.shift();
 				options = hookResult.shift();
