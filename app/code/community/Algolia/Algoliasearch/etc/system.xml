@@ -28,6 +28,10 @@
                         position: relative;
                         top: 4px;
                     }
+
+                    .comment a {
+                        color: #ea7601;
+                    }
                 </style>
                 ]]>
             </label>
@@ -52,15 +56,15 @@
                         <table>
                             <tr>
                                 <td>Documentation:</td>
-                                <td><a target="_BLANK" href="https://community.algolia.com/magento/documentation">https://community.algolia.com/magento/documentation</a></td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/doc/m1/getting-started/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://community.algolia.com/magento/documentation</a></td>
                             </tr>
                             <tr>
                                 <td>FAQ: </td>
-                                <td><a target="_BLANK" href="https://community.algolia.com/magento/faq/">https://community.algolia.com/magento/faq/</a></td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/faq/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://community.algolia.com/magento/faq/</a></td>
                             </tr>
                             <tr>
                                 <td>Issues: </td>
-                                <td><a target="_BLANK" href="https://github.com/algolia/algoliasearch-magento/issues">https://github.com/algoliasearch-magento/issues</a></td>
+                                <td><a target="_blank" href="https://github.com/algolia/algoliasearch-magento/issues/">https://github.com/algoliasearch-magento/issues</a></td>
                             </tr>
                         </table>
                         <br>
@@ -189,6 +193,18 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <expanded>0</expanded>
+                    <comment>
+                        <![CDATA[
+                        To customize autocomplete menu beyond its configuration, you can read tutorials:
+                        <a target="_blank" href="https://community.algolia.com/magento/doc/m1/customize-autocomplete/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">How to customize autocomplete</a>,
+                        <a target="_blank" href="https://community.algolia.com/magento/doc/m1/external-autocomplete-source/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">How to add external data source</a>,
+                        <a target="_blank" href="https://community.algolia.com/magento/doc/m1/backend/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">How to use backend events</a>
+                        <br>
+                        <br>
+                        <hr>
+                        <br>
+                        ]]>
+                    </comment>
                     <fields>
                         <nb_of_products_suggestions translate="label comment">
                             <label>Number of products</label>
@@ -288,7 +304,8 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the pages you don't want to search in.
+                                Configure here the pages you don't want to search in. <br>
+                                Pages' indexing documentation: <a target="_blank" href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#pages-indexing">https://community.algolia.com/magento/doc/m1/indexing/#pages-indexing</a>
                                 ]]>
                             </comment>
                         </excluded_pages>
@@ -318,9 +335,15 @@
                     <show_in_store>1</show_in_store>
                     <expanded>0</expanded>
                     <comment>
-                     <![CDATA[
-
-                     ]]>
+                        <![CDATA[
+                        To customize instant search results page beyond its configuration, you can read tutorials:
+                        <a target="_blank" href="https://community.algolia.com/magento/doc/m1/customize-instantsearch/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">How to customize instantsearch</a>,
+                        <a target="_blank" href="https://community.algolia.com/magento/doc/m1/backend/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">How to use backend events</a>
+                        <br>
+                        <br>
+                        <hr>
+                        <br>
+                        ]]>
                     </comment>
                     <fields>
                         <instant_selector translate="label comment">
@@ -340,7 +363,14 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Configure here the filtering options you want to display on your search results page. Choose Disjunctive to allow the selection of different values of a facet (e.g. hotels with 4 OR 5 stars). Choose Conjunctive to allow the selection of only one value of a facet (e.g. only "Size M").</comment>
+                            <comment>
+                                <![CDATA[
+                                Configure here the filtering options you want to display on your search results page.
+                                Choose Disjunctive to allow the selection of different values of a facet (e.g. hotels with 4 OR 5 stars).
+                                Choose Conjunctive to allow the selection of only one value of a facet (e.g. only "Size M").<br>
+                                Facets' documentation: <a target="_blank" href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#facets">https://community.algolia.com/magento/doc/m1/indexing/#facets</a>
+                                ]]>
+                            </comment>
                         </facets>
                         <max_values_per_facet translate="label comment">
                             <label>Number of values per facet</label>
@@ -361,9 +391,10 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment>
-                                Configure here the different sorting options you want to offer.
-
                                 <![CDATA[
+                                Configure here the different sorting options you want to offer.<br>
+                                Sorts documentation: <a target="_blank" href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#sorting-strategies">https://community.algolia.com/magento/doc/m1/indexing/#sorting-strategies</a>
+
                                 <br /><br />
                                 The extension will create :<br />
                                 - 1 index/store<br />
@@ -413,8 +444,16 @@
                     <expanded>0</expanded>
                     <comment>
                         <![CDATA[
-
-                     ]]>
+                        <table>
+                            <tr>
+                                <td>Products' indexing documentation:</td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#products-indexing">https://community.algolia.com/magento/doc/m1/indexing/#products-indexing</a></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <hr>
+                        <br>
+                        ]]>
                     </comment>
                     <fields>
                         <number_product_results translate="label comment">
@@ -437,8 +476,10 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Choose here the product attributes your users can search on, the ones you want to use as filters and sorts options and the ones required to display the search results.<br><br>
-                                 The order of the searchable attributes matters: a query matching the first searchable attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matching word(s) inside the attribute to matter. A match at the beginning of an attribute will be considered more important: for the query "iPhone", "iPhone 5s" will be ranked before "case for iPhone".<br><br>Index empty value means that if a product attribute isn't set the default value (probably No or N/A, depends on your translations) will not be indexed. This can be handy for categories where not all products do have all attributes set which can cause a lot of "No" facet values.<br>
+                                Choose here the product attributes your users can search on, the ones you want to use as filters and sorts options and the ones required to display the search results.<br>
+                                Searchable attributes' documentation: <a target="_blank" href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#searchable-attributes">https://community.algolia.com/magento/doc/m1/indexing/#searchable-attributes</a>
+                                <br><br>
+                                The order of the searchable attributes matters: a query matching the first searchable attribute of a product will put this product before the others in the results. Chose "Ordered" if you want the position of the matching word(s) inside the attribute to matter. A match at the beginning of an attribute will be considered more important: for the query "iPhone", "iPhone 5s" will be ranked before "case for iPhone".<br><br>Index empty value means that if a product attribute isn't set the default value (probably No or N/A, depends on your translations) will not be indexed. This can be handy for categories where not all products do have all attributes set which can cause a lot of "No" facet values.<br>
                                 <br><span class="algolia-config-warning">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
                                 ]]>
                             </comment>
@@ -453,7 +494,9 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br /><br />
+                                Configure here the attributes that reflect the popularity of your product (number of orders, number of likes, number of views, ...).<br>
+                                What is Custom ranking? <a target="_blank" href="https://www.algolia.com/doc/guides/relevance/sorting/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#sort-by-relevance-using-the-custom-ranking">https://www.algolia.com/doc/guides/relevance/sorting/#sort-by-relevance-using-the-custom-ranking</a>
+                                <br /><br />
                                 In case you want to use attribute which cannot be selected from the select box (eg. attribute indexed from outside of Magento), you can use "[use custom attribute]" option and write the name of the attribute into the new text field.<br /><br />
                                 <span class="algolia-config-warning">&#9888;</span> All attributes used here must have been initially included in the Attributes configuration panel.
                                 ]]>
@@ -531,9 +574,17 @@
                     <show_in_store>1</show_in_store>
                     <expanded>0</expanded>
                     <comment>
-                     <![CDATA[
-
-                     ]]>
+                        <![CDATA[
+                        <table>
+                            <tr>
+                                <td>Categories' indexing documentation:</td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#categories-indexing">https://community.algolia.com/magento/doc/m1/indexing/#categories-indexing</a></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <hr>
+                        <br>
+                        ]]>
                     </comment>
                     <fields>
                         <category_additional_attributes2 translate="label comment">
@@ -547,6 +598,8 @@
                             <comment>
                                 <![CDATA[
                                 Configure here the category attributes your users can search on. The order of these attributes matters: the higher in the list, the more important to rank the results.<br />
+                                Searchable attributes' documentation: <a target="_blank" href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#searchable-attributes-1">https://community.algolia.com/magento/doc/m1/indexing/#searchable-attributes-1</a>
+                                <br><br>
                                 <span class="algolia-config-warning">&#9888;</span> Do not forget to reindex your Algolia Search index after you've modified this panel.
                                 ]]>
                             </comment>
@@ -561,7 +614,9 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                Choose here the attributes that reflect the popularity of your categories (number of products, total number of sales of the category,etc.).<br /><br />
+                                Choose here the attributes that reflect the popularity of your categories (number of products, total number of sales of the category,etc.).<br>
+                                What is Custom ranking? <a target="_blank" href="https://www.algolia.com/doc/guides/relevance/sorting/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#sort-by-relevance-using-the-custom-ranking">https://www.algolia.com/doc/guides/relevance/sorting/#sort-by-relevance-using-the-custom-ranking</a>
+                                <br /><br />
                                 In case you want to use attribute which cannot be selected from the select box (eg. attribute indexed from outside of Magento), you can use "[use custom attribute]" option and write the name of the attribute into the new text field.<br /><br />
                                 <span class="algolia-config-warning">&#9888;</span> All attributes used here must have been included before in the Attributes chart.
                                 ]]>
@@ -591,6 +646,19 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
+                    <comment>
+                        <![CDATA[
+                        <table>
+                            <tr>
+                                <td>If you have issues with images:</td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/faq/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#why-are-images-not-showing-up">https://community.algolia.com/magento/faq/#why-are-images-not-showing-up</a></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <hr>
+                        <br>
+                     ]]>
+                    </comment>
                     <fields>
                         <width translate="label comment">
                             <label>Width</label>
@@ -632,6 +700,19 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
+                    <comment>
+                        <![CDATA[
+                        <table>
+                            <tr>
+                                <td>Indexing queue documentation:</td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information">https://community.algolia.com/magento/doc/m1/indexing/#general-information</a></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <hr>
+                        <br>
+                        ]]>
+                    </comment>
                     <fields>
                         <active translate="label">
                             <label>Queue Enabled</label>
@@ -694,7 +775,12 @@
                     <show_in_store>1</show_in_store>
                     <comment>
                         <![CDATA[
-                        Documentation of Magento analytics: <a href="https://community.algolia.com/magento/doc/m1/analytics/" target="_blank">https://community.algolia.com/magento/doc/m1/analytics/</a>
+                        <table>
+                            <tr>
+                                <td>Analytics documentation:</td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/doc/m1/analytics/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://community.algolia.com/magento/faq/#why-are-images-not-showing-up</a></td>
+                            </tr>
+                        </table>
                         <br>
                         <hr>
                         <br>
@@ -773,7 +859,7 @@
                         <table>
                             <tr>
                                 <td>Synonyms documentation:</td>
-                                <td><a target="_blank" href="https://www.algolia.com/doc/synonyms">https://www.algolia.com/doc/synonyms</a></td>
+                                <td><a target="_blank" href="https://www.algolia.com/doc/synonyms/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://www.algolia.com/doc/synonyms</a></td>
                             </tr>
                         </table>
                         <br>
@@ -964,7 +1050,7 @@
                                 <![CDATA[
                                 This feature enables the extension to automatically update the product index when category is updated.
                                 By default the feature is turned off. <br />
-                                This feature should not be enabled all the time as it generates large amount of operations. It should be enabled only when category is renamed / moved / etc... and it's products need to be reindexed.
+                                This feature should not be enabled all the time as it generates large amount of operations. It should be enabled only when category is renamed / moved / etc... and its products need to be reindexed.
                                 ]]>
                             </comment>
                         </index_all_category_product_on_category_update>
