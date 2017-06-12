@@ -1,5 +1,25 @@
 ## CHANGE LOG
 
+### 1.10.0
+
+#### FEATURES
+- **BC Break** - JS hooks - instantsearch.js file was completely refactored to create IS config object which can be manipulated via hook method (#822)
+- The indexed prices now include `WEEE` tax (#829)
+- The configuration page now displays information about the indexing queue and gives possibility to clear the queue (#849)
+
+#### UPDATES
+- Optimized assets - removed useless images (#820)
+- Synonyms management from Magento is turned off by default (#832)
+- Instance of `algolia_client` is now passed as thrid parameter to `algoliaHookBeforeAutocompleteStart` hook method (#847)
+
+#### FIXES
+- The correct price is now used for sorting with multistore / multicurrency setup (#818)
+- Fixed SVG icons when using Magento's merge CSS feature (#819)
+- Attributes to retrieve now contains attributes for categories (#827)
+- Fix the issue with Algolia error when more than 1000 products are supposed to be deleted (#838)
+- Correct products are displayed on category page when categories attribute is not set as attribute for faceting (#846)
+
+
 ### 1.9.0
 
 #### FEATURES
