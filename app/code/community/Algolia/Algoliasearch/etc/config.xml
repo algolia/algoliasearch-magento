@@ -63,6 +63,17 @@
             </modules>
         </translate>
     </adminhtml>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <controller before="Mage_Adminhtml">Algolia_Algoliasearch_Adminhtml</controller>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
     <global>
         <helpers>
             <algoliasearch>
