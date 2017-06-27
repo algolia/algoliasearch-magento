@@ -424,7 +424,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
         $attributes = array_unique($attributes);
 
-        return $attributes;
+        return array_values($attributes);
     }
 
     public function getCategoryAdditionalAttributes($storeId = null)
