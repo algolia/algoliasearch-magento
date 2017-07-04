@@ -323,6 +323,11 @@ a.ais-current-refined-values--link:hover
 .ais-range-slider--marker-large:first-child {
   margin-left: 0;
 }
+
+.ais-root__collapsed .ais-body, .ais-root__collapsed .ais-footer {
+	display: none;
+}
+
 /******************
 **
 ** Auto-completion menu
