@@ -30,6 +30,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const MIN_NUMBER_OF_RESULTS = 'algoliasearch/autocomplete/min_number_of_results';
     const DISPLAY_SUGGESTIONS_CATEGORIES = 'algoliasearch/autocomplete/display_categories_with_suggestions';
     const RENDER_TEMPLATE_DIRECTIVES = 'algoliasearch/autocomplete/render_template_directives';
+    const AUTOCOMPLETE_MENU_DEBUG = 'algoliasearch/autocomplete/debug';
 
     const NUMBER_OF_PRODUCT_RESULTS = 'algoliasearch/products/number_product_results';
     const PRODUCT_ATTRIBUTES = 'algoliasearch/products/product_additional_attributes';
@@ -313,6 +314,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getRenderTemplateDirectives($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::RENDER_TEMPLATE_DIRECTIVES, $storeId);
+    }
+
+    public function isAutocompleteDebugEnabled($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::AUTOCOMPLETE_MENU_DEBUG, $storeId);
     }
 
     public function getSortingIndices($storeId = null)
