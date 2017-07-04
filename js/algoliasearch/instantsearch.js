@@ -60,18 +60,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		};
 		
 		if (algoliaConfig.request.path.length > 0 && window.location.hash.indexOf('categories.level0') === -1) {
-			if (algoliaConfig.areCategoriesInFacets === false) {
+			if (algoliaConfig.areCategoriesInFacets) {
+				instantsearchOptions.searchParameters = {
+					hierarchicalFacetsRefinements: {
+						'categories.level0': [algoliaConfig.request.path]
+					}
+				};
+			} else {
 				instantsearchOptions.searchParameters = {
 					facetsRefinements: { }
 				};
 				
 				instantsearchOptions.searchParameters['facetsRefinements']['categories.level' + algoliaConfig.request.level] = [algoliaConfig.request.path];
-			} else {
-				instantsearchOptions.searchParameters = {
-					hierarchicalFacetsRefinements: {
-						'categories.level0': [algoliaConfig.request.path]
-					}
-				}
 			}
 		}
 		
