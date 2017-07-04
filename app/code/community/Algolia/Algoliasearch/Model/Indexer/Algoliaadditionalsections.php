@@ -68,12 +68,16 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliaadditionalsections extends Algo
      */
     public function reindexAll()
     {
+        if ($this->config->isModuleOutputEnabled() === false) {
+            return $this;
+        }
+
         if (!$this->config->getApplicationID() || !$this->config->getAPIKey() || !$this->config->getSearchOnlyAPIKey()) {
             /** @var Mage_Adminhtml_Model_Session $session */
             $session = Mage::getSingleton('adminhtml/session');
             $session->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
 
-            return;
+            return $this;
         }
 
         $this->engine->rebuildAdditionalSections();

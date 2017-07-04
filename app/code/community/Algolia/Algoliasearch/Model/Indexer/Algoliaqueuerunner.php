@@ -68,7 +68,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliaqueuerunner extends Mage_Index_
             $session = Mage::getSingleton('adminhtml/session');
             $session->addError('Algolia reindexing failed: You need to configure your Algolia credentials in System > Configuration > Algolia Search.');
 
-            return;
+            return $this;
         }
 
         $this->queue->runCron();
