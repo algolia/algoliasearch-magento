@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					dropdownMenu: '#menu-template'
 				},
 				dropdownMenuContainer: "#algolia-autocomplete-container",
-				debug: false
+				debug: algoliaConfig.autocomplete.isDebugEnabled
 			};
 			
 			if (isMobile() === true) {

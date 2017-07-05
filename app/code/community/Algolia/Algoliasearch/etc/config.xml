@@ -201,6 +201,7 @@
                 <min_number_of_results>2</min_number_of_results>
                 <display_categories_with_suggestions>1</display_categories_with_suggestions>
                 <render_template_directives>1</render_template_directives>
+                <debug>0</debug>
             </autocomplete>
             <categories>
                 <number_category_suggestions>5</number_category_suggestions>
