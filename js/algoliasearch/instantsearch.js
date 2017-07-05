@@ -59,6 +59,22 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			}
 		};
 		
+		if (algoliaConfig.request.path.length > 0 && window.location.hash.indexOf('categories.level0') === -1) {
+			if (algoliaConfig.areCategoriesInFacets) {
+				instantsearchOptions.searchParameters = {
+					hierarchicalFacetsRefinements: {
+						'categories.level0': [algoliaConfig.request.path]
+					}
+				};
+			} else {
+				instantsearchOptions.searchParameters = {
+					facetsRefinements: { }
+				};
+				
+				instantsearchOptions.searchParameters['facetsRefinements']['categories.level' + algoliaConfig.request.level] = [algoliaConfig.request.path];
+			}
+		}
+		
 		if (typeof algoliaHookBeforeInstantsearchInit === 'function') {
 			instantsearchOptions = algoliaHookBeforeInstantsearchInit(instantsearchOptions);
 		}
@@ -113,13 +129,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 						
 						if (algoliaConfig.request.refinementKey.length > 0) {
 							data.helper.toggleRefine(algoliaConfig.request.refinementKey, algoliaConfig.request.refinementValue);
-						}
-						
-						if (algoliaConfig.areCategoriesInFacets === false && algoliaConfig.request.path.length > 0) {
-							var facet = 'categories.level' + algoliaConfig.request.level;
-							
-							data.helper.state.facets.push(facet);
-							data.helper.toggleRefine(facet, algoliaConfig.request.path);
 						}
 						
 						data.helper.setPage(page);
@@ -460,14 +469,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			
 			if (typeof algoliaHookAfterInstantsearchStart === 'function') {
 				search = algoliaHookAfterInstantsearchStart(search);
-			}
-			
-			if (algoliaConfig.request.path.length > 0
-				&& 'categories.level0' in search.helper.state.hierarchicalFacetsRefinements === false
-				&& 'categories.level0' in search.helper.state.facetsRefinements === false) {
-				var page = search.helper.state.page;
-				
-				search.helper.toggleRefinement('categories.level0', algoliaConfig.request.path).setPage(page).search();
 			}
 			
 			handleInputCrossInstant($(instant_selector));
