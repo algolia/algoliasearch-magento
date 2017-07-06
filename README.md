@@ -10,7 +10,7 @@ Algolia Search for Magento 1.6+
 ![Magento 1.9.2](https://img.shields.io/badge/magento-1.9.2-blue.svg)
 ![Magento 1.9.3](https://img.shields.io/badge/magento-1.9.3-blue.svg)
 
-- **Auto-completion menu:** Offer End-Users immediate access to your whole catalog from the dropdown menu, whatever your number of categories or attributes.
+- **Auto-completion menu:** Offer End-Users immediate access to your whole catalog from the dropdown menu, whatever your number of categories or attributes is.
 
 - **Instant search results page:** Have your search results page, navigation and pagination updated in realtime, after each keystroke.
 
