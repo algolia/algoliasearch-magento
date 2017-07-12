@@ -229,7 +229,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $customRankingAttributes = array();
 
-        $facets = $this->config->getFacets();
+        $facets = $this->config->getFacets($storeId);
 
         /** @var Mage_Directory_Model_Currency $directoryCurrency */
         $directoryCurrency = Mage::getModel('directory/currency');
@@ -291,7 +291,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         /*
          * Handle replicas
          */
-        $sorting_indices = $this->config->getSortingIndices();
+        $sorting_indices = $this->config->getSortingIndices($storeId);
 
         if (count($sorting_indices) > 0) {
             $replicas = array();
