@@ -905,15 +905,16 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             if ($attribute_resource) {
                 $attribute_resource->setStoreId($product->getStoreId());
 
+                $values = array();
+                $subProductImages = array();
+
                 /**
                  * if $value is missing or if the attribute is SKU,
                  * use values from child products.
                  */
                 if (($value === null || 'sku' == $attribute_name) && ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')) {
-                    if ($value === null) {
-                        $values = array();
-                    } else {
-                        $values = array($this->getValueOrValueText($product, $attribute_name, $attribute_resource));
+                    if ($value !== null) {
+                        $values[] = $this->getValueOrValueText($product, $attribute_name, $attribute_resource);
                     }
 
                     $all_sub_products_out_of_stock = true;
@@ -931,13 +932,33 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                             $value = $sub_product->getData($attribute_name);
 
                             if ($value) {
-                                $values[] = $this->getValueOrValueText($sub_product, $attribute_name, $attribute_resource);
+                                $textValue = $this->getValueOrValueText($sub_product, $attribute_name, $attribute_resource);
+
+                                $values[] = $textValue;
+
+                                if (mb_strtolower($attribute_name, 'utf-8') === 'color') {
+                                    $image = $imageHelper->init($sub_product, $this->config->getImageType())
+                                                         ->resize($this->config->getImageWidth(),
+                                                             $this->config->getImageHeight());
+
+                                    try {
+                                        $textValueInLower = mb_strtolower($textValue, 'utf-8');
+                                        $subProductImages[$textValueInLower] = $image->toString();
+                                    } catch (\Exception $e) {
+                                        $this->logger->log($e->getMessage());
+                                        $this->logger->log($e->getTraceAsString());
+                                    }
+                                }
                             }
                         }
                     }
 
                     if (is_array($values) && count($values) > 0) {
                         $customData[$attribute_name] = array_values(array_unique($values, SORT_REGULAR));
+                    }
+
+                    if (empty($subProductImages) === false) {
+                        $customData['images_data'] = $subProductImages;
                     }
 
                     // Set main product out of stock if all
