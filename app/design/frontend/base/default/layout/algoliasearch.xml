@@ -63,4 +63,14 @@
             <block type="core/template" template="algoliasearch/autocomplete.phtml" name="algolia-autocomplete"/>
         </reference>
     </algolia_search_handle_no_topsearch>
+
+    <algolia_search_handle_prevent_backend_rendering>
+        <reference name="left_first">
+            <action method="unsetChild"><name>catalog.leftnav</name></action>
+        </reference>
+
+        <reference name="content">
+            <action method="unsetChild"><name>category.products</name></action>
+        </reference>
+    </algolia_search_handle_prevent_backend_rendering>
 </layout>

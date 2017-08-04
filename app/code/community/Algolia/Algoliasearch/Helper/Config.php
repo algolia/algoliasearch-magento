@@ -72,6 +72,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const AUTOCOMPLETE_SELECTOR = 'algoliasearch/advanced/autocomplete_selector';
     const INDEX_PRODUCT_ON_CATEGORY_PRODUCTS_UPDATE = 'algoliasearch/advanced/index_product_on_category_products_update';
     const INDEX_ALL_CATEGORY_PRODUCTS_ON_CATEGORY_UPDATE = 'algoliasearch/advanced/index_all_category_product_on_category_update';
+    const PREVENT_BACKEND_RENDERING = 'algoliasearch/advanced/prevent_backend_rendering';
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
@@ -603,6 +604,15 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         $constant = 'EXTRA_SETTINGS_'.mb_strtoupper($section);
 
         return trim(Mage::getStoreConfig(constant('self::'.$constant), $storeId));
+    }
+
+    public function preventBackendRendering($storeId = null)
+    {
+        if ($this->replaceCategories($storeId) === true) {
+            return Mage::getStoreConfigFlag(self::PREVENT_BACKEND_RENDERING, $storeId);
+        }
+
+        return false;
     }
 
     private function getCustomRanking($configName, $storeId = null)
