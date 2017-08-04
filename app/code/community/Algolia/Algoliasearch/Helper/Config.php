@@ -509,13 +509,17 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getPopularQueries($storeId = null)
     {
+        if (!$this->isInstantEnabled($storeId) || !$this->showSuggestionsOnNoResultsPage($storeId)) {
+            return array();
+        }
+
         if ($storeId === null) {
             $storeId = Mage::app()->getStore()->getId();
         }
 
-        /** @var Algolia_Algoliasearch_Helper_Entity_Suggestionhelper $suggestion_helper */
-        $suggestion_helper = Mage::helper('algoliasearch/entity_suggestionhelper');
-        $popularQueries = $suggestion_helper->getPopularQueries($storeId);
+        /** @var Algolia_Algoliasearch_Helper_Entity_Suggestionhelper $suggestionHelper */
+        $suggestionHelper = Mage::helper('algoliasearch/entity_suggestionhelper');
+        $popularQueries = $suggestionHelper->getPopularQueries($storeId);
 
         return $popularQueries;
     }
