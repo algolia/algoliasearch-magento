@@ -173,6 +173,7 @@
                 <index_prefix>magento_</index_prefix>
                 <is_popup_enabled>1</is_popup_enabled>
                 <is_instant_enabled>0</is_instant_enabled>
+                <use_image_adaptive>0</use_image_adaptive>
             </credentials>
             <products>
                 <number_product_results>9</number_product_results>

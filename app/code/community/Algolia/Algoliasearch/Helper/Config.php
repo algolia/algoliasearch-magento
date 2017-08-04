@@ -13,6 +13,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const SEARCH_ONLY_API_KEY = 'algoliasearch/credentials/search_only_api_key';
     const INDEX_PREFIX = 'algoliasearch/credentials/index_prefix';
     const IS_INSTANT_ENABLED = 'algoliasearch/credentials/is_instant_enabled';
+    const USE_ADAPTIVE_IMAGE = 'algoliasearch/credentials/use_adaptive_image';
 
     const REPLACE_CATEGORIES = 'algoliasearch/instant/replace_categories';
     const INSTANT_SELECTOR = 'algoliasearch/instant/instant_selector';
@@ -293,6 +294,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function isInstantEnabled($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::IS_INSTANT_ENABLED, $storeId);
+    }
+
+    public function useAdaptiveImage($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::USE_ADAPTIVE_IMAGE, $storeId);
     }
 
     public function getInstantSelector($storeId = null)

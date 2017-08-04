@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				transformData: {
 					allItems: function (results) {
 						for (var i = 0; i < results.hits.length; i++) {
-							results.hits[i] = transformHit(results.hits[i], algoliaConfig.priceKey);
+							results.hits[i] = transformHit(results.hits[i], algoliaConfig.priceKey, search.helper);
 							results.hits[i].isAddToCartEnabled = algoliaConfig.instant.isAddToCartEnabled;
 							
 							results.hits[i].algoliaConfig = window.algoliaConfig;
