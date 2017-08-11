@@ -67,10 +67,22 @@
     <algolia_search_handle_prevent_backend_rendering>
         <reference name="left_first">
             <action method="unsetChild"><name>catalog.leftnav</name></action>
+            <action method="unsetChild"><name>catalogsearch.leftnav</name></action>
+        </reference>
+
+        <reference name="left">
+            <action method="unsetChild"><name>tags_popular</name></action>
         </reference>
 
         <reference name="content">
             <action method="unsetChild"><name>category.products</name></action>
+            <action method="unsetChild"><name>search.result</name></action>
+        </reference>
+
+        <reference name="right">
+            <action method="unsetChild"><name>right.reports.product.viewed</name></action>
+            <action method="unsetChild"><name>left.reports.product.viewed</name></action>
+            <action method="unsetChild"><name>right.poll</name></action>
         </reference>
     </algolia_search_handle_prevent_backend_rendering>
 </layout>
