@@ -73,6 +73,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const INDEX_PRODUCT_ON_CATEGORY_PRODUCTS_UPDATE = 'algoliasearch/advanced/index_product_on_category_products_update';
     const INDEX_ALL_CATEGORY_PRODUCTS_ON_CATEGORY_UPDATE = 'algoliasearch/advanced/index_all_category_product_on_category_update';
     const PREVENT_BACKEND_RENDERING = 'algoliasearch/advanced/prevent_backend_rendering';
+    const BACKEND_RENDERING_ALLOWED_USER_AGENTS = 'algoliasearch/advanced/backend_rendering_allowed_user_agents';
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
@@ -608,11 +609,31 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function preventBackendRendering($storeId = null)
     {
-        if ($this->replaceCategories($storeId) === true) {
-            return Mage::getStoreConfigFlag(self::PREVENT_BACKEND_RENDERING, $storeId);
+        $preventBackendRendering = Mage::getStoreConfigFlag(self::PREVENT_BACKEND_RENDERING, $storeId);
+
+        if ($preventBackendRendering === false) {
+            return false;
         }
 
-        return false;
+        $userAgent = mb_strtolower($_SERVER['HTTP_USER_AGENT'], 'utf-8');
+
+        $allowedUserAgents = Mage::getStoreConfig(self::BACKEND_RENDERING_ALLOWED_USER_AGENTS, $storeId);
+        $allowedUserAgents = trim($allowedUserAgents);
+
+        if ($allowedUserAgents === '') {
+            return true;
+        }
+
+        $allowedUserAgents = explode("\n", $allowedUserAgents);
+
+        foreach ($allowedUserAgents as $allowedUserAgent) {
+            $allowedUserAgent = mb_strtolower($allowedUserAgent, 'utf-8');
+            if (strpos($userAgent, $allowedUserAgent) !== false) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function getCustomRanking($configName, $storeId = null)

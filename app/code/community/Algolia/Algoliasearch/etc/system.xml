@@ -1083,6 +1083,20 @@
                                 ]]>
                             </comment>
                         </prevent_backend_rendering>
+                        <backend_rendering_allowed_user_agents translate="label comment">
+                            <label>Allow backend rendering for User Agents:</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                You can specify multiple User-Agents, just put one User-Agent per a line.
+                                ]]>
+                            </comment>
+                            <depends><prevent_backend_rendering>1</prevent_backend_rendering></depends>
+                        </backend_rendering_allowed_user_agents>
                     </fields>
                 </advanced>
                 <advanced_settings translate="label">
