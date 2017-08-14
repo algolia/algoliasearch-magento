@@ -91,6 +91,20 @@ class Algolia_Algoliasearch_Model_Observer
         Algolia_Algoliasearch_Model_Indexer_Algolia::$product_categories[$product->getId()] = $product->getCategoryIds();
     }
 
+    public function savePage(Varien_Event_Observer $observer)
+    {
+        /** @var Mage_Cms_Model_Page $page */
+        $page = $observer->getDataObject();
+        $page = Mage::getModel('cms/page')->load($page->getId());
+
+        $storeIds = $page->getStoreId();
+
+        /** @var Algolia_Algoliasearch_Model_Resource_Engine $engine */
+        $engine = Mage::getResourceModel('algoliasearch/engine');
+
+        $engine->rebuildPages($storeIds, $page->getId());
+    }
+
     public function deleteProductsStoreIndices(Varien_Object $event)
     {
         $storeId = $event->getStoreId();
@@ -123,8 +137,9 @@ class Algolia_Algoliasearch_Model_Observer
     public function rebuildPageIndex(Varien_Object $event)
     {
         $storeId = $event->getStoreId();
+        $pageIds = $event->getPageIds();
 
-        $this->helper->rebuildStorePageIndex($storeId);
+        $this->helper->rebuildStorePageIndex($storeId, $pageIds);
     }
 
     public function rebuildSuggestionIndex(Varien_Object $event)
