@@ -2,6 +2,11 @@
 
 class Algolia_Algoliasearch_Adminhtml_QueueController extends Mage_Adminhtml_Controller_Action
 {
+    public function _isAllowed()
+    {
+        return true;
+    }
+
     public function indexAction()
     {
         /** @var Algolia_Algoliasearch_Helper_Config $config */
