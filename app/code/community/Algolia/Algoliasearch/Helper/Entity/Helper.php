@@ -272,6 +272,8 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
                     $store_ids[] = $store->getId();
                 }
             }
+        } elseif (is_array($store_id)) {
+            return $store_id;
         } else {
             $store_ids = array($store_id);
         }

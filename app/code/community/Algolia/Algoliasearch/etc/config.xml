@@ -130,6 +130,15 @@
                     </algolia_stockupdate>
                 </observers>
             </catalog_product_save_before>
+
+            <cms_page_save_before>
+                <observers>
+                    <algolia_savepage>
+                        <class>algoliasearch/observer</class>
+                        <method>savePage</method>
+                    </algolia_savepage>
+                </observers>
+            </cms_page_save_before>
         </events>
         <resources>
             <algoliasearch_setup>
