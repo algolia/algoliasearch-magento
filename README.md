@@ -1,13 +1,6 @@
-Algolia Search for Magento
+Algolia Search for Magento 1.6+
 ==================
-
-[Algolia Search](http://www.algolia.com) is a hosted full-text, numerical, and faceted search engine capable of delivering realtime results from the first keystroke.
-
-This extension replaces the default search of Magento with a typo-tolerant, fast & relevant search experience backed by Algolia. It's based on [algoliasearch-client-php](https://github.com/algolia/algoliasearch-client-php) and [algoliasearch-client-js](https://github.com/algolia/algoliasearch-client-js).
-
-See features and benefits of [Algolia Search Extension for Magento](https://community.algolia.com/magento).
-
-![Latest version](https://img.shields.io/badge/latest-1.8.1-green.svg)
+![Latest version](https://img.shields.io/badge/latest-1.10.0-green.svg)
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-magento.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-magento)
 ![PHP >= 5.3](https://img.shields.io/badge/php-%3E=5.3-green.svg)
 
@@ -17,28 +10,32 @@ See features and benefits of [Algolia Search Extension for Magento](https://comm
 ![Magento 1.9.2](https://img.shields.io/badge/magento-1.9.2-blue.svg)
 ![Magento 1.9.3](https://img.shields.io/badge/magento-1.9.3-blue.svg)
 
-Documentation
+- **Auto-completion menu:** Offer End-Users immediate access to your whole catalog from the dropdown menu, whatever your number of categories or attributes.
+
+- **Instant search results page:** Have your search results page, navigation and pagination updated in realtime, after each keystroke.
+
+Official website: [community.algolia.com/magento](https://community.algolia.com/magento).
+
+*Note: if your store is running under Magento version 2, please check our [Algolia for Magento 2 extension](https://github.com/algolia/algoliasearch-magento-2).*
+
+Algolia Search
 --------------
 
-Check out our documentation on [community.algolia.com/magento](https://community.algolia.com/magento/documentation/).
+[Algolia](http://www.algolia.com) is a search engine API as a service capable of delivering realtime results from the first keystroke.
 
-Demo
---------------
+This extension replaces the default search of Magento with a typo-tolerant, fast & relevant search experience backed by Algolia. It's based on [algoliasearch-client-php](https://github.com/algolia/algoliasearch-client-php), [autocomplete.js](https://github.com/algolia/autocomplete.js) and [instantsearch.js](https://github.com/algolia/instantsearch.js).
 
 You can check out our [live demo](https://magento.algolia.com).
 
-### Auto-completion menu
+Documentation
+--------------
 
-Offer End-Users immediate access to your whole catalog from the dropdown menu, whatever your number of categories or attributes.
+Check out the [Algolia Search for Magento 1 documentation](https://community.algolia.com/magento/doc/m1/getting-started/).
 
-![demo](doc/auto-complete.gif)
+Installation
+------------
 
-### Instant search results page
-
-Have your search results page, navigation and pagination updated in realtime, after each keystroke.
-
-![demo](doc/instant-search.gif)
-
+Follow our [getting started guide](https://community.algolia.com/magento/doc/m1/getting-started/).
 
 Contribute to the Extension
 ------------

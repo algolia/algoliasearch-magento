@@ -10,19 +10,15 @@ class CategoriesIndexingTest extends AbstractIndexingTestCase
 
     public function testDefaultIndexableAttributes()
     {
-        /** @var Algolia_Algoliasearch_Helper_Config $config */
-        $config = Mage::helper('algoliasearch/config');
-        $indexPrefix = $config->getIndexPrefix();
-
         setConfig('algoliasearch/categories/category_additional_attributes2', serialize(array()));
 
         $indexer = new Algolia_Algoliasearch_Model_Indexer_Algoliacategories();
-        $indexer->reindexAll();
+        $indexer->reindexSpecificCategories(24);
 
         $this->algoliaHelper->waitLastTask();
 
-        $results = $this->algoliaHelper->query($indexPrefix.'default_categories', '', array('hitsPerPage' => 1));
-        $hit = reset($results['hits']);
+        $results = $this->algoliaHelper->getObjects($this->indexPrefix.'default_categories', array('24'));
+        $hit = reset($results['results']);
 
         $defaultAttributes = array(
             'objectID',
@@ -35,7 +31,6 @@ class CategoriesIndexingTest extends AbstractIndexingTestCase
             'popularity',
             'product_count',
             'algoliaLastUpdateAtCET',
-            '_highlightResult',
         );
 
         foreach ($defaultAttributes as $key => $attribute) {

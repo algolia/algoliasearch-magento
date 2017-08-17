@@ -62,11 +62,11 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         return $this->getIndex($indexName)->getObjects($objectIds);
     }
 
-    public function setSettings($indexName, $settings)
+    public function setSettings($indexName, $settings, $forwardToReplicas = false)
     {
         $index = $this->getIndex($indexName);
 
-        $res = $index->setSettings($settings);
+        $res = $index->setSettings($settings, $forwardToReplicas);
 
         $this->lastUsedIndexName = $indexName;
         $this->lastTaskId = $res['taskID'];

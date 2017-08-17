@@ -13,6 +13,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const SEARCH_ONLY_API_KEY = 'algoliasearch/credentials/search_only_api_key';
     const INDEX_PREFIX = 'algoliasearch/credentials/index_prefix';
     const IS_INSTANT_ENABLED = 'algoliasearch/credentials/is_instant_enabled';
+    const USE_ADAPTIVE_IMAGE = 'algoliasearch/credentials/use_adaptive_image';
 
     const REPLACE_CATEGORIES = 'algoliasearch/instant/replace_categories';
     const INSTANT_SELECTOR = 'algoliasearch/instant/instant_selector';
@@ -30,6 +31,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const MIN_NUMBER_OF_RESULTS = 'algoliasearch/autocomplete/min_number_of_results';
     const DISPLAY_SUGGESTIONS_CATEGORIES = 'algoliasearch/autocomplete/display_categories_with_suggestions';
     const RENDER_TEMPLATE_DIRECTIVES = 'algoliasearch/autocomplete/render_template_directives';
+    const AUTOCOMPLETE_MENU_DEBUG = 'algoliasearch/autocomplete/debug';
 
     const NUMBER_OF_PRODUCT_RESULTS = 'algoliasearch/products/number_product_results';
     const PRODUCT_ATTRIBUTES = 'algoliasearch/products/product_additional_attributes';
@@ -77,6 +79,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
+
+    const EXTRA_SETTINGS_PRODUCTS = 'algoliasearch/advanced_settings/products_extra_settings';
+    const EXTRA_SETTINGS_CATEGORIES = 'algoliasearch/advanced_settings/categories_extra_settings';
+    const EXTRA_SETTINGS_PAGES = 'algoliasearch/advanced_settings/pages_extra_settings';
+    const EXTRA_SETTINGS_SUGGESTIONS = 'algoliasearch/advanced_settings/suggestions_extra_settings';
+    const EXTRA_SETTINGS_ADDITIONAL_SECTIONS = 'algoliasearch/advanced_settings/additional_sections_extra_settings';
 
     protected $_productTypeMap = array();
 
@@ -147,9 +155,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function isEnabledFrontEnd($storeId = null)
     {
-        // Frontend = Backend + Frontent
-        return Mage::getStoreConfigFlag(self::ENABLE_BACKEND,
-            $storeId) && Mage::getStoreConfigFlag(self::ENABLE_FRONTEND, $storeId);
+        return Mage::getStoreConfigFlag(self::ENABLE_FRONTEND, $storeId);
     }
 
     public function isEnabledBackend($storeId = null)
@@ -170,11 +176,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getShowOutOfStock($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::SHOW_OUT_OF_STOCK, $storeId);
-    }
-
-    public function noProcess($storeId = null)
-    {
-        return Mage::getStoreConfigFlag(self::NO_PROCESS, $storeId);
     }
 
     public function getImageWidth($storeId = null)
@@ -221,11 +222,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return array();
-    }
-
-    public function getNumberOfQuerySuggestions($storeId = null)
-    {
-        return Mage::getStoreConfig(self::NUMBER_QUERY_SUGGESTIONS, $storeId);
     }
 
     public function getMinPopularity($storeId = null)
@@ -318,6 +314,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfigFlag(self::IS_INSTANT_ENABLED, $storeId);
     }
 
+    public function useAdaptiveImage($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::USE_ADAPTIVE_IMAGE, $storeId);
+    }
+
     public function getInstantSelector($storeId = null)
     {
         return Mage::getStoreConfig(self::INSTANT_SELECTOR, $storeId);
@@ -337,6 +338,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getRenderTemplateDirectives($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::RENDER_TEMPLATE_DIRECTIVES, $storeId);
+    }
+
+    public function isAutocompleteDebugEnabled($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::AUTOCOMPLETE_MENU_DEBUG, $storeId);
     }
 
     public function getSortingIndices($storeId = null)
@@ -408,7 +414,13 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
         $attributes = array();
         foreach ($this->getProductAdditionalAttributes() as $attribute) {
-            if ($attribute['attribute'] !== 'price') {
+            if ($attribute['attribute'] !== 'price' && $attribute['retrievable'] === '1') {
+                $attributes[] = $attribute['attribute'];
+            }
+        }
+
+        foreach ($this->getCategoryAdditionalAttributes() as $attribute) {
+            if ($attribute['retrievable'] === '1') {
                 $attributes[] = $attribute['attribute'];
             }
         }
@@ -440,7 +452,9 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
             $attributes[] = 'price.'.$currency.'.special_to_date';
         }
 
-        return $attributes;
+        $attributes = array_unique($attributes);
+
+        return array_values($attributes);
     }
 
     public function getCategoryAdditionalAttributes($storeId = null)
@@ -513,13 +527,17 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getPopularQueries($storeId = null)
     {
+        if (!$this->isInstantEnabled($storeId) || !$this->showSuggestionsOnNoResultsPage($storeId)) {
+            return array();
+        }
+
         if ($storeId === null) {
             $storeId = Mage::app()->getStore()->getId();
         }
 
-        /** @var Algolia_Algoliasearch_Helper_Entity_Suggestionhelper $suggestion_helper */
-        $suggestion_helper = Mage::helper('algoliasearch/entity_suggestionhelper');
-        $popularQueries = $suggestion_helper->getPopularQueries($storeId);
+        /** @var Algolia_Algoliasearch_Helper_Entity_Suggestionhelper $suggestionHelper */
+        $suggestionHelper = Mage::helper('algoliasearch/entity_suggestionhelper');
+        $popularQueries = $suggestionHelper->getPopularQueries($storeId);
 
         return $popularQueries;
     }
@@ -606,6 +624,13 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return Mage::getBaseDir('media').'/algoliasearch-admin-config-uploads/'.$filename;
+    }
+
+    public function getExtraSettings($section, $storeId = null)
+    {
+        $constant = 'EXTRA_SETTINGS_'.mb_strtoupper($section);
+
+        return trim(Mage::getStoreConfig(constant('self::'.$constant), $storeId));
     }
 
     private function getCustomRanking($configName, $storeId = null)

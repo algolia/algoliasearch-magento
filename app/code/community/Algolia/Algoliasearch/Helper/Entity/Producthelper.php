@@ -229,7 +229,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $customRankingAttributes = array();
 
-        $facets = $this->config->getFacets();
+        $facets = $this->config->getFacets($storeId);
 
         /** @var Mage_Directory_Model_Currency $directoryCurrency */
         $directoryCurrency = Mage::getModel('directory/currency');
@@ -291,7 +291,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         /*
          * Handle replicas
          */
-        $sorting_indices = $this->config->getSortingIndices();
+        $sorting_indices = $this->config->getSortingIndices($storeId);
 
         if (count($sorting_indices) > 0) {
             $replicas = array();
@@ -316,6 +316,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $this->algolia_helper->setSettings($this->getIndexName($storeId), array('replicas' => $replicas));
 
+            /** @var Mage_Core_Model_Store $store */
+            $store = Mage::getModel('core/store')->load($storeId);
+            $baseCurrencyCode = $store->getBaseCurrencyCode();
+
             foreach ($sorting_indices as $values) {
                 if ($this->config->isCustomerGroupsEnabled($storeId) && $values['attribute'] === 'price') {
                     foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group) {
@@ -323,7 +327,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         $suffix_index_name = 'group_'.$group_id;
 
-                        $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'].'.'.$currencies[0].'.'.$suffix_index_name : $values['attribute'];
+                        $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'].'.'.$baseCurrencyCode.'.'.$suffix_index_name : $values['attribute'];
 
                         $mergeSettings['ranking'] = array(
                             $values['sort'].'('.$sort_attribute.')',
@@ -340,7 +344,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                             $mergeSettings);
                     }
                 } else {
-                    $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'].'.'.$currencies[0].'.'.'default' : $values['attribute'];
+                    $sort_attribute = $values['attribute'] === 'price' ? $values['attribute'].'.'.$baseCurrencyCode.'.'.'default' : $values['attribute'];
 
                     $mergeSettings['ranking'] = array(
                         $values['sort'].'('.$sort_attribute.')',
@@ -450,6 +454,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $directoryCurrency = Mage::getModel('directory/currency');
         $currencies = $directoryCurrency->getConfigAllowCurrencies();
 
+        if (Mage::helper('core')->isModuleEnabled('Mage_Weee') &&
+            Mage::helper('weee')->getPriceDisplayType($product->getStore()) == 0) {
+            $weeeTaxAmount = Mage::helper('weee')->getAmountForDisplay($product);
+        } else {
+            $weeeTaxAmount = 0;
+        }
+
         $baseCurrencyCode = $store->getBaseCurrencyCode();
 
         $groups = array();
@@ -472,12 +483,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                 $price = (double) $taxHelper->getPrice($product, $product->getPrice(), $with_tax, null, null, null, $product->getStore(), null);
                 $price = $directoryHelper->currencyConvert($price, $baseCurrencyCode, $currency_code);
+                $price += $weeeTaxAmount;
 
                 $customData[$field][$currency_code]['default'] = $price;
                 $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($price, false, $currency_code);
 
                 $special_price = (double) $taxHelper->getPrice($product, $product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
                 $special_price = $directoryHelper->currencyConvert($special_price, $baseCurrencyCode, $currency_code);
+                $special_price += $weeeTaxAmount;
 
                 if ($customer_groups_enabled) {
                     // If fetch special price for groups
@@ -488,6 +501,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                         $discounted_price = $product->getPriceModel()->getFinalPrice(1, $product);
                         $discounted_price = $directoryHelper->currencyConvert($discounted_price, $baseCurrencyCode, $currency_code);
+                        $discounted_price += $weeeTaxAmount;
 
                         if ($discounted_price !== false) {
                             $customData[$field][$currency_code]['group_'.$group_id] = (double) $taxHelper->getPrice($product,
@@ -891,15 +905,16 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             if ($attribute_resource) {
                 $attribute_resource->setStoreId($product->getStoreId());
 
+                $values = array();
+                $subProductImages = array();
+
                 /**
                  * if $value is missing or if the attribute is SKU,
                  * use values from child products.
                  */
                 if (($value === null || 'sku' == $attribute_name) && ($type == 'configurable' || $type == 'grouped' || $type == 'bundle')) {
-                    if ($value === null) {
-                        $values = array();
-                    } else {
-                        $values = array($this->getValueOrValueText($product, $attribute_name, $attribute_resource));
+                    if ($value !== null) {
+                        $values[] = $this->getValueOrValueText($product, $attribute_name, $attribute_resource);
                     }
 
                     $all_sub_products_out_of_stock = true;
@@ -917,13 +932,33 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                             $value = $sub_product->getData($attribute_name);
 
                             if ($value) {
-                                $values[] = $this->getValueOrValueText($sub_product, $attribute_name, $attribute_resource);
+                                $textValue = $this->getValueOrValueText($sub_product, $attribute_name, $attribute_resource);
+
+                                $values[] = $textValue;
+
+                                if (mb_strtolower($attribute_name, 'utf-8') === 'color') {
+                                    $image = $imageHelper->init($sub_product, $this->config->getImageType())
+                                                         ->resize($this->config->getImageWidth(),
+                                                             $this->config->getImageHeight());
+
+                                    try {
+                                        $textValueInLower = mb_strtolower($textValue, 'utf-8');
+                                        $subProductImages[$textValueInLower] = $image->toString();
+                                    } catch (\Exception $e) {
+                                        $this->logger->log($e->getMessage());
+                                        $this->logger->log($e->getTraceAsString());
+                                    }
+                                }
                             }
                         }
                     }
 
                     if (is_array($values) && count($values) > 0) {
                         $customData[$attribute_name] = array_values(array_unique($values, SORT_REGULAR));
+                    }
+
+                    if (empty($subProductImages) === false) {
+                        $customData['images_data'] = $subProductImages;
                     }
 
                     // Set main product out of stock if all

@@ -1,6 +1,6 @@
 <!-- Page hit template -->
 <script type="text/template" id="autocomplete_pages_template">
-    <a class="algoliasearch-autocomplete-hit" href="{{url}}">
+    <a class="algoliasearch-autocomplete-hit algolia-clearfix" href="{{url}}">
         <div class="info-without-thumb">
             {{{_highlightResult.name.value}}}
 
@@ -10,6 +10,5 @@
                 </div>
             {{/content}}
         </div>
-        <div class="clearfix"></div>
     </a>
 </script>

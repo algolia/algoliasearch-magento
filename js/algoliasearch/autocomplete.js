@@ -56,10 +56,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		});
 		
 		/**
-		 * ADD YOUR CUSTOM DATA SOURCE HERE
-		 **/
-		
-		/**
 		 * Setup the autocomplete search input
 		 * For autocomplete feature is used Algolia's autocomplete.js library
 		 * Docs: https://github.com/algolia/autocomplete.js
@@ -72,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					dropdownMenu: '#menu-template'
 				},
 				dropdownMenuContainer: "#algolia-autocomplete-container",
-				debug: false
+				debug: algoliaConfig.autocomplete.isDebugEnabled
 			};
 			
 			if (isMobile() === true) {
@@ -84,8 +80,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				options.templates.footer = '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" title="Search by Algolia" target="_blank"><img src="' +algoliaConfig.urls.logo + '" alt="Search by Algolia" /></a></div>';
 			}
 			
-			if (typeof algoliaHookBeforeAutocompleteStart == 'function') {
-				var hookResult = algoliaHookBeforeAutocompleteStart(sources, options);
+			if (typeof algoliaHookBeforeAutocompleteStart === 'function') {
+				var hookResult = algoliaHookBeforeAutocompleteStart(sources, options, algolia_client);
 				
 				sources = hookResult.shift();
 				options = hookResult.shift();

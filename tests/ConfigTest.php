@@ -49,7 +49,7 @@ class ConfigTest extends TestCase
         $this->assertEquals(count($facets), $attributesMatched);
     }
 
-    public function testAutomaticalSetOfCategoriesFacet()
+    public function testAutomaticSetOfCategoriesFacet()
     {
         // Remove categories from facets
         $facets = $this->config->getFacets();
@@ -99,5 +99,91 @@ class ConfigTest extends TestCase
             }
         }
         $this->assertTrue($categoriesAttributeIsIncluded, 'Categories attribute should be included in facets, but it is not');
+    }
+
+    public function testExtraSettings()
+    {
+        // Initial save to make sure indices are created
+        $this->observer->saveSettings();
+        $this->algoliaHelper->waitLastTask();
+
+        $sections = array('products', 'categories', 'pages', 'suggestions');
+
+        foreach ($sections as $section) {
+            $indexName = $this->indexPrefix.'default_'.$section;
+
+            $this->algoliaHelper->setSettings($indexName, array('exactOnSingleWordQuery' => 'attribute'));
+        }
+
+        $this->algoliaHelper->waitLastTask();
+
+        foreach ($sections as $section) {
+            $indexName = $this->indexPrefix.'default_'.$section;
+
+            $currentSettings = $this->algoliaHelper->getIndex($indexName)->getSettings();
+
+            $this->assertArrayHasKey('exactOnSingleWordQuery', $currentSettings);
+            $this->assertEquals('attribute', $currentSettings['exactOnSingleWordQuery']);
+        }
+
+        foreach ($sections as $section) {
+            setConfig('algoliasearch/advanced_settings/'.$section.'_extra_settings', '{"exactOnSingleWordQuery":"word"}');
+        }
+
+        $this->observer->saveSettings();
+        $this->algoliaHelper->waitLastTask();
+
+        foreach ($sections as $section) {
+            $indexName = $this->indexPrefix.'default_'.$section;
+
+            $currentSettings = $this->algoliaHelper->getIndex($indexName)->getSettings();
+
+            $this->assertArrayHasKey('exactOnSingleWordQuery', $currentSettings);
+            $this->assertEquals('word', $currentSettings['exactOnSingleWordQuery']);
+        }
+    }
+
+    public function testInvalidExtraSettings()
+    {
+        $sections = array('products', 'categories', 'pages', 'suggestions');
+
+        foreach ($sections as $section) {
+            setConfig('algoliasearch/advanced_settings/'.$section.'_extra_settings', '{"foo":"bar"}');
+        }
+
+        try {
+            $this->observer->saveSettings();
+        } catch(\AlgoliaSearch\AlgoliaException $e) {
+            $message = $e->getMessage();
+
+            // Check if the error message contains error for all sections
+            foreach ($sections as $section) {
+                $position = strpos($message, $section);
+                $this->assertTrue($position !== false);
+            }
+
+            return;
+        }
+
+        $this->fail('AlgoliaException was not raised');
+    }
+
+    public function testRetrievableAttributes()
+    {
+        resetConfigs(array('products/product_additional_attributes', 'categories/category_additional_attributes2'));
+
+        setConfig('algoliasearch/advanced/customer_groups_enable', '0');
+
+        $retrievableAttributes = $this->config->getAttributesToRetrieve(1);
+        $this->assertEmpty($retrievableAttributes);
+
+        setConfig('algoliasearch/advanced/customer_groups_enable', '1');
+
+        $retrievableAttributes = $this->config->getAttributesToRetrieve(1);
+        $this->assertNotEmpty($retrievableAttributes);
+
+        $this->assertContains('objectID', $retrievableAttributes);
+        $this->assertContains('name', $retrievableAttributes);
+        $this->assertContains('product_count', $retrievableAttributes); // Category attribute
     }
 }

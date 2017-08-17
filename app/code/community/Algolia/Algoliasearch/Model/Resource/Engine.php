@@ -22,6 +22,9 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     /** @var Algolia_Algoliasearch_Helper_Entity_Categoryhelper */
     protected $category_helper;
 
+    /** @var Algolia_Algoliasearch_Helper_Entity_Pagehelper */
+    protected $page_helper;
+
     /** @var Algolia_Algoliasearch_Helper_Entity_Suggestionhelper */
     protected $suggestion_helper;
 
@@ -34,6 +37,7 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         $this->logger = Mage::helper('algoliasearch/logger');
         $this->product_helper = Mage::helper('algoliasearch/entity_producthelper');
         $this->category_helper = Mage::helper('algoliasearch/entity_categoryhelper');
+        $this->page_helper = Mage::helper('algoliasearch/entity_pagehelper');
         $this->suggestion_helper = Mage::helper('algoliasearch/entity_suggestionhelper');
     }
 
@@ -75,9 +79,9 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
 
     public function rebuildCategoryIndex($storeId = null, $categoryIds = null)
     {
-        $ids = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
+        $storeIds = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
 
-        foreach ($ids as $id) {
+        foreach ($storeIds as $storeId) {
             $by_page = $this->config->getNumberOfElementByPage();
 
             if (is_array($categoryIds) && count($categoryIds) > $by_page) {
@@ -85,32 +89,23 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
                     $this->_rebuildCategoryIndex($storeId, $chunk);
                 }
             } else {
-                $this->_rebuildCategoryIndex($id, $categoryIds);
+                $this->_rebuildCategoryIndex($storeId, $categoryIds);
             }
         }
 
         return $this;
     }
 
-    public function rebuildPages()
+    public function rebuildPages($storeId = null, $pageIds = null)
     {
+        $storeIds = Algolia_Algoliasearch_Helper_Entity_Helper::getStores($storeId);
+
         /** @var Mage_Core_Model_Store $store */
-        foreach (Mage::app()->getStores() as $store) {
-            if ($this->config->isEnabledBackend($store->getId()) === false) {
-                if (php_sapi_name() === 'cli') {
-                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
-                }
-
-                /** @var Mage_Adminhtml_Model_Session $session */
-                $session = Mage::getSingleton('adminhtml/session');
-                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
-
-                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
-
-                continue;
+        foreach ($storeIds as $storeId) {
+            if ($this->page_helper->shouldIndexPages($storeId) === true) {
+                $this->addToQueue('algoliasearch/observer', 'rebuildPageIndex',
+                    array('store_id' => $storeId, 'page_ids' => $pageIds), 1);
             }
-
-            $this->addToQueue('algoliasearch/observer', 'rebuildPageIndex', array('store_id' => $store->getId()), 1);
         }
     }
 

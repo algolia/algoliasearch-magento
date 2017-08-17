@@ -1,8 +1,6 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-
-class QueueTest extends TestCase
+class QueueTest extends AbstractTestCase
 {
     /** @var Varien_Db_Adapter_Interface */
     private $readConnection;
@@ -12,6 +10,8 @@ class QueueTest extends TestCase
 
     public function setUp()
     {
+        parent::setUp();
+
         /** @var Mage_Core_Model_Resource $resource */
         $resource = Mage::getSingleton('core/resource');
 
@@ -58,10 +58,6 @@ class QueueTest extends TestCase
     /** @depends testFill */
     public function testExecute()
     {
-        /** @var Algolia_Algoliasearch_Helper_Config $config */
-        $config = Mage::helper('algoliasearch/config');
-        $indexPrefix = $config->getIndexPrefix();
-
         /** @var Algolia_Algoliasearch_Helper_Algoliahelper $algoliaHelper */
         $algoliaHelper = Mage::helper('algoliasearch/algoliahelper');
 
@@ -78,15 +74,15 @@ class QueueTest extends TestCase
         $existsDefaultTmpIndex = false;
         $existsFrenchTmpIndex = false;
         foreach ($indices['items'] as $index) {
-            if ($index['name'] === $indexPrefix.'default_products') {
+            if ($index['name'] === $this->indexPrefix.'default_products') {
                 $existsDefaultProdIndex = true;
             }
 
-            if ($index['name'] === $indexPrefix.'default_products_tmp') {
+            if ($index['name'] === $this->indexPrefix.'default_products_tmp') {
                 $existsDefaultTmpIndex = true;
             }
 
-            if ($index['name'] === $indexPrefix.'french_products_tmp') {
+            if ($index['name'] === $this->indexPrefix.'french_products_tmp') {
                 $existsFrenchTmpIndex = true;
             }
         }
@@ -109,27 +105,27 @@ class QueueTest extends TestCase
         $existsFrenchTmpIndex = false;
         $existsGermanTmpIndex = false;
         foreach ($indices['items'] as $index) {
-            if ($index['name'] === $indexPrefix.'default_products') {
+            if ($index['name'] === $this->indexPrefix.'default_products') {
                 $existsDefaultProdIndex = true;
             }
 
-            if ($index['name'] === $indexPrefix.'french_products') {
+            if ($index['name'] === $this->indexPrefix.'french_products') {
                 $existsFrenchProdIndex = true;
             }
 
-            if ($index['name'] === $indexPrefix.'german_products') {
+            if ($index['name'] === $this->indexPrefix.'german_products') {
                 $existsGermanProdIndex = true;
             }
 
-            if ($index['name'] === $indexPrefix.'default_products_tmp') {
+            if ($index['name'] === $this->indexPrefix.'default_products_tmp') {
                 $existsDefaultTmpIndex = true;
             }
 
-            if ($index['name'] === $indexPrefix.'french_products_tmp') {
+            if ($index['name'] === $this->indexPrefix.'french_products_tmp') {
                 $existsFrenchTmpIndex = true;
             }
 
-            if ($index['name'] === $indexPrefix.'german_products_tmp') {
+            if ($index['name'] === $this->indexPrefix.'german_products_tmp') {
                 $existsGermanTmpIndex = true;
             }
         }
@@ -176,19 +172,15 @@ class QueueTest extends TestCase
         $algoliaHelper = Mage::helper('algoliasearch/algoliahelper');
         $algoliaHelper->waitLastTask();
 
-        /** @var Algolia_Algoliasearch_Helper_Config $config */
-        $config = Mage::helper('algoliasearch/config');
-        $indexPrefix = $config->getIndexPrefix();
-
-        $settings = $algoliaHelper->getIndex($indexPrefix.'default_products')->getSettings();
+        $settings = $algoliaHelper->getIndex($this->indexPrefix.'default_products')->getSettings();
         $this->assertFalse(empty($settings['attributesForFaceting']), 'AttributesForFacetting should be set, but they are not.');
         $this->assertFalse(empty($settings['searchableAttributes']), 'SearchableAttributes should be set, but they are not.');
 
-        $settings = $algoliaHelper->getIndex($indexPrefix.'french_products')->getSettings();
+        $settings = $algoliaHelper->getIndex($this->indexPrefix.'french_products')->getSettings();
         $this->assertFalse(empty($settings['attributesForFaceting']), 'AttributesForFacetting should be set, but they are not.');
         $this->assertFalse(empty($settings['searchableAttributes']), 'SearchableAttributes should be set, but they are not.');
 
-        $settings = $algoliaHelper->getIndex($indexPrefix.'german_products')->getSettings();
+        $settings = $algoliaHelper->getIndex($this->indexPrefix.'german_products')->getSettings();
         $this->assertFalse(empty($settings['attributesForFaceting']), 'AttributesForFacetting should be set, but they are not.');
         $this->assertFalse(empty($settings['searchableAttributes']), 'SearchableAttributes should be set, but they are not.');
     }

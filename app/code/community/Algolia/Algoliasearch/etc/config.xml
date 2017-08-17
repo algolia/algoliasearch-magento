@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.8.1</version>
+            <version>1.10.0</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -63,6 +63,17 @@
             </modules>
         </translate>
     </adminhtml>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <controller before="Mage_Adminhtml">Algolia_Algoliasearch_Adminhtml</controller>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
     <global>
         <helpers>
             <algoliasearch>
@@ -119,6 +130,15 @@
                     </algolia_stockupdate>
                 </observers>
             </catalog_product_save_before>
+
+            <cms_page_save_before>
+                <observers>
+                    <algolia_savepage>
+                        <class>algoliasearch/observer</class>
+                        <method>savePage</method>
+                    </algolia_savepage>
+                </observers>
+            </cms_page_save_before>
         </events>
         <resources>
             <algoliasearch_setup>
@@ -162,6 +182,7 @@
                 <index_prefix>magento_</index_prefix>
                 <is_popup_enabled>1</is_popup_enabled>
                 <is_instant_enabled>0</is_instant_enabled>
+                <use_image_adaptive>0</use_image_adaptive>
             </credentials>
             <products>
                 <number_product_results>9</number_product_results>
@@ -190,6 +211,7 @@
                 <min_number_of_results>2</min_number_of_results>
                 <display_categories_with_suggestions>1</display_categories_with_suggestions>
                 <render_template_directives>1</render_template_directives>
+                <debug>0</debug>
             </autocomplete>
             <categories>
                 <number_category_suggestions>5</number_category_suggestions>
@@ -217,7 +239,7 @@
                 <push_initial_search>0</push_initial_search>
             </analytics>
             <synonyms>
-                <enable_synonyms>1</enable_synonyms>
+                <enable_synonyms>0</enable_synonyms>
             </synonyms>
             <advanced>
                 <remove_words_if_no_result>allOptional</remove_words_if_no_result>

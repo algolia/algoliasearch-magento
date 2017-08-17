@@ -89,7 +89,7 @@ input::-ms-clear {
   display: inline-block;
   width: 12px;
   height: 12px;
-  background:  url("data:image/svg+xml;utf8,<svg width=\'34\' height=\'34\' viewBox=\'0 0 34 34\' xmlns=\'http://www.w3.org/2000/svg\'><title>testvg</title><g fill=\'%23000\' fill-rule=\'evenodd\'><path d=\'M17.163 0C7.95 0 .41 7.578.353 16.893c-.03 4.542 1.693 8.82 4.847 12.053 3.156 3.23 7.367 5.026 11.857 5.054h.11c9.21 0 16.75-7.578 16.81-16.893C34.035 7.735 26.54.06 17.163 0zm.015 30.842v1.08l-.09-1.08c-3.656-.023-7.085-1.485-9.654-4.115-2.57-2.63-3.97-6.116-3.948-9.814C3.533 9.33 9.673 3.158 17.262 3.158c7.548.048 13.65 6.297 13.605 13.93-.05 7.585-6.19 13.754-13.69 13.754z\'/><path d=\'M22.362 10.23l-5.186 5.245-5.186-5.244c-.417-.42-1.092-.42-1.51 0-.416.422-.416 1.105 0 1.526L15.668 17l-5.186 5.244c-.416.42-.416 1.104 0 1.525.21.21.483.316.755.316.273 0 .546-.106.755-.317l5.186-5.245 5.186 5.244c.208.21.482.316.754.316.273 0 .546-.106.755-.317.417-.422.417-1.105 0-1.526L18.685 17l5.187-5.244c.417-.42.417-1.104 0-1.525-.416-.42-1.09-.42-1.508 0z\'/></g></svg>")no-repeat center center / contain;
+  background: url("cross-circle.svg") no-repeat center center / contain;
   opacity: 0;
 }
 
@@ -323,6 +323,11 @@ a.ais-current-refined-values--link:hover
 .ais-range-slider--marker-large:first-child {
   margin-left: 0;
 }
+
+.ais-root__collapsed .ais-body, .ais-root__collapsed .ais-footer {
+	display: none;
+}
+
 /******************
 **
 ** Auto-completion menu
@@ -676,7 +681,7 @@ a.ais-current-refined-values--link:hover
 .clear-cross {
   position: absolute;
   display: none;
-  background: url("data:image/svg+xml;utf8,<svg width=\'12\' height=\'12\' viewBox=\'0 0 12 12\' xmlns=\'http://www.w3.org/2000/svg\' opacity=\'0.6\'><path d=\'M.566 1.698L0 1.13 1.132 0l.565.566L6 4.868 10.302.566 10.868 0 12 1.132l-.566.565L7.132 6l4.302 4.3.566.568L10.868 12l-.565-.566L6 7.132l-4.3 4.302L1.13 12 0 10.868l.566-.565L4.868 6 .566 1.698z\'></path></svg>") no-repeat center center / contain;
+  background: url("clear-cross.svg") no-repeat center center / contain;
   cursor: pointer;
   width: 16px;
   height: 16px;
@@ -715,7 +720,7 @@ a.ais-current-refined-values--link:hover
   height: 20px;
   display: block;
   top: 10px;
-  background: url("data:image/svg+xml;utf8,<svg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\'  fill=\'%23A6A6A6\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M15.553 31.107c8.59 0 15.554-6.964 15.554-15.554S24.143 0 15.553 0 0 6.964 0 15.553c0 8.59 6.964 15.554 15.553 15.554zm0-3.888c6.443 0 11.666-5.225 11.666-11.668 0-6.442-5.225-11.665-11.668-11.665-6.442 0-11.665 5.223-11.665 11.665 0 6.443 5.223 11.666 11.665 11.666zm12.21 3.84a2.005 2.005 0 0 1 .002-2.833l.463-.463a2.008 2.008 0 0 1 2.833-.003l8.17 8.168c.78.78.78 2.05-.004 2.833l-.462.463a2.008 2.008 0 0 1-2.834.004l-8.168-8.17z\' fill-rule=\'evenodd\'/></svg>") no-repeat center right / 20px;
+  background: url("magnifying-glass.svg") no-repeat center right / 20px;
 }
 
 #algolia-searchbox .algolia-search-input {
@@ -1030,7 +1035,7 @@ a.ais-current-refined-values--link:hover
   width: 16px;
   height: 16px;
   transform: translateY(-50%);
-  background: url("data:image/svg+xml;utf8,<svg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\'  xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M15.553 31.107c8.59 0 15.554-6.964 15.554-15.554S24.143 0 15.553 0 0 6.964 0 15.553c0 8.59 6.964 15.554 15.553 15.554zm0-3.888c6.443 0 11.666-5.225 11.666-11.668 0-6.442-5.225-11.665-11.668-11.665-6.442 0-11.665 5.223-11.665 11.665 0 6.443 5.223 11.666 11.665 11.666zm12.21 3.84a2.005 2.005 0 0 1 .002-2.833l.463-.463a2.008 2.008 0 0 1 2.833-.003l8.17 8.168c.78.78.78 2.05-.004 2.833l-.462.463a2.008 2.008 0 0 1-2.834.004l-8.168-8.17z\' fill=\'#fff\' fill-rule=\'evenodd\'/></svg>") no-repeat center center / contain;
+  background: url("is-icon.svg") no-repeat center center / contain;
 }
 #algolia_instant_selector #instant-search-box .clear-query-instant {
   top: 50%;
@@ -1211,4 +1216,10 @@ a.ais-current-refined-values--link:hover
 
 #algolia-right-container .infos.hidden {
 	display: none;
+}
+
+.algolia-clearfix:after {
+	content:"";
+	display:block;
+	clear:both;
 }

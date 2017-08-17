@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
 			return check;
 		};
 		
-		window.transformHit = function (hit, price_key) {
+		window.transformHit = function (hit, price_key, helper) {
 			if (Array.isArray(hit.categories)) {
 				hit.categories = hit.categories.join(', ');
 			}
@@ -20,7 +20,19 @@ document.addEventListener("DOMContentLoaded", function (e) {
 
 				hit.categories_without_path = hit.categories_without_path.join(', ');
 			}
-
+			
+			var matchedColors = [];
+			
+			if (helper && algoliaConfig.useAdaptiveImage === true) {
+				if (hit.images_data && helper.state.facetsRefinements.color) {
+					matchedColors = helper.state.disjunctiveFacetsRefinements.color.slice(0); // slice to clone
+				}
+				
+				if (hit.images_data && helper.state.disjunctiveFacetsRefinements.color) {
+					matchedColors = helper.state.disjunctiveFacetsRefinements.color.slice(0); // slice to clone
+				}
+			}
+			
 			if (Array.isArray(hit.color)) {
 				var colors = [];
 
@@ -28,16 +40,42 @@ document.addEventListener("DOMContentLoaded", function (e) {
 					if (color.matchLevel === 'none') {
 						return;
 					}
-
+					
 					colors.push(color.value);
+					
+					if (algoliaConfig.useAdaptiveImage === true) {
+						var re = /<em>(.*?)<\/em>/g;
+						var matchedWords = color.value.match(re).map(function (val) {
+							return val.replace(/<\/?em>/g, '');
+						});
+						
+						var matchedColor = matchedWords.join(' ');
+						
+						if (hit.images_data && color.fullyHighlighted && color.fullyHighlighted === true) {
+							matchedColors.push(matchedColor);
+						}
+					}
 				});
 
 				colors = colors.join(', ');
 
-				hit._highlightResult.color = {value: colors};
+				hit._highlightResult.color = { value: colors };
 			}
 			else if (hit._highlightResult.color && hit._highlightResult.color.matchLevel === 'none') {
-				hit._highlightResult.color = {value: ''};
+				hit._highlightResult.color = { value: '' };
+			}
+			
+			if (algoliaConfig.useAdaptiveImage === true) {
+				$.each(matchedColors, function (i, color) {
+					color = color.toLowerCase();
+					
+					if (hit.images_data[color]) {
+						hit.image_url = hit.images_data[color];
+						hit.thumbnail_url = hit.images_data[color];
+						
+						return false;
+					}
+				});
 			}
 
 			if (hit._highlightResult.color && hit._highlightResult.color.value && hit.categories_without_path) {
@@ -45,7 +83,6 @@ document.addEventListener("DOMContentLoaded", function (e) {
 					hit.categories_without_path = '';
 				}
 			}
-
 
 			if (Array.isArray(hit._highlightResult.name)) {
 				hit._highlightResult.name = hit._highlightResult.name[0];
@@ -378,7 +415,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
 			var input = $(this).closest('#algolia-searchbox').find('input');
 			input.val('');
 
-			if (algoliaConfig.autocomplete.enabled && !algoliaConfig.instant.enabled) {
+			if (algoliaConfig.autocomplete.enabled != algoliaConfig.instant.enabled) {
 				input.get(0).dispatchEvent(new Event('input'));
 			}
 

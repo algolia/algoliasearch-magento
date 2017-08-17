@@ -144,7 +144,8 @@ if ($config->isInstantEnabled()) {
     }
 }
 
-// Hide the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS.
+// Hides the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS.
+// Hides the search results rendered by the server, which are also executed because it's unsure whether Google indexes the results that are fetched through JS.
 if ($config->isInstantEnabled() && $isSearchPage) {
     echo '
     <script>
@@ -212,6 +213,7 @@ $algoliaJsConfig = array(
         'nbOfCategoriesSuggestions' => $config->getNumberOfCategoriesSuggestions(),
         'nbOfQueriesSuggestions' => $config->getNumberOfQueriesSuggestions(),
         'displaySuggestionsCategories' => $config->displaySuggestionsCategories(),
+        'isDebugEnabled' => $config->isAutocompleteDebugEnabled(),
     ),
     'extensionVersion' => $config->getExtensionVersion(),
     'applicationId' => $config->getApplicationID(),
@@ -246,6 +248,7 @@ $algoliaJsConfig = array(
     'showSuggestionsOnNoResultsPage' => $config->showSuggestionsOnNoResultsPage(),
     'baseUrl' => $baseUrl,
     'popularQueries' => $config->getPopularQueries(),
+    'useAdaptiveImage' => $config->useAdaptiveImage(),
     'urls' => array(
         'logo' => $this->getSkinUrl('algoliasearch/search-by-algolia.svg'),
     ),

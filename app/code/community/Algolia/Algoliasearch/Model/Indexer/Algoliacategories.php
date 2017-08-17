@@ -111,6 +111,10 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Algolia_Algo
 
     protected function _processEvent(Mage_Index_Model_Event $event)
     {
+        if ($this->config->isModuleOutputEnabled() === false) {
+            return;
+        }
+
         if (!$this->config->getApplicationID() || !$this->config->getAPIKey() || !$this->config->getSearchOnlyAPIKey()) {
             if (self::$credential_error === false) {
                 /** @var Mage_Adminhtml_Model_Session $session */
@@ -172,6 +176,10 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Algolia_Algo
      */
     public function reindexAll()
     {
+        if ($this->config->isModuleOutputEnabled() === false) {
+            return $this;
+        }
+
         if (!$this->config->getApplicationID() || !$this->config->getAPIKey() || !$this->config->getSearchOnlyAPIKey()) {
             /** @var Mage_Adminhtml_Model_Session $session */
             $session = Mage::getSingleton('adminhtml/session');

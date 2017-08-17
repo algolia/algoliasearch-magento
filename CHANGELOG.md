@@ -1,5 +1,52 @@
 ## CHANGE LOG
 
+### 1.10.0
+
+#### FEATURES
+- **BC Break** - JS hooks - instantsearch.js file was completely refactored to create IS config object which can be manipulated via hook method (#822)
+- The indexed prices now include `WEEE` tax (#829)
+- The configuration page now displays information about the indexing queue and gives possibility to clear the queue (#849)
+
+#### UPDATES
+- Optimized assets - removed useless images (#820)
+- Synonyms management from Magento is turned off by default (#832)
+- Instance of `algolia_client` is now passed as thrid parameter to `algoliaHookBeforeAutocompleteStart` hook method (#847)
+
+#### FIXES
+- The correct price is now used for sorting with multistore / multicurrency setup (#818)
+- Fixed SVG icons when using Magento's merge CSS feature (#819)
+- Attributes to retrieve now contains attributes for categories (#827)
+- Fix the issue with Algolia error when more than 1000 products are supposed to be deleted (#838)
+- Correct products are displayed on category page when categories attribute is not set as attribute for faceting (#846)
+
+
+### 1.9.0
+
+#### FEATURES
+- JavaScript custom events to easily extend extension's front end (#642, [Documentation](https://community.algolia.com/magento/doc/m1/analytics/))
+- Analytics - the extension now uses Magento's GA to measure searches (#754)
+- New queue processing mechanism which makes queue processing much more optimized in terms of Algolia operations and processing time (#757, #775)
+- Create a "debug" script which generates a file with dumped Algolia configuration. This file then can be sent to Algolia's support for easier investigation (#777)
+- Option to send an extra Algolia settings to Algolia indices (#770)
+- Ability to enabled / disable indexing and front end search separatly (#793)
+
+#### UPDATES
+- The extension now completely removes `<script>` and `<style>` tags with its content from CMS pages content (#765)
+- The extension now initializes a Magento translator in order to make it available in custom events' methods (#789)
+- Test container now accepts two parameters (#794):
+    - `--xdebug` to install the container with XDebug
+    - `--filter` to filter running tests
+- `Engine` class is now loaded via `getResourceModel` method (#798)
+
+#### FIXES
+- Fixed `clearfix` class in CSS (#772)
+- Fixed the issue when search box cursor was moved to the end of a search query (#779)
+- Fixes category refinement on category page power by instant search when page reload was performed (#783)
+- Fixed the issue when instant search results stayed on the page even after click on cross in a search box (#784)
+- Fixed the issue when `array_combine()` method could be called with empty array (#790)
+- Fixed pagination on IS page (#805)
+
+
 ### 1.8.1
 
 #### FEATURES
