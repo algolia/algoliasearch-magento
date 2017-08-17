@@ -164,8 +164,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
                 $this->addToQueue('algoliasearch/observer', 'rebuildSuggestionIndex', $data, 1);
             }
 
-            $this->addToQueue('algoliasearch/observer', 'moveStoreSuggestionIndex',
-                array('store_id' => $store->getId()), 1);
+            if ($nb_page > 0) {
+                $this->addToQueue('algoliasearch/observer', 'moveStoreSuggestionIndex',
+                    array('store_id' => $store->getId()), 1);
+            }
         }
 
         return $this;
