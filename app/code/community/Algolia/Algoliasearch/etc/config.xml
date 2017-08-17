@@ -220,9 +220,12 @@
                 <show_cats_not_included_in_navigation>0</show_cats_not_included_in_navigation>
             </categories>
             <queue>
-                <active>0</active>
                 <number_of_element_by_page>100</number_of_element_by_page>
+                <active>0</active>
                 <number_of_job_to_run>10</number_of_job_to_run>
+                <number_of_retries>3</number_of_retries>
+                <check_price_index>0</check_price_index>
+                <check_stock_index>0</check_stock_index>
             </queue>
             <image>
                 <width>265</width>

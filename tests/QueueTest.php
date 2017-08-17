@@ -211,7 +211,7 @@ class QueueTest extends AbstractTestCase
         $this->assertEquals(6, count($mergedJobs));
 
         $expectedCategoryJob = array(
-            'job_id' => '7',
+            'job_id' => 7,
             'pid' => NULL,
             'class' => 'algoliasearch/observer',
             'method' => 'rebuildCategoryIndex',
@@ -228,12 +228,13 @@ class QueueTest extends AbstractTestCase
             'error_log' => '',
             'data_size' => 3,
             'store_id' => '1',
+            'merged_ids' => array('1', '7'),
         );
 
         $this->assertEquals($expectedCategoryJob, $mergedJobs[0]);
 
         $expectedProductJob = array(
-            'job_id' => '10',
+            'job_id' => 10,
             'pid' => NULL,
             'class' => 'algoliasearch/observer',
             'method' => 'rebuildProductIndex',
@@ -249,6 +250,7 @@ class QueueTest extends AbstractTestCase
             'error_log' => '',
             'data_size' => 2,
             'store_id' => '1',
+            'merged_ids' => array('4', '10'),
         );
 
         $this->assertEquals($expectedProductJob, $mergedJobs[3]);
@@ -334,6 +336,7 @@ class QueueTest extends AbstractTestCase
             'error_log' => '',
             'data_size' => 3,
             'store_id' => '1',
+            'merged_ids' => array('1', '7'),
         );
 
         $expectedLastJob = array(
@@ -353,6 +356,7 @@ class QueueTest extends AbstractTestCase
             'error_log' => '',
             'data_size' => 2,
             'store_id' => '3',
+            'merged_ids' => array('6', '12'),
         );
 
         $this->assertEquals($expectedFirstJob, reset($jobs));
@@ -442,5 +446,63 @@ class QueueTest extends AbstractTestCase
 
         $this->assertEquals($pid, $firstJob['pid']);
         $this->assertEquals($pid, $lastJob['pid']);
+    }
+
+    public function testFaildedJob()
+    {
+        setConfig('algoliasearch/queue/number_of_retries', 3);
+
+        $this->writeConnection->query('TRUNCATE TABLE algoliasearch_queue');
+
+        // Setting "not-existing-store" as store_id throws exception during processing the job
+        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
+            (1, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"not-existing-store","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (2, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (3, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"not-existing-store","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (4, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (5, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"not-existing-store","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (6, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (7, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"not-existing-store","product_ids":["405"]}\', 3, 0, \'\', 1),
+            (8, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["405"]}\', 3, 0, \'\', 1)');
+
+        $queue = new Algolia_Algoliasearch_Model_Queue();
+
+        $pid = getmypid();
+        $jobs = invokeMethod($queue, 'getJobs', array('maxJobs' => 10, 'pid' => $pid));
+
+        // Check is jobs are correctly merged
+        $this->assertEquals(4, count($jobs));
+
+        // Reset pid
+        $this->writeConnection->query('UPDATE algoliasearch_queue SET pid = NULL');
+
+        $queue->run(10);
+
+        $jobs = $this->readConnection->query('SELECT * FROM algoliasearch_queue')->fetchAll();
+        $this->assertEquals(4, count($jobs));
+
+        foreach ($jobs as $job) {
+            $this->assertNull($job['pid']);
+            $this->assertEquals('1', $job['retries']);
+        }
+
+        $queue->run(10);
+
+        $jobs = $this->readConnection->query('SELECT * FROM algoliasearch_queue')->fetchAll();
+        $this->assertEquals(4, count($jobs));
+
+        foreach ($jobs as $job) {
+            $this->assertNull($job['pid']);
+            $this->assertEquals('2', $job['retries']);
+        }
+
+        // 3rd run, 3rd retry - retries are maxed out
+        $queue->run(10);
+
+        // 4th run - should clean the table from maxed out jobs
+        $queue->run(10);
+
+        $jobs = $this->readConnection->query('SELECT * FROM algoliasearch_queue')->fetchAll();
+        $this->assertEquals(0, count($jobs));
     }
 }

@@ -50,6 +50,9 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const IS_ACTIVE = 'algoliasearch/queue/active';
     const NUMBER_OF_ELEMENT_BY_PAGE = 'algoliasearch/queue/number_of_element_by_page';
     const NUMBER_OF_JOB_TO_RUN = 'algoliasearch/queue/number_of_job_to_run';
+    const RETRY_LIMIT = 'algoliasearch/queue/number_of_retries';
+    const CHECK_PRICE_INDEX = 'algoliasearch/queue/check_price_index';
+    const CHECK_STOCK_INDEX = 'algoliasearch/queue/check_stock_index';
 
     const XML_PATH_IMAGE_WIDTH = 'algoliasearch/image/width';
     const XML_PATH_IMAGE_HEIGHT = 'algoliasearch/image/height';
@@ -259,6 +262,21 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function isQueueActive($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::IS_ACTIVE, $storeId);
+    }
+
+    public function shouldCheckPriceIndex($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::CHECK_PRICE_INDEX, $storeId);
+    }
+
+    public function shouldCheckStockIndex($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::CHECK_STOCK_INDEX, $storeId);
+    }
+
+    public function getRetryLimit($storeId = null)
+    {
+        return (int) Mage::getStoreConfig(self::RETRY_LIMIT, $storeId);
     }
 
     public function getRemoveWordsIfNoResult($storeId = null)
