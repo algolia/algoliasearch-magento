@@ -745,11 +745,21 @@
                         ]]>
                     </comment>
                     <fields>
+                        <number_of_element_by_page translate="label comment">
+                            <label>Max number of element per indexing job</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>The max number of element by indexing job. Default value is 100.</comment>
+                        </number_of_element_by_page>
                         <active translate="label">
                             <label>Queue Enabled</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>10</sort_order>
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -764,21 +774,11 @@
                                 ]]>
                             </comment>
                         </active>
-                        <number_of_element_by_page translate="label comment">
-                            <label>Max number of element per indexing job</label>
-                            <frontend_type>text</frontend_type>
-                            <validate>validate-digits</validate>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>The max number of element by indexing job. Default value is 100.</comment>
-                        </number_of_element_by_page>
                         <number_of_job_to_run translate="label comment">
                             <label>Number of jobs to run each time the cron is run</label>
                             <frontend_type>text</frontend_type>
                             <validate>validate-digits</validate>
-                            <sort_order>40</sort_order>
+                            <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -794,6 +794,55 @@
                                 <active>1</active>
                             </depends>
                         </number_of_job_to_run>
+                        <number_of_retries translate="label">
+                            <label>Number of times to retry processing of queued jobs</label>
+                            <sort_order>40</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <comment>Select the number of times to retry events that have failed the indexes check.</comment>
+                            <source_model>algoliasearch/system_config_source_dropdown_retryValues</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </number_of_retries>
+                        <check_price_index translate="label">
+                            <label>Should check if the prices were reindexed before pushing to Algolia?</label>
+                            <sort_order>40</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <comment>
+                                <![CDATA[
+                                Use only when on Enterprise Edition with enabled asynchronous price reindexing.<br />
+                                If set to Yes, the queue checks if all the products which are supposed to be indexed in Algolia has reindexed prices. If they don't those products will be skipped and pushed to Algolia when they have its' prices reindexed.
+                                ]]>
+                            </comment>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </check_price_index>
+                        <check_stock_index translate="label">
+                            <label>Should check if the stock was reindexed before pushing to Algolia?</label>
+                            <sort_order>50</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <comment>
+                                <![CDATA[
+                                Use only when on Enterprise Edition with enabled asynchronous price reindexing.<br />
+                                If set to Yes, the queue checks if all the products which are supposed to be indexed in Algolia has reindexed stock. If they don't those products will be skipped and pushed to Algolia when they have its' stock reindexed.
+                                ]]>
+                            </comment>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </check_stock_index>
                     </fields>
                 </queue>
                 <analytics translate="label">
