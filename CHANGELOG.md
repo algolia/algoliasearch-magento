@@ -1,5 +1,27 @@
 ## CHANGE LOG
 
+### 1.11.0
+
+## FEATURES
+- Added option to turn on autocomplete's `debug` option from configuration (#865)
+- The extension now displays the right image for a color variant depending on search query or selected color filter (#883)
+
+## UPDATES
+- Added CSS class for proper function of collapsible IS widgets (#859)
+- Changed Magento archive URLs in dev containers (#874)
+- Updated Magento 1.9.3 version to the latest one in dev container (#882)
+- Optimization of `getPopularQueries()` method (#888)
+
+## FIXES
+- Fixed the hardcode admin URL for fetching queue info (#854)
+- Fixed issue when some attributes weren't set as retrievable when custom groups were enabled (#856)
+- Fixed back button which returned all products on category pages (#852)
+- Removed not-necessary additional query on category page (#852)
+- Fixed displayed link to analytics documentation (#869)
+- Fixed store specific facets (#868)
+- Fixed option to disable the module by disabling it's output (#866)
+
+
 ### 1.10.0
 
 #### FEATURES
