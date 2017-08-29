@@ -1,6 +1,6 @@
 Algolia Search for Magento 1.6+
 ==================
-![Latest version](https://img.shields.io/badge/latest-1.10.0-green.svg)
+![Latest version](https://img.shields.io/badge/latest-1.11.0-green.svg)
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-magento.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-magento)
 ![PHP >= 5.3](https://img.shields.io/badge/php-%3E=5.3-green.svg)
 
