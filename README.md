@@ -1,6 +1,8 @@
 Algolia Search for Magento 1.6+
 ==================
+
 ![Latest version](https://img.shields.io/badge/latest-1.11.0-green.svg)
+
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-magento.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-magento)
 ![PHP >= 5.3](https://img.shields.io/badge/php-%3E=5.3-green.svg)
 
@@ -9,6 +11,12 @@ Algolia Search for Magento 1.6+
 ![Magento 1.8.1](https://img.shields.io/badge/magento-1.8.1-blue.svg)
 ![Magento 1.9.2](https://img.shields.io/badge/magento-1.9.2-blue.svg)
 ![Magento 1.9.3](https://img.shields.io/badge/magento-1.9.3-blue.svg)
+
+-------
+
+🔎 Are you a Magento engineer? [Join our team](https://www.algolia.com/careers#!?j=eed58660-f684-436d-a2ff-e9947d2b65a2) and help us deliver the best search solution for Magento stores!
+
+-------
 
 - **Auto-completion menu:** Offer End-Users immediate access to your whole catalog from the dropdown menu, whatever your number of categories or attributes.
 
