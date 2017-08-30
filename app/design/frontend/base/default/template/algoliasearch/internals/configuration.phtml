@@ -213,6 +213,7 @@ $algoliaJsConfig = array(
         'nbOfCategoriesSuggestions' => $config->getNumberOfCategoriesSuggestions(),
         'nbOfQueriesSuggestions' => $config->getNumberOfQueriesSuggestions(),
         'displaySuggestionsCategories' => $config->displaySuggestionsCategories(),
+        'isDebugEnabled' => $config->isAutocompleteDebugEnabled(),
     ),
     'extensionVersion' => $config->getExtensionVersion(),
     'applicationId' => $config->getApplicationID(),
@@ -247,6 +248,7 @@ $algoliaJsConfig = array(
     'showSuggestionsOnNoResultsPage' => $config->showSuggestionsOnNoResultsPage(),
     'baseUrl' => $baseUrl,
     'popularQueries' => $config->getPopularQueries(),
+    'useAdaptiveImage' => $config->useAdaptiveImage(),
     'urls' => array(
         'logo' => $this->getSkinUrl('algoliasearch/search-by-algolia.svg'),
     ),

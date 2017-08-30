@@ -185,7 +185,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
-    public function rebuildStorePageIndex($storeId)
+    public function rebuildStorePageIndex($storeId, $pageIds = null)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
             $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($storeId));
@@ -193,19 +193,24 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             return;
         }
 
+        $shouldUseTmpIndex = ($pageIds === null);
+
         $emulationInfo = $this->startEmulation($storeId);
 
-        $index_name = $this->page_helper->getIndexName($storeId);
+        $indexName = $this->page_helper->getIndexName($storeId, $shouldUseTmpIndex);
 
-        $pages = $this->page_helper->getPages($storeId);
-
+        /** @var array $pages */
+        $pages = $this->page_helper->getPages($storeId, $pageIds);
         foreach (array_chunk($pages, 100) as $chunk) {
-            $this->algolia_helper->addObjects($chunk, $index_name.'_tmp');
+            $this->algolia_helper->addObjects($chunk, $indexName);
         }
 
-        $this->algolia_helper->moveIndex($index_name.'_tmp', $index_name);
+        if ($shouldUseTmpIndex === true) {
+            $finalIndexName = $this->page_helper->getIndexName($storeId);
 
-        $this->algolia_helper->setSettings($index_name, $this->page_helper->getIndexSettings($storeId));
+            $this->algolia_helper->moveIndex($indexName, $finalIndexName);
+            $this->algolia_helper->setSettings($finalIndexName, $this->page_helper->getIndexSettings($storeId));
+        }
 
         $this->stopEmulation($emulationInfo);
     }
@@ -442,6 +447,19 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $potentiallyDeletedProductsIds = array_combine($potentiallyDeletedProductsIds, $potentiallyDeletedProductsIds);
         } else {
             $potentiallyDeletedProductsIds = array();
+        }
+
+        if (method_exists('Mage', 'getEdition') === true && Mage::getEdition() === Mage::EDITION_ENTERPRISE) {
+            $productIds = array();
+
+            /** @var Mage_Catalog_Model_Product $products */
+            foreach ($collection as $products) {
+                $productIds[] = $products->getId();
+            }
+
+            /** @var Algolia_Algoliasearch_Helper_IndexChecker $indexChecker */
+            $indexChecker = Mage::helper('algoliasearch/indexChecker');
+            $indexChecker->checkIndexers($storeId, $productIds);
         }
 
         $this->logger->start('CREATE RECORDS '.$this->logger->getStoreName($storeId));

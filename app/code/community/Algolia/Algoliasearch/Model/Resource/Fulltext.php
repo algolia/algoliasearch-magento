@@ -47,6 +47,10 @@ class Algolia_Algoliasearch_Model_Resource_Fulltext extends Mage_CatalogSearch_M
             return parent::rebuildIndex($storeId, $productIds);
         }
 
+        if ($this->config->isModuleOutputEnabled() === false) {
+            return parent::rebuildIndex($storeId, $productIds);
+        }
+
         if (!$this->config->getApplicationID() || !$this->config->getAPIKey() || !$this->config->getSearchOnlyAPIKey()) {
             /** @var Mage_Adminhtml_Model_Session $session */
             $session = Mage::getSingleton('adminhtml/session');

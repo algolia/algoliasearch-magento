@@ -166,6 +166,10 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Algolia_Algoliasearch_
 
     protected function _processEvent(Mage_Index_Model_Event $event)
     {
+        if ($this->config->isModuleOutputEnabled() === false) {
+            return;
+        }
+
         if (!$this->config->getApplicationID() || !$this->config->getAPIKey() || !$this->config->getSearchOnlyAPIKey()) {
             if (self::$credential_error === false) {
                 /** @var Mage_Adminhtml_Model_Session $session */
@@ -205,6 +209,10 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Algolia_Algoliasearch_
      */
     public function reindexAll()
     {
+        if ($this->config->isModuleOutputEnabled() === false) {
+            return $this;
+        }
+
         if (!$this->config->getApplicationID() || !$this->config->getAPIKey() || !$this->config->getSearchOnlyAPIKey()) {
             /** @var Mage_Adminhtml_Model_Session $session */
             $session = Mage::getSingleton('adminhtml/session');
@@ -212,7 +220,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algolia extends Algolia_Algoliasearch_
 
             $this->logger->log('ERROR Credentials not configured correctly');
 
-            return;
+            return $this;
         }
 
         $this->logger->start('PRODUCTS FULL REINDEX');

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2013 Algolia
  * http://www.algolia.com/
@@ -20,20 +21,10 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- *
- *
  */
 
-require_once __DIR__.'/AlgoliaException.php';
-require_once __DIR__.'/AlgoliaConnectionException.php';
-require_once __DIR__.'/Client.php';
-require_once __DIR__.'/ClientContext.php';
-require_once __DIR__.'/FailingHostsCache.php';
-require_once __DIR__.'/FileFailingHostsCache.php';
-require_once __DIR__.'/Index.php';
-require_once __DIR__.'/IndexBrowser.php';
-require_once __DIR__.'/InMemoryFailingHostsCache.php';
-require_once __DIR__.'/Json.php';
-require_once __DIR__.'/PlacesIndex.php';
-require_once __DIR__.'/SynonymType.php';
-require_once __DIR__.'/Version.php';
+namespace AlgoliaSearch;
+
+class AlgoliaConnectionException extends AlgoliaException
+{
+}

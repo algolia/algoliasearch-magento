@@ -21,13 +21,17 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
         return $indexSettings;
     }
 
-    public function getPages($storeId)
+    public function getPages($storeId, $pageIds = null)
     {
         /** @var Mage_Cms_Model_Page $cmsPage */
         $cmsPage = Mage::getModel('cms/page');
 
         /** @var Mage_Cms_Model_Resource_Page_Collection $pages */
         $pages = $cmsPage->getCollection()->addStoreFilter($storeId)->addFieldToFilter('is_active', 1);
+
+        if ($pageIds && count($pageIds) > 0) {
+            $pages = $pages->addFieldToFilter('page_id', array('in' => $pageIds));
+        }
 
         Mage::dispatchEvent('algolia_after_pages_collection_build', array('store' => $storeId, 'collection' => $pages));
 
@@ -84,5 +88,18 @@ class Algolia_Algoliasearch_Helper_Entity_Pagehelper extends Algolia_Algoliasear
         }
 
         return $pages;
+    }
+
+    public function shouldIndexPages($storeId)
+    {
+        $autocompleteSections = $this->config->getAutocompleteSections($storeId);
+
+        foreach ($autocompleteSections as $section) {
+            if ($section['name'] === 'pages') {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
