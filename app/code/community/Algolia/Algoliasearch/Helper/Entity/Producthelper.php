@@ -171,6 +171,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
 
             $products = $products
+                ->addAttributeToSelect('special_price')
                 ->addAttributeToSelect('special_from_date')
                 ->addAttributeToSelect('special_to_date')
                 ->addAttributeToSelect('visibility')
