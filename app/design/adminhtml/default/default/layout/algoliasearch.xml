@@ -1,5 +1,15 @@
 <?xml version="1.0"?>
 <layout>
+    <default>
+        <reference name="head">
+            <action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>
+        </reference>
+
+        <reference name="notifications">
+            <block type="algoliasearch/adminhtml_notifications" name="algoliasearch_notifications" template="algoliasearch/notifications.phtml"/>
+        </reference>
+    </default>
+
     <algolia_bundle_handle>
         <reference name="head">
             <action method="addJs"><script>algoliasearch/internals/adminhtml/algoliaAdminBundle.min.js</script></action>
