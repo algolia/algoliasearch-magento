@@ -61,10 +61,12 @@ class QueueTest extends AbstractTestCase
         /** @var Algolia_Algoliasearch_Helper_Algoliahelper $algoliaHelper */
         $algoliaHelper = Mage::helper('algoliasearch/algoliahelper');
 
+        $this->writeConnection->query('TRUNCATE TABLE algoliasearch_queue_log');
+
         $queue = new Algolia_Algoliasearch_Model_Queue();
 
         // Run the first four jobs - saveSettings, batch, move, batch
-        $queue->run(4);
+        $queue->runCron(4, true);
 
         $algoliaHelper->waitLastTask();
 
@@ -92,7 +94,7 @@ class QueueTest extends AbstractTestCase
         $this->assertTrue($existsFrenchTmpIndex, 'French products TMP index does not exists and it should'); // Wasn't moved
 
         // Run the second three jobs - move, batch, move
-        $queue->run(3);
+        $queue->runCron(3, true);
 
         $algoliaHelper->waitLastTask();
 
@@ -137,6 +139,12 @@ class QueueTest extends AbstractTestCase
         $this->assertTrue($existsDefaultProdIndex, 'Default product production index does not exists and it should');
         $this->assertTrue($existsFrenchProdIndex, 'French products production index does not exists and it should');
         $this->assertTrue($existsGermanProdIndex, 'German products production index does not exists and it should');
+
+        $logRecords = $this->readConnection->query('SELECT * FROM algoliasearch_queue_log')->fetchAll();
+
+        $this->assertSame(2, count($logRecords));
+        $this->assertEquals(4, $logRecords[0]['processed_jobs']);
+        $this->assertEquals(3, $logRecords[1]['processed_jobs']);
     }
 
     public function testSettings()
@@ -188,19 +196,19 @@ class QueueTest extends AbstractTestCase
     public function testMerging()
     {
         $this->writeConnection->query('TRUNCATE TABLE algoliasearch_queue');
-        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
-            (1, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"1","category_ids":["9","22"]}\', 3, 0, \'\', 2),
-            (2, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["9","22"]}\', 3, 0, \'\', 2),
-            (3, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"3","category_ids":["9","22"]}\', 3, 0, \'\', 2),
-            (4, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":["448"]}\', 3, 0, \'\', 1),
-            (5, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["448"]}\', 3, 0, \'\', 1),
-            (6, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["448"]}\', 3, 0, \'\', 1),
-            (7, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"1","category_ids":["40"]}\', 3, 0, \'\', 1),
-            (8, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["40"]}\', 3, 0, \'\', 1),
-            (9, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"3","category_ids":["40"]}\', 3, 0, \'\', 1),
-            (10, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":["405"]}\', 3, 0, \'\', 1),
-            (11, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["405"]}\', 3, 0, \'\', 1),
-            (12, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["405"]}\', 3, 0, \'\', 1);');
+        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `created`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
+            (1, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"1","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (2, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (3, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"3","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (4, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (5, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (6, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (7, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"1","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (8, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (9, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"3","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (10, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":["405"]}\', 3, 0, \'\', 1),
+            (11, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["405"]}\', 3, 0, \'\', 1),
+            (12, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["405"]}\', 3, 0, \'\', 1);');
 
         $queue = new Algolia_Algoliasearch_Model_Queue();
 
@@ -212,6 +220,7 @@ class QueueTest extends AbstractTestCase
 
         $expectedCategoryJob = array(
             'job_id' => 7,
+            'created' => '2017-09-01 12:00:00',
             'pid' => NULL,
             'class' => 'algoliasearch/observer',
             'method' => 'rebuildCategoryIndex',
@@ -235,6 +244,7 @@ class QueueTest extends AbstractTestCase
 
         $expectedProductJob = array(
             'job_id' => 10,
+            'created' => '2017-09-01 12:00:00',
             'pid' => NULL,
             'class' => 'algoliasearch/observer',
             'method' => 'rebuildProductIndex',
@@ -259,19 +269,19 @@ class QueueTest extends AbstractTestCase
     public function testMergingWithStaticMethods()
     {
         $this->writeConnection->query('TRUNCATE TABLE algoliasearch_queue');
-        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
-            (1, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"1","category_ids":["9","22"]}\', 3, 0, \'\', 2),
-            (2, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["9","22"]}\', 3, 0, \'\', 2),
-            (3, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"3","category_ids":["9","22"]}\', 3, 0, \'\', 2),
-            (4, NULL, \'algoliasearch/observer\', \'removeCategories\', \'{"store_id":"1","product_ids":["448"]}\', 3, 0, \'\', 1),
-            (5, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["448"]}\', 3, 0, \'\', 1),
-            (6, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["448"]}\', 3, 0, \'\', 1),
-            (7, NULL, \'algoliasearch/observer\', \'saveSettings\', \'{"store_id":"1","category_ids":["40"]}\', 3, 0, \'\', 1),
-            (8, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["40"]}\', 3, 0, \'\', 1),
-            (9, NULL, \'algoliasearch/observer\', \'moveProductsTmpIndex\', \'{"store_id":"3","category_ids":["40"]}\', 3, 0, \'\', 1),
-            (10, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":["405"]}\', 3, 0, \'\', 1),
-            (11, NULL, \'algoliasearch/observer\', \'moveStoreSuggestionIndex\', \'{"store_id":"2","product_ids":["405"]}\', 3, 0, \'\', 1),
-            (12, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["405"]}\', 3, 0, \'\', 1);');
+        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `created`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
+            (1, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"1","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (2, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (3, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"3","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (4, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'removeCategories\', \'{"store_id":"1","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (5, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (6, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (7, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'saveSettings\', \'{"store_id":"1","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (8, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (9, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'moveProductsTmpIndex\', \'{"store_id":"3","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (10, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":["405"]}\', 3, 0, \'\', 1),
+            (11, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'moveStoreSuggestionIndex\', \'{"store_id":"2","product_ids":["405"]}\', 3, 0, \'\', 1),
+            (12, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["405"]}\', 3, 0, \'\', 1);');
 
         $queue = new Algolia_Algoliasearch_Model_Queue();
 
@@ -298,19 +308,19 @@ class QueueTest extends AbstractTestCase
     public function testGetJobs()
     {
         $this->writeConnection->query('TRUNCATE TABLE algoliasearch_queue');
-        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
-            (1, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"1","category_ids":["9","22"]}\', 3, 0, \'\', 2),
-            (2, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["9","22"]}\', 3, 0, \'\', 2),
-            (3, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"3","category_ids":["9","22"]}\', 3, 0, \'\', 2),
-            (4, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":["448"]}\', 3, 0, \'\', 1),
-            (5, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["448"]}\', 3, 0, \'\', 1),
-            (6, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["448"]}\', 3, 0, \'\', 1),
-            (7, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"1","category_ids":["40"]}\', 3, 0, \'\', 1),
-            (8, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["40"]}\', 3, 0, \'\', 1),
-            (9, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"3","category_ids":["40"]}\', 3, 0, \'\', 1),
-            (10, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":["405"]}\', 3, 0, \'\', 1),
-            (11, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["405"]}\', 3, 0, \'\', 1),
-            (12, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["405"]}\', 3, 0, \'\', 1);');
+        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `created`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
+            (1, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"1","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (2, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (3, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"3","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (4, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (5, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (6, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (7, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"1","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (8, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (9, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"3","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (10, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":["405"]}\', 3, 0, \'\', 1),
+            (11, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["405"]}\', 3, 0, \'\', 1),
+            (12, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"3","product_ids":["405"]}\', 3, 0, \'\', 1);');
 
         $queue = new Algolia_Algoliasearch_Model_Queue();
 
@@ -320,6 +330,7 @@ class QueueTest extends AbstractTestCase
 
         $expectedFirstJob = array(
             'job_id' => 7,
+            'created' => '2017-09-01 12:00:00',
             'pid' => NULL,
             'class' => 'algoliasearch/observer',
             'method' => 'rebuildCategoryIndex',
@@ -341,6 +352,7 @@ class QueueTest extends AbstractTestCase
 
         $expectedLastJob = array(
             'job_id' => 12,
+            'created' => '2017-09-01 12:00:00',
             'pid' => NULL,
             'class' => 'algoliasearch/observer',
             'method' => 'rebuildProductIndex',
@@ -381,9 +393,9 @@ class QueueTest extends AbstractTestCase
         $jsonProductIds = json_encode($productIds);
 
         $this->writeConnection->query('TRUNCATE TABLE algoliasearch_queue');
-        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
-            (1, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":'.$jsonProductIds.'}\', 3, 0, \'\', 5000),
-            (2, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["9","22"]}\', 3, 0, \'\', 2);');
+        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `created`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
+            (1, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":'.$jsonProductIds.'}\', 3, 0, \'\', 5000),
+            (2, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["9","22"]}\', 3, 0, \'\', 2);');
 
         $queue = new Algolia_Algoliasearch_Model_Queue();
 
@@ -417,9 +429,9 @@ class QueueTest extends AbstractTestCase
         $jsonProductIds = json_encode($productIds);
 
         $this->writeConnection->query('TRUNCATE TABLE algoliasearch_queue');
-        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
-            (1, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":'.$jsonProductIds.'}\', 3, 0, \'\', 99),
-            (2, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["9","22"]}\', 3, 0, \'\', 2);');
+        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `created`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
+            (1, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"1","product_ids":'.$jsonProductIds.'}\', 3, 0, \'\', 99),
+            (2, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["9","22"]}\', 3, 0, \'\', 2);');
 
         $queue = new Algolia_Algoliasearch_Model_Queue();
 
@@ -455,15 +467,15 @@ class QueueTest extends AbstractTestCase
         $this->writeConnection->query('TRUNCATE TABLE algoliasearch_queue');
 
         // Setting "not-existing-store" as store_id throws exception during processing the job
-        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
-            (1, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"not-existing-store","category_ids":["9","22"]}\', 3, 0, \'\', 2),
-            (2, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["9","22"]}\', 3, 0, \'\', 2),
-            (3, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"not-existing-store","product_ids":["448"]}\', 3, 0, \'\', 1),
-            (4, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["448"]}\', 3, 0, \'\', 1),
-            (5, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"not-existing-store","category_ids":["40"]}\', 3, 0, \'\', 1),
-            (6, NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["40"]}\', 3, 0, \'\', 1),
-            (7, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"not-existing-store","product_ids":["405"]}\', 3, 0, \'\', 1),
-            (8, NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["405"]}\', 3, 0, \'\', 1)');
+        $this->writeConnection->query('INSERT INTO `algoliasearch_queue` (`job_id`, `created`, `pid`, `class`, `method`, `data`, `max_retries`, `retries`, `error_log`, `data_size`) VALUES
+            (1, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"not-existing-store","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (2, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["9","22"]}\', 3, 0, \'\', 2),
+            (3, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"not-existing-store","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (4, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["448"]}\', 3, 0, \'\', 1),
+            (5, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"not-existing-store","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (6, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildCategoryIndex\', \'{"store_id":"2","category_ids":["40"]}\', 3, 0, \'\', 1),
+            (7, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"not-existing-store","product_ids":["405"]}\', 3, 0, \'\', 1),
+            (8, \'2017-09-01 12:00:00\', NULL, \'algoliasearch/observer\', \'rebuildProductIndex\', \'{"store_id":"2","product_ids":["405"]}\', 3, 0, \'\', 1)');
 
         $queue = new Algolia_Algoliasearch_Model_Queue();
 
