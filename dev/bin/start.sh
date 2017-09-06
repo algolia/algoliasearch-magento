@@ -22,12 +22,8 @@ n98-magerun --skip-root-check --root-dir=/var/www/htdocs config:set algoliasearc
 n98-magerun --skip-root-check --root-dir=/var/www/htdocs config:set web/unsecure/base_url $BASE_URL
 n98-magerun --skip-root-check --root-dir=/var/www/htdocs config:set web/secure/base_url $BASE_URL
 
-chmod -R 777 /var/www/htdocs/media
-chown -R www-data:www-data /var/www/htdocs/media
-
 if [ $INSTALL_ALGOLIA == Yes ]; then
-  /root/bin/modman repair --force algoliasearch-magento
-  /root/bin/modman repair --force algoliasearch-magento-extend-module-skeleton
+  /root/bin/modman deploy-all
 
   # reindex whole index
   n98-magerun --skip-root-check --root-dir=/var/www/htdocs index:reindex algolia_search_indexer
@@ -39,7 +35,6 @@ else
   /root/bin/modman undeploy algoliasearch-magento-extend-module-skeleton
 fi
 
-# Again in case root created some folder with root:root
 chmod -R 777 /var/www/htdocs/media
 chown -R www-data:www-data /var/www/htdocs/media
 
