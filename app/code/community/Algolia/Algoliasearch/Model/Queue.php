@@ -52,6 +52,7 @@ class Algolia_Algoliasearch_Model_Queue
     {
         // Insert a row for the new job
         $this->db->insert($this->table, array(
+            'created'   => date('Y-m-d H:i:s'),
             'class'     => $class,
             'method'    => $method,
             'data'      => json_encode($data),
