@@ -4,7 +4,7 @@
         <Algolia_Algoliasearch>
             <active>true</active>
             <codePool>community</codePool>
-            <version>1.11.0</version>
+            <version>1.11.1</version>
         </Algolia_Algoliasearch>
     </modules>
 </config>
