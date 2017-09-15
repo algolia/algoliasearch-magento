@@ -1,5 +1,11 @@
 ## CHANGE LOG
 
+### 1.11.1
+
+- Query rules are preserved during reindex with indexing queue enabled (#913)
+- Information about the indexing queue is displayed in admin-wide notifications (#905)
+- Information about queue processing are logged to `algoliasearch_queue_log` DB table (#907)
+
 ### 1.11.0
 
 ## FEATURES
