@@ -14,5 +14,6 @@ app/locale/en_US/Algolia_Algoliasearch.csv                          app/locale/e
 app/locale/sv_SE/Algolia_Algoliasearch.csv                          app/locale/sv_SE/Algolia_Algoliasearch.csv
 app/locale/nl_NL/Algolia_Algoliasearch.csv                          app/locale/nl_NL/Algolia_Algoliasearch.csv
 skin/frontend/base/default/algoliasearch/                           skin/frontend/base/default/algoliasearch/
+skin/adminhtml/base/default/algoliasearch/                          skin/adminhtml/base/default/algoliasearch/
 js/algoliasearch/                                                   js/algoliasearch/
 lib/AlgoliaSearch/                                                  lib/AlgoliaSearch/

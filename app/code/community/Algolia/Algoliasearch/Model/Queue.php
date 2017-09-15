@@ -6,6 +6,7 @@ class Algolia_Algoliasearch_Model_Queue
     const ERROR_LOG = 'algoliasearch_queue_errors.log';
 
     protected $table;
+    protected $logTable;
 
     /** @var Magento_Db_Adapter_Pdo_Mysql */
     protected $db;
@@ -29,12 +30,16 @@ class Algolia_Algoliasearch_Model_Queue
 
     private $noOfFailedJobs = 0;
 
+    private $logRecord = array();
+
     public function __construct()
     {
         /** @var Mage_Core_Model_Resource $coreResource */
         $coreResource = Mage::getSingleton('core/resource');
 
         $this->table = $coreResource->getTableName('algoliasearch/queue');
+        $this->logTable = $this->table.'_log';
+
         $this->db = $coreResource->getConnection('core_write');
 
         $this->config = Mage::helper('algoliasearch/config');
@@ -47,6 +52,7 @@ class Algolia_Algoliasearch_Model_Queue
     {
         // Insert a row for the new job
         $this->db->insert($this->table, array(
+            'created'   => date('Y-m-d H:i:s'),
             'class'     => $class,
             'method'    => $method,
             'data'      => json_encode($data),
@@ -55,19 +61,38 @@ class Algolia_Algoliasearch_Model_Queue
         ));
     }
 
-    public function runCron()
+    public function runCron($nbJobs = null, $force = false)
     {
-        if (!$this->config->isQueueActive()) {
+        if (!$this->config->isQueueActive() && $force === false) {
             return;
         }
 
-        $nbJobs = $this->config->getNumberOfJobToRun();
+        $this->clearOldLogRecords();
 
-        if (getenv('EMPTY_QUEUE') && getenv('EMPTY_QUEUE') == '1') {
-            $nbJobs = -1;
+        $this->logRecord = array(
+            'started' => date('Y-m-d H:i:s'),
+            'processed_jobs' => 0,
+            'with_empty_queue' => 0,
+        );
+
+        $started = time();
+
+        if ($nbJobs === null) {
+            $nbJobs = $this->config->getNumberOfJobToRun();
+            if (getenv('EMPTY_QUEUE') && getenv('EMPTY_QUEUE') == '1') {
+                $nbJobs = -1;
+
+                $this->logRecord['with_empty_queue'] = 1;
+            }
         }
 
         $this->run($nbJobs);
+
+        $this->logRecord['duration'] = time() - $started;
+
+        $this->db->insert($this->logTable, $this->logRecord);
+
+        $this->db->closeConnection();
     }
 
     public function run($maxJobs)
@@ -77,7 +102,7 @@ class Algolia_Algoliasearch_Model_Queue
         $jobs = $this->getJobs($maxJobs, $pid);
 
         if (empty($jobs)) {
-            $this->db->closeConnection();
+            return;
         }
 
         // Run all reserved jobs
@@ -96,6 +121,8 @@ class Algolia_Algoliasearch_Model_Queue
                 $model = Mage::getSingleton($job['class']);
                 $method = $job['method'];
                 $model->{$method}(new Varien_Object($job['data']));
+
+                $this->logRecord['processed_jobs'] += count($job['merged_ids']);
             } catch (\Exception $e) {
                 $this->noOfFailedJobs++;
 
@@ -119,8 +146,6 @@ class Algolia_Algoliasearch_Model_Queue
 
             return;
         }
-
-        $this->db->closeConnection();
     }
 
     private function getJobs($maxJobs, $pid)
@@ -380,5 +405,15 @@ class Algolia_Algoliasearch_Model_Queue
         }
 
         return $currentMax;
+    }
+
+    private function clearOldLogRecords()
+    {
+        $idsToDelete = $this->db->query("SELECT id FROM {$this->logTable} ORDER BY started DESC, id DESC LIMIT 25000, ".PHP_INT_MAX)
+                        ->fetchAll(\PDO::FETCH_COLUMN, 0);
+
+        if ($idsToDelete) {
+            $this->db->query("DELETE FROM {$this->logTable} WHERE id IN (" . implode(", ", $idsToDelete) . ")");
+        }
     }
 }

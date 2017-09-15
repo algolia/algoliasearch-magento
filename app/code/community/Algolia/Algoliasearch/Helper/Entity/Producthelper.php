@@ -406,6 +406,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         } elseif ($saveToTmpIndicesToo === true) {
             $this->algolia_helper->copySynonyms($this->getIndexName($storeId), $this->getIndexName($storeId, $saveToTmpIndicesToo));
         }
+
+        if ($saveToTmpIndicesToo === true) {
+            $this->algolia_helper->copyQueryRules($this->getIndexName($storeId), $this->getIndexName($storeId, $saveToTmpIndicesToo));
+        }
     }
 
     protected function getFields($store)
