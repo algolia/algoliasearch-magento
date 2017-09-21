@@ -793,7 +793,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         if (false === isset($defaultData['thumbnail_url'])) {
             /** @var Algolia_Algoliasearch_Helper_Image $thumb */
-            $thumb = $imageHelper->init($product, 'thumbnail')->resize(75, 75);
+            $thumb = $imageHelper->init($product, 'thumbnail')
+                        ->resize($this->config->getThumbnailWidth(), $this->config->getThumbnailHeight());
 
             try {
                 $customData['thumbnail_url'] = $thumb->toString();

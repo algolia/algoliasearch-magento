@@ -711,6 +711,24 @@
                             <comment><![CDATA[You can specify the size of the images used at the Search Results Page.<br />
                                 If your images are already present in some size, e.g. 265x265, Algolia's index job may not have to resize those, potentially saving time and resources.]]></comment>
                         </height>
+                        <thumbnail_width translate="label comment">
+                            <label>Thumbnail Width</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </thumbnail_width>
+                        <thumbnail_height translate="label comment">
+                            <label>Thumbnail Height</label>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-digits</validate>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </thumbnail_height>
                         <type translate="label comment">
                             <label>Type</label>
                             <frontend_type>select</frontend_type>

@@ -230,6 +230,8 @@
             <image>
                 <width>265</width>
                 <height>265</height>
+                <thumbnail_width>75</thumbnail_width>
+                <thumbnail_height>75</thumbnail_height>
                 <type>image</type>
             </image>
             <analytics>
