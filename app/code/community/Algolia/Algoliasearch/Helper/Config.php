@@ -73,6 +73,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const CUSTOMER_GROUPS_ENABLE = 'algoliasearch/advanced/customer_groups_enable';
     const MAKE_SEO_REQUEST = 'algoliasearch/advanced/make_seo_request';
     const REMOVE_BRANDING = 'algoliasearch/advanced/remove_branding';
+    const SHOW_QUEUE_NOTIFICATION = 'algoliasearch/advanced/show_queue_notification';
     const AUTOCOMPLETE_SELECTOR = 'algoliasearch/advanced/autocomplete_selector';
     const INDEX_PRODUCT_ON_CATEGORY_PRODUCTS_UPDATE = 'algoliasearch/advanced/index_product_on_category_products_update';
     const INDEX_ALL_CATEGORY_PRODUCTS_ON_CATEGORY_UPDATE = 'algoliasearch/advanced/index_all_category_product_on_category_update';
@@ -242,6 +243,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function isRemoveBranding($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::REMOVE_BRANDING, $storeId);
+    }
+
+    public function showQueueNotificiation($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::SHOW_QUEUE_NOTIFICATION, $storeId);
     }
 
     public function getMaxValuesPerFacet($storeId = null)

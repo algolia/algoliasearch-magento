@@ -7,6 +7,14 @@ class Algolia_Algoliasearch_Block_Adminhtml_Notifications extends Mage_Adminhtml
         return $this->getUrl('adminhtml/system_config/edit/section/algoliasearch');
     }
 
+    public function showNotification()
+    {
+        /** @var Algolia_Algoliasearch_Helper_Config $config */
+        $config = Mage::helper('algoliasearch/config');
+
+        return $config->showQueueNotificiation();
+    }
+
     public function getQueueInfo()
     {
         /** @var Algolia_Algoliasearch_Helper_Config $config */
