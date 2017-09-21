@@ -2,6 +2,10 @@
 
 /** @var Algolia_Algoliasearch_Block_Adminhtml_Notifications $this */
 
+if ($this->showNotification() === false) {
+    return;
+}
+
 $queueInfo = $this->getQueueInfo();
 
 ?>
