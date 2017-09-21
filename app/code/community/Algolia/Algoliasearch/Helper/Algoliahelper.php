@@ -12,6 +12,12 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
     /** @var Algolia_Algoliasearch_Helper_Config */
     protected $config;
 
+    /** @var int */
+    protected $maxRecordSize = 20000;
+
+    /** @var array */
+    protected $potentiallyLongAttributes = array('description', 'short_description', 'meta_description', 'content');
+
     /** @var string */
     private $lastUsedIndexName;
 
@@ -287,18 +293,16 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         if (!empty($modifiedIds)) {
             /** @var Mage_Adminhtml_Model_Session $session */
             $session = Mage::getSingleton('adminhtml/session');
-            $session->addWarning('Algolia reindexing : You have some records ('.implode(',', $modifiedIds).') that are too big. They have either been truncated or skipped');
+            $session->addWarning('Algolia reindexing : You have some records ('.implode(',', $modifiedIds).') that are too big. They have either been truncated or skipped.');
         }
     }
 
     public function handleTooBigRecord(&$object)
     {
-        $longAttributes = array('description', 'short_description', 'meta_description', 'content');
-
         $size = mb_strlen(json_encode($object));
 
-        if ($size > 20000) {
-            foreach ($longAttributes as $attribute) {
+        if ($size > $this->maxRecordSize) {
+            foreach ($this->potentiallyLongAttributes as $attribute) {
                 if (isset($object[$attribute])) {
                     unset($object[$attribute]);
                 }
@@ -306,7 +310,7 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
 
             $size = mb_strlen(json_encode($object));
 
-            if ($size > 20000) {
+            if ($size > $this->maxRecordSize) {
                 $object = false;
             }
         }
