@@ -476,6 +476,16 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 unset($potentiallyDeletedProductsIds[$productId]);
             }
 
+            Mage::dispatchEvent('algolia_before_product_availability_check', array('product' => $product, 'store' => $storeId));
+
+            if ($product->getData('algolia__noIndex') === true) {
+                $productsToRemove[$productId] = $productId;
+            }
+
+            if ($product->getData('algolia__alwaysIndex') === true) {
+                $productsToIndex[$productId] = $this->product_helper->getObject($product);
+            }
+
             if (isset($productsToIndex[$productId]) || isset($productsToRemove[$productId])) {
                 continue;
             }
@@ -489,8 +499,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 continue;
             }
 
-            $productObject = $this->product_helper->getObject($product);
-            $productsToIndex[$productId] = $productObject;
+            $productsToIndex[$productId] = $this->product_helper->getObject($product);
         }
 
         $productsToRemove = array_merge($productsToRemove, $potentiallyDeletedProductsIds);
