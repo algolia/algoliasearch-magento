@@ -76,6 +76,10 @@ class Algolia_Algoliasearch_Model_Observer
                     } else {
                         $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle_no_topsearch');
                     }
+
+                    if ($this->config->preventBackendRendering() === true) {
+                        $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle_prevent_backend_rendering');
+                    }
                 }
             }
         }

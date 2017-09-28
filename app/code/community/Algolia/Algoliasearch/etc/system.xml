@@ -1143,6 +1143,36 @@
                                 ]]>
                             </comment>
                         </index_all_category_product_on_category_update>
+                        <prevent_backend_rendering translate="label comment">
+                            <label>Prevent backend rendering?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                <span class="algolia-config-warning">&#9888;</span>
+                                By preventing your store from backend rendering you might break your SEO and accessibility of your store by search crawlers. Please, read documentation before you turn the backend rendering off:
+                                <a target="_blank" href="https://community.algolia.com/magento/doc/m1/prevent-backend-rendering/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">Prevent Backend Rendering documentation</a>
+                                ]]>
+                            </comment>
+                        </prevent_backend_rendering>
+                        <backend_rendering_allowed_user_agents translate="label comment">
+                            <label>Allow backend rendering for User Agents:</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                To specify multiple User-Agents, please put one User-Agent per line.
+                                ]]>
+                            </comment>
+                            <depends><prevent_backend_rendering>1</prevent_backend_rendering></depends>
+                        </backend_rendering_allowed_user_agents>
                     </fields>
                 </advanced>
                 <advanced_settings translate="label">
