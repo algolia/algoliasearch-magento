@@ -1,5 +1,5 @@
 {
-	"name": "algolia/algoliasearch-magento",
+	"name": "sickdaflip/algoliasearch-magento",
 	"type": "magento-module",
 	"license": "MIT",
 	"homepage": "https://github.com/algolia/algoliasearch-magento",
