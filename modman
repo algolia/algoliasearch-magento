@@ -10,6 +10,7 @@ app/design/frontend/base/default/layout/algoliasearch.xml           app/design/f
 app/design/frontend/base/default/template/algoliasearch/            app/design/frontend/base/default/template/algoliasearch/
 app/design/adminhtml/default/default/layout/algoliasearch.xml       app/design/adminhtml/default/default/layout/algoliasearch.xml
 app/design/adminhtml/default/default/template/algoliasearch/        app/design/adminhtml/default/default/template/algoliasearch/
+app/locale/de_DE/Algolia_Algoliasearch.csv                          app/locale/de_DE/Algolia_Algoliasearch.csv
 app/locale/en_US/Algolia_Algoliasearch.csv                          app/locale/en_US/Algolia_Algoliasearch.csv
 app/locale/sv_SE/Algolia_Algoliasearch.csv                          app/locale/sv_SE/Algolia_Algoliasearch.csv
 app/locale/nl_NL/Algolia_Algoliasearch.csv                          app/locale/nl_NL/Algolia_Algoliasearch.csv

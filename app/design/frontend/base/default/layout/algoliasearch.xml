@@ -4,7 +4,7 @@
         <reference name="head">
             <block type="core/template" before="js" template="algoliasearch/internals/configuration.phtml" name="algolia-configuration"/>
 
-            <action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>
+            <!--<action method="addCss"><stylesheet>algoliasearch/algoliasearch.css</stylesheet></action>-->
 
             <action method="addJs"><script>algoliasearch/internals/frontend/Function.prototype.bind.js</script></action>
             <action method="addJs"><script>algoliasearch/internals/frontend/algoliaBundle.min.js</script></action>
@@ -47,9 +47,9 @@
             <!-- Example: <block type="core/template" template="algoliasearch/[autocomplete_or_instantsearch]/your_custom_template_name.phtml" name="algolia-your-custom-template-name"/> -->
         </reference>
 
-        <reference name="content">
-            <block type="core/template" before="content" template="algoliasearch/internals/beforecontent.phtml" name="algolia-beforecontent"/>
-        </reference>
+        <!--<reference name="head">
+            <block type="core/template" template="algoliasearch/internals/beforecontent.phtml" name="algolia-beforecontent"/>
+        </reference>-->
     </algolia_search_handle>
 
     <algolia_search_handle_with_topsearch>
