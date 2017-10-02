@@ -1,5 +1,21 @@
 ## CHANGE LOG
 
+### 1.12.0
+
+Since this release, the extension is **Enterprise Edition compliant**!
+
+## FEATURES
+- Experimental feature to prevent backend rendering of category and search results pages (#886)
+    - Use very carefully and read [documentation](https://community.algolia.com/magento/doc/m1/prevent-backend-rendering/) before enabling it
+- Introduced events and developer attributes to force add / remove product(s) to / from Algolia (#922)
+- Added to option to turn off administration top bar with information about queue (#920)
+
+## UPDATES
+- Changed some links in the configuration
+
+## FIXES
+- Fixed failing database migration for creation of queue log table (#927)
+
 ### 1.11.1
 
 - Query rules are preserved during reindex with indexing queue enabled (#913)
