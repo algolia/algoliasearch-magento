@@ -224,7 +224,7 @@ class Algolia_Algoliasearch_Model_Observer
             }
         } else {
             if (!empty($page) && !empty($pageSize)) {
-                $collection = $this->product_helper->getProductCollectionQuery($storeId, $productIds, $useTmpIndex);
+                $collection = $this->product_helper->getProductCollectionQuery($storeId, $productIds);
                 $this->helper->rebuildStoreProductIndexPage($storeId, $collection, $page, $pageSize, null, $productIds, $useTmpIndex);
             } else {
                 $this->helper->rebuildStoreProductIndex($storeId, $productIds);
