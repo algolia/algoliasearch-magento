@@ -231,7 +231,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			hits: {
 				container: '#instant-search-results-container',
 				templates: {
-					allItems: $('#instant-hit-template').html()
+					allItems: $('#instant-hit-template').html(),
+					empty: algoliaConfig.translations.noProducts
 				},
 				transformData: {
 					allItems: function (results) {
