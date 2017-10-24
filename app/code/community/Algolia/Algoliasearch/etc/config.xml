@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.11.1</version>
+            <version>1.12.0</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -246,9 +246,13 @@
                 <partial_update>0</partial_update>
                 <make_seo_request>1</make_seo_request>
                 <remove_branding>0</remove_branding>
+                <show_queue_notification>1</show_queue_notification>
                 <autocomplete_selector>.algolia-search-input</autocomplete_selector>
                 <index_product_on_category_products_update>1</index_product_on_category_products_update>
                 <index_all_category_product_on_category_update>0</index_all_category_product_on_category_update>
+                <prevent_backend_rendering>0</prevent_backend_rendering>
+                <backend_rendering_allowed_user_agents>Googlebot
+Bingbot</backend_rendering_allowed_user_agents>
             </advanced>
             <product_map>
                 <!--

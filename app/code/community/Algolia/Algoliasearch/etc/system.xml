@@ -4,7 +4,7 @@
         <algoliasearch translate="label" module="algoliasearch">
             <label>
                 <![CDATA[
-                Algolia Search 1.11.1
+                Algolia Search 1.12.0
                 <style>
                     .algoliasearch-admin-menu span {
                         padding-left: 38px !important;
@@ -939,7 +939,7 @@
                         <table>
                             <tr>
                                 <td>Synonyms documentation:</td>
-                                <td><a target="_blank" href="https://www.algolia.com/doc/synonyms/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://www.algolia.com/doc/synonyms</a></td>
+                                <td><a target="_blank" href="https://www.algolia.com/doc/guides/textual-relevance/synonyms/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://www.algolia.com/doc/guides/textual-relevance/synonyms/</a></td>
                             </tr>
                         </table>
                         <br>
@@ -975,7 +975,7 @@
                                 Synonyms are defined by a comma-separated list of words that should be considered equivalent by the Algolia engine.<br>
                                 For instance: <code>tv, television, tv set</code><br>
                                 Using that set, if a record contains “television” and a user searches for “TV”, this record will be returned.<br>
-                                Documentation: <a href="https://www.algolia.com/doc/synonyms#synonyms" target="_blank">https://www.algolia.com/doc/synonyms#synonyms</a>
+                                Documentation: <a href="https://www.algolia.com/doc/guides/textual-relevance/synonyms/#regular-synonyms" target="_blank">https://www.algolia.com/doc/guides/textual-relevance/synonyms/#regular-synonyms</a>
                                 ]]>
                             </comment>
                         </synonyms>
@@ -992,7 +992,7 @@
                                 One-way synonyms allow you to define alternative words for a search term, which are not synonyms to each others.<br>
                                 Let’s take an example: when a user searches for “tablet”, you want him to be able to find iPads and Galaxy Note tablets alike, but you might not want Android tablets to show up when he searches for “iPad”.<br>
                                 To do this, you’d define a one-way synonyms set between <code>tablet</code> (as input) and <code>ipad, galaxy note</code> (as synonyms). When the user types in “tablet”, records containing “iPad” and “Galaxy Note” will be returned. However records containing only “tablet” or “Galaxy Note” won’t be returned if he searches for “iPad”.<br>
-                                Documentation: <a href="https://www.algolia.com/doc/synonyms#one-way-synonyms" target="_blank">https://www.algolia.com/doc/synonyms#one-way-synonyms</a>
+                                Documentation: <a href="https://www.algolia.com/doc/guides/textual-relevance/synonyms/#one-way-synonyms" target="_blank">https://www.algolia.com/doc/guides/textual-relevance/synonyms/#one-way-synonyms</a>
                                    <br>
                                 <br>
                                     Algolia offers more synonymys’ types - placeholders and alternative corrections. These types can be managed directly from your <a href="https://www.algolia.com/dashboard" target="_blank">Algolia’s dashboard</a>.
@@ -1093,6 +1093,15 @@
                             <show_in_store>1</show_in_store>
                             <comment>Choose here if the algolia logo is added to the drop-down template.</comment>
                         </remove_branding>
+                        <show_queue_notification translate="label comment">
+                            <label>Show queue information panel in administration header</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>45</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </show_queue_notification>
                         <autocomplete_selector translate="label comment">
                             <label>Search input DOM Selector</label>
                             <frontend_type>text</frontend_type>
@@ -1134,6 +1143,36 @@
                                 ]]>
                             </comment>
                         </index_all_category_product_on_category_update>
+                        <prevent_backend_rendering translate="label comment">
+                            <label>Prevent backend rendering?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                <span class="algolia-config-warning">&#9888;</span>
+                                By preventing your store from backend rendering you might break your SEO and accessibility of your store by search crawlers. Please, read documentation before you turn the backend rendering off:
+                                <a target="_blank" href="https://community.algolia.com/magento/doc/m1/prevent-backend-rendering/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">Prevent Backend Rendering documentation</a>
+                                ]]>
+                            </comment>
+                        </prevent_backend_rendering>
+                        <backend_rendering_allowed_user_agents translate="label comment">
+                            <label>Allow backend rendering for User Agents:</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                To specify multiple User-Agents, please put one User-Agent per line.
+                                ]]>
+                            </comment>
+                            <depends><prevent_backend_rendering>1</prevent_backend_rendering></depends>
+                        </backend_rendering_allowed_user_agents>
                     </fields>
                 </advanced>
                 <advanced_settings translate="label">
@@ -1153,7 +1192,7 @@
                         Example: <code>{"exactOnSingleWordQuery":"word"}</code>
                         </p>
 
-                        <p>List of possible settings: <a href="https://www.algolia.com/doc/api-client/default/settings/#index-settings-parameters" target="_blank">https://www.algolia.com/doc/api-client/default/settings/#index-settings-parameters</a></p>
+                        <p>List of possible settings: <a href="https://www.algolia.com/doc/api-reference/settings-api-parameters/#index-settings-parameters" target="_blank">https://www.algolia.com/doc/api-reference/settings-api-parameters/#index-settings-parameters</a></p>
 
                         <p><span class="algolia-config-warning">&#9888;</span> Edit extra settings only when you're sure what you're doing. Bad settings can effect your search functionality and have a bad impact on your relevance.</p>
                         ]]>

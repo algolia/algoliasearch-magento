@@ -73,9 +73,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const CUSTOMER_GROUPS_ENABLE = 'algoliasearch/advanced/customer_groups_enable';
     const MAKE_SEO_REQUEST = 'algoliasearch/advanced/make_seo_request';
     const REMOVE_BRANDING = 'algoliasearch/advanced/remove_branding';
+    const SHOW_QUEUE_NOTIFICATION = 'algoliasearch/advanced/show_queue_notification';
     const AUTOCOMPLETE_SELECTOR = 'algoliasearch/advanced/autocomplete_selector';
     const INDEX_PRODUCT_ON_CATEGORY_PRODUCTS_UPDATE = 'algoliasearch/advanced/index_product_on_category_products_update';
     const INDEX_ALL_CATEGORY_PRODUCTS_ON_CATEGORY_UPDATE = 'algoliasearch/advanced/index_all_category_product_on_category_update';
+    const PREVENT_BACKEND_RENDERING = 'algoliasearch/advanced/prevent_backend_rendering';
+    const BACKEND_RENDERING_ALLOWED_USER_AGENTS = 'algoliasearch/advanced/backend_rendering_allowed_user_agents';
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
@@ -242,6 +245,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function isRemoveBranding($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::REMOVE_BRANDING, $storeId);
+    }
+
+    public function showQueueNotificiation($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::SHOW_QUEUE_NOTIFICATION, $storeId);
     }
 
     public function getMaxValuesPerFacet($storeId = null)
@@ -631,6 +639,35 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         $constant = 'EXTRA_SETTINGS_'.mb_strtoupper($section);
 
         return trim(Mage::getStoreConfig(constant('self::'.$constant), $storeId));
+    }
+
+    public function preventBackendRendering($storeId = null)
+    {
+        $preventBackendRendering = Mage::getStoreConfigFlag(self::PREVENT_BACKEND_RENDERING, $storeId);
+
+        if ($preventBackendRendering === false) {
+            return false;
+        }
+
+        $userAgent = mb_strtolower($_SERVER['HTTP_USER_AGENT'], 'utf-8');
+
+        $allowedUserAgents = Mage::getStoreConfig(self::BACKEND_RENDERING_ALLOWED_USER_AGENTS, $storeId);
+        $allowedUserAgents = trim($allowedUserAgents);
+
+        if ($allowedUserAgents === '') {
+            return true;
+        }
+
+        $allowedUserAgents = explode("\n", $allowedUserAgents);
+
+        foreach ($allowedUserAgents as $allowedUserAgent) {
+            $allowedUserAgent = mb_strtolower($allowedUserAgent, 'utf-8');
+            if (strpos($userAgent, $allowedUserAgent) !== false) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function getCustomRanking($configName, $storeId = null)

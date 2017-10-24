@@ -26,10 +26,10 @@ algoliaAdminBundle.$(function($) {
 				' You are using old version of Algolia extension. ' +
 				'Latest version of the extension is '+latestVersion+'. ' +
 				'You can get it on ' +
-				'<a href="https://www.magentocommerce.com/magento-connect/search-algolia-search.html" target="_blank">Magento Connect</a>.<br />' +
+				'<a href="https://marketplace.magento.com/algolia-algoliasearch.html" target="_blank">Magento Marketplace</a>.<br />' +
 				'<small style="color: #2f2f2f; font-size: .8em; padding-left: 36px; display: inline-block">' +
 				'It\'s highly recommended to update your version to avoid any unexpecting issues and to get new features.<br />' +
-				'<i>If you are happy with the extension, please rate the extension on <a href="https://www.magentocommerce.com/magento-connect/search-algolia-search.html" target="_blank">Magento Connect</a>.</i>' +
+				'<i>If you are happy with the extension, please rate the extension on <a href="https://marketplace.magento.com/algolia-algoliasearch.html" target="_blank">Magento Marketplace</a>.</i>' +
 				'</small></td>');
 		}
 	});
