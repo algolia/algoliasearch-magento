@@ -56,6 +56,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const XML_PATH_IMAGE_WIDTH = 'algoliasearch/image/width';
     const XML_PATH_IMAGE_HEIGHT = 'algoliasearch/image/height';
+    const XML_PATH_THUMBNAIL_WIDTH = 'algoliasearch/image/thumbnail_width';
+    const XML_PATH_THUMBNAIL_HEIGHT = 'algoliasearch/image/thumbnail_height';
     const XML_PATH_IMAGE_TYPE = 'algoliasearch/image/type';
 
     const ENABLE_ANALYTICS = 'algoliasearch/analytics/enable_analytics';
@@ -199,6 +201,26 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return $imageHeight;
+    }
+
+    public function getThumbnailWidth($storeId = null)
+    {
+        $thumbnailWidth = Mage::getStoreConfig(self::XML_PATH_THUMBNAIL_WIDTH, $storeId);
+        if (empty($thumbnailWidth)) {
+            return;
+        }
+
+        return $thumbnailWidth;
+    }
+
+    public function getThumbnailHeight($storeId = null)
+    {
+        $thumbnailHeight = Mage::getStoreConfig(self::XML_PATH_THUMBNAIL_HEIGHT, $storeId);
+        if (empty($thumbnailHeight)) {
+            return;
+        }
+
+        return $thumbnailHeight;
     }
 
     public function getImageType($storeId = null)
