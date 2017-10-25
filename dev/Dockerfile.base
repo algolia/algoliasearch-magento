@@ -31,14 +31,14 @@ RUN cd /var/www/htdocs/skin && cp -R /tmp/magento-sample-data-1.9.0.0/skin/* .
 RUN chown -R www-data:www-data /var/www/htdocs
 
 ## database setup
-RUN service mysql start && \
+RUN find /var/lib/mysql -type f -exec touch {} \; && service mysql start && \
 	(echo "CREATE DATABASE magento" | mysql -u root --password=P4ssw0rd) && \
 	mysql -u root --password=P4ssw0rd magento < /tmp/magento-sample-data-1.9.0.0/magento_sample_data_for_1.9.0.0.sql && \
 	MYSQL_HOST=127.0.0.1 MYSQL_USER=root MYSQL_PASSWORD=P4ssw0rd MYSQL_DATABASE=magento MAGENTO_LOCALE=en_US MAGENTO_TIMEZONE=Europe/Paris MAGENTO_DEFAULT_CURRENCY=USD MAGENTO_URL=http://mymagentostore.com MAGENTO_ADMIN_FIRSTNAME=Admin MAGENTO_ADMIN_LASTNAME=MyStore MAGENTO_ADMIN_EMAIL=amdin@mymagentostore.com MAGENTO_ADMIN_USERNAME=admin MAGENTO_ADMIN_PASSWORD=magentorocks1 /usr/local/bin/install-magento && \
 	service mysql stop
 
 ## configure Magento
-RUN service mysql start && \
+RUN find /var/lib/mysql -type f -exec touch {} \; && service mysql start && \
 	n98-magerun --skip-root-check --root-dir=/var/www/htdocs cache:flush && \
 	n98-magerun --skip-root-check --root-dir=/var/www/htdocs cache:disable && \
 	n98-magerun --skip-root-check --root-dir=/var/www/htdocs config:set dev/template/allow_symlink "1" >/dev/null 2>&1 && \
