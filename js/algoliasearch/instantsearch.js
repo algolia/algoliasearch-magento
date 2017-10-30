@@ -109,6 +109,30 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		});
 		
 		var allWidgetConfiguration = {
+			/**
+			 * Products' hits
+			 * This widget renders all products into result page
+			 * Docs: https://community.algolia.com/instantsearch.js/documentation/#hits
+			 **/
+			hits: {
+				container: '#instant-search-results-container',
+				templates: {
+					allItems: $('#instant-hit-template').html()
+				},
+				transformData: {
+					allItems: function (results) {
+						for (var i = 0; i < results.hits.length; i++) {
+							results.hits[i] = transformHit(results.hits[i], algoliaConfig.priceKey, search.helper);
+							results.hits[i].isAddToCartEnabled = algoliaConfig.instant.isAddToCartEnabled;
+							
+							results.hits[i].algoliaConfig = window.algoliaConfig;
+						}
+						
+						return results;
+					}
+				},
+				hitsPerPage: algoliaConfig.hitsPerPage
+			},
 			custom: [
 				/**
 				 * Custom widget - this widget is used to refine results for search page or catalog page
@@ -222,30 +246,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				container: '#algolia-sorts',
 				indices: algoliaConfig.sortingIndices,
 				cssClass: 'form-control'
-			},
-			/**
-			 * Products' hits
-			 * This widget renders all products into result page
-			 * Docs: https://community.algolia.com/instantsearch.js/documentation/#hits
-			 **/
-			hits: {
-				container: '#instant-search-results-container',
-				templates: {
-					allItems: $('#instant-hit-template').html()
-				},
-				transformData: {
-					allItems: function (results) {
-						for (var i = 0; i < results.hits.length; i++) {
-							results.hits[i] = transformHit(results.hits[i], algoliaConfig.priceKey, search.helper);
-							results.hits[i].isAddToCartEnabled = algoliaConfig.instant.isAddToCartEnabled;
-							
-							results.hits[i].algoliaConfig = window.algoliaConfig;
-						}
-						
-						return results;
-					}
-				},
-				hitsPerPage: algoliaConfig.hitsPerPage
 			},
 			/**
 			 * Widget name: Current refinements
