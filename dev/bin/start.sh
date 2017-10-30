@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 # start services
-service mysql start
+find /var/lib/mysql -type f -exec touch {} \; && service mysql start
 service apache2 start
 
 # GET / to initialize the algolia_search_indexer (Open to another cleaner way to do it :) )
