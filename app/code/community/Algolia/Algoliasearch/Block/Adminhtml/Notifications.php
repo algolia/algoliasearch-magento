@@ -26,7 +26,7 @@ class Algolia_Algoliasearch_Block_Adminhtml_Notifications extends Mage_Adminhtml
 
         $readConnection = $resource->getConnection('core_read');
 
-        $size = (int)$readConnection->query('SELECT COUNT(*) as total_count FROM '.$tableName)->fetchColumn(0);
+        $size = (int) $readConnection->query('SELECT COUNT(*) as total_count FROM '.$tableName)->fetchColumn(0);
         $maxJobsPerSingleRun = $config->getNumberOfJobToRun();
 
         $etaMinutes = ceil($size / $maxJobsPerSingleRun) * 5; // 5 - assuming the queue runner runs every 5 minutes
