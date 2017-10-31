@@ -71,6 +71,14 @@ class Algolia_Algoliasearch_Model_Observer
                 if ($this->config->isPopupEnabled() || $this->config->isInstantEnabled()) {
                     $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle');
 
+                    if ($this->config->isPopupEnabled()) {
+                        $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle_autocomplete');
+                    }
+
+                    if ($this->config->isInstantEnabled() || $this->config->replaceCategories()) {
+                        $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle_instantsearch');
+                    }
+
                     if ($this->config->isDefaultSelector()) {
                         $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle_with_topsearch');
                     } else {
