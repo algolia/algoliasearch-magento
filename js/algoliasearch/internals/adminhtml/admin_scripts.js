@@ -42,18 +42,18 @@ algoliaAdminBundle.$(function($) {
 	
 	$.getJSON(baseUrl + '/queue', function(queueInfo) {
 		var message = '<span style="font-size: 25px; position: relative; top: 5px;">⚠</span> ' +
-			'<strong style="font-size: 1.15em;"><a href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information" target="_blank">Indexing queue</a> is not enabled</strong><br>' +
+			'<strong style="font-size: 1.15em;"><a href="https://community.algolia.com/magento/doc/m1/indexing-queue/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information" target="_blank">Indexing queue</a> is not enabled</strong><br>' +
 			'It\'s highly recommended to enable it, especially if you are on production environment. ' +
-			'You can learn how to enable the index queue in the documentation: <a href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information" target="_blank">Indexing queue</a>';
+			'You can learn how to enable the index queue in the documentation: <a href="https://community.algolia.com/magento/doc/m1/indexing-queue/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information" target="_blank">Indexing queue</a>';
 		
 		if (queueInfo.isEnabled === true) {
-			message = '<strong style="font-size: 1.15em;"><a href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information" target="_blank">Indexing queue</a> information</strong><br>' +
+			message = '<strong style="font-size: 1.15em;"><a href="https://community.algolia.com/magento/doc/m1/indexing-queue/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information" target="_blank">Indexing queue</a> information</strong><br>' +
 				'Number of queued jobs: <strong>' + queueInfo.currentSize + '</strong>, ' +
 				'all queued jobs will be processed in appr. <strong>' + queueInfo.eta + '</strong> ' +
 				'<small style="color: #2f2f2f; font-size: .8em;">(assuming your queue runner runs every 5 minutes)</small><br>' +
 				'If you want to clear the queue, hit the button: <button class="algolia_clear_queue">Clear the queue</button><br />' +
 				'<small style="color: #2f2f2f; font-size: .9em; display: inline-block;">' +
-				'More information about how the indexing queue works you can find in the documentation: <a href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information" target="_blank">Indexing queue</a>' +
+				'More information about how the indexing queue works you can find in the documentation: <a href="https://community.algolia.com/magento/doc/m1/indexing-queue/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information" target="_blank">Indexing queue</a>' +
 				'</small>';
 		}
 		
