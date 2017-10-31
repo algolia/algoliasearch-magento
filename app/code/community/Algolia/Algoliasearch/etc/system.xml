@@ -59,6 +59,10 @@
                                 <td><a target="_blank" href="https://community.algolia.com/magento/doc/m1/getting-started/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://community.algolia.com/magento/documentation</a></td>
                             </tr>
                             <tr>
+                                <td>Indexing troubleshooting guide:</td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/doc/faq-support-data/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://community.algolia.com/magento/doc/faq-support-data/</a></td>
+                            </tr>
+                            <tr>
                                 <td>FAQ: </td>
                                 <td><a target="_blank" href="https://community.algolia.com/magento/faq/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://community.algolia.com/magento/faq/</a></td>
                             </tr>
@@ -737,6 +741,10 @@
                             <tr>
                                 <td>Indexing queue documentation:</td>
                                 <td><a target="_blank" href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information">https://community.algolia.com/magento/doc/m1/indexing/#general-information</a></td>
+                            </tr>
+                            <tr>
+                                <td>Indexing troubleshooting guide:</td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/doc/faq-support-data/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://community.algolia.com/magento/doc/faq-support-data/</a></td>
                             </tr>
                         </table>
                         <br>
