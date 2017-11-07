@@ -34,6 +34,10 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         \AlgoliaSearch\Version::addPrefixUserAgentSegment('Magento integration', $version);
         \AlgoliaSearch\Version::addSuffixUserAgentSegment('PHP', phpversion());
         \AlgoliaSearch\Version::addSuffixUserAgentSegment('Magento', Mage::getVersion());
+
+        if (method_exists('Mage', 'getEdition')) {
+            \AlgoliaSearch\Version::addSuffixUserAgentSegment('Edition', Mage::getEdition());
+        }
     }
 
     public function resetCredentialsFromConfig()
