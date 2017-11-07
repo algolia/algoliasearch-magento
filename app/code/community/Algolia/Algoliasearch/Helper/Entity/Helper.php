@@ -82,7 +82,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
     {
         if (!empty($completeRemoveTags)) {
             $dom = new DOMDocument();
-            if (@$dom->loadHTML($s)) {
+            if (@$dom->loadHTML('<?xml encoding="utf-8" ?>' . $s)) {
                 $toRemove = array();
                 foreach ($completeRemoveTags as $tag) {
                     $removeTags = $dom->getElementsByTagName($tag);
