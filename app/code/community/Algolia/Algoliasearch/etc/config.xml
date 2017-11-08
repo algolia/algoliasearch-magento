@@ -251,6 +251,7 @@
                 <index_product_on_category_products_update>1</index_product_on_category_products_update>
                 <index_all_category_product_on_category_update>0</index_all_category_product_on_category_update>
                 <prevent_backend_rendering>0</prevent_backend_rendering>
+                <prevent_backend_rendering_display_mode>all</prevent_backend_rendering_display_mode>
                 <backend_rendering_allowed_user_agents>Googlebot
 Bingbot</backend_rendering_allowed_user_agents>
             </advanced>
