@@ -898,7 +898,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         foreach ($additionalAttributes as $attribute) {
             $attribute_name = $attribute['attribute'];
-            if (isset($customData[$attribute_name])) {
+            if (array_key_exists($attribute_name, $customData)) {
                 continue;
             }
 
