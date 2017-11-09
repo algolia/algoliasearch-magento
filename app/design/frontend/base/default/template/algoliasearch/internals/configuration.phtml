@@ -181,6 +181,14 @@ if ($isCategoryPage) {
 $instantsearchApiKey = $algoliaHelper->generateSearchSecuredApiKey($config->getSearchOnlyAPIKey(), $instantsearchApiKeyParams);
 
 /**
+ * Parameter to track in the URL
+ */
+$urlTrackedParameters = ['query', 'attribute:*', 'index'];
+if (! $config->isInfiniteScrollEnabled()) {
+    $urlTrackedParameters[] = 'page';
+}
+
+/**
  * Add custom autocomplete filter restrictions into $autocompleteApiKeyParams['filters'] variable
  * Filters doc: https://www.algolia.com/doc/api-client/php/parameters#filters
  * Example: 'in_stock=1 AND color:Black' (color must be set as attribute for faceting)
@@ -194,6 +202,7 @@ $autocompleteApiKey = $algoliaHelper->generateSearchSecuredApiKey($config->getSe
 $algoliaJsConfig = array(
     'instant' => array(
         'enabled' => $config->isInstantEnabled(),
+        'infiniteScrollEnabled' => $config->isInfiniteScrollEnabled(),
         'apiKey' => $instantsearchApiKey,
         'selector' => $config->getInstantSelector(),
         'isAddToCartEnabled' => $config->isAddToCartEnable(),
@@ -249,6 +258,7 @@ $algoliaJsConfig = array(
     'baseUrl' => $baseUrl,
     'popularQueries' => $config->getPopularQueries(),
     'useAdaptiveImage' => $config->useAdaptiveImage(),
+    'urlTrackedParameters' => $urlTrackedParameters,
     'urls' => array(
         'logo' => $this->getSkinUrl('algoliasearch/search-by-algolia.svg'),
     ),
@@ -274,6 +284,7 @@ $algoliaJsConfig = array(
         'categories' => $this->__('Categories'),
         'products' => $this->__('Products'),
         'searchBy' => $this->__('Search by'),
+        'showMore' => $this->__('Show more products'),
     ),
 );
 

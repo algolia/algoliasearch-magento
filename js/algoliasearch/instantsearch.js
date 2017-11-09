@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			indexName: algoliaConfig.indexName + '_products',
 			urlSync: {
 				useHash: true,
-				trackedParameters: ['query', 'page', 'attribute:*', 'index']
+				trackedParameters: algoliaConfig.urlTrackedParameters
 			}
 		};
 		
@@ -264,23 +264,65 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				},
 				attributes: attributes,
 				onlyListedAttributes: true
-			},
-			/**
-			 * Pagination
-			 * Docs: https://community.algolia.com/instantsearch.js/documentation/#pagination
-			 **/
-			pagination: {
-				container: '#instant-search-pagination-container',
-				cssClass: 'algolia-pagination',
-				showFirstLast: false,
-				maxPages: 1000,
-				labels: {
-					previous: algoliaConfig.translations.previousPage,
-					next: algoliaConfig.translations.nextPage
-				},
-				scrollTo: 'body'
 			}
 		};
+
+
+		if (algoliaConfig.instant.infiniteScrollEnabled === true) {
+			allWidgetConfiguration.infiniteHits = {
+				container: '#instant-search-results-container',
+				templates: {
+					empty: algoliaConfig.translations.noResults,
+					item: $('#instant-hit-template-item').html()
+				},
+				hitsPerPage: algoliaConfig.hitsPerPage,
+				showMoreLabel: algoliaConfig.translations.showMore,
+				cssClasses : {
+					root: 'clearfix'
+				}
+			};
+		} else {
+			/**
+			 * Products' hits
+			 * This widget renders all products into result page
+			 * Docs: https://community.algolia.com/instantsearch.js/documentation/#hits
+			 **/
+			allWidgetConfiguration.hits = {
+				container: '#instant-search-results-container',
+				templates: {
+					allItems: $('#instant-hit-template').html()
+				},
+				transformData: {
+					allItems: function (results) {
+						for (var i = 0; i < results.hits.length; i++) {
+							results.hits[i] = transformHit(results.hits[i], algoliaConfig.priceKey, search.helper);
+							results.hits[i].isAddToCartEnabled = algoliaConfig.instant.isAddToCartEnabled;
+
+							results.hits[i].algoliaConfig = window.algoliaConfig;
+						}
+
+						return results;
+					}
+				},
+				hitsPerPage: algoliaConfig.hitsPerPage
+			};
+
+            /**
+             * Pagination
+             * Docs: https://community.algolia.com/instantsearch.js/documentation/#pagination
+             **/
+            allWidgetConfiguration.pagination = {
+                container: '#instant-search-pagination-container',
+                    cssClass: 'algolia-pagination',
+                    showFirstLast: false,
+                    maxPages: 1000,
+                    labels: {
+                    previous: algoliaConfig.translations.previousPage,
+                        next: algoliaConfig.translations.nextPage
+                },
+                scrollTo: 'body'
+            }
+		}
 		
 		/**
 		 * Here are specified custom attributes widgets which require special code to run properly
