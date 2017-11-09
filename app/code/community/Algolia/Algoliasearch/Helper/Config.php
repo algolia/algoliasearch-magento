@@ -78,6 +78,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const INDEX_PRODUCT_ON_CATEGORY_PRODUCTS_UPDATE = 'algoliasearch/advanced/index_product_on_category_products_update';
     const INDEX_ALL_CATEGORY_PRODUCTS_ON_CATEGORY_UPDATE = 'algoliasearch/advanced/index_all_category_product_on_category_update';
     const PREVENT_BACKEND_RENDERING = 'algoliasearch/advanced/prevent_backend_rendering';
+    const PREVENT_BACKEND_RENDERING_DISPLAY_MODE = 'algoliasearch/advanced/prevent_backend_rendering_display_mode';
     const BACKEND_RENDERING_ALLOWED_USER_AGENTS = 'algoliasearch/advanced/backend_rendering_allowed_user_agents';
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
@@ -668,6 +669,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return true;
+    }
+
+    public function getBackendRenderingDisplayMode($storeId = null)
+    {
+        return Mage::getStoreConfig(self::PREVENT_BACKEND_RENDERING_DISPLAY_MODE, $storeId);
     }
 
     private function getCustomRanking($configName, $storeId = null)

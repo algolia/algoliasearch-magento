@@ -86,7 +86,13 @@ class Algolia_Algoliasearch_Model_Observer
                     }
 
                     if ($this->config->preventBackendRendering() === true) {
-                        $observer->getLayout()->getUpdate()->addHandle('algolia_search_handle_prevent_backend_rendering');
+                        $category = Mage::registry('current_category');
+                        $displayMode = $this->config->getBackendRenderingDisplayMode();
+
+                        if ($category && ($displayMode === 'all' || ($displayMode === 'only_products' && $category->getDisplayMode() !== 'PAGE'))) {
+                            $observer->getLayout()->getUpdate()
+                                     ->addHandle('algolia_search_handle_prevent_backend_rendering');
+                        }
                     }
                 }
             }
