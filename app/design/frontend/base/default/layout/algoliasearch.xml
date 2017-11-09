@@ -35,12 +35,6 @@
         </reference>
     </algolia_search_handle_with_topsearch>
 
-    <algolia_search_handle_no_topsearch>
-        <reference name="head">
-            <block type="core/template" template="algoliasearch/autocomplete.phtml" name="algolia-autocomplete"/>
-        </reference>
-    </algolia_search_handle_no_topsearch>
-
     <algolia_search_handle_autocomplete>
         <reference name="head">
             <action method="addJs"><script>algoliasearch/autocomplete.js</script></action>
