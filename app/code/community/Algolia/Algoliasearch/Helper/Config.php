@@ -446,6 +446,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
             'image_url',
             'in_stock',
             'type_id',
+            'value', // for additional sections
         ));
 
         /** @var Mage_Directory_Model_Currency $currencyDirectory */
