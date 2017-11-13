@@ -17,6 +17,6 @@
     </filter>
     <logging>
         <!-- <log type="coverage-html" target="coverage-report" /> -->
-        <log type="coverage-clover" target="coverage.cov" />
+        <!-- <log type="coverage-clover" target="coverage.cov" /> -->
     </logging>
 </phpunit>
