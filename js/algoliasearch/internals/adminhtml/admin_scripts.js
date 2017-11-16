@@ -80,7 +80,7 @@ algoliaAdminBundle.$(function($) {
 			}
 		}, 200);
 		
-		$.getJSON(baseUrl + '/queue/truncate', function(payload) {
+		$.getJSON(baseUrl + '/algoliaqueue/truncate', function(payload) {
 			window.clearInterval(dots);
 			
 			if (payload.status === 'ok') {
