@@ -40,7 +40,7 @@ algoliaAdminBundle.$(function($) {
 		position = url.indexOf('/system_config/edit/'),
 		baseUrl = url.substring(0, position);
 	
-	$.getJSON(baseUrl + '/queue', function(queueInfo) {
+	$.getJSON(baseUrl + '/algoliaqueue', function(queueInfo) {
 		var message = '<span style="font-size: 25px; position: relative; top: 5px;">⚠</span> ' +
 			'<strong style="font-size: 1.15em;"><a href="https://community.algolia.com/magento/doc/m1/indexing-queue/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information" target="_blank">Indexing queue</a> is not enabled</strong><br>' +
 			'It\'s highly recommended to enable it, especially if you are on production environment. ' +
