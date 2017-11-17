@@ -1,6 +1,6 @@
 <?php
 
-class Algolia_Algoliasearch_Adminhtml_QueueController extends Mage_Adminhtml_Controller_Action
+class Algolia_Algoliasearch_Adminhtml_AlgoliaQueueController extends Mage_Adminhtml_Controller_Action
 {
     public function _isAllowed()
     {
