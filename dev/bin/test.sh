@@ -2,7 +2,7 @@
 
 # Start services
 echo -e "\e[93m-- Starting Apache and MySQL services --\e[0m"
-service mysql start
+find /var/lib/mysql -type f -exec touch {} \; && service mysql start
 service apache2 start
 
 if [ "$TRAVIS" == true ]; then
@@ -13,7 +13,7 @@ fi
 
 # GET / to initialize Magento - required before test runs
 echo -e "\n\e[93m-- Fetching the Magento homepage to initialize Magento --\e[0m"
-wget 127.0.0.1
+wget --max-redirect 0 0.0.0.0
 
 # Apache is not needed for tests
 echo -e "\e[93m-- Stopping the Apache server (not needed for the tests) --\e[0m"

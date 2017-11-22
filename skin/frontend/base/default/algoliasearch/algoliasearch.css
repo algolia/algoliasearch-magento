@@ -1223,3 +1223,7 @@ a.ais-current-refined-values--link:hover
 	display:block;
 	clear:both;
 }
+
+.ais-infinite-hits--showmore > button:disabled {
+  display:none !important;
+}

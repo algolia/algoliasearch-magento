@@ -1,14 +1,14 @@
 #! /usr/bin/env bash
 
 # start services
-service mysql start
+find /var/lib/mysql -type f -exec touch {} \; && service mysql start
 service apache2 start
 
 # GET / to initialize the algolia_search_indexer (Open to another cleaner way to do it :) )
 if [ $EXPOSED_PORT == 80 ]; then
-  wget $BASE_URL
+  wget --max-redirect 0 $BASE_URL
 else
-  wget 0.0.0.0
+  wget --max-redirect 0 0.0.0.0
 fi
 
 # set configuration variables & volumes

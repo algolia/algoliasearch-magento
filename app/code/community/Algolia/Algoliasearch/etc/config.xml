@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.12.0</version>
+            <version>1.13.0</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -182,7 +182,7 @@
                 <index_prefix>magento_</index_prefix>
                 <is_popup_enabled>1</is_popup_enabled>
                 <is_instant_enabled>0</is_instant_enabled>
-                <use_image_adaptive>0</use_image_adaptive>
+                <use_adaptive_image>0</use_adaptive_image>
             </credentials>
             <products>
                 <number_product_results>9</number_product_results>
@@ -201,6 +201,7 @@
                 <max_values_per_facet>10</max_values_per_facet>
                 <sorts>a:3:{s:18:"_1432908018844_844";a:3:{s:9:"attribute";s:5:"price";s:4:"sort";s:3:"asc";s:5:"label";s:12:"Lowest price";}s:18:"_1432908022539_539";a:3:{s:9:"attribute";s:5:"price";s:4:"sort";s:4:"desc";s:5:"label";s:13:"Highest price";}s:18:"_1433768597454_454";a:3:{s:9:"attribute";s:10:"created_at";s:4:"sort";s:4:"desc";s:5:"label";s:12:"Newest first";}}</sorts>
                 <add_to_cart_enable>1</add_to_cart_enable>
+                <infinite_scroll_enable>0</infinite_scroll_enable>
             </instant>
             <autocomplete>
                 <nb_of_products_suggestions>6</nb_of_products_suggestions>
@@ -251,6 +252,7 @@
                 <index_product_on_category_products_update>1</index_product_on_category_products_update>
                 <index_all_category_product_on_category_update>0</index_all_category_product_on_category_update>
                 <prevent_backend_rendering>0</prevent_backend_rendering>
+                <prevent_backend_rendering_display_mode>all</prevent_backend_rendering_display_mode>
                 <backend_rendering_allowed_user_agents>Googlebot
 Bingbot</backend_rendering_allowed_user_agents>
             </advanced>

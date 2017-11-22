@@ -73,6 +73,7 @@
             <target>magedesign</target>
             <target>magedesign</target>
             <target>mageskin</target>
+            <target>mageskin</target>
             <target>mage</target>
             <target>mage</target>
             <target>magedesign</target>
@@ -86,6 +87,7 @@
             <path>frontend/base/default/layout/algoliasearch.xml</path>
             <path>frontend/base/default/template/algoliasearch</path>
             <path>frontend/base/default/algoliasearch</path>
+            <path>adminhtml/base/default/algoliasearch</path>
             <path>js/algoliasearch</path>
             <path>lib/AlgoliaSearch</path>
             <path>adminhtml/default/default/template/algoliasearch</path>
@@ -97,6 +99,7 @@
             <type>file</type>
             <type>dir</type>
             <type>file</type>
+            <type>dir</type>
             <type>dir</type>
             <type>dir</type>
             <type>dir</type>
@@ -117,8 +120,10 @@
             <include/>
             <include/>
             <include/>
+            <include/>
         </include>
         <ignore>
+            <ignore/>
             <ignore/>
             <ignore/>
             <ignore/>

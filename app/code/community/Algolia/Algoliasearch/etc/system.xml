@@ -4,7 +4,7 @@
         <algoliasearch translate="label" module="algoliasearch">
             <label>
                 <![CDATA[
-                Algolia Search 1.12.0
+                Algolia Search 1.13.0
                 <style>
                     .algoliasearch-admin-menu span {
                         padding-left: 38px !important;
@@ -57,6 +57,10 @@
                             <tr>
                                 <td>Documentation:</td>
                                 <td><a target="_blank" href="https://community.algolia.com/magento/doc/m1/getting-started/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://community.algolia.com/magento/documentation</a></td>
+                            </tr>
+                            <tr>
+                                <td>Indexing troubleshooting guide:</td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/doc/faq-support-data/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://community.algolia.com/magento/doc/faq-support-data/</a></td>
                             </tr>
                             <tr>
                                 <td>FAQ: </td>
@@ -463,6 +467,16 @@
                             <show_in_store>1</show_in_store>
                             <comment>Choose here if you want to add an "add to cart" button in the template.</comment>
                         </add_to_cart_enable>
+                        <infinite_scroll_enable translate="label comment">
+                            <label>Enable Infinite Scroll</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>This will display a show more button to load more results instead of traditional pagination.</comment>
+                        </infinite_scroll_enable>
                     </fields>
                 </instant>
                 <products translate="label">
@@ -736,7 +750,11 @@
                         <table>
                             <tr>
                                 <td>Indexing queue documentation:</td>
-                                <td><a target="_blank" href="https://community.algolia.com/magento/doc/m1/indexing/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link#general-information">https://community.algolia.com/magento/doc/m1/indexing/#general-information</a></td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/doc/m1/indexing-queue/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://community.algolia.com/magento/doc/m1/indexing-queue/</a></td>
+                            </tr>
+                            <tr>
+                                <td>Indexing troubleshooting guide:</td>
+                                <td><a target="_blank" href="https://community.algolia.com/magento/doc/faq-support-data/?utm_source=magento&utm_medium=extension&utm_campaign=magento_1&utm_term=shop-owner&utm_content=doc-link">https://community.algolia.com/magento/doc/faq-support-data/</a></td>
                             </tr>
                         </table>
                         <br>
@@ -1159,6 +1177,20 @@
                                 ]]>
                             </comment>
                         </prevent_backend_rendering>
+                        <prevent_backend_rendering_display_mode translate="label comment">
+                            <label>Prevent backend rendering for:</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>algoliasearch/system_backendRenderingDisplayMode</source_model>
+                            <sort_order>95</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                ]]>
+                            </comment>
+                            <depends><prevent_backend_rendering>1</prevent_backend_rendering></depends>
+                        </prevent_backend_rendering_display_mode>
                         <backend_rendering_allowed_user_agents translate="label comment">
                             <label>Allow backend rendering for User Agents:</label>
                             <frontend_type>textarea</frontend_type>

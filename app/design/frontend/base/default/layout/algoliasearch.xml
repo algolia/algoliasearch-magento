@@ -10,9 +10,6 @@
             <action method="addJs"><script>algoliasearch/internals/frontend/algoliaBundle.min.js</script></action>
             <action method="addJs"><script>algoliasearch/internals/frontend/common.js</script></action>
 
-            <action method="addJs"><script>algoliasearch/instantsearch.js</script></action>
-            <action method="addJs"><script>algoliasearch/autocomplete.js</script></action>
-
             <block type="core/text" name="algolia-polyfill">
                 <action method="setText">
                     <text>
@@ -27,26 +24,6 @@
             </block>
         </reference>
 
-        <reference name="before_body_end">
-            <!-- Multi-category Autocomplete templates -->
-            <block type="core/template" template="algoliasearch/autocomplete/product.phtml" name="algolia-autocomplete-product"/>
-            <block type="core/template" template="algoliasearch/autocomplete/category.phtml" name="algolia-autocomplete-category"/>
-            <block type="core/template" template="algoliasearch/autocomplete/page.phtml" name="algolia-autocomplete-page"/>
-            <block type="core/template" template="algoliasearch/autocomplete/attribute.phtml" name="algolia-autocomplete-attribute"/>
-            <block type="core/template" template="algoliasearch/autocomplete/suggestion.phtml" name="algolia-autocomplete-suggestion"/>
-            <block type="core/template" template="algoliasearch/autocomplete/menu.phtml" name="algolia-autocomplete-menu"/>
-
-            <!-- Instant search results page templates -->
-            <block type="core/template" template="algoliasearch/instantsearch/wrapper.phtml" name="algolia-instantsearch-wrapper"/>
-            <block type="core/template" template="algoliasearch/instantsearch/hit.phtml" name="algolia-instantsearch-hit"/>
-            <block type="core/template" template="algoliasearch/instantsearch/stats.phtml" name="algolia-instantsearch-stats"/>
-            <block type="core/template" template="algoliasearch/instantsearch/refinementsItem.phtml" name="algolia-instantsearch-refinements-item"/>
-            <block type="core/template" template="algoliasearch/instantsearch/currentRefinements.phtml" name="algolia-instantsearch-current-refinments"/>
-
-            <!-- INSERT YOUR CUSTOM TEMPLATES HERE -->
-            <!-- Example: <block type="core/template" template="algoliasearch/[autocomplete_or_instantsearch]/your_custom_template_name.phtml" name="algolia-your-custom-template-name"/> -->
-        </reference>
-
         <reference name="content">
             <block type="core/template" before="content" template="algoliasearch/internals/beforecontent.phtml" name="algolia-beforecontent"/>
         </reference>
@@ -58,11 +35,42 @@
         </reference>
     </algolia_search_handle_with_topsearch>
 
-    <algolia_search_handle_no_topsearch>
+    <algolia_search_handle_autocomplete>
         <reference name="head">
-            <block type="core/template" template="algoliasearch/autocomplete.phtml" name="algolia-autocomplete"/>
+            <action method="addJs"><script>algoliasearch/autocomplete.js</script></action>
         </reference>
-    </algolia_search_handle_no_topsearch>
+
+        <reference name="before_body_end">
+            <!-- Multi-category Autocomplete templates -->
+            <block type="core/template" template="algoliasearch/autocomplete/product.phtml" name="algolia-autocomplete-product"/>
+            <block type="core/template" template="algoliasearch/autocomplete/category.phtml" name="algolia-autocomplete-category"/>
+            <block type="core/template" template="algoliasearch/autocomplete/page.phtml" name="algolia-autocomplete-page"/>
+            <block type="core/template" template="algoliasearch/autocomplete/attribute.phtml" name="algolia-autocomplete-attribute"/>
+            <block type="core/template" template="algoliasearch/autocomplete/suggestion.phtml" name="algolia-autocomplete-suggestion"/>
+            <block type="core/template" template="algoliasearch/autocomplete/menu.phtml" name="algolia-autocomplete-menu"/>
+
+            <!-- INSERT YOUR CUSTOM TEMPLATES HERE -->
+            <!-- Example: <block type="core/template" template="algoliasearch/[autocomplete_or_instantsearch]/your_custom_template_name.phtml" name="algolia-your-custom-template-name"/> -->
+        </reference>
+    </algolia_search_handle_autocomplete>
+
+    <algolia_search_handle_instantsearch>
+        <reference name="head">
+            <action method="addJs"><script>algoliasearch/instantsearch.js</script></action>
+        </reference>
+
+        <reference name="before_body_end">
+            <!-- Instant search results page templates -->
+            <block type="core/template" template="algoliasearch/instantsearch/wrapper.phtml" name="algolia-instantsearch-wrapper"/>
+            <block type="core/template" template="algoliasearch/instantsearch/hit.phtml" name="algolia-instantsearch-hit"/>
+            <block type="core/template" template="algoliasearch/instantsearch/stats.phtml" name="algolia-instantsearch-stats"/>
+            <block type="core/template" template="algoliasearch/instantsearch/refinementsItem.phtml" name="algolia-instantsearch-refinements-item"/>
+            <block type="core/template" template="algoliasearch/instantsearch/currentRefinements.phtml" name="algolia-instantsearch-current-refinments"/>
+
+            <!-- INSERT YOUR CUSTOM TEMPLATES HERE -->
+            <!-- Example: <block type="core/template" template="algoliasearch/[autocomplete_or_instantsearch]/your_custom_template_name.phtml" name="algolia-your-custom-template-name"/> -->
+        </reference>
+    </algolia_search_handle_instantsearch>
 
     <algolia_search_handle_prevent_backend_rendering>
         <reference name="left_first">
