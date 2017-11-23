@@ -337,7 +337,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					hierarchical_levels.push('categories.level' + l.toString());
 				
 				var hierarchicalMenuParams = {
-					container: facet.wrapper.appendChild(document.createElement('div')),
+					container: facet.wrapper.appendChild(createISWidgetContainer(facet.attribute)),
 					attributes: hierarchical_levels,
 					separator: ' /// ',
 					alwaysGetRootLevel: true,
@@ -369,7 +369,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				delete templates.item;
 				
 				return ['priceRanges', {
-					container: facet.wrapper.appendChild(document.createElement('div')),
+					container: facet.wrapper.appendChild(createISWidgetContainer(facet.attribute)),
 					attributeName: facet.attribute,
 					labels: {
 						currency: algoliaConfig.currencySymbol,
@@ -385,7 +385,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			
 			if (facet.type === 'conjunctive') {
 				return ['refinementList', {
-					container: facet.wrapper.appendChild(document.createElement('div')),
+					container: facet.wrapper.appendChild(createISWidgetContainer(facet.attribute)),
 					attributeName: facet.attribute,
 					limit: algoliaConfig.maxValuesPerFacet,
 					operator: 'and',
@@ -398,7 +398,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			
 			if (facet.type === 'disjunctive') {
 				return ['refinementList', {
-					container: facet.wrapper.appendChild(document.createElement('div')),
+					container: facet.wrapper.appendChild(createISWidgetContainer(facet.attribute)),
 					attributeName: facet.attribute,
 					limit: algoliaConfig.maxValuesPerFacet,
 					operator: 'or',
@@ -413,7 +413,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				delete templates.item;
 				
 				return ['rangeSlider', {
-					container: facet.wrapper.appendChild(document.createElement('div')),
+					container: facet.wrapper.appendChild(createISWidgetContainer(facet.attribute)),
 					attributeName: facet.attribute,
 					templates: templates,
 					cssClasses: {
