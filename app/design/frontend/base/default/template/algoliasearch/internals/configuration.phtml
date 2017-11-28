@@ -144,15 +144,6 @@ if ($config->isInstantEnabled()) {
     }
 }
 
-// Hides the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS.
-// Hides the search results rendered by the server, which are also executed because it's unsure whether Google indexes the results that are fetched through JS.
-if ($config->isInstantEnabled() && $isSearchPage) {
-    echo '
-    <script>
-        document.write(\'<style type="text/css"> ' . $config->getInstantSelector() . '{display:none}</style>\');
-    </script>';
-}
-
 /**
  * Generate API keys
  * Docs: https://www.algolia.com/doc/api-client/php/api-keys#generate-key
@@ -291,6 +282,15 @@ $algoliaJsConfig = array(
 $transport = new Varien_Object($algoliaJsConfig);
 Mage::dispatchEvent('algolia_after_create_configuration', array('configuration' => $transport));
 $algoliaJsConfig = $transport->getData();
+
+// Hides the instant-search selector ASAP to remove flickering. Will be re-displayed later with JS.
+// Hides the search results rendered by the server, which are also executed because it's unsure whether Google indexes the results that are fetched through JS.
+if ($algoliaJsConfig['instant']['enabled'] && $algoliaJsConfig['isSearchPage']) {
+    echo '
+    <script>
+        document.write(\'<style type="text/css"> ' . $config->getInstantSelector() . '{display:none}</style>\');
+    </script>';
+}
 
 ?>
 
