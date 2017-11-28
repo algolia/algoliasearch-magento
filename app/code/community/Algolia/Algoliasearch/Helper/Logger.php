@@ -31,7 +31,11 @@ class Algolia_Algoliasearch_Helper_Logger extends Mage_Core_Helper_Abstract
             return 'undefined store';
         }
 
-        return $storeId.' ('.$this->stores[$storeId].')';
+        if(array_key_exists($storeId,$this->stores)) {
+            return $storeId . ' (' . $this->stores[$storeId] . ')';
+        }
+
+        return $storeId;
     }
 
     public function start($action)
