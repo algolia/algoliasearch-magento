@@ -730,4 +730,39 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             throw new \AlgoliaSearch\AlgoliaException('<br>'.implode('<br> ', $error));
         }
     }
+
+    public function deleteInactiveProducts($storeId)
+    {
+        $indexName = $this->product_helper->getIndexName($storeId);
+        $index = $this->algolia_helper->getIndex($indexName);
+
+        $objectIds = array();
+        $counter = 0;
+        foreach ($index->browse('', array('attributesToRetrieve' => array('objectID'))) as $hit) {
+            $objectIds[] = $hit['objectID'];
+            $counter++;
+
+            if ($counter === 1000) {
+                $this->deleteInactiveIds($storeId, $objectIds, $indexName);
+
+                $objectIds = array();
+                $counter = 0;
+            }
+        }
+
+        if (!empty($objectIds)) {
+            $this->deleteInactiveIds($storeId, $objectIds, $indexName);
+        }
+    }
+
+    private function deleteInactiveIds($storeId, $objectIds, $indexName)
+    {
+        $collection = $this->product_helper->getProductCollectionQuery($storeId, $objectIds);
+        $dbIds = $collection->getAllIds();
+        
+        $collection = null;
+
+        $idsToDeleteFromAlgolia = array_diff($objectIds, $dbIds);
+        $this->algolia_helper->deleteObjects($idsToDeleteFromAlgolia, $indexName);
+    }
 }
