@@ -230,6 +230,9 @@ document.addEventListener("DOMContentLoaded", function (e) {
 							} else {
 								hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.query;
 							}
+							
+							var toEscape = hit._highlightResult.query.value;
+							hit._highlightResult.query.value = algoliaBundle.autocomplete.escapeHighlightedString(toEscape);
 
 							return algoliaConfig.autocomplete.templates.suggestions.render(hit);
 						}
