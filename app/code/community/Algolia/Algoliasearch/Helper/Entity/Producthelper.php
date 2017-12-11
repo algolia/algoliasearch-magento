@@ -673,7 +673,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $customData = array(
             'objectID'           => $product->getId(),
             'name'               => $product->getName(),
-            'url'                => $product->getProductUrl(),
+            'url'                => $product->getProductUrl(false),
             'visibility_search'  => (int) (in_array($visibility, $visibleInSearch)),
             'visibility_catalog' => (int) (in_array($visibility, $visibleInCatalog)),
         );
