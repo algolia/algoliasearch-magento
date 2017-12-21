@@ -95,6 +95,17 @@ document.addEventListener("DOMContentLoaded", function (e) {
 			if (hit['price'] !== undefined && price_key !== '.' + algoliaConfig.currencyCode + '.default' && hit['price'][algoliaConfig.currencyCode][price_key.substr(1) + '_formated'] !== hit['price'][algoliaConfig.currencyCode]['default_formated']) {
 				hit['price'][algoliaConfig.currencyCode][price_key.substr(1) + '_original_formated'] = hit['price'][algoliaConfig.currencyCode]['default_formated'];
 			}
+			
+			if (hit['price'][algoliaConfig.currencyCode]['default_original_formated']
+				&& hit['price'][algoliaConfig.currencyCode]['special_to_date']) {
+				var priceExpiration = hit['price'][algoliaConfig.currencyCode]['special_to_date'];
+
+				if (algoliaConfig.now > priceExpiration) {
+					console.log('here');
+					hit['price'][algoliaConfig.currencyCode]['default_formated'] = hit['price'][algoliaConfig.currencyCode]['default_original_formated'];
+					hit['price'][algoliaConfig.currencyCode]['default_original_formated'] = false;
+				}
+			}
 
 			return hit;
 		};
