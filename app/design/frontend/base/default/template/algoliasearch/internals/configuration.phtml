@@ -253,6 +253,7 @@ $algoliaJsConfig = array(
     'urls' => array(
         'logo' => $this->getSkinUrl('algoliasearch/search-by-algolia.svg'),
     ),
+    'now' => Mage::app()->getLocale()->storeDate()->getTimestamp(),
     'translations' => array(
         'to' => $this->__('to'),
         'or' => $this->__('or'),
