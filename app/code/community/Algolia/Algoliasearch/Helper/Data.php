@@ -416,7 +416,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
             $categoryObject = $this->category_helper->getObject($category);
 
-            if ($categoryObject['product_count'] > 0) {
+            if ($this->config->shouldIndexEmptyCategories($storeId) === true || $categoryObject['product_count'] > 0) {
                 array_push($indexData, $categoryObject);
             }
         }
