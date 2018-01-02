@@ -167,6 +167,9 @@
                 <algolia_queue_runner>
                     <model>algoliasearch/indexer_algoliaqueuerunner</model>
                 </algolia_queue_runner>
+                <algolia_delete_products>
+                    <model>algoliasearch/indexer_algoliadeleteproducts</model>
+                </algolia_delete_products>
             </indexer>
         </index>
     </global>

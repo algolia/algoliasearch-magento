@@ -336,4 +336,31 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
     {
         $this->addToQueue('algoliasearch/observer', 'saveSettings', array('isFullProductReindex' => $isFullProductReindex), 1);
     }
+
+    public function deleteInactiveProducts()
+    {
+        /** @var Algolia_Algoliasearch_Helper_Data $helper */
+        $helper = Mage::helper('algoliasearch');
+
+        /** @var Mage_Core_Model_Store $store */
+        foreach (Mage::app()->getStores() as $store) {
+            $storeId = $store->getId();
+
+            if ($this->config->isEnabledBackend($store->getId()) === false) {
+                if (php_sapi_name() === 'cli') {
+                    echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
+                }
+
+                /** @var Mage_Adminhtml_Model_Session $session */
+                $session = Mage::getSingleton('adminhtml/session');
+                $session->addWarning('[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
+
+                $this->logger->log('INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId()));
+
+                continue;
+            }
+
+            $helper->deleteInactiveProducts($storeId);
+        }
+    }
 }
