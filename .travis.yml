@@ -16,5 +16,8 @@ services:
 install:
   - composer install --no-scripts
 
+before_script:
+  - wget http://api-key-dealer.herokuapp.com/clients/algolia-keys && chmod +x algolia-keys
+
 script:
-  - dev/runTests.sh -a $ALGOLIA_APPLICATION_ID -k $ALGOLIA_API_KEY -s $ALGOLIA_SEARCH_API_KEY -b http://magento.local -p magento1_tests_ -v 193
+  - eval $(./algolia-keys export) && dev/runTests.sh -a $ALGOLIA_APPLICATION_ID -k $ALGOLIA_API_KEY -s $ALGOLIA_SEARCH_API_KEY -b http://magento.local -p TRAVIS_M1_ -v 193
