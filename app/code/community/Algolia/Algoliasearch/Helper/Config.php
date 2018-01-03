@@ -47,6 +47,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const INDEX_PRODUCT_COUNT = 'algoliasearch/categories/index_product_count';
     const CATEGORY_CUSTOM_RANKING = 'algoliasearch/categories/custom_ranking_category_attributes';
     const SHOW_CATS_NOT_INCLUDED_IN_NAVIGATION = 'algoliasearch/categories/show_cats_not_included_in_navigation';
+    const INDEX_EMPTY_CATEGORIES = 'algoliasearch/categories/index_empty_categories';
 
     const IS_ACTIVE = 'algoliasearch/queue/active';
     const NUMBER_OF_ELEMENT_BY_PAGE = 'algoliasearch/queue/number_of_element_by_page';
@@ -111,6 +112,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function showCatsNotIncludedInNavigation($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::SHOW_CATS_NOT_INCLUDED_IN_NAVIGATION, $storeId);
+    }
+
+    public function shouldIndexEmptyCategories($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::INDEX_EMPTY_CATEGORIES, $storeId);
     }
 
     public function isDefaultSelector($storeId = null)
