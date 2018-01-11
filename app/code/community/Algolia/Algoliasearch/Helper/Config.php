@@ -471,6 +471,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
             $attributes[] = 'price.'.$currency.'.default_formated';
             $attributes[] = 'price.'.$currency.'.group_'.$group_id;
             $attributes[] = 'price.'.$currency.'.group_'.$group_id.'_formated';
+            $attributes[] = 'price.'.$currency.'.group_'.$group_id.'_original_formated';
             $attributes[] = 'price.'.$currency.'.special_from_date';
             $attributes[] = 'price.'.$currency.'.special_to_date';
         }
