@@ -102,6 +102,10 @@ class Algolia_Algoliasearch_Model_Observer
 
     public function savePage(Varien_Event_Observer $observer)
     {
+        if (!$this->config->getApplicationID() || !$this->config->getAPIKey()) {
+            return;
+        }
+
         /** @var Mage_Cms_Model_Page $page */
         $page = $observer->getDataObject();
         $page = Mage::getModel('cms/page')->load($page->getId());
