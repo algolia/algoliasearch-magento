@@ -34,7 +34,10 @@ $currencySymbol = $app->getLocale()->currency($currencyCode)->getSymbol();
 $session = Mage::getSingleton('customer/session');
 $customerGroupId = $session->getCustomerGroupId();
 
-$priceKey = $config->isCustomerGroupsEnabled($storeId) ? '.'.$currencyCode.'.group_'.$customerGroupId : '.'.$currencyCode.'.default';
+$priceKey = '.'.$currencyCode.'.default';
+if ($config->isCustomerGroupsEnabled($storeId) && $customerGroupId !== 0) {
+    $priceKey = '.'.$currencyCode.'.group_'.$customerGroupId;
+}
 
 $query = '';
 $refinementKey = '';
