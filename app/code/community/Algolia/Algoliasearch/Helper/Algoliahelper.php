@@ -261,13 +261,29 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->lastTaskId = $res['taskID'];
     }
 
-    public function waitLastTask()
+//    public function waitLastTask()
+//    {
+//        if (!isset($this->lastUsedIndexName) || !isset($this->lastTaskId)) {
+//            return;
+//        }
+//
+//        $this->client->initIndex($this->lastUsedIndexName)->waitTask($this->lastTaskId);
+//    }
+
+    public function waitLastTask($lastUsedIndexName = null, $lastTaskId = null)
     {
-        if (!isset($this->lastUsedIndexName) || !isset($this->lastTaskId)) {
+        if ($lastUsedIndexName === null && isset($this->lastUsedIndexName)) {
+            $lastUsedIndexName = $this->lastUsedIndexName;
+        }
+
+        if ($lastTaskId === null && isset($this->lastTaskId)) {
+            $lastTaskId = $this->lastTaskId;
+        }
+        if (!$lastUsedIndexName || !$lastTaskId) {
             return;
         }
 
-        $this->client->initIndex($this->lastUsedIndexName)->waitTask($this->lastTaskId);
+        $this->client->initIndex($lastUsedIndexName)->waitTask($lastTaskId);
     }
 
     private function prepareRecords(&$objects, $indexName)
@@ -347,4 +363,15 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
 
         return $longestAttribute;
     }
+
+    public function getLastIndexName()
+    {
+        return $this->lastUsedIndexName;
+    }
+
+    public function getLastTaskId()
+    {
+        return $this->lastTaskId;
+    }
+
 }
