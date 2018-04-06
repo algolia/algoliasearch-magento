@@ -297,7 +297,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $replicas = array();
 
         if (count($sorting_indices) > 0) {
-
             foreach ($sorting_indices as $values) {
                 if ($this->config->isCustomerGroupsEnabled($storeId) && $values['attribute'] === 'price') {
                     foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group) {
