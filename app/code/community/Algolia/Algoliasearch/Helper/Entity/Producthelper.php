@@ -1094,7 +1094,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     private function deleteUnusedReplicas($indexName, $replicas, $setReplicasTaskId)
     {
-        $indicesToDelete = [];
+        $indicesToDelete = array();
 
         $allIndices = $this->algolia_helper->listIndexes();
         foreach ($allIndices['items'] as $indexInfo) {

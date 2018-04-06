@@ -364,5 +364,4 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
     {
         return $this->lastTaskId;
     }
-
 }
