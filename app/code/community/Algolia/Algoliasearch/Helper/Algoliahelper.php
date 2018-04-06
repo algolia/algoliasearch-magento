@@ -261,15 +261,6 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->lastTaskId = $res['taskID'];
     }
 
-//    public function waitLastTask()
-//    {
-//        if (!isset($this->lastUsedIndexName) || !isset($this->lastTaskId)) {
-//            return;
-//        }
-//
-//        $this->client->initIndex($this->lastUsedIndexName)->waitTask($this->lastTaskId);
-//    }
-
     public function waitLastTask($lastUsedIndexName = null, $lastTaskId = null)
     {
         if ($lastUsedIndexName === null && isset($this->lastUsedIndexName)) {
