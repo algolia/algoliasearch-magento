@@ -1100,8 +1100,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             if (strpos($indexInfo['name'], $indexName) !== 0 || $indexInfo['name'] === $indexName) {
                 continue;
             }
-
-            if (in_array($indexInfo['name'], $replicas) === false) {
+            // Do not delete tmp indices which are used for indexing jobs
+            if (strpos($indexInfo['name'], '_tmp') === false && in_array($indexInfo['name'], $replicas) === false) {
                 $indicesToDelete[] = $indexInfo['name'];
             }
         }
