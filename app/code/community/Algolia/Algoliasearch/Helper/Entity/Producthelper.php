@@ -294,9 +294,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
          */
         $sorting_indices = $this->config->getSortingIndices($storeId);
 
-        if (count($sorting_indices) > 0) {
-            $replicas = array();
+        $replicas = array();
 
+        if (count($sorting_indices) > 0) {
             foreach ($sorting_indices as $values) {
                 if ($this->config->isCustomerGroupsEnabled($storeId) && $values['attribute'] === 'price') {
                     foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group) {
@@ -316,6 +316,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
 
             $this->algolia_helper->setSettings($this->getIndexName($storeId), array('replicas' => $replicas));
+            $setReplicasTaskId = $this->algolia_helper->getLastTaskId();
 
             /** @var Mage_Core_Model_Store $store */
             $store = Mage::getModel('core/store')->load($storeId);
@@ -369,7 +370,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     }
                 }
             }
+        } else {
+            $this->algolia_helper->setSettings($this->getIndexName($storeId), array('replicas' => $replicas));
+            $setReplicasTaskId = $this->algolia_helper->getLastTaskId();
         }
+
+        $this->deleteUnusedReplicas($indexName, $replicas, $setReplicasTaskId);
+
 
         if ($this->config->isEnabledSynonyms($storeId) === true) {
             if ($synonymsFile = $this->config->getSynonymsFile($storeId)) {
@@ -1082,5 +1089,29 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         return $customData;
+    }
+
+    private function deleteUnusedReplicas($indexName, $replicas, $setReplicasTaskId)
+    {
+        $indicesToDelete = array();
+
+        $allIndices = $this->algolia_helper->listIndexes();
+        foreach ($allIndices['items'] as $indexInfo) {
+            if (strpos($indexInfo['name'], $indexName) !== 0 || $indexInfo['name'] === $indexName) {
+                continue;
+            }
+            // Do not delete tmp indices which are used for indexing jobs
+            if (strpos($indexInfo['name'], '_tmp') === false && in_array($indexInfo['name'], $replicas) === false) {
+                $indicesToDelete[] = $indexInfo['name'];
+            }
+        }
+
+        if (count($indicesToDelete) > 0) {
+            $this->algolia_helper->waitLastTask($indexName, $setReplicasTaskId);
+
+            foreach ($indicesToDelete as $indexToDelete) {
+                $this->algolia_helper->deleteIndex($indexToDelete);
+            }
+        }
     }
 }
