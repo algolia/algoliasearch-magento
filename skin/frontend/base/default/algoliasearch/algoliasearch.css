@@ -241,6 +241,14 @@ a.ais-current-refined-values--link:hover
   fill: #636363;
 }
 
+#algolia_instant_selector .ais-refinement-list--list  .sbx-sffv__input {
+  border : 1px solid silver;
+}
+
+#algolia_instant_selector .ais-refinement-list--list  .sbx-sffv__input:focus {
+  border : 1px solid #54A5CD;
+}
+
 #algolia_instant_selector .ais-refinement-list--list .sffv-no-results {
   padding-left: 3%;
 }
