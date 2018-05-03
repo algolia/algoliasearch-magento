@@ -49,6 +49,14 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Algoli
                     ),
                     'rowMethod' => 'getSearchable',
                 ),
+                'create_rule' => array(
+                    'label'  => 'Create Query rule?',
+                    'options' => array(
+                        '1' => 'Yes',
+                        '2' => 'No'
+                    ),
+                    'rowMethod' => 'getCreateRule',
+                ),
             ),
             'buttonLabel' => 'Add Facet',
             'addAfter'    => false,
