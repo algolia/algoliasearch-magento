@@ -1131,7 +1131,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $this->clearFacetsQueryRules($index);
 
-        $rules = [];
+        $rules = array();
         $facets = $this->config->getFacets();
         foreach ($facets as $facet) {
             if (!array_key_exists('create_rule', $facet) || $facet['create_rule'] !== '1') {
@@ -1140,23 +1140,23 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
             $attribute = $facet['attribute'];
 
-            $rules[] = [
+            $rules[] = array(
                 'objectID' => 'filter_'.$attribute,
                 'description' => 'Filter facet "'.$attribute.'"',
-                'condition' => [
+                'condition' => array(
                     'anchoring' => 'contains',
                     'pattern' => '{facet:'.$attribute.'}',
                     'context' => 'magento_filters',
-                ],
-                'consequence' => [
-                    'params' => [
-                        'automaticFacetFilters' => [$attribute],
-                        'query' => [
-                            'remove' => ['{facet:'.$attribute.'}']
-                        ]
-                    ],
-                ]
-            ];
+                ),
+                'consequence' => array(
+                    'params' => array(
+                        'automaticFacetFilters' => array($attribute),
+                        'query' => array(
+                            'remove' => array('{facet:'.$attribute.'}')
+                        )
+                    ),
+                )
+            );
         }
 
         if ($rules) {
@@ -1169,11 +1169,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $hitsPerPage = 100;
         $page = 0;
         do {
-            $fetchedQueryRules = $index->searchRules([
-                'context' => 'magento_filters',
-                'page' => $page,
-                'hitsPerPage' => $hitsPerPage,
-            ]);
+            $fetchedQueryRules = $index->searchRules(
+                array(
+                    'context' => 'magento_filters',
+                    'page' => $page,
+                    'hitsPerPage' => $hitsPerPage,
+                )
+            );
 
             foreach ($fetchedQueryRules['hits'] as $hit) {
                 $index->deleteRule($hit['objectID'], true);
