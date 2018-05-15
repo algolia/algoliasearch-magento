@@ -233,6 +233,9 @@ $algoliaJsConfig = array(
     'currencySymbol' => $currencySymbol,
     'maxValuesPerFacet' => (int) $config->getMaxValuesPerFacet(),
     'autofocus' => true,
+    'ccAnalytics' => array(
+        'ISSelector' => $config->getClickConversionAnalyticsISSelector(),
+    ),
     'analytics' => array(
         'enabled' => $config->isEnabledAnalytics(),
         'delay' => $config->getAnalyticsDelay(),

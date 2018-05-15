@@ -93,4 +93,12 @@
             <action method="unsetChild"><name>right.poll</name></action>
         </reference>
     </algolia_search_handle_prevent_backend_rendering>
+
+    <algolia_search_handle_click_conversion_analytics>
+        <reference name="head">
+            <action method="addJs"><script>algoliasearch/internals/frontend/search-insights.js</script></action>
+            <action method="addJs"><script>algoliasearch/click_conversion_analytics.js</script></action>
+        </reference>
+    </algolia_search_handle_click_conversion_analytics>
+
 </layout>

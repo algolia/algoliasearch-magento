@@ -60,10 +60,13 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IMAGE_HEIGHT = 'algoliasearch/image/height';
     const XML_PATH_IMAGE_TYPE = 'algoliasearch/image/type';
 
-    const ENABLE_ANALYTICS = 'algoliasearch/analytics/enable_analytics';
-    const ANALYTICS_DELAY = 'algoliasearch/analytics/delay';
-    const ANALYTICS_TRIGGER_ON_UI_INTERACTION = 'algoliasearch/analytics/trigger_on_ui_interaction';
-    const ANALYTICS_PUSH_INITIAL_SEARCH = 'algoliasearch/analytics/push_initial_search';
+    const GA_ENABLE = 'algoliasearch/analytics/enable';
+    const GA_DELAY = 'algoliasearch/analytics/delay';
+    const GA_TRIGGER_ON_UI_INTERACTION = 'algoliasearch/analytics/trigger_on_ui_interaction';
+    const GA_PUSH_INITIAL_SEARCH = 'algoliasearch/analytics/push_initial_search';
+
+    const CC_ANALYTICS_ENABLE = 'algoliasearch/cc_analytics/enable';
+    const CC_ANALYTICS_IS_SELECTOR = 'algoliasearch/cc_analytics/is_selector';
 
     const ENABLE_SYNONYMS = 'algoliasearch/synonyms/enable_synonyms';
     const SYNONYMS = 'algoliasearch/synonyms/synonyms';
@@ -595,22 +598,32 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function isEnabledAnalytics($storeId = null)
     {
-        return Mage::getStoreConfigFlag(self::ENABLE_ANALYTICS, $storeId);
+        return Mage::getStoreConfigFlag(self::GA_ENABLE, $storeId);
     }
 
     public function getAnalyticsDelay($storeId = null)
     {
-        return (int) Mage::getStoreConfig(self::ANALYTICS_DELAY, $storeId);
+        return (int) Mage::getStoreConfig(self::GA_DELAY, $storeId);
     }
 
     public function getTriggerOnUIInteraction($storeId = null)
     {
-        return Mage::getStoreConfigFlag(self::ANALYTICS_TRIGGER_ON_UI_INTERACTION, $storeId);
+        return Mage::getStoreConfigFlag(self::GA_TRIGGER_ON_UI_INTERACTION, $storeId);
     }
 
     public function getPushInitialSearch($storeId = null)
     {
-        return Mage::getStoreConfigFlag(self::ANALYTICS_PUSH_INITIAL_SEARCH, $storeId);
+        return Mage::getStoreConfigFlag(self::GA_PUSH_INITIAL_SEARCH, $storeId);
+    }
+
+    public function isClickConversionAnalyticsEnabled($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::CC_ANALYTICS_ENABLE, $storeId);
+    }
+
+    public function getClickConversionAnalyticsISSelector($storeId = null)
+    {
+        return Mage::getStoreConfig(self::CC_ANALYTICS_IS_SELECTOR, $storeId);
     }
 
     public function isEnabledSynonyms($storeId = null)

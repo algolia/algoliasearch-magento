@@ -89,6 +89,8 @@ class Algolia_Algoliasearch_Model_Observer
 
         $this->loadPreventBackendRenderingHandle($observer);
 
+        $this->loadAnalyticsHandle($observer);
+
         return $this;
     }
 
@@ -306,5 +308,14 @@ class Algolia_Algoliasearch_Model_Observer
         }
 
         $observer->getData('layout')->getUpdate() ->addHandle('algolia_search_handle_prevent_backend_rendering');
+    }
+
+    private function loadAnalyticsHandle(Varien_Event_Observer $observer)
+    {
+        if (!$this->config->isClickConversionAnalyticsEnabled()) {
+            return;
+        }
+
+        $observer->getData('layout')->getUpdate()->addHandle('algolia_search_handle_click_conversion_analytics');
     }
 }
