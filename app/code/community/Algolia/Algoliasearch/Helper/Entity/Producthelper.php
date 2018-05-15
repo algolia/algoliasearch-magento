@@ -294,6 +294,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $this->algolia_helper->setSettings($indexName.'_tmp', $mergeSettings);
         }
 
+        $this->setFacetsQueryRules($indexName);
+        if ($saveToTmpIndicesToo === true) {
+            $this->setFacetsQueryRules($indexName.'_tmp');
+        }
+
         /*
          * Handle replicas
          */
@@ -1118,5 +1123,65 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $this->algolia_helper->deleteIndex($indexToDelete);
             }
         }
+    }
+
+    private function setFacetsQueryRules($indexName)
+    {
+        $index = $this->algolia_helper->getIndex($indexName);
+
+        $this->clearFacetsQueryRules($index);
+
+        $rules = array();
+        $facets = $this->config->getFacets();
+        foreach ($facets as $facet) {
+            if (!array_key_exists('create_rule', $facet) || $facet['create_rule'] !== '1') {
+                continue;
+            }
+
+            $attribute = $facet['attribute'];
+
+            $rules[] = array(
+                'objectID' => 'filter_'.$attribute,
+                'description' => 'Filter facet "'.$attribute.'"',
+                'condition' => array(
+                    'anchoring' => 'contains',
+                    'pattern' => '{facet:'.$attribute.'}',
+                    'context' => 'magento_filters',
+                ),
+                'consequence' => array(
+                    'params' => array(
+                        'automaticFacetFilters' => array($attribute),
+                        'query' => array(
+                            'remove' => array('{facet:'.$attribute.'}')
+                        )
+                    ),
+                )
+            );
+        }
+
+        if ($rules) {
+            $index->batchRules($rules, true);
+        }
+    }
+
+    private function clearFacetsQueryRules($index)
+    {
+        $hitsPerPage = 100;
+        $page = 0;
+        do {
+            $fetchedQueryRules = $index->searchRules(
+                array(
+                    'context' => 'magento_filters',
+                    'page' => $page,
+                    'hitsPerPage' => $hitsPerPage,
+                )
+            );
+
+            foreach ($fetchedQueryRules['hits'] as $hit) {
+                $index->deleteRule($hit['objectID'], true);
+            }
+
+            $page++;
+        } while (($page * $hitsPerPage) < $fetchedQueryRules['nbHits']);
     }
 }

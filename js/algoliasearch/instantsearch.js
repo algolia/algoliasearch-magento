@@ -56,6 +56,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			urlSync: {
 				useHash: true,
 				trackedParameters: algoliaConfig.urlTrackedParameters
+			},
+			searchParameters: {
+				hitsPerPage: algoliaConfig.hitsPerPage,
+				ruleContexts: ['magento_filters', ''] // Empty context to keep BC for already create rules in dashboard
 			}
 		};
 		

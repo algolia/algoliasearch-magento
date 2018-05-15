@@ -51,6 +51,34 @@ class ConfigTest extends TestCase
         $this->assertEquals(count($facets), $attributesMatched);
     }
 
+    public function testQueryRules()
+    {
+        $this->observer->saveSettings();
+        $this->algoliaHelper->waitLastTask();
+
+        $index = $this->algoliaHelper->getIndex($this->indexPrefix.'default_products');
+
+        $matchedRules = [];
+
+        $hitsPerPage = 100;
+        $page = 0;
+        do {
+            $fetchedQueryRules = $index->searchRules([
+                'context' => 'magento_filters',
+                'page' => $page,
+                'hitsPerPage' => $hitsPerPage,
+            ]);
+
+            foreach ($fetchedQueryRules['hits'] as $hit) {
+                $matchedRules[] = $hit;
+            }
+
+            $page++;
+        } while (($page * $hitsPerPage) < $fetchedQueryRules['nbHits']);
+
+        $this->assertEquals(1, count($matchedRules));
+    }
+
     public function testAutomaticSetOfCategoriesFacet()
     {
         // Remove categories from facets
