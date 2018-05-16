@@ -239,7 +239,7 @@
             </image>
             <cc_analytics>
                 <enable>0</enable>
-                <is_selector>.ais-infinite-hits--item a.result, .ais-hits--item a.result</is_selector>
+                <is_selector>.ais-infinite-hits--item a.result, .ais-hits a.result</is_selector>
             </cc_analytics>
             <analytics>
                 <enable>0</enable>
