@@ -883,7 +883,7 @@
                     </fields>
                 </queue>
                 <cc_analytics>
-                    <label>Click Analytics</label>
+                    <label><![CDATA[Click & Conversion Analytics]]></label>
                     <expanded>0</expanded>
                     <frontend_type>text</frontend_type>
                     <sort_order>73</sort_order>
@@ -894,8 +894,10 @@
                         <![CDATA[
                         <table>
                             <tr>
-                                <td>Click analytics can be tracked only when you're on Business or a higher Algolia plan.</td>
-                                <td>Documentation of click analytics: <a href="https://community.algolia.com/magento/doc/m1/click-analytics" target="_blank">https://community.algolia.com/magento/doc/m1/click-analytics/</a></td>
+                                <td>Analyse how your customers are behaving when searching on your website. With <a target="_blank" href="https://www.algolia.com/doc/guides/analytics/click-analytics/">Click & Conversion analytics</a>, you can track which products are clicked more, and which search queries leads to more conversion. Note: this feature is not available on all plans, please refer to <a target="_blank" href="https://www.algolia.com/pricing/">Algolia's pricing page</a> for more details</td>
+                            </tr>
+                            <tr>
+                                <td>Documentation of Click & Conversion analytics: <a href="https://community.algolia.com/magento/doc/m1/click-analytics" target="_blank">https://community.algolia.com/magento/doc/m1/click-analytics/</a></td>
                             </tr>
                         </table>
                         <br>
@@ -922,11 +924,47 @@
                             <show_in_store>1</show_in_store>
                             <comment>
                                 <![CDATA[
-                                        The element must contain attributes "data-objectid" and "data-position".
-                                    ]]>
+                                    The element must contain attributes "data-objectid" and "data-position".
+                                ]]>
                             </comment>
                             <depends><enable>1</enable></depends>
                         </is_selector>
+                        <conversion_analytics_mode translate="label comment">
+                            <label>Conversion Analytics mode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>algoliasearch/system_conversionAnalyticsMode</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    Conversion is tracked when the product was found and clicked in search results and then added to cart.
+                                ]]>
+                            </comment>
+                            <depends>
+                                <enable>1</enable>
+                            </depends>
+                        </conversion_analytics_mode>
+                        <add_to_cart_selector translate="label comment">
+                            <label>DOM selector of a "Add to Cart" buttons</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                    The element has to contain attribute "data-objectid" or a "productId" variable needs to be specified in "frontend" algoliaConfig variable.
+                                    <br /><br />
+                                    More selectors separate by a comma (,).
+                                ]]>
+                            </comment>
+                            <depends>
+                                <conversion_analytics_mode>add_to_cart</conversion_analytics_mode>
+                                <enable>1</enable>
+                            </depends>
+                        </add_to_cart_selector>
                     </fields>
                 </cc_analytics>
                 <analytics translate="label">

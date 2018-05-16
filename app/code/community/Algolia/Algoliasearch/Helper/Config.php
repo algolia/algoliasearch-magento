@@ -67,6 +67,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     const CC_ANALYTICS_ENABLE = 'algoliasearch/cc_analytics/enable';
     const CC_ANALYTICS_IS_SELECTOR = 'algoliasearch/cc_analytics/is_selector';
+    const CC_CONVERSION_ANALYTICS_MODE = 'algoliasearch/cc_analytics/conversion_analytics_mode';
+    const CC_ADD_TO_CART_SELECTOR = 'algoliasearch/cc_analytics/add_to_cart_selector';
 
     const ENABLE_SYNONYMS = 'algoliasearch/synonyms/enable_synonyms';
     const SYNONYMS = 'algoliasearch/synonyms/synonyms';
@@ -624,6 +626,16 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getClickConversionAnalyticsISSelector($storeId = null)
     {
         return Mage::getStoreConfig(self::CC_ANALYTICS_IS_SELECTOR, $storeId);
+    }
+
+    public function getConversionAnalyticsMode($storeId = null)
+    {
+        return Mage::getStoreConfig(self::CC_CONVERSION_ANALYTICS_MODE, $storeId);
+    }
+
+    public function getConversionAnalyticsAddToCartSelector($storeId = null)
+    {
+        return Mage::getStoreConfig(self::CC_ADD_TO_CART_SELECTOR, $storeId);
     }
 
     public function isEnabledSynonyms($storeId = null)
