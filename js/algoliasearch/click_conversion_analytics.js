@@ -34,7 +34,6 @@ algolia.registerHook('beforeInstantsearchStart', function (search) {
 	search.once('render', function() {
 		AlgoliaAnalytics.initSearch({
 			getQueryID: function() {
-				console.log(search);
 				return search.helper.lastResults && search.helper.lastResults._rawResults[0].queryID
 			}
 		});
