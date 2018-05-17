@@ -241,7 +241,7 @@
                 <enable>0</enable>
                 <is_selector>.ais-infinite-hits--item a.result, .ais-hits a.result</is_selector>
                 <conversion_analytics_mode>disabled</conversion_analytics_mode>
-                <add_to_cart_selector>.add-to-cart-buttons .btn-cart</add_to_cart_selector>
+                <add_to_cart_selector>.add-to-cart-buttons .btn-cart, .hit-addtocart</add_to_cart_selector>
             </cc_analytics>
             <analytics>
                 <enable>0</enable>

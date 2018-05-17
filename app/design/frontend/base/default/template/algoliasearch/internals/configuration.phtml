@@ -148,6 +148,33 @@ if ($config->isInstantEnabled()) {
 }
 
 /**
+ * Handle Click & Conversion Analytics
+ */
+
+$productId = null;
+$orderedProductIds = array();
+if ($config->isClickConversionAnalyticsEnabled()) {
+    $fullActionName = $app->getRequest()->getModuleName() . '_' . $app->getRequest()->getControllerName() . '_' . $app->getRequest()->getActionName();
+
+    // If the page is a product view, add the id to the configuration
+    if ($fullActionName == 'catalog_product_view' ) {
+        $currentProduct = Mage::registry('current_product');
+        if (!is_null($currentProduct)) {
+            $productId = $currentProduct->getId();
+        }
+    }
+
+    // If we reach success page, add the product ids of the last order for conversion analytics
+    if (!is_null($config->getConversionAnalyticsMode()) && $config->getConversionAnalyticsMode() != 'disabled' && $fullActionName == 'checkout_onepage_success') {
+        $lastOrderId = Mage::getSingleton('checkout/session')->getLastOrderId();
+        $lastOrder = Mage::getSingleton('sales/order')->load($lastOrderId);
+        foreach($lastOrder->getAllItems() as $item) {
+            $orderedProductIds[] = $item->getProductId();
+        }
+    }
+}
+
+/**
  * Generate API keys
  * Docs: https://www.algolia.com/doc/api-client/php/api-keys#generate-key
  */
@@ -228,6 +255,7 @@ $algoliaJsConfig = array(
     'isSearchPage' => $isSearchPage,
     'isCategoryPage' => $isCategoryPage,
     'removeBranding' => $config->isRemoveBranding(),
+    'productId' => $productId,
     'priceKey' => $priceKey,
     'currencyCode' => $currencyCode,
     'currencySymbol' => $currencySymbol,
@@ -235,6 +263,9 @@ $algoliaJsConfig = array(
     'autofocus' => true,
     'ccAnalytics' => array(
         'ISSelector' => $config->getClickConversionAnalyticsISSelector(),
+        'conversionAnalyticsMode' => $config->getConversionAnalyticsMode(),
+        'addToCartSelector' => $config->getConversionAnalyticsAddToCartSelector(),
+        'orderedProductIds' => $orderedProductIds,
     ),
     'analytics' => array(
         'enabled' => $config->isEnabledAnalytics(),

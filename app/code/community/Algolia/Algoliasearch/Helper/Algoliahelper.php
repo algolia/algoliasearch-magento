@@ -47,6 +47,11 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         }
     }
 
+    public function getClient()
+    {
+        return $this->client;
+    }
+
     public function generateSearchSecuredApiKey($key, $params = array())
     {
         return $this->client->generateSecuredApiKey($key, $params);

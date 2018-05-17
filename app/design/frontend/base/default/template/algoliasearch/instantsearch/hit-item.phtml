@@ -63,7 +63,7 @@ if ($config->isCustomerGroupsEnabled($storeId) && $customerGroupId !== 0) {
                                         <input type="hidden" name="form_key"
                                                value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>"/>
                                         <input type="hidden" name="qty" value="1">
-                                        <button type="submit"><?php echo $this->__('Add to Cart'); ?></button>
+                                        <button type="submit" class="hit-addtocart" data-objectid="{{objectID}}" data-position="{{__position}}"><?php echo $this->__('Add to Cart'); ?></button>
                                     </form>
                                 {{/in_stock}}
                             {{/isAddToCartEnabled}}
