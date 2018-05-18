@@ -20,12 +20,12 @@ class Algolia_Algoliasearch_Model_System_Config_Backend_EnableClickAnalytics ext
         $headers[] = 'Content-Type: application/x-www-form-urlencoded';
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-        $postFields = json_encode([
+        $postFields = json_encode(array(
             'timestamp' => time(),
             'queryID' => 'a',
             'objectID' => 'non_existent_object_id',
             'position' => 1,
-        ]);
+        ));
 
         curl_setopt($ch, CURLOPT_URL, "https://insights.algolia.io/1/searches/click");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -33,7 +33,7 @@ class Algolia_Algoliasearch_Model_System_Config_Backend_EnableClickAnalytics ext
         curl_setopt($ch, CURLOPT_POST, 1);
 
         $result = curl_exec($ch);
-        curl_close ($ch);
+        curl_close($ch);
 
         if ($result) {
             $result = json_decode($result);
