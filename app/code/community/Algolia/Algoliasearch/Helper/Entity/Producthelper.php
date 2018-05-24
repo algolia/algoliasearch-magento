@@ -325,8 +325,20 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
             }
 
+            // Merge current replicas with sorting replicas to not delete A/B testing replica indices
+            try {
+                $currentSettings = $this->algolia_helper->getSettings($indexName);
+                if (array_key_exists('replicas', $currentSettings)) {
+                    $replicas = array_values(array_unique(array_merge($replicas, $currentSettings['replicas'])));
+                }
+            } catch (\AlgoliaSearch\AlgoliaException $e) {
+                if ($e->getMessage() !== 'Index does not exist') {
+                    throw $e;
+                }
+            }
+
             $this->algolia_helper->setSettings($this->getIndexName($storeId), array('replicas' => $replicas));
-            $setReplicasTaskId = $this->algolia_helper->getLastTaskId();
+            // $setReplicasTaskId = $this->algolia_helper->getLastTaskId();
 
             /** @var Mage_Core_Model_Store $store */
             $store = Mage::getModel('core/store')->load($storeId);
@@ -382,11 +394,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
         } else {
             $this->algolia_helper->setSettings($this->getIndexName($storeId), array('replicas' => $replicas));
-            $setReplicasTaskId = $this->algolia_helper->getLastTaskId();
+            // $setReplicasTaskId = $this->algolia_helper->getLastTaskId();
         }
 
-        $this->deleteUnusedReplicas($indexName, $replicas, $setReplicasTaskId);
-
+        // Commented out as it doesn't delete anything now because of merging replica indices earlier
+        // $this->deleteUnusedReplicas($indexName, $replicas, $setReplicasTaskId);
 
         if ($this->config->isEnabledSynonyms($storeId) === true) {
             if ($synonymsFile = $this->config->getSynonymsFile($storeId)) {

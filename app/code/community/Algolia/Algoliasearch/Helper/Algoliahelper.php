@@ -116,12 +116,17 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->lastTaskId = $res['taskID'];
     }
 
+    public function getSettings($indexName)
+    {
+        return $this->getIndex($indexName)->getSettings();
+    }
+
     public function mergeSettings($indexName, $settings)
     {
         $onlineSettings = array();
 
         try {
-            $onlineSettings = $this->getIndex($indexName)->getSettings();
+            $onlineSettings = $this->getSettings();
         } catch (\Exception $e) {
         }
 
