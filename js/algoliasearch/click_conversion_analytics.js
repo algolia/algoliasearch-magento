@@ -1,5 +1,3 @@
-var objectIdsStorageKey = 'algoliasearch_analytics_ids';
-
 algoliaBundle.$(function ($) {
 	AlgoliaAnalytics.init({
 		applicationID: algoliaConfig.applicationId,
@@ -42,13 +40,12 @@ algoliaBundle.$(function ($) {
 	}
 
 	// "Place order" conversions
-	if (algoliaConfig.ccAnalytics.conversionAnalyticsMode === 'place_order') {
-		// "algoliaConfig.ccAnalytics.orderedProductIds" are set only on checkout success page
-		if (algoliaConfig.ccAnalytics.orderedProductIds.length > 0) {
-			$.each(algoliaConfig.ccAnalytics.orderedProductIds, function (i, objectId) {
-				trackConversion(objectId);
-			});
-		}
+	// "algoliaConfig.ccAnalytics.orderedProductIds" are set only on checkout success page
+	if (algoliaConfig.ccAnalytics.conversionAnalyticsMode === 'place_order'
+		&& algoliaConfig.ccAnalytics.orderedProductIds.length > 0) {
+		$.each(algoliaConfig.ccAnalytics.orderedProductIds, function (i, objectId) {
+			trackConversion(objectId);
+		});
 	}
 
 });
@@ -73,68 +70,20 @@ algolia.registerHook('beforeInstantsearchStart', function (search) {
 
 
 function trackClick(objectID, position, queryId) {
-	objectID = objectID.toString();
+	var clickData = {
+		objectID: objectID.toString(),
+		position: parseInt(position)
+	};
 
-	var propertyName = getPropertyName(objectID);
-
-	var clickedObjectIds = getObjectIds('clicked');
-	if (!clickedObjectIds[propertyName]) {
-		var clickData = {
-			objectID: objectID,
-			position: parseInt(position)
-		};
-
-		if (queryId) {
-			clickData.queryID = queryId;
-		}
-
-		AlgoliaAnalytics.click(clickData);
-
-		clickedObjectIds[propertyName] = 1;
-
-		var convertedObjectIds = getObjectIds('converted');
-		delete convertedObjectIds[propertyName];
-
-		setObjectIds('clicked', clickedObjectIds);
-		setObjectIds('converted', convertedObjectIds);
+	if (queryId) {
+		clickData.queryID = queryId;
 	}
+
+	AlgoliaAnalytics.click(clickData);
 }
 
 function trackConversion(objectID) {
-	objectID = objectID.toString();
-
-	var propertyName = getPropertyName(objectID);
-
-	var convertedObjectIds = getObjectIds('converted');
-	if (!convertedObjectIds[propertyName]) {
-		AlgoliaAnalytics.conversion({
-			objectID: objectID
-		});
-
-		convertedObjectIds[propertyName] = 1;
-
-		var clickedObjectIds = getObjectIds('clicked');
-		delete clickedObjectIds[propertyName];
-
-		setObjectIds('clicked', clickedObjectIds);
-		setObjectIds('converted', convertedObjectIds);
-	}
-}
-
-function getObjectIds(type) {
-	var objectIds = localStorage.getItem(objectIdsStorageKey + '_' + type);
-
-	if (!objectIds) {
-		return {};
-	}
-
-	return JSON.parse(objectIds);
-}
-
-function setObjectIds(type, objectIds) {
-	localStorage.setItem(objectIdsStorageKey + '_' + type, JSON.stringify(objectIds));
-}
-
-function getPropertyName(objectID) {
-	return 'product-' + objectID;
+	AlgoliaAnalytics.conversion({
+		objectID: objectID.toString()
+	});
 }
