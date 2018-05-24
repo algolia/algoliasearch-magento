@@ -126,7 +126,7 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $onlineSettings = array();
 
         try {
-            $onlineSettings = $this->getSettings();
+            $onlineSettings = $this->getSettings($indexName);
         } catch (\Exception $e) {
         }
 
