@@ -237,8 +237,14 @@
                 <height>265</height>
                 <type>image</type>
             </image>
+            <cc_analytics>
+                <enable>0</enable>
+                <is_selector>.ais-infinite-hits--item a.result, .ais-hits a.result</is_selector>
+                <conversion_analytics_mode>disabled</conversion_analytics_mode>
+                <add_to_cart_selector>.add-to-cart-buttons .btn-cart, .hit-addtocart</add_to_cart_selector>
+            </cc_analytics>
             <analytics>
-                <enable_analytics>0</enable_analytics>
+                <enable>0</enable>
                 <delay>3000</delay>
                 <trigger_on_ui_interaction>1</trigger_on_ui_interaction>
                 <push_initial_search>0</push_initial_search>
