@@ -47,6 +47,11 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         }
     }
 
+    public function getClient()
+    {
+        return $this->client;
+    }
+
     public function generateSearchSecuredApiKey($key, $params = array())
     {
         return $this->client->generateSecuredApiKey($key, $params);
@@ -116,12 +121,17 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->lastTaskId = $res['taskID'];
     }
 
+    public function getSettings($indexName)
+    {
+        return $this->getIndex($indexName)->getSettings();
+    }
+
     public function mergeSettings($indexName, $settings)
     {
         $onlineSettings = array();
 
         try {
-            $onlineSettings = $this->getIndex($indexName)->getSettings();
+            $onlineSettings = $this->getSettings($indexName);
         } catch (\Exception $e) {
         }
 

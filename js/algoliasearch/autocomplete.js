@@ -79,8 +79,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			if (algoliaConfig.removeBranding === false) {
 				options.templates.footer = '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" title="Search by Algolia" target="_blank"><img src="' +algoliaConfig.urls.logo + '" alt="Search by Algolia" /></a></div>';
 			}
+
+			sources = algolia.triggerHooks('beforeAutocompleteSources', sources, algolia_client);
+			options = algolia.triggerHooks('beforeAutocompleteOptions', options);
 			
 			if (typeof algoliaHookBeforeAutocompleteStart === 'function') {
+				console.warn('Deprecated! You are using an old API for Algolia\'s front end hooks. ' +
+					'Please, replace your hook method with new hook API. ' +
+					'More information you can find on https://community.algolia.com/magento/doc/m1/frontend-events/');
+
 				var hookResult = algoliaHookBeforeAutocompleteStart(sources, options, algolia_client);
 				
 				sources = hookResult.shift();

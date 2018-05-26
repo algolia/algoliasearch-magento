@@ -19,6 +19,23 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		if (findAutocomplete) {
 			$(algoliaConfig.instant.selector).find('#algolia-autocomplete-container').remove();
 		}
+
+		/** BC of old hooks **/
+		if (typeof algoliaHookBeforeInstantsearchInit === 'function') {
+			algolia.registerHook('beforeInstantsearchInit', algoliaHookBeforeInstantsearchInit);
+		}
+
+		if (typeof algoliaHookBeforeWidgetInitialization === 'function') {
+			algolia.registerHook('beforeWidgetInitialization', algoliaHookBeforeWidgetInitialization);
+		}
+
+		if (typeof algoliaHookBeforeInstantsearchStart === 'function') {
+			algolia.registerHook('beforeInstantsearchStart', algoliaHookBeforeInstantsearchStart);
+		}
+
+		if (typeof algoliaHookAfterInstantsearchStart === 'function') {
+			algolia.registerHook('afterInstantsearchStart', algoliaHookAfterInstantsearchStart);
+		}
 		
 		/**
 		 * Setup wrapper
@@ -78,10 +95,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				instantsearchOptions.searchParameters['facetsRefinements']['categories.level' + algoliaConfig.request.level] = [algoliaConfig.request.path];
 			}
 		}
-		
-		if (typeof algoliaHookBeforeInstantsearchInit === 'function') {
-			instantsearchOptions = algoliaHookBeforeInstantsearchInit(instantsearchOptions);
-		}
+
+		instantsearchOptions = algolia.triggerHooks('beforeInstantsearchInit', instantsearchOptions);
 		
 		var search = algoliaBundle.instantsearch(instantsearchOptions);
 		
@@ -279,6 +294,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					empty: algoliaConfig.translations.noResults,
 					item: $('#instant-hit-template-item').html()
 				},
+				transformData: {
+					item: function (hit) {
+						hit = transformHit(hit, algoliaConfig.priceKey, search.helper);
+						hit.isAddToCartEnabled = algoliaConfig.instant.isAddToCartEnabled;
+
+						hit.algoliaConfig = window.algoliaConfig;
+
+						hit.__position = hit.__hitIndex + 1;
+
+						return hit;
+					}
+				},
 				hitsPerPage: algoliaConfig.hitsPerPage,
 				showMoreLabel: algoliaConfig.translations.showMore,
 				cssClasses : {
@@ -298,9 +325,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				},
 				transformData: {
 					allItems: function (results) {
+						var hitIndex = 0;
+						var state = search.helper.state;
 						for (var i = 0; i < results.hits.length; i++) {
 							results.hits[i] = transformHit(results.hits[i], algoliaConfig.priceKey, search.helper);
 							results.hits[i].isAddToCartEnabled = algoliaConfig.instant.isAddToCartEnabled;
+							results.hits[i].__position = (state.page * state.hitsPerPage) + ++hitIndex;
 
 							results.hits[i].algoliaConfig = window.algoliaConfig;
 						}
@@ -492,10 +522,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				pushInitialSearch: algoliaConfig.analytics.pushInitialSearch
 			};
 		}
-		
-		if (typeof algoliaHookBeforeWidgetInitialization === 'function') {
-			allWidgetConfiguration = algoliaHookBeforeWidgetInitialization(allWidgetConfiguration);
-		}
+
+		allWidgetConfiguration = algolia.triggerHooks('beforeWidgetInitialization', allWidgetConfiguration);
 		
 		$.each(allWidgetConfiguration, function (widgetType, widgetConfig) {
 			if (Array.isArray(widgetConfig) === true) {
@@ -512,16 +540,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			if(isStarted === true) {
 				return;
 			}
-			
-			if (typeof algoliaHookBeforeInstantsearchStart === 'function') {
-				search = algoliaHookBeforeInstantsearchStart(search);
-			}
+
+			search = algolia.triggerHooks('beforeInstantsearchStart', search);
 			
 			search.start();
-			
-			if (typeof algoliaHookAfterInstantsearchStart === 'function') {
-				search = algoliaHookAfterInstantsearchStart(search);
-			}
+
+			search = algolia.triggerHooks('afterInstantsearchStart', search);
 			
 			handleInputCrossInstant($(instant_selector));
 			

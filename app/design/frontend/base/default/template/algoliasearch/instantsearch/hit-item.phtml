@@ -19,7 +19,7 @@ if ($config->isCustomerGroupsEnabled($storeId) && $customerGroupId !== 0) {
 
         <div class="col-md-4 col-sm-6">
             <div class="result-wrapper">
-                <a href="{{url}}" class="result algolia-clearfix">
+                <a href="{{url}}" class="result algolia-clearfix" data-objectid="{{objectID}}" data-position="{{__position}}">
                     <div class="result-content">
                         <div class="result-thumbnail">
                             {{#image_url}}<img src="{{{ image_url }}}"/>{{/image_url}}
@@ -63,7 +63,7 @@ if ($config->isCustomerGroupsEnabled($storeId) && $customerGroupId !== 0) {
                                         <input type="hidden" name="form_key"
                                                value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>"/>
                                         <input type="hidden" name="qty" value="1">
-                                        <button type="submit"><?php echo $this->__('Add to Cart'); ?></button>
+                                        <button type="submit" class="hit-addtocart" data-objectid="{{objectID}}" data-position="{{__position}}"><?php echo $this->__('Add to Cart'); ?></button>
                                     </form>
                                 {{/in_stock}}
                             {{/isAddToCartEnabled}}
