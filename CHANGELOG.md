@@ -1,5 +1,33 @@
 # CHANGE LOG
 
+## 1.14.0
+
+### FEATURES
+- Add option to index empty categories (#992)
+- Search for facet values (#1020) 
+- Facet query rules (#1025) 
+- Click & Conversion analytics (#1027) 
+
+### UPDATES
+- Show longest attribute when the record is skipped (#976)
+- Add CSS classes to InstantSearch widget containers (#977 )
+- Hide the instant-search selector on algoliaConfig variable (#981)
+- Escape JS suggestions in autocomplete menu (#984)
+- Never index SID in URL (#985)
+- Skip rebuilding CMS page(s) when the extension has not been configured (#1000)
+- Add "filters" rule to ranking formula (#1005)
+- Display default price when customer group is 0 (#1011)
+- Automatically delete unused replica indices (#1019) 
+- Remove category from indexes of all store views (#1028) 
+
+### FIXES
+- Fix configurable products' prices (#978)
+- Fix bug #979 (#980) 
+- Fix expired special prices (#988)
+- Fix special price with customer groups (#997)
+- Fix buggy behavior on iOS (#1009)
+
+
 ## 1.13.0
 
 ### FEATURES
