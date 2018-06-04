@@ -70,8 +70,6 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
                 $this->addToQueue('algoliasearch/observer', 'removeCategories',
                     array('store_id' => $id, 'category_ids' => $category_ids), count($category_ids));
             }
-
-            return $this;
         }
 
         return $this;
