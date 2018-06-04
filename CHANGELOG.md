@@ -3,10 +3,11 @@
 ## 1.14.0
 
 ### FEATURES
+- [Click & Conversion analytics](https://www.algolia.com/doc/guides/analytics/click-analytics/) (#1027) - [Documentation](https://community.algolia.com/magento/doc/m1/click-analytics/) 
+- Facet query rules (#1025) 
 - Add option to index empty categories (#992)
 - Search for facet values (#1020) 
-- Facet query rules (#1025) 
-- Click & Conversion analytics (#1027) 
+
 
 ### UPDATES
 - Show longest attribute when the record is skipped (#976)
