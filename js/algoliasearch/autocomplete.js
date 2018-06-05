@@ -79,8 +79,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			if (algoliaConfig.removeBranding === false) {
 				options.templates.footer = '<div class="footer_algolia"><a href="https://www.algolia.com/?utm_source=magento&utm_medium=link&utm_campaign=magento_autocompletion_menu" title="Search by Algolia" target="_blank"><img src="' +algoliaConfig.urls.logo + '" alt="Search by Algolia" /></a></div>';
 			}
+
+			sources = algolia.triggerHooks('beforeAutocompleteSources', sources, algolia_client);
+			options = algolia.triggerHooks('beforeAutocompleteOptions', options);
 			
 			if (typeof algoliaHookBeforeAutocompleteStart === 'function') {
+				console.warn('Deprecated! You are using an old API for Algolia\'s front end hooks. ' +
+					'Please, replace your hook method with new hook API. ' +
+					'More information you can find on https://community.algolia.com/magento/doc/m1/frontend-events/');
+
 				var hookResult = algoliaHookBeforeAutocompleteStart(sources, options, algolia_client);
 				
 				sources = hookResult.shift();
@@ -112,12 +119,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			var dropdown = data.dropdown;
 			var suggestionClass = '.' + dropdown.cssClasses.prefix + dropdown.cssClasses.suggestion;
 			
-			dropdown.$menu.on('touchstart', suggestionClass, function(e) {
-				e.preventDefault();
-				e.stopPropagation();
-				
-				var url = $(this).find('a').attr('href');
-				location.assign(url);
+			var touchmoved;
+			dropdown.$menu.on('touchend', suggestionClass, function (e) {
+				if(touchmoved === false) {
+					e.preventDefault();
+					e.stopPropagation();
+					
+					var url = $(this).find('a').attr('href');
+					location.assign(url);
+				}
+			}).on('touchmove', function (){
+				touchmoved = true;
+			}).on('touchstart', function(){
+				touchmoved = false;
 			});
 		});
 	});

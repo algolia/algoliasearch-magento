@@ -47,6 +47,11 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         }
     }
 
+    public function getClient()
+    {
+        return $this->client;
+    }
+
     public function generateSearchSecuredApiKey($key, $params = array())
     {
         return $this->client->generateSecuredApiKey($key, $params);
@@ -116,12 +121,17 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->lastTaskId = $res['taskID'];
     }
 
+    public function getSettings($indexName)
+    {
+        return $this->getIndex($indexName)->getSettings();
+    }
+
     public function mergeSettings($indexName, $settings)
     {
         $onlineSettings = array();
 
         try {
-            $onlineSettings = $this->getIndex($indexName)->getSettings();
+            $onlineSettings = $this->getSettings($indexName);
         } catch (\Exception $e) {
         }
 
@@ -261,13 +271,20 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->lastTaskId = $res['taskID'];
     }
 
-    public function waitLastTask()
+    public function waitLastTask($lastUsedIndexName = null, $lastTaskId = null)
     {
-        if (!isset($this->lastUsedIndexName) || !isset($this->lastTaskId)) {
+        if ($lastUsedIndexName === null && isset($this->lastUsedIndexName)) {
+            $lastUsedIndexName = $this->lastUsedIndexName;
+        }
+
+        if ($lastTaskId === null && isset($this->lastTaskId)) {
+            $lastTaskId = $this->lastTaskId;
+        }
+        if (!$lastUsedIndexName || !$lastTaskId) {
             return;
         }
 
-        $this->client->initIndex($this->lastUsedIndexName)->waitTask($this->lastTaskId);
+        $this->client->initIndex($lastUsedIndexName)->waitTask($lastTaskId);
     }
 
     private function prepareRecords(&$objects, $indexName)
@@ -282,26 +299,34 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
 
             $previousObject = $object;
 
-            $this->handleTooBigRecord($object);
-
-            if ($previousObject !== $object) {
-                $modifiedIds[] = $indexName.' objectID('.$previousObject['objectID'].')';
-            }
+            $object = $this->handleTooBigRecord($object);
 
             if ($object === false) {
+                $longestAttribute = $this->getLongestAttribute($previousObject);
+                $modifiedIds[] = $indexName.' - ID '.$previousObject['objectID'].' - skipped - longest attribute: '.$longestAttribute;
+
                 unset($objects[$key]);
-                continue;
+            } elseif ($previousObject !== $object) {
+                $modifiedIds[] = $indexName.' - ID '.$previousObject['objectID'].' - truncated';
             }
         }
 
         if (!empty($modifiedIds)) {
+            $separator = php_sapi_name() === 'cli' ? "\n" : '<br>';
+
+            $errorMessage = 'Algolia reindexing: You have some records which are too big to be indexed in Algolia. They have either been truncated (removed attributes: '.implode(', ', $this->potentiallyLongAttributes).') or skipped completely: '.$separator.implode($separator, $modifiedIds);
+
             /** @var Mage_Adminhtml_Model_Session $session */
             $session = Mage::getSingleton('adminhtml/session');
-            $session->addWarning('Algolia reindexing : You have some records ('.implode(',', $modifiedIds).') that are too big. They have either been truncated or skipped.');
+            $session->addWarning($errorMessage);
+
+            if (php_sapi_name() === 'cli') {
+                echo $errorMessage . "\n";
+            }
         }
     }
 
-    public function handleTooBigRecord(&$object)
+    public function handleTooBigRecord($object)
     {
         $size = mb_strlen(json_encode($object));
 
@@ -318,5 +343,35 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
                 $object = false;
             }
         }
+
+        return $object;
+    }
+
+    private function getLongestAttribute($object)
+    {
+        $maxLength = 0;
+        $longestAttribute = '';
+
+        foreach ($object as $attribute => $value) {
+            $attributeLenght = mb_strlen(json_encode($value));
+
+            if ($attributeLenght > $maxLength) {
+                $longestAttribute = $attribute;
+
+                $maxLength = $attributeLenght;
+            }
+        }
+
+        return $longestAttribute;
+    }
+
+    public function getLastIndexName()
+    {
+        return $this->lastUsedIndexName;
+    }
+
+    public function getLastTaskId()
+    {
+        return $this->lastTaskId;
     }
 }

@@ -5,16 +5,21 @@ $config = Mage::helper('algoliasearch/config');
 
 /** @var Mage_Customer_Model_Session $session */
 $session = Mage::getSingleton('customer/session');
-$group_id = $session->getCustomerGroupId();
+$customerGroupId = $session->getCustomerGroupId();
 
-$currency_code = Mage::app()->getStore()->getCurrentCurrencyCode();
-$price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreId()) ? '.'.$currency_code.'.group_'.$group_id : '.'.$currency_code.'.default';
+$storeId = Mage::app()->getStore()->getStoreId();
+$currencyCode = Mage::app()->getStore()->getCurrentCurrencyCode();
+
+$priceKey = '.'.$currencyCode.'.default';
+if ($config->isCustomerGroupsEnabled($storeId) && $customerGroupId !== 0) {
+    $priceKey = '.'.$currencyCode.'.group_'.$customerGroupId;
+}
 
 ?>
 
         <div class="col-md-4 col-sm-6">
             <div class="result-wrapper">
-                <a href="{{url}}" class="result algolia-clearfix">
+                <a href="{{url}}" class="result algolia-clearfix" data-objectid="{{objectID}}" data-position="{{__position}}">
                     <div class="result-content">
                         <div class="result-thumbnail">
                             {{#image_url}}<img src="{{{ image_url }}}"/>{{/image_url}}
@@ -35,15 +40,15 @@ $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreI
                                         <div class="price-wrapper">
                                             <div>
                                                 <span
-                                                    class="after_special {{#price<?php echo $price_key; ?>_original_formated}}promotion{{/price<?php echo $price_key; ?>_original_formated}}">
-                                                    {{price<?php echo $price_key; ?>_formated}}
+                                                    class="after_special {{#price<?php echo $priceKey; ?>_original_formated}}promotion{{/price<?php echo $priceKey; ?>_original_formated}}">
+                                                    {{price<?php echo $priceKey; ?>_formated}}
                                                 </span>
 
-                                                {{#price<?php echo $price_key; ?>_original_formated}}
+                                                {{#price<?php echo $priceKey; ?>_original_formated}}
                                                     <span class="before_special">
-                                                        {{price<?php echo $price_key; ?>_original_formated}}
+                                                        {{price<?php echo $priceKey; ?>_original_formated}}
                                                     </span>
-                                                {{/price<?php echo $price_key; ?>_original_formated}}
+                                                {{/price<?php echo $priceKey; ?>_original_formated}}
                                             </div>
                                         </div>
                                     </div>
@@ -58,7 +63,7 @@ $price_key = $config->isCustomerGroupsEnabled(Mage::app()->getStore()->getStoreI
                                         <input type="hidden" name="form_key"
                                                value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>"/>
                                         <input type="hidden" name="qty" value="1">
-                                        <button type="submit"><?php echo $this->__('Add to Cart'); ?></button>
+                                        <button type="submit" class="hit-addtocart" data-objectid="{{objectID}}" data-position="{{__position}}"><?php echo $this->__('Add to Cart'); ?></button>
                                     </form>
                                 {{/in_stock}}
                             {{/isAddToCartEnabled}}

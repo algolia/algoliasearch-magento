@@ -89,6 +89,8 @@ class Algolia_Algoliasearch_Model_Observer
 
         $this->loadPreventBackendRenderingHandle($observer);
 
+        $this->loadAnalyticsHandle($observer);
+
         return $this;
     }
 
@@ -102,6 +104,10 @@ class Algolia_Algoliasearch_Model_Observer
 
     public function savePage(Varien_Event_Observer $observer)
     {
+        if (!$this->config->getApplicationID() || !$this->config->getAPIKey()) {
+            return;
+        }
+
         /** @var Mage_Cms_Model_Page $page */
         $page = $observer->getDataObject();
         $page = Mage::getModel('cms/page')->load($page->getId());
@@ -302,5 +308,14 @@ class Algolia_Algoliasearch_Model_Observer
         }
 
         $observer->getData('layout')->getUpdate() ->addHandle('algolia_search_handle_prevent_backend_rendering');
+    }
+
+    private function loadAnalyticsHandle(Varien_Event_Observer $observer)
+    {
+        if (!$this->config->isClickConversionAnalyticsEnabled()) {
+            return;
+        }
+
+        $observer->getData('layout')->getUpdate()->addHandle('algolia_search_handle_click_conversion_analytics');
     }
 }

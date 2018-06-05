@@ -47,6 +47,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const INDEX_PRODUCT_COUNT = 'algoliasearch/categories/index_product_count';
     const CATEGORY_CUSTOM_RANKING = 'algoliasearch/categories/custom_ranking_category_attributes';
     const SHOW_CATS_NOT_INCLUDED_IN_NAVIGATION = 'algoliasearch/categories/show_cats_not_included_in_navigation';
+    const INDEX_EMPTY_CATEGORIES = 'algoliasearch/categories/index_empty_categories';
 
     const IS_ACTIVE = 'algoliasearch/queue/active';
     const NUMBER_OF_ELEMENT_BY_PAGE = 'algoliasearch/queue/number_of_element_by_page';
@@ -59,10 +60,15 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_IMAGE_HEIGHT = 'algoliasearch/image/height';
     const XML_PATH_IMAGE_TYPE = 'algoliasearch/image/type';
 
-    const ENABLE_ANALYTICS = 'algoliasearch/analytics/enable_analytics';
-    const ANALYTICS_DELAY = 'algoliasearch/analytics/delay';
-    const ANALYTICS_TRIGGER_ON_UI_INTERACTION = 'algoliasearch/analytics/trigger_on_ui_interaction';
-    const ANALYTICS_PUSH_INITIAL_SEARCH = 'algoliasearch/analytics/push_initial_search';
+    const GA_ENABLE = 'algoliasearch/analytics/enable';
+    const GA_DELAY = 'algoliasearch/analytics/delay';
+    const GA_TRIGGER_ON_UI_INTERACTION = 'algoliasearch/analytics/trigger_on_ui_interaction';
+    const GA_PUSH_INITIAL_SEARCH = 'algoliasearch/analytics/push_initial_search';
+
+    const CC_ANALYTICS_ENABLE = 'algoliasearch/cc_analytics/enable';
+    const CC_ANALYTICS_IS_SELECTOR = 'algoliasearch/cc_analytics/is_selector';
+    const CC_CONVERSION_ANALYTICS_MODE = 'algoliasearch/cc_analytics/conversion_analytics_mode';
+    const CC_ADD_TO_CART_SELECTOR = 'algoliasearch/cc_analytics/add_to_cart_selector';
 
     const ENABLE_SYNONYMS = 'algoliasearch/synonyms/enable_synonyms';
     const SYNONYMS = 'algoliasearch/synonyms/synonyms';
@@ -111,6 +117,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function showCatsNotIncludedInNavigation($storeId = null)
     {
         return Mage::getStoreConfigFlag(self::SHOW_CATS_NOT_INCLUDED_IN_NAVIGATION, $storeId);
+    }
+
+    public function shouldIndexEmptyCategories($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::INDEX_EMPTY_CATEGORIES, $storeId);
     }
 
     public function isDefaultSelector($storeId = null)
@@ -465,6 +476,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
             $attributes[] = 'price.'.$currency.'.default_formated';
             $attributes[] = 'price.'.$currency.'.group_'.$group_id;
             $attributes[] = 'price.'.$currency.'.group_'.$group_id.'_formated';
+            $attributes[] = 'price.'.$currency.'.group_'.$group_id.'_original_formated';
             $attributes[] = 'price.'.$currency.'.special_from_date';
             $attributes[] = 'price.'.$currency.'.special_to_date';
         }
@@ -588,22 +600,42 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function isEnabledAnalytics($storeId = null)
     {
-        return Mage::getStoreConfigFlag(self::ENABLE_ANALYTICS, $storeId);
+        return Mage::getStoreConfigFlag(self::GA_ENABLE, $storeId);
     }
 
     public function getAnalyticsDelay($storeId = null)
     {
-        return (int) Mage::getStoreConfig(self::ANALYTICS_DELAY, $storeId);
+        return (int) Mage::getStoreConfig(self::GA_DELAY, $storeId);
     }
 
     public function getTriggerOnUIInteraction($storeId = null)
     {
-        return Mage::getStoreConfigFlag(self::ANALYTICS_TRIGGER_ON_UI_INTERACTION, $storeId);
+        return Mage::getStoreConfigFlag(self::GA_TRIGGER_ON_UI_INTERACTION, $storeId);
     }
 
     public function getPushInitialSearch($storeId = null)
     {
-        return Mage::getStoreConfigFlag(self::ANALYTICS_PUSH_INITIAL_SEARCH, $storeId);
+        return Mage::getStoreConfigFlag(self::GA_PUSH_INITIAL_SEARCH, $storeId);
+    }
+
+    public function isClickConversionAnalyticsEnabled($storeId = null)
+    {
+        return Mage::getStoreConfigFlag(self::CC_ANALYTICS_ENABLE, $storeId);
+    }
+
+    public function getClickConversionAnalyticsISSelector($storeId = null)
+    {
+        return Mage::getStoreConfig(self::CC_ANALYTICS_IS_SELECTOR, $storeId);
+    }
+
+    public function getConversionAnalyticsMode($storeId = null)
+    {
+        return Mage::getStoreConfig(self::CC_CONVERSION_ANALYTICS_MODE, $storeId);
+    }
+
+    public function getConversionAnalyticsAddToCartSelector($storeId = null)
+    {
+        return Mage::getStoreConfig(self::CC_ADD_TO_CART_SELECTOR, $storeId);
     }
 
     public function isEnabledSynonyms($storeId = null)

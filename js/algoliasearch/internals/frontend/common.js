@@ -1,3 +1,49 @@
+var algolia = {
+	allowedHooks: [
+		'beforeAutocompleteSources',
+		'beforeAutocompleteOptions',
+		'beforeInstantsearchInit',
+		'beforeWidgetInitialization',
+		'beforeInstantsearchStart',
+		'afterInstantsearchStart'
+	],
+	registeredHooks: [],
+	registerHook: function (hookName, callback) {
+		if (this.allowedHooks.indexOf(hookName) === -1) {
+			throw 'Hook "' + hookName + '" cannot be defined. Please use one of ' + this.allowedHooks.join(', ');
+		}
+
+		if (!this.registeredHooks[hookName]) {
+			this.registeredHooks[hookName] = [callback];
+		} else {
+			this.registeredHooks[hookName].push(callback);
+		}
+	},
+	getRegisteredHooks: function(hookName) {
+		if (this.allowedHooks.indexOf(hookName) === -1) {
+			throw 'Hook "' + hookName + '" cannot be defined. Please use one of ' + this.allowedHooks.join(', ');
+		}
+
+		if (!this.registeredHooks[hookName]) {
+			return [];
+		}
+
+		return this.registeredHooks[hookName];
+	},
+	triggerHooks: function () {
+		var hookName = arguments[0],
+			originalData = arguments[1],
+			hookArguments = Array.prototype.slice.call(arguments, 2);
+
+		var data = this.getRegisteredHooks(hookName).reduce(function(currentData, hook) {
+			var allParameters = [].concat(currentData).concat(hookArguments);
+			return hook.apply(null, allParameters);
+		}, originalData);
+
+		return data;
+	}
+};
+
 document.addEventListener("DOMContentLoaded", function (e) {
 	algoliaBundle.$(function ($) {
 		window.isMobile = function() {
@@ -95,6 +141,16 @@ document.addEventListener("DOMContentLoaded", function (e) {
 			if (hit['price'] !== undefined && price_key !== '.' + algoliaConfig.currencyCode + '.default' && hit['price'][algoliaConfig.currencyCode][price_key.substr(1) + '_formated'] !== hit['price'][algoliaConfig.currencyCode]['default_formated']) {
 				hit['price'][algoliaConfig.currencyCode][price_key.substr(1) + '_original_formated'] = hit['price'][algoliaConfig.currencyCode]['default_formated'];
 			}
+			
+			if (hit['price'] !== undefined && hit['price'][algoliaConfig.currencyCode]['default_original_formated']
+				&& hit['price'][algoliaConfig.currencyCode]['special_to_date']) {
+				var priceExpiration = hit['price'][algoliaConfig.currencyCode]['special_to_date'];
+
+				if (algoliaConfig.now > priceExpiration) {
+					hit['price'][algoliaConfig.currencyCode]['default_formated'] = hit['price'][algoliaConfig.currencyCode]['default_original_formated'];
+					hit['price'][algoliaConfig.currencyCode]['default_original_formated'] = false;
+				}
+			}
 
 			return hit;
 		};
@@ -106,7 +162,8 @@ document.addEventListener("DOMContentLoaded", function (e) {
 
 			var options = {
 				hitsPerPage: section.hitsPerPage,
-				analyticsTags: 'autocomplete'
+				analyticsTags: 'autocomplete',
+				clickAnalytics: true
 			};
 
 			var source;
@@ -141,9 +198,11 @@ document.addEventListener("DOMContentLoaded", function (e) {
 
 							return template;
 						},
-						suggestion: function (hit) {
+						suggestion: function (hit, payload) {
 							hit = transformHit(hit, algoliaConfig.priceKey)
 							hit.displayKey = hit.displayKey || hit.name;
+							hit.__queryID = payload.queryID;
+							hit.__position = payload.hits.indexOf(hit) + 1;
 
 							return algoliaConfig.autocomplete.templates[section.name].render(hit);
 						}
@@ -160,7 +219,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
 					name: i,
 					templates: {
 						empty: '<div class="aa-no-results">' + algoliaConfig.translations.noResults + '</div>',
-						suggestion: function (hit) {
+						suggestion: function (hit, payload) {
 							if (section.name === 'categories') {
 								hit.displayKey = hit.path;
 							}
@@ -182,6 +241,8 @@ document.addEventListener("DOMContentLoaded", function (e) {
 							}
 
 							hit.displayKey = hit.displayKey || hit.name;
+							hit.__queryID = payload.queryID;
+							hit.__position = payload.hits.indexOf(hit) + 1;
 
 							return algoliaConfig.autocomplete.templates[section.name].render(hit);
 						}
@@ -195,9 +256,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
 					suggestionsSource;
 				
 				if (algoliaConfig.autocomplete.displaySuggestionsCategories == true) {
-					suggestionsSource = $.fn.autocomplete.sources.popularIn(suggestions_index, {
-						hitsPerPage: section.hitsPerPage
-						}, {
+					suggestionsSource = $.fn.autocomplete.sources.popularIn(suggestions_index, options, {
 							source: 'query',
 							index: products_index,
 							facets: ['categories.level0'],
@@ -230,6 +289,11 @@ document.addEventListener("DOMContentLoaded", function (e) {
 							} else {
 								hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + hit.query;
 							}
+							
+							var toEscape = hit._highlightResult.query.value;
+							hit._highlightResult.query.value = algoliaBundle.autocomplete.escapeHighlightedString(toEscape);
+							hit.__queryID = payload.queryID;
+							hit.__position = payload.hits.indexOf(hit) + 1;
 
 							return algoliaConfig.autocomplete.templates.suggestions.render(hit);
 						}
@@ -240,15 +304,14 @@ document.addEventListener("DOMContentLoaded", function (e) {
 				var index = algolia_client.initIndex(algoliaConfig.indexName + "_section_" + section.name);
 
 				source = {
-					source: $.fn.autocomplete.sources.hits(index, {
-						hitsPerPage: section.hitsPerPage,
-						analyticsTags: 'autocomplete'
-					}),
+					source: $.fn.autocomplete.sources.hits(index, options),
 					displayKey: 'value',
 					name: i,
 					templates: {
-						suggestion: function (hit) {
+						suggestion: function (hit, payload) {
 							hit.url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(hit.value) + '&refinement_key=' + section.name;
+							hit.__queryID = payload.queryID;
+							hit.__position = payload.hits.indexOf(hit) + 1;
 							return algoliaConfig.autocomplete.templates.additionnalSection.render(hit);
 						}
 					}
@@ -393,6 +456,13 @@ document.addEventListener("DOMContentLoaded", function (e) {
 				input.closest('#instant-search-box').find('.clear-query-instant').hide();
 			}
 		};
+		
+		window.createISWidgetContainer = function (attributeName) {
+			var div = document.createElement('div');
+			div.className = 'is-widget-container-' + attributeName.split('.').join('_');
+			
+			return div;
+		};
 
 		var instant_selector = !algoliaConfig.autocomplete.enabled ? ".algolia-search-input" : "#instant-search-bar";
 
@@ -437,6 +507,5 @@ document.addEventListener("DOMContentLoaded", function (e) {
 			this.focus();
 			window.scrollTo(x, y);
 		};
-
 	});
 });

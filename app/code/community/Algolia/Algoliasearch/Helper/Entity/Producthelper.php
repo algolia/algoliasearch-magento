@@ -172,7 +172,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
 
             $products = $products
-                ->addAttributeToSelect('special_price')
                 ->addAttributeToSelect('special_from_date')
                 ->addAttributeToSelect('special_to_date')
                 ->addAttributeToSelect('visibility')
@@ -254,7 +253,12 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     $attributesForFaceting[] = $facet['attribute'];
                 }
             } else {
-                $attributesForFaceting[] = $facet['attribute'];
+                $attribute = $facet['attribute'];
+                if (array_key_exists('searchable', $facet) && $facet['searchable'] === '1') {
+                    $attribute = 'searchable('.$attribute.')';
+                }
+
+                $attributesForFaceting[] = $attribute;
             }
         }
 
@@ -290,14 +294,19 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $this->algolia_helper->setSettings($indexName.'_tmp', $mergeSettings);
         }
 
+        $this->setFacetsQueryRules($indexName);
+        if ($saveToTmpIndicesToo === true) {
+            $this->setFacetsQueryRules($indexName.'_tmp');
+        }
+
         /*
          * Handle replicas
          */
         $sorting_indices = $this->config->getSortingIndices($storeId);
 
-        if (count($sorting_indices) > 0) {
-            $replicas = array();
+        $replicas = array();
 
+        if (count($sorting_indices) > 0) {
             foreach ($sorting_indices as $values) {
                 if ($this->config->isCustomerGroupsEnabled($storeId) && $values['attribute'] === 'price') {
                     foreach ($groups = Mage::getModel('customer/group')->getCollection() as $group) {
@@ -316,7 +325,20 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
             }
 
+            // Merge current replicas with sorting replicas to not delete A/B testing replica indices
+            try {
+                $currentSettings = $this->algolia_helper->getSettings($indexName);
+                if (array_key_exists('replicas', $currentSettings)) {
+                    $replicas = array_values(array_unique(array_merge($replicas, $currentSettings['replicas'])));
+                }
+            } catch (\AlgoliaSearch\AlgoliaException $e) {
+                if ($e->getMessage() !== 'Index does not exist') {
+                    throw $e;
+                }
+            }
+
             $this->algolia_helper->setSettings($this->getIndexName($storeId), array('replicas' => $replicas));
+            // $setReplicasTaskId = $this->algolia_helper->getLastTaskId();
 
             /** @var Mage_Core_Model_Store $store */
             $store = Mage::getModel('core/store')->load($storeId);
@@ -336,6 +358,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                             'typo',
                             'geo',
                             'words',
+                            'filters',
                             'proximity',
                             'attribute',
                             'exact',
@@ -353,6 +376,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         'typo',
                         'geo',
                         'words',
+                        'filters',
                         'proximity',
                         'attribute',
                         'exact',
@@ -368,7 +392,13 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     }
                 }
             }
+        } else {
+            $this->algolia_helper->setSettings($this->getIndexName($storeId), array('replicas' => $replicas));
+            // $setReplicasTaskId = $this->algolia_helper->getLastTaskId();
         }
+
+        // Commented out as it doesn't delete anything now because of merging replica indices earlier
+        // $this->deleteUnusedReplicas($indexName, $replicas, $setReplicasTaskId);
 
         if ($this->config->isEnabledSynonyms($storeId) === true) {
             if ($synonymsFile = $this->config->getSynonymsFile($storeId)) {
@@ -555,7 +585,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     }
                 }
 
-                if ($type == 'grouped' || $type == 'bundle') {
+                if ($type == 'grouped' || $type == 'bundle' || $type == 'configurable') {
                     $min = PHP_INT_MAX;
                     $max = 0;
 
@@ -565,9 +595,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         list($min, $max) = $_priceModel->getTotalPrices($product, null, $with_tax, true);
                         $min = (double) $min;
                         $max = (double) $max;
-                    }
-
-                    if ($type == 'grouped') {
+                    } else {
                         if (count($sub_products) > 0) {
                             foreach ($sub_products as $sub_product) {
                                 $price = (double) $taxHelper->getPrice($product, $sub_product->getFinalPrice(), $with_tax,
@@ -675,7 +703,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $customData = array(
             'objectID'           => $product->getId(),
             'name'               => $product->getName(),
-            'url'                => $product->getProductUrl(),
+            'url'                => $product->getProductUrl(false),
             'visibility_search'  => (int) (in_array($visibility, $visibleInSearch)),
             'visibility_catalog' => (int) (in_array($visibility, $visibleInCatalog)),
         );
@@ -1083,5 +1111,89 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         return $customData;
+    }
+
+    private function deleteUnusedReplicas($indexName, $replicas, $setReplicasTaskId)
+    {
+        $indicesToDelete = array();
+
+        $allIndices = $this->algolia_helper->listIndexes();
+        foreach ($allIndices['items'] as $indexInfo) {
+            if (strpos($indexInfo['name'], $indexName) !== 0 || $indexInfo['name'] === $indexName) {
+                continue;
+            }
+            // Do not delete tmp indices which are used for indexing jobs
+            if (strpos($indexInfo['name'], '_tmp') === false && in_array($indexInfo['name'], $replicas) === false) {
+                $indicesToDelete[] = $indexInfo['name'];
+            }
+        }
+
+        if (count($indicesToDelete) > 0) {
+            $this->algolia_helper->waitLastTask($indexName, $setReplicasTaskId);
+
+            foreach ($indicesToDelete as $indexToDelete) {
+                $this->algolia_helper->deleteIndex($indexToDelete);
+            }
+        }
+    }
+
+    private function setFacetsQueryRules($indexName)
+    {
+        $index = $this->algolia_helper->getIndex($indexName);
+
+        $this->clearFacetsQueryRules($index);
+
+        $rules = array();
+        $facets = $this->config->getFacets();
+        foreach ($facets as $facet) {
+            if (!array_key_exists('create_rule', $facet) || $facet['create_rule'] !== '1') {
+                continue;
+            }
+
+            $attribute = $facet['attribute'];
+
+            $rules[] = array(
+                'objectID' => 'filter_'.$attribute,
+                'description' => 'Filter facet "'.$attribute.'"',
+                'condition' => array(
+                    'anchoring' => 'contains',
+                    'pattern' => '{facet:'.$attribute.'}',
+                    'context' => 'magento_filters',
+                ),
+                'consequence' => array(
+                    'params' => array(
+                        'automaticFacetFilters' => array($attribute),
+                        'query' => array(
+                            'remove' => array('{facet:'.$attribute.'}')
+                        )
+                    ),
+                )
+            );
+        }
+
+        if ($rules) {
+            $index->batchRules($rules, true);
+        }
+    }
+
+    private function clearFacetsQueryRules($index)
+    {
+        $hitsPerPage = 100;
+        $page = 0;
+        do {
+            $fetchedQueryRules = $index->searchRules(
+                array(
+                    'context' => 'magento_filters',
+                    'page' => $page,
+                    'hitsPerPage' => $hitsPerPage,
+                )
+            );
+
+            foreach ($fetchedQueryRules['hits'] as $hit) {
+                $index->deleteRule($hit['objectID'], true);
+            }
+
+            $page++;
+        } while (($page * $hitsPerPage) < $fetchedQueryRules['nbHits']);
     }
 }
