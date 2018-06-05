@@ -204,7 +204,7 @@ $instantsearchApiKey = $algoliaHelper->generateSearchSecuredApiKey($config->getS
 /**
  * Parameter to track in the URL
  */
-$urlTrackedParameters = ['query', 'attribute:*', 'index'];
+$urlTrackedParameters = array('query', 'attribute:*', 'index');
 if (! $config->isInfiniteScrollEnabled()) {
     $urlTrackedParameters[] = 'page';
 }
