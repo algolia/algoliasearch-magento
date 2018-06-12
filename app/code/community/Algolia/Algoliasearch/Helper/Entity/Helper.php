@@ -15,7 +15,7 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
     protected static $_categoryNames;
 
     /** @var array */
-    private $nonCastableAttributes = ['sku', 'name', 'description'];
+    private $nonCastableAttributes = array('sku', 'name', 'description');
 
     abstract protected function getIndexNameSuffix();
 
