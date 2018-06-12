@@ -1310,6 +1310,20 @@
                             </comment>
                             <depends><prevent_backend_rendering>1</prevent_backend_rendering></depends>
                         </backend_rendering_allowed_user_agents>
+                        <non_castable_attributes translate="label comment">
+                            <label>Product numeric textfield attributes</label>
+                            <frontend_model>algoliasearch/system_config_form_field_productAttributes</frontend_model>
+                            <backend_model>algoliasearch/system_config_backend_serialized_array</backend_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[
+                                Choose here the textfield attributes that you don't want to be turned into numeric values (i.e. : if you don't want "00123" turned into "123")
+                                ]]>
+                            </comment>
+                        </non_castable_attributes>
                     </fields>
                 </advanced>
                 <advanced_settings translate="label">

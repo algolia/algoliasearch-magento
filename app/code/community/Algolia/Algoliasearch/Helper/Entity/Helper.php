@@ -14,6 +14,9 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
     protected static $_activeCategories;
     protected static $_categoryNames;
 
+    /** @var array */
+    private $nonCastableAttributes = ['sku', 'name', 'description'];
+
     abstract protected function getIndexNameSuffix();
 
     public function __construct()
@@ -21,6 +24,12 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
         $this->config = Mage::helper('algoliasearch/config');
         $this->algolia_helper = Mage::helper('algoliasearch/algoliahelper');
         $this->logger = Mage::helper('algoliasearch/logger');
+
+        // Merge non castable attributes set in config
+        $this->nonCastableAttributes = array_merge(
+            $this->nonCastableAttributes,
+            $this->config->getNonCastableAttributes()
+        );
     }
 
     public function getBaseIndexName($storeId = null)
@@ -54,10 +63,8 @@ abstract class Algolia_Algoliasearch_Helper_Entity_Helper
 
     protected function castProductObject(&$productData)
     {
-        $nonCastableAttributes = array('sku', 'name', 'description');
-
         foreach ($productData as $key => &$data) {
-            if (in_array($key, $nonCastableAttributes, true) === true) {
+            if (in_array($key, $this->nonCastableAttributes, true) === true) {
                 continue;
             }
 

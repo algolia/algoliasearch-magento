@@ -87,6 +87,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const PREVENT_BACKEND_RENDERING = 'algoliasearch/advanced/prevent_backend_rendering';
     const PREVENT_BACKEND_RENDERING_DISPLAY_MODE = 'algoliasearch/advanced/prevent_backend_rendering_display_mode';
     const BACKEND_RENDERING_ALLOWED_USER_AGENTS = 'algoliasearch/advanced/backend_rendering_allowed_user_agents';
+    const NON_CASTABLE_ATTRIBUTES = 'algoliasearch/advanced/non_castable_attributes';
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
@@ -714,6 +715,20 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getBackendRenderingDisplayMode($storeId = null)
     {
         return Mage::getStoreConfig(self::PREVENT_BACKEND_RENDERING_DISPLAY_MODE, $storeId);
+    }
+
+    public function getNonCastableAttributes($storeId = null)
+    {
+        $nonCastableAttributes = [];
+        $config = unserialize(Mage::getStoreConfig(self::NON_CASTABLE_ATTRIBUTES, $storeId));
+
+        foreach ($config as $attributeData) {
+            if (isset($attributeData['attribute'])) {
+                $nonCastableAttributes[] = $attributeData['attribute'];
+            }
+        }
+
+        return $nonCastableAttributes;
     }
 
     private function getCustomRanking($configName, $storeId = null)
