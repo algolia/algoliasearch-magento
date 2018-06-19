@@ -722,9 +722,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         $nonCastableAttributes = array();
         $config = unserialize(Mage::getStoreConfig(self::NON_CASTABLE_ATTRIBUTES, $storeId));
 
-        foreach ($config as $attributeData) {
-            if (isset($attributeData['attribute'])) {
-                $nonCastableAttributes[] = $attributeData['attribute'];
+        if (is_array($config)) {
+            foreach ($config as $attributeData) {
+                if (isset($attributeData['attribute'])) {
+                    $nonCastableAttributes[] = $attributeData['attribute'];
+                }
             }
         }
 
