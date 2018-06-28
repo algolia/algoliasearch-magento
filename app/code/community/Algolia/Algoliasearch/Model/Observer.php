@@ -96,6 +96,10 @@ class Algolia_Algoliasearch_Model_Observer
 
     public function saveProduct(Varien_Event_Observer $observer)
     {
+        if ($this->checkIfIndexerIsManual('algolia_search_indexer')) {
+            return;
+        }
+
         $product = $observer->getDataObject();
         $product = Mage::getModel('catalog/product')->load($product->getId());
 
@@ -104,7 +108,9 @@ class Algolia_Algoliasearch_Model_Observer
 
     public function savePage(Varien_Event_Observer $observer)
     {
-        if (!$this->config->getApplicationID() || !$this->config->getAPIKey()) {
+        if (!$this->config->getApplicationID()
+            || !$this->config->getAPIKey()
+            || $this->checkIfIndexerIsManual('algolia_search_indexer_pages')) {
             return;
         }
 
@@ -317,5 +323,18 @@ class Algolia_Algoliasearch_Model_Observer
         }
 
         $observer->getData('layout')->getUpdate()->addHandle('algolia_search_handle_click_conversion_analytics');
+    }
+
+    private function checkIfIndexerIsManual($indexerCode)
+    {
+        $isManual = false;
+
+        /** @var $process Mage_Index_Model_Process */
+        $process = Mage::getModel('index/process')->load($indexerCode, 'indexer_code');
+        if (!is_null($process) && $process->getMode() == Mage_Index_Model_Process::MODE_MANUAL) {
+            $isManual = true;
+        }
+
+        return $isManual;
     }
 }
