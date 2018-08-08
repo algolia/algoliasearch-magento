@@ -461,7 +461,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					},
 					tooltips: {
 						format: function (formattedValue) {
-							return formatCurrency(formattedValue, algoliaConfig.priceFormat);
+							return facet.attribute.match(/price/) === null ?
+								parseInt(formattedValue) :
+								formatCurrency(formattedValue, algoliaConfig.priceFormat);
 						}
 					}
 				}];
