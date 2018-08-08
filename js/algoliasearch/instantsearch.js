@@ -461,7 +461,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					},
 					tooltips: {
 						format: function (formattedValue) {
-							return parseInt(formattedValue);
+							return formatCurrency(formattedValue, algoliaConfig.priceFormat);
 						}
 					}
 				}];
