@@ -47,4 +47,23 @@ class Algolia_Algoliasearch_Block_Adminhtml_Notifications extends Mage_Adminhtml
 
         return $queueInfo;
     }
+
+    /**
+     * Show notification based on condition
+     *
+     * @return bool
+     */
+    protected function _toHtml()
+    {
+        $queueInfo = $this->getQueueInfo();
+        if ($this->showNotification()
+            && $queueInfo['isEnabled'] === true
+            && $queueInfo['currentSize'] > 0) {
+
+            return parent::_toHtml();
+        }
+
+        return '';
+    }
+
 }

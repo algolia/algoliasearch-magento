@@ -1,17 +1,6 @@
 <?php
-
 /** @var Algolia_Algoliasearch_Block_Adminhtml_Notifications $this */
-
-if ($this->showNotification() === false) {
-    return;
-}
-
 $queueInfo = $this->getQueueInfo();
-
-if ($queueInfo['isEnabled'] === true && $queueInfo['currentSize'] === 0) {
-    return;
-}
-
 ?>
 
 <div class="notification-global algoliasearch-queue-notification"> <!-- TODO FIX the SKIN URL -->
