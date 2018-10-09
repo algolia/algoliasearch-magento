@@ -538,7 +538,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 continue;
             }
 
-
             $productsToIndex[$productId] = $this->product_helper->getObject($product);
         }
 

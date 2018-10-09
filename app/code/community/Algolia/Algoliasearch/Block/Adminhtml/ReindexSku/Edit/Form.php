@@ -10,8 +10,7 @@ class Algolia_Algoliasearch_Block_Adminhtml_ReindexSku_Edit_Form extends Mage_Ad
         $form = new Varien_Data_Form(array(
             'id'      => 'edit_form',
             'action'  => $this->getUrl('*/*/reindexPost'),
-            'method'  => 'post',
-            // 'enctype' => 'multipart/form-data'
+            'method'  => 'post'
         ));
 
         $fieldset = $form->addFieldset('base_fieldset', array());

@@ -21,10 +21,9 @@
         </reference>
     </algolia_bundle_handle>
 
-
-    <adminhtml_algolia_reindexsku_index>
+    <adminhtml_algoliasearch_reindexsku_index>
         <reference name="content">
             <block type="algoliasearch/adminhtml_reindexsku_edit" name="algoliasearch.reindexsku.form.container" />
         </reference>
-    </adminhtml_algolia_reindexsku_index>
+    </adminhtml_algoliasearch_reindexsku_index>
 </layout>

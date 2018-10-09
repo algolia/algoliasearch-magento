@@ -9,7 +9,7 @@
                     <children>
                         <reindexsku translate="title" module="algoliasearch">
                             <title>Reindex SKU(s)</title>
-                            <action>adminhtml/algolia_reindexsku</action>
+                            <action>adminhtml/algoliasearch_reindexsku</action>
                             <sort_order>10</sort_order>
                         </reindexsku>
                     </children>
