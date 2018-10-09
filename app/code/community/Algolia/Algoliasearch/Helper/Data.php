@@ -461,24 +461,17 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 ->withStoreId($storeId);
         }
 
-        if (!in_array($product->getVisibility(), [
-            Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH,
-            Mage_Catalog_Model_Product_Visibility::VISIBILITY_IN_SEARCH,
-            Mage_Catalog_Model_Product_Visibility::VISIBILITY_IN_CATALOG,
-        ])) {
+        if ($this->product_helper->shouldIndexProductByItsVisibility($product, $storeId) === false) {
             throw (new Algolia_Algoliasearch_Model_Exception_ProductNotVisibleException())
                 ->withProduct($product)
                 ->withStoreId($storeId);
         }
 
-        if (!$this->config->getShowOutOfStock($storeId)) {
-            if (!$product->isSalable() || !$product->getStockItem()->getIsInStock()) {
-
-                Mage::log($product->getData());
-                throw (new Algolia_Algoliasearch_Model_Exception_ProductOutOfStockException())
-                    ->withProduct($product)
-                    ->withStoreId($storeId);
-            }
+        if (!$this->config->getShowOutOfStock($storeId)
+            && !$product->getStockItem()->getIsInStock()) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductOutOfStockException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
         }
 
         return true;
@@ -538,14 +531,13 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 continue;
             }
 
-            if ($product->isDeleted() === true
-                || $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED
-                || $this->product_helper->shouldIndexProductByItsVisibility($product, $storeId) === false
-                || ($product->getStockItem()->is_in_stock == 0 && !$this->config->getShowOutOfStock($storeId))
-            ) {
+            try {
+                $this->canProductBeReindexed($product, $storeId);
+            } catch (Algolia_Algoliasearch_Model_Exception_ProductReindexException $e) {
                 $productsToRemove[$productId] = $productId;
                 continue;
             }
+
 
             $productsToIndex[$productId] = $this->product_helper->getObject($product);
         }
