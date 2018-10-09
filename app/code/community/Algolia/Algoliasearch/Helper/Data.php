@@ -437,6 +437,54 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
+    /**
+     * Check if product can be index on Algolia
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @param int     $storeId
+     *
+     * @return bool
+     *
+     */
+    public function canProductBeReindexed(Mage_Catalog_Model_Product $product, $storeId)
+    {
+
+        if ($product->isDeleted() === true) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductDeletedException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if ($product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductDisabledException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if (!in_array($product->getVisibility(), [
+            Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH,
+            Mage_Catalog_Model_Product_Visibility::VISIBILITY_IN_SEARCH,
+            Mage_Catalog_Model_Product_Visibility::VISIBILITY_IN_CATALOG,
+        ])) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductNotVisibleException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if (!$this->config->getShowOutOfStock($storeId)) {
+            if (!$product->isSalable() || !$product->getStockItem()->getIsInStock()) {
+
+                Mage::log($product->getData());
+                throw (new Algolia_Algoliasearch_Model_Exception_ProductOutOfStockException())
+                    ->withProduct($product)
+                    ->withStoreId($storeId);
+            }
+        }
+
+        return true;
+    }
+
+
     protected function getProductsRecords($storeId, $collection, $potentiallyDeletedProductsIds = array())
     {
         $productsToIndex = array();
@@ -511,7 +559,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'toRemove' => array_unique($productsToRemove),
         );
     }
-
     public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null, $productIds = null, $useTmpIndex = false)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {

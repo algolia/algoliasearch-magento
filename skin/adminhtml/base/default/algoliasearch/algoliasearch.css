@@ -3,3 +3,8 @@
 	background-size: 16px 16px;
 	border-color: #bee1ee;
 }
+
+.algoliasearch-head-icon {
+	background: url(/skin/frontend/base/default/algoliasearch/algolia-admin-menu.svg) no-repeat;
+	background-size: 16px 16px;
+}

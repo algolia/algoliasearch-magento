@@ -1041,6 +1041,44 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return $customData;
     }
 
+    /**
+     * Returns all parent product IDs, e.g. when simple product is part of configurable or bundle
+     *
+     * @param array $productIds
+     * @return array
+     */
+    public function getParentProductIds(array $productIds)
+    {
+        $parentIds = [];
+        foreach ($this->getCompositeTypes() as $typeInstance) {
+            $parentIds = array_merge($parentIds, $typeInstance->getParentIdsByChild($productIds));
+        }
+        return $parentIds;
+    }
+
+    /**
+     * Returns composite product type instances
+     *
+     * @return Mage_Catalog_Model_Product_Type[]
+     *
+     * @see Mage_Catalog_Model_Resource_Product_Flat_Indexer::getProductTypeInstances()
+     */
+    private function getCompositeTypes()
+    {
+        if ($this->compositeTypes === null) {
+            /** @var Mage_Catalog_Model_Product $productEmulator */
+            $productEmulator = Mage::getModel('catalog/product');
+            /** @var Mage_Catalog_Model_Product_Type $productType */
+            $productType = Mage::getModel('catalog/product_type');
+            foreach ($productType->getCompositeTypes() as $typeId) {
+                $productEmulator->setTypeId($typeId);
+                $this->compositeTypes[$typeId] = $productType->factory($productEmulator);
+            }
+        }
+
+        return $this->compositeTypes;
+    }
+    
     public function getAllProductIds($storeId)
     {
         $products = Mage::getModel('catalog/product')->getCollection();

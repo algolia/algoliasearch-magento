@@ -20,4 +20,11 @@
             <block type="core/template" template="algoliasearch/adminjs.phtml" name="algolia-admin-beforebodyend"/>
         </reference>
     </algolia_bundle_handle>
+
+
+    <adminhtml_algolia_reindexsku_index>
+        <reference name="content">
+            <block type="algoliasearch/adminhtml_reindexsku_edit" name="algoliasearch.reindexsku.form.container" />
+        </reference>
+    </adminhtml_algolia_reindexsku_index>
 </layout>
