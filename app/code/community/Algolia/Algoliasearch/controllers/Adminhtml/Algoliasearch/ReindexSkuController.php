@@ -13,8 +13,6 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
         $this->loadLayout();
         $this->_setActiveMenu('system/algolia/reindexsku');
         $this->renderLayout();
-
-        // Mage::helper('algoliasearch/entity_producthelper')->getParentProductIds();
     }
 
     /**
@@ -23,7 +21,7 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
     public function reindexPostAction()
     {
         if ($this->getRequest()->getParam('skus')) {
-            $skus = array_map('trim', preg_split("/(,|\r\n|\n|\r)/", $this->getRequest()->getParam('skus')));
+            $skus = array_filter(array_map('trim', preg_split("/(,|\r\n|\n|\r)/", $this->getRequest()->getParam('skus'))));
             $stores = Mage::app()->getStores();
             $session = Mage::getSingleton('adminhtml/session');
 
@@ -43,23 +41,24 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
             foreach ($skus as $sku) {
 
                 try {
+
                     $product = $collection->getItemByColumnValue('sku', $sku);
                     if (!$product) {
-                        throw new Algolia_AlgoliaSearch_Model_Exception_ProductUnknownSkuException($this->__('Product with SKU "%s" was not found.', $sku));
+                        throw new Algolia_Algoliasearch_Model_Exception_ProductUnknownSkuException($this->__('Product with SKU "%s" was not found.', $sku));
                     }
                     $this->checkAndReindex($product, $stores);
 
-                } catch (Algolia_AlgoliaSearch_Model_Exception_ProductUnknownSkuException $e) {
+                } catch (Algolia_Algoliasearch_Model_Exception_ProductUnknownSkuException $e) {
                     $session->addError($e->getMessage());
-                } catch (Algolia_AlgoliaSearch_Model_Exception_ProductDisabledException $e) {
+                } catch (Algolia_Algoliasearch_Model_Exception_ProductDisabledException $e) {
                     $session->addError(
                         $this->__('The product "%s" (%s) is disabled in store "%s".', $e->getProduct()->getName(), $e->getProduct()->getSku(), $stores[$e->getStoreId()]->getName())
                     );
-                } catch (Algolia_AlgoliaSearch_Model_Exception_ProductDeletedException $e) {
+                } catch (Algolia_Algoliasearch_Model_Exception_ProductDeletedException $e) {
                     $session->addError(
                         $this->__('The product "%s" (%s) is deleted from store "%s".', $e->getProduct()->getName(), $e->getProduct()->getSku(), $stores[$e->getStoreId()]->getName())
                     );
-                } catch (Algolia_AlgoliaSearch_Model_Exception_ProductNotVisibleException $e) {
+                } catch (Algolia_Algoliasearch_Model_Exception_ProductNotVisibleException $e) {
                     $session->addError(
                         $this->__('The product "%s" (%s) is not visible in store "%s".', $e->getProduct()->getName(), $e->getProduct()->getSku(), $stores[$e->getStoreId()]->getName())
                     );

@@ -1,6 +1,6 @@
 <?php
 
-class Algolia_AlgoliaSearch_Model_Exception_ProductUnknownSkuException extends Algolia_Algoliasearch_Model_Exception_ProductReindexException
+class Algolia_Algoliasearch_Model_Exception_ProductUnknownSkuException extends Algolia_Algoliasearch_Model_Exception_ProductReindexException
 {
 
 }
