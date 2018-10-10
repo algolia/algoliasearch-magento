@@ -7,6 +7,11 @@
                     <title>Algolia Search</title>
                     <sort_order>93</sort_order>
                     <children>
+                        <configuration translate="title" module="algoliasearch">
+                            <title>Configurations</title>
+                            <action>adminhtml/system_config/edit/section/algoliasearch</action>
+                            <sort_order>0</sort_order>
+                        </configuration>
                         <reindexsku translate="title" module="algoliasearch">
                             <title>Reindex SKU(s)</title>
                             <action>adminhtml/algoliasearch_reindexsku</action>
