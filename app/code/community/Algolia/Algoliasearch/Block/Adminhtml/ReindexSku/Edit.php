@@ -1,7 +1,7 @@
 <?php
 
-class Algolia_Algoliasearch_Block_Adminhtml_ReindexSku_Edit extends Mage_Adminhtml_Block_Widget_Form_Container {
-
+class Algolia_Algoliasearch_Block_Adminhtml_ReindexSku_Edit extends Mage_Adminhtml_Block_Widget_Form_Container
+{
     /**
      * Internal constructor
      *
@@ -35,5 +35,4 @@ class Algolia_Algoliasearch_Block_Adminhtml_ReindexSku_Edit extends Mage_Adminht
     {
         return 'icon-head algoliasearch-head-icon';
     }
-
 }

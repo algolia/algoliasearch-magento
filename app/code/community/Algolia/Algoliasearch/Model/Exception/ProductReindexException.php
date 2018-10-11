@@ -2,7 +2,6 @@
 
 class Algolia_Algoliasearch_Model_Exception_ProductReindexException extends RuntimeException
 {
-
     /** @var Mage_Catalog_Model_Product */
     protected $product;
 
@@ -56,5 +55,4 @@ class Algolia_Algoliasearch_Model_Exception_ProductReindexException extends Runt
     {
         return $this->storeId;
     }
-
 }

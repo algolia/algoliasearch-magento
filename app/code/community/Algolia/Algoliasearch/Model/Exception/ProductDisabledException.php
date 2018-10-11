@@ -2,5 +2,4 @@
 
 class Algolia_Algoliasearch_Model_Exception_ProductDisabledException extends Algolia_Algoliasearch_Model_Exception_ProductReindexException
 {
-
 }

@@ -448,7 +448,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function canProductBeReindexed(Mage_Catalog_Model_Product $product, $storeId)
     {
-
         if ($product->isDeleted() === true) {
             throw (new Algolia_Algoliasearch_Model_Exception_ProductDeletedException())
                 ->withProduct($product)

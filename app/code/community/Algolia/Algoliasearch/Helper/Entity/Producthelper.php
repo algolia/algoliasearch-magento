@@ -1052,7 +1052,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
      */
     public function getParentProductIds(array $productIds)
     {
-        $parentIds = [];
+        $parentIds = array();
         foreach ($this->getCompositeTypes() as $typeInstance) {
             $parentIds = array_merge($parentIds, $typeInstance->getParentIdsByChild($productIds));
         }

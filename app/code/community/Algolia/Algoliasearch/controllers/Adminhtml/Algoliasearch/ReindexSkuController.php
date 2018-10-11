@@ -35,11 +35,10 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
             // Load the collection instead of loading every one individually
             $collection = Mage::getResourceModel('catalog/product_collection')
                 ->addAttributeToSelect('*')
-                ->addAttributeToFilter('sku', ['in' => $skus])
+                ->addAttributeToFilter('sku', array('in' => $skus))
                 ->setFlag('require_stock_items', true);
 
             foreach ($skus as $sku) {
-
                 try {
 
                     $product = $collection->getItemByColumnValue('sku', $sku);
@@ -69,7 +68,6 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
                 } catch (Exception $e) {
                     $session->addError($e->getMessage());
                 }
-
             }
         }
 
@@ -83,43 +81,37 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
      */
     protected function checkAndReindex($product, array $stores)
     {
-
         $session = Mage::getSingleton('adminhtml/session');
         foreach ($stores as $storeId => $store) {
-
             if (!in_array($storeId, $product->getStoreIds())) {
                 $session->addNotice($this->__('The product "%s" (%s) is not associated with store "%s".',
                     $product->getName(), $product->getSku(), $store->getName()));
                 continue;
             }
-
             try {
                 Mage::helper('algoliasearch')->canProductBeReindexed($product, $storeId);
             } catch (Algolia_AlgoliaSearch_Model_Exception_ProductNotVisibleException $e) {
                 // If it's a simple product that is not visible, try to index its parent if it exists
                 if ($e->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE) {
-                    $parentId = Mage::helper('algoliasearch/entity_producthelper')->getParentProductIds([$e->getProduct()->getId()]);
+                    $parentId = Mage::helper('algoliasearch/entity_producthelper')->getParentProductIds(array($e->getProduct()->getId()));
                     if (isset($parentId[0])) {
                         $parentProduct = Mage::getModel('catalog/product')->load($parentId[0]);
                         $session->addError(
                             $this->__('The product "%s" (%s) is not visible but it has a parent product "%s" (%s) for store "%s".',
                                 $e->getProduct()->getName(), $e->getProduct()->getSku(), $parentProduct->getName(), $parentProduct->getSku(), $stores[$e->getStoreId()]->getName()));
-                        $this->checkAndReindex($parentProduct, [$stores[$e->getStoreId()]]);
+                        $this->checkAndReindex($parentProduct, array($stores[$e->getStoreId()]));
                         continue;
                     }
                 }
             }
-
-            $productIds = [$product->getId()];
+            $productIds = array($product->getId());
             $productIds = array_merge($productIds, Mage::helper('algoliasearch/entity_producthelper')->getParentProductIds($productIds));
 
             Mage::helper('algoliasearch')->rebuildStoreProductIndex($storeId, $productIds);
 
             $session->addSuccess($this->__('The product "%s" (%s) has been reindexed for store "%s".',
                 $product->getName(), $product->getSku(), $store->getName()));
-
         }
-
     }
 
 
@@ -132,5 +124,4 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
     {
         return Mage::getSingleton('admin/session')->isAllowed('system/algoliasearch/reindexsku');
     }
-
 }
