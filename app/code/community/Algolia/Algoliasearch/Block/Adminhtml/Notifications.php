@@ -2,7 +2,6 @@
 
 class Algolia_Algoliasearch_Block_Adminhtml_Notifications extends Mage_Adminhtml_Block_Template
 {
-
     protected $_queueInfo;
 
     public function getConfigurationUrl()
@@ -66,11 +65,9 @@ class Algolia_Algoliasearch_Block_Adminhtml_Notifications extends Mage_Adminhtml
         if ($this->showNotification()
             && $queueInfo['isEnabled'] === true
             && $queueInfo['currentSize'] > 0) {
-
             return parent::_toHtml();
         }
 
         return '';
     }
-
 }
