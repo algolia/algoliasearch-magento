@@ -2,7 +2,6 @@
 
 class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algoliasearch_Helper_Entity_Helper
 {
-
     private $compositeTypes;
 
     protected static $_productAttributes;

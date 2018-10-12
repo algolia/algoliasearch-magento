@@ -1,7 +1,7 @@
 <?php
 
-class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends Mage_Adminhtml_Controller_Action {
-
+class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends Mage_Adminhtml_Controller_Action
+{
     const MAX_SKUS = 10;
 
     public function indexAction()
@@ -15,9 +15,6 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
         $this->renderLayout();
     }
 
-    /**
-     * rebuildStoreProductIndex
-     */
     public function reindexPostAction()
     {
         if ($this->getRequest()->getParam('skus')) {
@@ -29,6 +26,7 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
                 $session->addError($this->__('The maximal number of SKU(s) is %s. Could you please remove some SKU(s) to fit into the limit?',
                     self::MAX_SKUS));
                 $this->_redirect('*/*/');
+
                 return;
             }
 
@@ -40,13 +38,11 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
 
             foreach ($skus as $sku) {
                 try {
-
                     $product = $collection->getItemByColumnValue('sku', $sku);
                     if (!$product) {
                         throw new Algolia_Algoliasearch_Model_Exception_ProductUnknownSkuException($this->__('Product with SKU "%s" was not found.', $sku));
                     }
                     $this->checkAndReindex($product, $stores);
-
                 } catch (Algolia_Algoliasearch_Model_Exception_ProductUnknownSkuException $e) {
                     $session->addError($e->getMessage());
                 } catch (Algolia_Algoliasearch_Model_Exception_ProductDisabledException $e) {
@@ -72,12 +68,11 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
         }
 
         $this->_redirect('*/*/');
-
     }
 
     /**
      * @param Mage_Catalog_Model_Product $product
-     * @param array $stores
+     * @param array                      $stores
      */
     protected function checkAndReindex($product, array $stores)
     {
@@ -114,9 +109,8 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
         }
     }
 
-
     /**
-     * Check ACL permissions
+     * Check ACL permissions.
      *
      * @return bool
      */
