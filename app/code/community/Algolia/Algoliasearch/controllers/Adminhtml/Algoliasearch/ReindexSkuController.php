@@ -19,8 +19,15 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
     {
         if ($this->getRequest()->getParam('skus')) {
             $skus = array_filter(array_map('trim', preg_split("/(,|\r\n|\n|\r)/", $this->getRequest()->getParam('skus'))));
-            $stores = Mage::app()->getStores();
             $session = Mage::getSingleton('adminhtml/session');
+            $stores = Mage::app()->getStores();
+            $config = Mage::helper('algoliasearch/config');
+
+            foreach ($stores as $storeId => $store) {
+                if ($config->isEnabledBackend($storeId) === false) {
+                    unset($stores[$storeId]);
+                }
+            }
 
             if (count($skus) > self::MAX_SKUS) {
                 $session->addError($this->__('The maximal number of SKU(s) is %s. Could you please remove some SKU(s) to fit into the limit?',
