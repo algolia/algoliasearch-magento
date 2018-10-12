@@ -9,7 +9,7 @@ class Algolia_Algoliasearch_Model_Exception_ProductReindexException extends Runt
     protected $storeId;
 
     /**
-     * Add related product
+     * Add related product.
      *
      * @param Mage_Catalog_Model_Product $product
      *
@@ -23,7 +23,7 @@ class Algolia_Algoliasearch_Model_Exception_ProductReindexException extends Runt
     }
 
     /**
-     * Add related store ID
+     * Add related store ID.
      *
      * @param int $storeId
      *
@@ -37,7 +37,7 @@ class Algolia_Algoliasearch_Model_Exception_ProductReindexException extends Runt
     }
 
     /**
-     * Get related product
+     * Get related product.
      *
      * @return Mage_Catalog_Model_Product
      */
@@ -47,7 +47,7 @@ class Algolia_Algoliasearch_Model_Exception_ProductReindexException extends Runt
     }
 
     /**
-     * Get related store ID
+     * Get related store ID.
      *
      * @return int
      */

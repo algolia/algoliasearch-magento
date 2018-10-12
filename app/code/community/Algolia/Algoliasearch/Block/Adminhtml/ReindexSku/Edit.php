@@ -3,21 +3,19 @@
 class Algolia_Algoliasearch_Block_Adminhtml_ReindexSku_Edit extends Mage_Adminhtml_Block_Widget_Form_Container
 {
     /**
-     * Internal constructor
-     *
-     * @return void
+     * Internal constructor.
      */
     protected function _construct()
     {
         parent::_construct();
 
-        $this->_objectId   = 'sku';
+        $this->_objectId = 'sku';
         $this->_blockGroup = 'algoliasearch';
         $this->_controller = 'adminhtml_reindexsku';
     }
 
     /**
-     * Get header text
+     * Get header text.
      *
      * @return string
      */
@@ -27,7 +25,7 @@ class Algolia_Algoliasearch_Block_Adminhtml_ReindexSku_Edit extends Mage_Adminht
     }
 
     /**
-     * Set custom Algolia icon class
+     * Set custom Algolia icon class.
      *
      * @return string
      */
