@@ -1143,7 +1143,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 ->withStoreId($storeId);
         }
 
-        if ($product->getStatus() === Mage_Catalog_Model_Product_Status::STATUS_DISABLED) {
+        if ($product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED) {
             throw (new Algolia_Algoliasearch_Model_Exception_ProductDisabledException())
                 ->withProduct($product)
                 ->withStoreId($storeId);
