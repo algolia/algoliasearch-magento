@@ -1055,6 +1055,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         foreach ($this->getCompositeTypes() as $typeInstance) {
             $parentIds = array_merge($parentIds, $typeInstance->getParentIdsByChild($productIds));
         }
+
         return $parentIds;
     }
 
@@ -1070,6 +1071,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         if ($this->compositeTypes === null) {
             /** @var Mage_Catalog_Model_Product $productEmulator */
             $productEmulator = Mage::getModel('catalog/product');
+
             /** @var Mage_Catalog_Model_Product_Type $productType */
             $productType = Mage::getModel('catalog/product_type');
             foreach ($productType->getCompositeTypes() as $typeId) {
@@ -1122,6 +1124,45 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         return $catalog_productVisibility->{$visibilityMethod}();
+    }
+
+    /**
+     * Check if product can be index on Algolia
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @param int     $storeId
+     *
+     * @return bool
+     *
+     */
+    public function canProductBeReindexed(Mage_Catalog_Model_Product $product, $storeId)
+    {
+        if ($product->isDeleted() === true) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductDeletedException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if ($product->getStatus() === Mage_Catalog_Model_Product_Status::STATUS_DISABLED) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductDisabledException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if ($this->shouldIndexProductByItsVisibility($product, $storeId) === false) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductNotVisibleException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if (!$this->config->getShowOutOfStock($storeId)
+            && !$product->getStockItem()->getIsInStock()) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductOutOfStockException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        return true;
     }
 
     private function explodeSynomyms($synonyms)

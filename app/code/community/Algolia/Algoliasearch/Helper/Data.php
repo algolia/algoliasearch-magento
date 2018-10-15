@@ -437,46 +437,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
-    /**
-     * Check if product can be index on Algolia
-     *
-     * @param Mage_Catalog_Model_Product $product
-     * @param int     $storeId
-     *
-     * @return bool
-     *
-     */
-    public function canProductBeReindexed(Mage_Catalog_Model_Product $product, $storeId)
-    {
-        if ($product->isDeleted() === true) {
-            throw (new Algolia_Algoliasearch_Model_Exception_ProductDeletedException())
-                ->withProduct($product)
-                ->withStoreId($storeId);
-        }
-
-        if ($product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED) {
-            throw (new Algolia_Algoliasearch_Model_Exception_ProductDisabledException())
-                ->withProduct($product)
-                ->withStoreId($storeId);
-        }
-
-        if ($this->product_helper->shouldIndexProductByItsVisibility($product, $storeId) === false) {
-            throw (new Algolia_Algoliasearch_Model_Exception_ProductNotVisibleException())
-                ->withProduct($product)
-                ->withStoreId($storeId);
-        }
-
-        if (!$this->config->getShowOutOfStock($storeId)
-            && !$product->getStockItem()->getIsInStock()) {
-            throw (new Algolia_Algoliasearch_Model_Exception_ProductOutOfStockException())
-                ->withProduct($product)
-                ->withStoreId($storeId);
-        }
-
-        return true;
-    }
-
-
     protected function getProductsRecords($storeId, $collection, $potentiallyDeletedProductsIds = array())
     {
         $productsToIndex = array();
@@ -531,7 +491,7 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             }
 
             try {
-                $this->canProductBeReindexed($product, $storeId);
+                $this->product_helper->canProductBeReindexed($product, $storeId);
             } catch (Algolia_Algoliasearch_Model_Exception_ProductReindexException $e) {
                 $productsToRemove[$productId] = $productId;
                 continue;

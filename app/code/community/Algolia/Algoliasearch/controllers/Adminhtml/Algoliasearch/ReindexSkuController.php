@@ -83,7 +83,10 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
      */
     protected function checkAndReindex($product, array $stores)
     {
+        /** @var Algolia_Algoliasearch_Helper_Entity_Producthelper $productHelper */
+        $productHelper = Mage::helper('algoliasearch/entity_producthelper');
         $session = Mage::getSingleton('adminhtml/session');
+
         foreach ($stores as $storeId => $store) {
             if (!in_array($storeId, $product->getStoreIds())) {
                 $session->addNotice($this->__('The product "%s" (%s) is not associated with store "%s".',
@@ -91,23 +94,24 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
                 continue;
             }
             try {
-                Mage::helper('algoliasearch')->canProductBeReindexed($product, $storeId);
+                $productHelper->canProductBeReindexed($product, $storeId);
             } catch (Algolia_AlgoliaSearch_Model_Exception_ProductNotVisibleException $e) {
                 // If it's a simple product that is not visible, try to index its parent if it exists
                 if ($e->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE) {
-                    $parentId = Mage::helper('algoliasearch/entity_producthelper')->getParentProductIds(array($e->getProduct()->getId()));
+                    $parentId = $productHelper->getParentProductIds(array($e->getProduct()->getId()));
                     if (isset($parentId[0])) {
                         $parentProduct = Mage::getModel('catalog/product')->load($parentId[0]);
                         $session->addError(
                             $this->__('The product "%s" (%s) is not visible but it has a parent product "%s" (%s) for store "%s".',
-                                $e->getProduct()->getName(), $e->getProduct()->getSku(), $parentProduct->getName(), $parentProduct->getSku(), $stores[$e->getStoreId()]->getName()));
+                                $e->getProduct()->getName(), $e->getProduct()->getSku(), $parentProduct->getName(),
+                                $parentProduct->getSku(), $stores[$e->getStoreId()]->getName()));
                         $this->checkAndReindex($parentProduct, array($stores[$e->getStoreId()]));
                         continue;
                     }
                 }
             }
             $productIds = array($product->getId());
-            $productIds = array_merge($productIds, Mage::helper('algoliasearch/entity_producthelper')->getParentProductIds($productIds));
+            $productIds = array_merge($productIds, $productHelper->getParentProductIds($productIds));
 
             Mage::helper('algoliasearch')->rebuildStoreProductIndex($storeId, $productIds);
 
