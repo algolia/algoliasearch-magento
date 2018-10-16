@@ -26,6 +26,11 @@
             <block type="algoliasearch/adminhtml_indexingqueue" name="algoliasearch.indexingqueue.grid.container" />
         </reference>
     </adminhtml_algoliasearch_indexingqueue_index>
+    <adminhtml_algoliasearch_indexingqueue_view>
+        <reference name="content">
+            <block type="algoliasearch/adminhtml_indexingqueue_view" name="algoliasearch.indexingqueue.view.container" />
+        </reference>
+    </adminhtml_algoliasearch_indexingqueue_view>
 
     <adminhtml_algoliasearch_reindexsku_index>
         <reference name="content">

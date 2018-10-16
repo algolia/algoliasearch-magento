@@ -2,7 +2,6 @@
 
 class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
-
     /**
      * Initialize Grid Properties
      *
@@ -11,7 +10,7 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Grid extends Mage_Admi
     {
         parent::__construct();
         $this->setId('job_id');
-        $this->setDefaultSort('query_id');
+        $this->setDefaultSort('job_id');
         $this->setDefaultDir('desc');
     }
 

@@ -416,4 +416,12 @@ class Algolia_Algoliasearch_Model_Queue
             $this->db->query("DELETE FROM {$this->logTable} WHERE id IN (" . implode(", ", $idsToDelete) . ")");
         }
     }
+
+    public function clearQueue($canClear = false)
+    {
+        if ($canClear) {
+            $this->db->truncateTable($this->table);
+            $this->logger->log("{$this->table} table has been truncated.");
+        }
+    }
 }
