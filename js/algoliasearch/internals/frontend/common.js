@@ -279,7 +279,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
 					displayKey: 'query',
 					name: section.name,
 					templates: {
-						suggestion: function (hit) {
+						suggestion: function (hit, payload) {
 							if (hit.facet) {
 								hit.category = hit.facet.value;
 							}

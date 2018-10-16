@@ -259,6 +259,7 @@ $algoliaJsConfig = array(
     'priceKey' => $priceKey,
     'currencyCode' => $currencyCode,
     'currencySymbol' => $currencySymbol,
+    'priceFormat' => Mage::app()->getLocale()->getJsPriceFormat(),
     'maxValuesPerFacet' => (int) $config->getMaxValuesPerFacet(),
     'autofocus' => true,
     'ccAnalytics' => array(
