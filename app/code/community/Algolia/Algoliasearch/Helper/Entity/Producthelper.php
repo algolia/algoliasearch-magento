@@ -2,6 +2,8 @@
 
 class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algoliasearch_Helper_Entity_Helper
 {
+    private $compositeTypes;
+
     protected static $_productAttributes;
     protected static $_currencies;
 
@@ -1041,6 +1043,46 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return $customData;
     }
 
+    /**
+     * Returns all parent product IDs, e.g. when simple product is part of configurable or bundle
+     *
+     * @param array $productIds
+     * @return array
+     */
+    public function getParentProductIds(array $productIds)
+    {
+        $parentIds = array();
+        foreach ($this->getCompositeTypes() as $typeInstance) {
+            $parentIds = array_merge($parentIds, $typeInstance->getParentIdsByChild($productIds));
+        }
+
+        return $parentIds;
+    }
+
+    /**
+     * Returns composite product type instances
+     *
+     * @return Mage_Catalog_Model_Product_Type[]
+     *
+     * @see Mage_Catalog_Model_Resource_Product_Flat_Indexer::getProductTypeInstances()
+     */
+    private function getCompositeTypes()
+    {
+        if ($this->compositeTypes === null) {
+            /** @var Mage_Catalog_Model_Product $productEmulator */
+            $productEmulator = Mage::getModel('catalog/product');
+
+            /** @var Mage_Catalog_Model_Product_Type $productType */
+            $productType = Mage::getModel('catalog/product_type');
+            foreach ($productType->getCompositeTypes() as $typeId) {
+                $productEmulator->setTypeId($typeId);
+                $this->compositeTypes[$typeId] = $productType->factory($productEmulator);
+            }
+        }
+
+        return $this->compositeTypes;
+    }
+    
     public function getAllProductIds($storeId)
     {
         $products = Mage::getModel('catalog/product')->getCollection();
@@ -1082,6 +1124,45 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         return $catalog_productVisibility->{$visibilityMethod}();
+    }
+
+    /**
+     * Check if product can be index on Algolia
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @param int     $storeId
+     *
+     * @return bool
+     *
+     */
+    public function canProductBeReindexed(Mage_Catalog_Model_Product $product, $storeId)
+    {
+        if ($product->isDeleted() === true) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductDeletedException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if ($product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductDisabledException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if ($this->shouldIndexProductByItsVisibility($product, $storeId) === false) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductNotVisibleException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if (!$this->config->getShowOutOfStock($storeId)
+            && !$product->getStockItem()->getIsInStock()) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductOutOfStockException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        return true;
     }
 
     private function explodeSynomyms($synonyms)

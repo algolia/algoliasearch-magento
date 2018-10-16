@@ -490,11 +490,9 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
                 continue;
             }
 
-            if ($product->isDeleted() === true
-                || $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED
-                || $this->product_helper->shouldIndexProductByItsVisibility($product, $storeId) === false
-                || ($product->getStockItem()->is_in_stock == 0 && !$this->config->getShowOutOfStock($storeId))
-            ) {
+            try {
+                $this->product_helper->canProductBeReindexed($product, $storeId);
+            } catch (Algolia_Algoliasearch_Model_Exception_ProductReindexException $e) {
                 $productsToRemove[$productId] = $productId;
                 continue;
             }
@@ -511,7 +509,6 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             'toRemove' => array_unique($productsToRemove),
         );
     }
-
     public function rebuildStoreProductIndexPage($storeId, $collectionDefault, $page, $pageSize, $emulationInfo = null, $productIds = null, $useTmpIndex = false)
     {
         if ($this->config->isEnabledBackend($storeId) === false) {
