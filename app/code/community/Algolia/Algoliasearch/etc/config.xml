@@ -96,6 +96,9 @@
                     <queue>
                         <table>algoliasearch_queue</table>
                     </queue>
+                    <job>
+                        <table>algoliasearch_queue</table>
+                    </job>
                 </entities>
             </algoliasearch_resource>
             <catalogsearch_mysql4>

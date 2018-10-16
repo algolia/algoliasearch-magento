@@ -21,6 +21,12 @@
         </reference>
     </algolia_bundle_handle>
 
+    <adminhtml_algoliasearch_indexingqueue_index>
+        <reference name="content">
+            <block type="algoliasearch/adminhtml_indexingqueue" name="algoliasearch.indexingqueue.grid.container" />
+        </reference>
+    </adminhtml_algoliasearch_indexingqueue_index>
+
     <adminhtml_algoliasearch_reindexsku_index>
         <reference name="content">
             <block type="algoliasearch/adminhtml_reindexsku_edit" name="algoliasearch.reindexsku.form.container" />
