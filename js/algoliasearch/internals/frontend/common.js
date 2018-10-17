@@ -336,12 +336,21 @@ document.addEventListener("DOMContentLoaded", function (e) {
 
 					var ors = '';
 
-					if (keys.length > 0) {
-						ors += '<span><a href="' + keys[0].url + '">' + keys[0].key + '</a></span>';
+					var isCategoryFacetEnabled = false;
+					for (var i=0; i<algoliaConfig.facets.length; i++) {
+						if (algoliaConfig.facets[i].attribute == "categories") {
+							isCategoryFacetEnabled = true;
+						}
 					}
 
-					if (keys.length > 1) {
-						ors += ', <span><a href="' + keys[1].url + '">' + keys[1].key + '</a></span>';
+					if (isCategoryFacetEnabled) {
+						if (keys.length > 0) {
+							ors += '<span><a href="' + keys[0].url + '">' + keys[0].key + '</a></span>';
+						}
+
+						if (keys.length > 1) {
+							ors += ', <span><a href="' + keys[1].url + '">' + keys[1].key + '</a></span>';
+						}
 					}
 
 					var allUrl = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query.query);
