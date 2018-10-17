@@ -28,7 +28,7 @@
     </adminhtml_algoliasearch_indexingqueue_index>
     <adminhtml_algoliasearch_indexingqueue_view>
         <reference name="content">
-            <block type="algoliasearch/adminhtml_indexingqueue_view" name="algoliasearch.indexingqueue.view.container" />
+            <block type="algoliasearch/adminhtml_indexingqueue_edit" name="algoliasearch.indexingqueue.edit.container" />
         </reference>
     </adminhtml_algoliasearch_indexingqueue_view>
 

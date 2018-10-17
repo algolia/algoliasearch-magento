@@ -15,7 +15,8 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue extends Mage_Adminhtml
         $this->_removeButton('add');
         $this->_addButton('clear_queue', array(
             'label' => Mage::helper('algoliasearch')->__('Clear Queue'),
-            'onclick' => "location.href='" . $this->getUrl('*/*/clear') . "'",
+            'onclick' => "if (confirm('Are you sure you want to clear the queue? This operation cannot be reverted.')) { 
+                location.href='" . $this->getUrl('*/*/clear') . "' };",
             'class' => 'cancel',
         ));
     }

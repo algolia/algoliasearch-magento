@@ -1,18 +1,20 @@
 <?php
 
-class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_View extends Mage_Adminhtml_Block_Widget_View_Container
+class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Edit extends Mage_Adminhtml_Block_Widget_Form_Container
 {
     /**
      * Internal constructor.
      */
-    protected function _construct()
+    public function __construct()
     {
-        parent::_construct();
+        parent::__construct();
 
+        $this->_objectId = 'job_id';
         $this->_blockGroup = 'algoliasearch';
         $this->_controller = 'adminhtml_indexingqueue';
 
-        $this->_removeButton('edit');
+        $this->_removeButton('save');
+        $this->_removeButton('reset');
     }
 
     /**
@@ -23,7 +25,7 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_View extends Mage_Admi
     public function getHeaderText()
     {
         return Mage::helper('algoliasearch')->__('Algolia Search - Indexing Queue Job #%s',
-            Mage::registry('algoliasearch_indexingqueue_job')->getId());
+            Mage::registry('algoliasearch_indexingqueue_job')->getJobId());
     }
 
     /**
@@ -36,3 +38,4 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_View extends Mage_Admi
         return 'icon-head algoliasearch-head-icon';
     }
 }
+
