@@ -38,4 +38,3 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Edit extends Mage_Admi
         return 'icon-head algoliasearch-head-icon';
     }
 }
-

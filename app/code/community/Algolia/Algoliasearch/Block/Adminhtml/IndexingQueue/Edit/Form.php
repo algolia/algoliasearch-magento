@@ -31,6 +31,13 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Edit_Form extends Mage
             'readonly' => true,
         ));
 
+        $fieldset->addField('status', 'text', array(
+            'name' => 'status',
+            'label' => Mage::helper('algoliasearch')->__('Status'),
+            'title' => Mage::helper('algoliasearch')->__('Status'),
+            'readonly' => true
+        ));
+
         $fieldset->addField('pid', 'text', array(
             'name' => 'pid',
             'label' => Mage::helper('algoliasearch')->__('PID'),
@@ -88,6 +95,9 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Edit_Form extends Mage
         ));
 
         $form->setValues($model->getData());
+        $form->addValues(array(
+            'status' => $model->getStatusLabel()
+        ));
         $form->setUseContainer(true);
         $this->setForm($form);
 

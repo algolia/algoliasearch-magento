@@ -22,6 +22,7 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Grid extends Mage_Admi
     protected function _prepareCollection()
     {
         $collection = Mage::getResourceModel('algoliasearch/job_collection');
+
         $this->setCollection($collection);
 
         return parent::_prepareCollection();
@@ -48,11 +49,18 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Grid extends Mage_Admi
             'type' => 'datetime',
         ));
 
+        $this->addColumn('status', array(
+            'header' => Mage::helper('algoliasearch')->__('Status'),
+            'index' => 'status',
+            'getter' => 'getStatusLabel',
+            'filter' => false,
+        ));
+
         $this->addColumn('method', array(
             'header' => Mage::helper('algoliasearch')->__('Method'),
             'index' => 'method',
             'type' => 'options',
-            'options' => Mage::getModel('algoliasearch/job')->getMethodOptionArray(),
+            'options' => Mage::getModel('algoliasearch/source_jobMethods')->getMethods(),
         ));
 
         // to format by renderer

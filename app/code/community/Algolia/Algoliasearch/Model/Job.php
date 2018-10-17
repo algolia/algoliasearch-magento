@@ -16,21 +16,31 @@ class Algolia_Algoliasearch_Model_Job extends Mage_Core_Model_Abstract
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function getMethodOptionArray()
+    public function getStatus()
     {
-        return array(
-            'saveConfigurationToAlgolia' => 'Save Configuration',
-            'moveIndex' => 'Move Index',
-            'deleteObjects' => 'Object deletion',
-            'rebuildStoreCategoryIndex' => 'Store Category Reindex',
-            'rebuildCategoryIndex' => 'Category Reindex',
-            'rebuildStoreProductIndex' => 'Store Product Reindex',
-            'rebuildProductIndex' => 'Product Reindex',
-            'rebuildStoreAdditionalSectionsIndex' => 'Additional Section Reindex',
-            'rebuildStoreSuggestionIndex' => 'Suggestion Reindex',
-            'rebuildStorePageIndex' => 'Page Reindex',
-        );
+        $status = Algolia_Algoliasearch_Model_Source_JobStatuses::STATUS_PROCESSING;
+
+        if (is_null($this->getPid())) {
+            $status = Algolia_Algoliasearch_Model_Source_JobStatuses::STATUS_NEW;
+        }
+
+        if ((int) $this->getRetries() >= $this->getMaxRetries()) {
+            $status = Algolia_Algoliasearch_Model_Source_JobStatuses::STATUS_ERROR;
+        }
+
+        return $status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatusLabel()
+    {
+        $status = $this->getStatus();
+        $labels = Mage::getModel('algoliasearch/source_jobStatuses')->getStatuses();
+
+        return isset($labels[$status]) ? $labels[$status] : $status;
     }
 }
