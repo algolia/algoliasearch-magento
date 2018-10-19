@@ -1,0 +1,11 @@
+<?php /** @var $this Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Status */ ?>
+<div class="message notification-global notice algolia-notice">
+    <div id="messages-message-notice">
+        <p><?php echo $this->__('Status of the queue : <strong>%s</strong>.', $this->getQueueRunnerStatus()); ?><br/>
+        <?php echo $this->__('Last Update : <strong>%s</strong>.', $this->getLastQueueUpdate()); ?></p>
+        <?php $notices = $this->getNotices() ?>
+        <?php foreach ($notices as $notice) : ?>
+            <p><?php echo $notice ?></p>
+        <?php endforeach; ?>
+    </div>
+</div>

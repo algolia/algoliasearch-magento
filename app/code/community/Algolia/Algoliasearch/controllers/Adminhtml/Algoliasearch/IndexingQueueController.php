@@ -68,6 +68,22 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_IndexingQueueController exte
         $this->_redirect('*/*/');
     }
 
+    public function resetAction()
+    {
+        try {
+            $queueRunnerIndexer = Mage::getModel('index/indexer')
+                ->getProcessByCode(Algolia_Algoliasearch_Model_Indexer_Algoliaqueuerunner::INDEXER_ID);
+            $queueRunnerIndexer->setStatus(Mage_Index_Model_Process::STATUS_PENDING);
+            $queueRunnerIndexer->save();
+
+            Mage::getSingleton('adminhtml/session')->addSuccess('Indexing Queue has been reset.');
+        } catch (Exception $e) {
+            Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
+        }
+
+        $this->_redirect('*/*/');
+    }
+
     protected function _checkQueueIsActivated()
     {
         if (!Mage::helper('algoliasearch/config')->isQueueActive()) {

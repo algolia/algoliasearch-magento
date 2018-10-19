@@ -10,9 +10,12 @@ class Algolia_Algoliasearch_Model_Source_JobMethods
         'rebuildCategoryIndex' => 'Category Reindex',
         'rebuildStoreProductIndex' => 'Store Product Reindex',
         'rebuildProductIndex' => 'Product Reindex',
-        'rebuildStoreAdditionalSectionsIndex' => 'Additional Section Reindex',
-        'rebuildStoreSuggestionIndex' => 'Suggestion Reindex',
-        'rebuildStorePageIndex' => 'Page Reindex',
+        'rebuildStoreAdditionalSectionsIndex' => 'Store Additional Section Reindex',
+        'rebuildAdditionalSectionsIndex' => 'Additional Section Reindex',
+        'rebuildStoreSuggestionIndex' => 'Store Suggestion Reindex',
+        'rebuildSuggestionIndex' => 'Sugesstion Reindex',
+        'rebuildStorePageIndex' => 'Store Page Reindex',
+        'rebuildPageIndex' => 'Page Reindex',
     );
 
     /**

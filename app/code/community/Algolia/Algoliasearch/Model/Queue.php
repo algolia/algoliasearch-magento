@@ -61,6 +61,28 @@ class Algolia_Algoliasearch_Model_Queue
         ));
     }
 
+    /**
+     * Return the average processing time for the 2 last two days
+     * (null if there was less than 100 runs with processed jobs)
+     *
+     * @throws \Zend_Db_Statement_Exception
+     *
+     * @return float|null
+     */
+    public function getAverageProcessingTime()
+    {
+        $data = $this->db->query(
+            $this->db->select()
+                ->from($this->logTable, ['number_of_runs' => 'COUNT(duration)', 'average_time' => 'AVG(duration)'])
+                ->where('processed_jobs > 0 AND with_empty_queue = 0 AND started >= (CURDATE() - INTERVAL 2 DAY)')
+        );
+        $result = $data->fetch();
+
+        return (int) $result['number_of_runs'] >= 100 && isset($result['average_time']) ?
+            (float) $result['average_time'] :
+            null;
+    }
+
     public function runCron($nbJobs = null, $force = false)
     {
         if (!$this->config->isQueueActive() && $force === false) {

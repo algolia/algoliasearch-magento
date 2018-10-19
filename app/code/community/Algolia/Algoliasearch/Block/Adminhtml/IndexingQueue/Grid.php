@@ -63,15 +63,15 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Grid extends Mage_Admi
             'options' => Mage::getModel('algoliasearch/source_jobMethods')->getMethods(),
         ));
 
-        // to format by renderer
         $this->addColumn('data', array(
             'header' => Mage::helper('algoliasearch')->__('Data'),
             'index' => 'data',
+            'renderer' => 'Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Grid_Renderer_Json'
         ));
 
         $this->addColumn('max_retries', array(
             'header' => Mage::helper('algoliasearch')->__('Max Retries'),
-            'width' => '50px',
+            'width' => '40px',
             'filter' => false,
             'index' => 'max_retries',
             'type' => 'number'
@@ -79,7 +79,7 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Grid extends Mage_Admi
 
         $this->addColumn('retries', array(
             'header' => Mage::helper('algoliasearch')->__('Retries'),
-            'width' => '50px',
+            'width' => '40px',
             'filter' => false,
             'index' => 'retries',
             'type' => 'number'

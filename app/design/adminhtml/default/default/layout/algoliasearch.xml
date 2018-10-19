@@ -23,9 +23,8 @@
 
     <adminhtml_algoliasearch_indexingqueue_index>
         <reference name="content">
-            <block type="algoliasearch/adminhtml_indexingqueue" name="algoliasearch.indexingqueue.grid.container">
-                <block type="algoliasearch/adminhtml_indexingqueue_status" name="algoliasearch.indexingqueue.status" />
-            </block>
+            <block type="algoliasearch/adminhtml_indexingqueue_status" name="algoliasearch.indexingqueue.status" />
+            <block type="algoliasearch/adminhtml_indexingqueue" name="algoliasearch.indexingqueue.grid.container" />
         </reference>
     </adminhtml_algoliasearch_indexingqueue_index>
     <adminhtml_algoliasearch_indexingqueue_view>
