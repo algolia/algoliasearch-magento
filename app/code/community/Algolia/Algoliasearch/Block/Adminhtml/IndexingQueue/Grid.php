@@ -22,7 +22,6 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Grid extends Mage_Admi
     protected function _prepareCollection()
     {
         $collection = Mage::getResourceModel('algoliasearch/job_collection');
-
         $this->setCollection($collection);
 
         return parent::_prepareCollection();

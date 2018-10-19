@@ -73,7 +73,7 @@ class Algolia_Algoliasearch_Model_Queue
     {
         $data = $this->db->query(
             $this->db->select()
-                ->from($this->logTable, ['number_of_runs' => 'COUNT(duration)', 'average_time' => 'AVG(duration)'])
+                ->from($this->logTable, array('number_of_runs' => 'COUNT(duration)', 'average_time' => 'AVG(duration)'))
                 ->where('processed_jobs > 0 AND with_empty_queue = 0 AND started >= (CURDATE() - INTERVAL 2 DAY)')
         );
         $result = $data->fetch();
