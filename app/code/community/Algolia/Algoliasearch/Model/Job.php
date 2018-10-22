@@ -43,4 +43,18 @@ class Algolia_Algoliasearch_Model_Job extends Mage_Core_Model_Abstract
 
         return isset($labels[$status]) ? $labels[$status] : $status;
     }
+
+    /**
+     * @param Exception $e
+     *
+     * @return Job
+     */
+    public function saveError(Exception $e)
+    {
+        $this->setErrorLog($e->getMessage());
+        $this->save($this);
+
+        return $this;
+    }
+
 }

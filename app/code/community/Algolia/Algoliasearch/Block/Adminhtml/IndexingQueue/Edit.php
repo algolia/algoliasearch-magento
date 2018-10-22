@@ -15,6 +15,7 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Edit extends Mage_Admi
 
         $this->_removeButton('save');
         $this->_removeButton('reset');
+        $this->_removeButton('delete');
     }
 
     /**

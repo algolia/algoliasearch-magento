@@ -7,6 +7,7 @@ class Algolia_Algoliasearch_Model_Queue
 
     protected $table;
     protected $logTable;
+    protected $archiveTable;
 
     /** @var Magento_Db_Adapter_Pdo_Mysql */
     protected $db;
@@ -38,7 +39,8 @@ class Algolia_Algoliasearch_Model_Queue
         $coreResource = Mage::getSingleton('core/resource');
 
         $this->table = $coreResource->getTableName('algoliasearch/queue');
-        $this->logTable = $this->table.'_log';
+        $this->logTable = $coreResource->getTableName('algoliasearch/queue_log');
+        $this->archiveTable = $coreResource->getTableName('algoliasearch/queue_archive');
 
         $this->db = $coreResource->getConnection('core_write');
 
@@ -170,14 +172,26 @@ class Algolia_Algoliasearch_Model_Queue
         }
     }
 
+    private function archiveFailedJobs($whereClause)
+    {
+        $this->db->query(
+            "INSERT INTO {$this->archiveTable} (pid, class, method, data, error_log, data_size, created_at) 
+                  SELECT pid, class, method, data, error_log, data_size, NOW()
+                  FROM {$this->table}
+                  WHERE " . $whereClause
+        );
+    }
+
     private function getJobs($maxJobs, $pid)
     {
         // Clear jobs with crossed max retries count
         $retryLimit = $this->config->getRetryLimit();
         if ($retryLimit > 0) {
             $where = $this->db->quoteInto('retries >= ?', $retryLimit);
+            $this->archiveFailedJobs($where);
             $this->db->delete($this->table, $where);
         } else {
+            $this->archiveFailedJobs('retries > max_retries');
             $this->db->delete($this->table, 'retries > max_retries');
         }
 
