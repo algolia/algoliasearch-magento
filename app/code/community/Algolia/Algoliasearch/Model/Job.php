@@ -3,6 +3,7 @@
 class Algolia_Algoliasearch_Model_Job extends Mage_Core_Model_Abstract
 {
     const CACHE_TAG = 'algoliasearch_queue_job';
+
     protected $_cacheTag = 'algoliasearch_queue_job';
     protected $_eventPrefix = 'algoliasearch_queue_job';
     protected $_eventObject = 'queue_job';
@@ -47,7 +48,7 @@ class Algolia_Algoliasearch_Model_Job extends Mage_Core_Model_Abstract
     /**
      * @param Exception $e
      *
-     * @return Job
+     * @return Algolia_Algoliasearch_Model_Job
      */
     public function saveError(Exception $e)
     {
@@ -56,5 +57,4 @@ class Algolia_Algoliasearch_Model_Job extends Mage_Core_Model_Abstract
 
         return $this;
     }
-
 }

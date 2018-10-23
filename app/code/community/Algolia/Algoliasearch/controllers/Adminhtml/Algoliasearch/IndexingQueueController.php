@@ -46,7 +46,7 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_IndexingQueueController exte
             return;
         }
 
-        Mage::register('algoliasearch_indexingqueue_job', $job);
+        Mage::register('algoliasearch_current_job', $job);
 
         $this->loadLayout();
         $this->_setActiveMenu('system/algolia/indexing_queue');
@@ -88,7 +88,7 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_IndexingQueueController exte
     {
         if (!Mage::helper('algoliasearch/config')->isQueueActive()) {
             Mage::getSingleton('adminhtml/session')->addWarning(
-                $this->__('The indexing queue is not activated. Please activate it in the <a href="%s">Algolia configuration</a>.',
+                $this->__('The indexing queue is not enabled. Please activate it in your <a href="%s">Algolia configuration</a>.',
                     $this->getUrl('adminhtml/system_config/edit/section/algoliasearch')));
         }
     }

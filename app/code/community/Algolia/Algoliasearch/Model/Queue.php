@@ -146,23 +146,33 @@ class Algolia_Algoliasearch_Model_Queue
                 $method = $job['method'];
                 $model->{$method}(new Varien_Object($job['data']));
 
+                // Delete one by one
+                $where = $this->db->quoteInto('job_id IN (?)', $job['merged_ids']);
+                $this->db->delete($this->table, $where);
+
                 $this->logRecord['processed_jobs'] += count($job['merged_ids']);
             } catch (\Exception $e) {
                 $this->noOfFailedJobs++;
 
-                // Increment retries, set the job ID back to NULL
-                $updateQuery = "UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = NULL, retries = retries + 1 WHERE job_id IN (".implode(', ', (array) $job['merged_ids']).")";
-                $this->db->query($updateQuery);
+                // Log error information
+                $logMessage = 'Queue processing ' . $job['pid'] . ' [KO]: 
+                     Class: ' . $job['class'] . ', 
+                     Method: ' . $job['method'] . ', 
+                     Parameters: ' . json_encode($job['data']);
+                $this->logger->log($logMessage);
 
-                // log error information
-                $this->logger->log("Queue processing {$job['pid']} [KO]: Mage::getSingleton({$job['class']})->{$job['method']}(".json_encode($job['data']).')');
-                $this->logger->log(date('c').' ERROR: '.get_class($e).": '{$e->getMessage()}' in {$e->getFile()}:{$e->getLine()}\n"."Stack trace:\n".$e->getTraceAsString());
+                $logMessage = date('c') . ' ERROR: ' . get_class($e) . ': 
+                    ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() .
+                    "\nStack trace:\n" . $e->getTraceAsString();
+                $this->logger->log($logMessage);
+
+                // Increment retries, set the job ID back to NULL
+                $updateQuery = "UPDATE {$this->db->quoteIdentifier($this->table, true)} 
+                  SET pid = NULL, retries = retries + 1 , error_log = '" . addslashes($logMessage) . "'
+                  WHERE job_id IN (".implode(', ', (array) $job['merged_ids']).")";
+                $this->db->query($updateQuery);
             }
         }
-
-        // Delete only when finished to be able to debug the queue if needed
-        $where = $this->db->quoteInto('pid = ?', $pid);
-        $this->db->delete($this->table, $where);
 
         $isFullReindex = ($maxJobs === -1);
         if ($isFullReindex) {
@@ -252,20 +262,21 @@ class Algolia_Algoliasearch_Model_Queue
                 }
             }
 
+            if (isset($firstJobId)) {
+                $lastJobId = $this->maxValueInArray($jobs, 'job_id');
+
+                // Reserve all new jobs since last run
+                $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} 
+                  SET pid = " . $pid . ' 
+                  WHERE job_id >= ' . $firstJobId . " AND job_id <= $lastJobId");
+            }
+
             $this->db->commit();
         } catch (\Exception $e) {
             $this->db->rollBack();
             $this->db->closeConnection();
 
             throw $e;
-        }
-
-
-        if (isset($firstJobId)) {
-            $lastJobId = $this->maxValueInArray($jobs, 'job_id');
-
-            // Reserve all new jobs since last run
-            $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = ".$pid.' WHERE job_id >= '.$firstJobId." AND job_id <= $lastJobId");
         }
 
         return $jobs;

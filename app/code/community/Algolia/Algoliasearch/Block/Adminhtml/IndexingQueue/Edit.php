@@ -26,7 +26,7 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Edit extends Mage_Admi
     public function getHeaderText()
     {
         return Mage::helper('algoliasearch')->__('Algolia Search - Indexing Queue Job #%s',
-            Mage::registry('algoliasearch_indexingqueue_job')->getJobId());
+            Mage::registry('algoliasearch_current_job')->getJobId());
     }
 
     /**
