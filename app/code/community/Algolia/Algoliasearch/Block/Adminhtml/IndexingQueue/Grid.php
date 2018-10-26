@@ -84,6 +84,23 @@ class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Grid extends Mage_Admi
             'type' => 'number'
         ));
 
+        $this->addColumn('action',
+            array(
+                'header'    => Mage::helper('algoliasearch')->__('Action'),
+                'width'     => '50px',
+                'type'      => 'action',
+                'getter'     => 'getJobId',
+                'actions'   => array(
+                    array(
+                        'caption' => Mage::helper('algoliasearch')->__('View'),
+                        'url'     => array('base'=>'*/*/view'),
+                        'field'   => 'id'
+                    )
+                ),
+                'filter'    => false,
+                'sortable'  => false,
+            ));
+
         return parent::_prepareColumns();
     }
 

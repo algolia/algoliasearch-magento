@@ -3,8 +3,10 @@
 class Algolia_Algoliasearch_Model_Source_JobMethods
 {
     protected $_methods = array(
+        'saveSettings' => 'Save Settings',
         'saveConfigurationToAlgolia' => 'Save Configuration',
         'moveIndex' => 'Move Index',
+        'moveProductsTmpIndex' => 'Move Products Temp Index',
         'deleteObjects' => 'Object Deletion',
         'rebuildStoreCategoryIndex' => 'Store Category Reindex',
         'rebuildCategoryIndex' => 'Category Reindex',
