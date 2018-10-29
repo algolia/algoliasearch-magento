@@ -577,14 +577,14 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                                 false, $currency_code);
                         }
                     }
-                } else {
-                    if ($special_price && $special_price < $customData[$field][$currency_code]['default']) {
-                        $customData[$field][$currency_code]['default_original_formated'] = $customData[$field][$currency_code]['default_formated'];
+                }
 
-                        $customData[$field][$currency_code]['default'] = $special_price;
-                        $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($special_price,
-                            false, $currency_code);
-                    }
+                if ($special_price && $special_price < $customData[$field][$currency_code]['default']) {
+                    $customData[$field][$currency_code]['default_original_formated'] = $customData[$field][$currency_code]['default_formated'];
+
+                    $customData[$field][$currency_code]['default'] = $special_price;
+                    $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($special_price,
+                        false, $currency_code);
                 }
 
                 if ($type == 'grouped' || $type == 'bundle' || $type == 'configurable') {
