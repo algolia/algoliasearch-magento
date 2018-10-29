@@ -336,20 +336,16 @@ document.addEventListener("DOMContentLoaded", function (e) {
 
 					var ors = '';
 
-					var isCategoryFacetEnabled = false;
-					for (var i=0; i<algoliaConfig.facets.length; i++) {
-						if (algoliaConfig.facets[i].attribute == "categories") {
-							isCategoryFacetEnabled = true;
-						}
-					}
-
-					if (isCategoryFacetEnabled) {
-						if (keys.length > 0) {
-							ors += '<span><a href="' + keys[0].url + '">' + keys[0].key + '</a></span>';
-						}
-
-						if (keys.length > 1) {
-							ors += ', <span><a href="' + keys[1].url + '">' + keys[1].key + '</a></span>';
+					if (keys.length > 0) {
+						var orsTab = [];
+						for (var i = 0; i<algoliaConfig.facets.length; i++) {
+							if (algoliaConfig.facets[i].attribute == "categories") {
+								for (var i=0; i<keys.length && i<2 ; i++) {
+									orsTab.push('<span><a href="' + keys[i].url + '">' + keys[i].key + '</a></span>');
+								}
+								ors = orsTab.join(', ');
+								break;
+							}
 						}
 					}
 
