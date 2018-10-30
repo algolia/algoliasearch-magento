@@ -1,5 +1,9 @@
 # CHANGE LOG
 
+## 1.14.1
+
+- Remove the default creation of the color facet query rule (#1072)
+
 ## 1.14.0
 
 ### FEATURES
