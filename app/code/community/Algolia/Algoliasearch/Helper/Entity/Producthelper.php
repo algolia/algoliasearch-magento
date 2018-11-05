@@ -1,5 +1,7 @@
 <?php
 
+use AlgoliaSearch\AlgoliaException;
+
 class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algoliasearch_Helper_Entity_Helper
 {
     protected static $_productAttributes;
@@ -440,7 +442,18 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         if ($saveToTmpIndicesToo === true) {
-            $this->algolia_helper->copyQueryRules($this->getIndexName($storeId), $this->getIndexName($storeId, $saveToTmpIndicesToo));
+            $indexName = $this->getIndexName($storeId);
+            $indexNameTmp = $this->getIndexName($storeId, $saveToTmpIndicesToo);
+
+            try {
+                $this->algolia_helper->copyQueryRules($indexName, $indexNameTmp);
+            } catch (AlgoliaException $e) {
+                // Fail silently if query rules are disabled on the app
+                // If QRs are disabled, nothing will happen and the extension will work as expected
+                if ($e->getMessage() !== 'Query Rules are not enabled on this application') {
+                    throw $e;
+                }
+            }
         }
     }
 
@@ -1178,22 +1191,28 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     private function clearFacetsQueryRules($index)
     {
-        $hitsPerPage = 100;
-        $page = 0;
-        do {
-            $fetchedQueryRules = $index->searchRules(
-                array(
-                    'context' => 'magento_filters',
-                    'page' => $page,
-                    'hitsPerPage' => $hitsPerPage,
-                )
-            );
+        try {
+            $hitsPerPage = 100;
+            $page = 0;
+            do {
+                $fetchedQueryRules = $index->searchRules(array(
+                        'context' => 'magento_filters',
+                        'page' => $page,
+                        'hitsPerPage' => $hitsPerPage,
+                    ));
 
-            foreach ($fetchedQueryRules['hits'] as $hit) {
-                $index->deleteRule($hit['objectID'], true);
+                foreach ($fetchedQueryRules['hits'] as $hit) {
+                    $index->deleteRule($hit['objectID'], true);
+                }
+
+                $page++;
+            } while (($page * $hitsPerPage) < $fetchedQueryRules['nbHits']);
+        } catch (AlgoliaException $e) {
+            // Fail silently if query rules are disabled on the app
+            // If QRs are disabled, nothing will happen and the extension will work as expected
+            if ($e->getMessage() !== 'Query Rules are not enabled on this application') {
+                throw $e;
             }
-
-            $page++;
-        } while (($page * $hitsPerPage) < $fetchedQueryRules['nbHits']);
+        }
     }
 }
