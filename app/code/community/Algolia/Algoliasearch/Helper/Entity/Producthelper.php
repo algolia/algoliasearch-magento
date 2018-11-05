@@ -603,6 +603,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                                 if (!$sub_product->isSalable()) {
                                     continue;
                                 }
+
                                 $price = (double) $taxHelper->getPrice($product, $sub_product->getFinalPrice(), $with_tax,
                                                          null, null, null, $product->getStore(), null);
 
@@ -610,6 +611,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                                 $max = max($max, $price);
                             }
                         }
+
                         if ($min > $max) {
                             $min = $max;
                         } // avoid to have PHP_INT_MAX in case of no salable subproducts (Corner case of visibility and stock options)
