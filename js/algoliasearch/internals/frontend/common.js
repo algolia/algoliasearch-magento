@@ -321,13 +321,17 @@ document.addEventListener("DOMContentLoaded", function (e) {
 			if (section.name === 'products') {
 				source.templates.footer = function (query, content) {
 					var keys = [];
-					for (var key in content.facets['categories.level0']) {
-						var url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query.query) + '#q=' + encodeURIComponent(query.query) + '&hFR[categories.level0][0]=' + encodeURIComponent(key) + '&idx=' + algoliaConfig.indexName + '_products';
-						keys.push({
-							key: key,
-							value: content.facets['categories.level0'][key],
-							url: url
-						});
+					for (var i = 0; i<algoliaConfig.facets.length; i++) {
+						if (algoliaConfig.facets[i].attribute == "categories") {
+							for (var key in content.facets['categories.level0']) {
+								var url = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query.query) + '#q=' + encodeURIComponent(query.query) + '&hFR[categories.level0][0]=' + encodeURIComponent(key) + '&idx=' + algoliaConfig.indexName + '_products';
+								keys.push({
+									key: key,
+									value: content.facets['categories.level0'][key],
+									url: url
+								});
+							}
+						}
 					}
 
 					keys.sort(function (a, b) {
@@ -338,15 +342,10 @@ document.addEventListener("DOMContentLoaded", function (e) {
 
 					if (keys.length > 0) {
 						var orsTab = [];
-						for (var i = 0; i<algoliaConfig.facets.length; i++) {
-							if (algoliaConfig.facets[i].attribute == "categories") {
-								for (var i=0; i<keys.length && i<2 ; i++) {
-									orsTab.push('<span><a href="' + keys[i].url + '">' + keys[i].key + '</a></span>');
-								}
-								ors = orsTab.join(', ');
-								break;
-							}
+						for (var i = 0; i < keys.length && i < 2; i++) {
+							orsTab.push('<span><a href="' + keys[i].url + '">' + keys[i].key + '</a></span>');
 						}
+						ors = orsTab.join(', ');
 					}
 
 					var allUrl = algoliaConfig.baseUrl + '/catalogsearch/result/?q=' + encodeURIComponent(query.query);
