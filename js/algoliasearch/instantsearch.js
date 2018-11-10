@@ -584,6 +584,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     function addSearchForFacetValues(facet, options) {
         if (facet.searchable === '1') {
             options['searchForFacetValues'] = {
+								isAlwaysActive: true,
                 placeholder: algoliaConfig.translations.searchForFacetValuesPlaceholder,
                 templates: {
                     noResults: '<div class="sffv-no-results">' + algoliaConfig.translations.noResults + '</div>'
