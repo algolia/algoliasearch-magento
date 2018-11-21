@@ -18,7 +18,7 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliadeleteproducts extends Algolia_
 
     public function getName()
     {
-        return Mage::helper('algoliasearch')->__('Algolia Search - Delete inactive products');
+        return Mage::helper('algoliasearch')->__('Algolia Search - Remove inactive products from Algolia');
     }
 
     public function getDescription()

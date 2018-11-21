@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.15.0</version>
+            <version>1.14.1</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -209,7 +209,7 @@
             <instant>
                 <replace_categories>1</replace_categories>
                 <instant_selector>.main</instant_selector>
-                <facets>a:3:{s:18:"_1432907948596_596";a:5:{s:9:"attribute";s:5:"price";s:4:"type";s:6:"slider";s:5:"label";s:5:"Price";s:10:"searchable";s:1:"2";s:11:"create_rule";s:1:"2";}s:18:"_1432907963376_376";a:5:{s:9:"attribute";s:10:"categories";s:4:"type";s:11:"conjunctive";s:5:"label";s:10:"Categories";s:10:"searchable";s:1:"2";s:11:"create_rule";s:1:"2";}s:17:"_1447846054032_32";a:5:{s:9:"attribute";s:5:"color";s:4:"type";s:11:"disjunctive";s:5:"label";s:6:"Colors";s:10:"searchable";s:1:"1";s:11:"create_rule";s:1:"1";}}</facets>
+                <facets>a:3:{s:18:"_1432907948596_596";a:5:{s:9:"attribute";s:5:"price";s:4:"type";s:6:"slider";s:5:"label";s:5:"Price";s:10:"searchable";s:1:"2";s:11:"create_rule";s:1:"2";}s:18:"_1432907963376_376";a:5:{s:9:"attribute";s:10:"categories";s:4:"type";s:11:"conjunctive";s:5:"label";s:10:"Categories";s:10:"searchable";s:1:"2";s:11:"create_rule";s:1:"2";}s:17:"_1447846054032_32";a:5:{s:9:"attribute";s:5:"color";s:4:"type";s:11:"disjunctive";s:5:"label";s:6:"Colors";s:10:"searchable";s:1:"1";s:11:"create_rule";s:1:"2";}}</facets>
                 <max_values_per_facet>10</max_values_per_facet>
                 <sorts>a:3:{s:18:"_1432908018844_844";a:3:{s:9:"attribute";s:5:"price";s:4:"sort";s:3:"asc";s:5:"label";s:12:"Lowest price";}s:18:"_1432908022539_539";a:3:{s:9:"attribute";s:5:"price";s:4:"sort";s:4:"desc";s:5:"label";s:13:"Highest price";}s:18:"_1433768597454_454";a:3:{s:9:"attribute";s:10:"created_at";s:4:"sort";s:4:"desc";s:5:"label";s:12:"Newest first";}}</sorts>
                 <add_to_cart_enable>1</add_to_cart_enable>
