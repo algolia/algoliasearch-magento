@@ -7,6 +7,7 @@ class Algolia_Algoliasearch_Model_Queue
 
     protected $table;
     protected $logTable;
+    protected $archiveTable;
 
     /** @var Magento_Db_Adapter_Pdo_Mysql */
     protected $db;
@@ -38,7 +39,8 @@ class Algolia_Algoliasearch_Model_Queue
         $coreResource = Mage::getSingleton('core/resource');
 
         $this->table = $coreResource->getTableName('algoliasearch/queue');
-        $this->logTable = $this->table.'_log';
+        $this->logTable = $coreResource->getTableName('algoliasearch/queue_log');
+        $this->archiveTable = $coreResource->getTableName('algoliasearch/queue_archive');
 
         $this->db = $coreResource->getConnection('core_write');
 
@@ -59,6 +61,28 @@ class Algolia_Algoliasearch_Model_Queue
             'data_size' => $data_size,
             'pid'       => null,
         ));
+    }
+
+    /**
+     * Return the average processing time for the 2 last two days
+     * (null if there was less than 100 runs with processed jobs)
+     *
+     * @throws \Zend_Db_Statement_Exception
+     *
+     * @return float|null
+     */
+    public function getAverageProcessingTime()
+    {
+        $data = $this->db->query(
+            $this->db->select()
+                ->from($this->logTable, array('number_of_runs' => 'COUNT(duration)', 'average_time' => 'AVG(duration)'))
+                ->where('processed_jobs > 0 AND with_empty_queue = 0 AND started >= (CURDATE() - INTERVAL 2 DAY)')
+        );
+        $result = $data->fetch();
+
+        return (int) $result['number_of_runs'] >= 100 && isset($result['average_time']) ?
+            (float) $result['average_time'] :
+            null;
     }
 
     public function runCron($nbJobs = null, $force = false)
@@ -122,23 +146,33 @@ class Algolia_Algoliasearch_Model_Queue
                 $method = $job['method'];
                 $model->{$method}(new Varien_Object($job['data']));
 
+                // Delete one by one
+                $where = $this->db->quoteInto('job_id IN (?)', $job['merged_ids']);
+                $this->db->delete($this->table, $where);
+
                 $this->logRecord['processed_jobs'] += count($job['merged_ids']);
             } catch (\Exception $e) {
                 $this->noOfFailedJobs++;
 
-                // Increment retries, set the job ID back to NULL
-                $updateQuery = "UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = NULL, retries = retries + 1 WHERE job_id IN (".implode(', ', (array) $job['merged_ids']).")";
-                $this->db->query($updateQuery);
+                // Log error information
+                $logMessage = 'Queue processing ' . $job['pid'] . ' [KO]: 
+                     Class: ' . $job['class'] . ', 
+                     Method: ' . $job['method'] . ', 
+                     Parameters: ' . json_encode($job['data']);
+                $this->logger->log($logMessage);
 
-                // log error information
-                $this->logger->log("Queue processing {$job['pid']} [KO]: Mage::getSingleton({$job['class']})->{$job['method']}(".json_encode($job['data']).')');
-                $this->logger->log(date('c').' ERROR: '.get_class($e).": '{$e->getMessage()}' in {$e->getFile()}:{$e->getLine()}\n"."Stack trace:\n".$e->getTraceAsString());
+                $logMessage = date('c') . ' ERROR: ' . get_class($e) . ': 
+                    ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() .
+                    "\nStack trace:\n" . $e->getTraceAsString();
+                $this->logger->log($logMessage);
+
+                // Increment retries, set the job ID back to NULL
+                $updateQuery = "UPDATE {$this->db->quoteIdentifier($this->table, true)} 
+                  SET pid = NULL, retries = retries + 1 , error_log = '" . addslashes($logMessage) . "'
+                  WHERE job_id IN (".implode(', ', (array) $job['merged_ids']).")";
+                $this->db->query($updateQuery);
             }
         }
-
-        // Delete only when finished to be able to debug the queue if needed
-        $where = $this->db->quoteInto('pid = ?', $pid);
-        $this->db->delete($this->table, $where);
 
         $isFullReindex = ($maxJobs === -1);
         if ($isFullReindex) {
@@ -148,14 +182,26 @@ class Algolia_Algoliasearch_Model_Queue
         }
     }
 
+    private function archiveFailedJobs($whereClause)
+    {
+        $this->db->query(
+            "INSERT INTO {$this->archiveTable} (pid, class, method, data, error_log, data_size, created_at) 
+                  SELECT pid, class, method, data, error_log, data_size, NOW()
+                  FROM {$this->table}
+                  WHERE " . $whereClause
+        );
+    }
+
     private function getJobs($maxJobs, $pid)
     {
         // Clear jobs with crossed max retries count
         $retryLimit = $this->config->getRetryLimit();
         if ($retryLimit > 0) {
             $where = $this->db->quoteInto('retries >= ?', $retryLimit);
+            $this->archiveFailedJobs($where);
             $this->db->delete($this->table, $where);
         } else {
+            $this->archiveFailedJobs('retries > max_retries');
             $this->db->delete($this->table, 'retries > max_retries');
         }
 
@@ -216,20 +262,21 @@ class Algolia_Algoliasearch_Model_Queue
                 }
             }
 
+            if (isset($firstJobId)) {
+                $lastJobId = $this->maxValueInArray($jobs, 'job_id');
+
+                // Reserve all new jobs since last run
+                $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} 
+                  SET pid = " . $pid . ' 
+                  WHERE job_id >= ' . $firstJobId . " AND job_id <= $lastJobId");
+            }
+
             $this->db->commit();
         } catch (\Exception $e) {
             $this->db->rollBack();
             $this->db->closeConnection();
 
             throw $e;
-        }
-
-
-        if (isset($firstJobId)) {
-            $lastJobId = $this->maxValueInArray($jobs, 'job_id');
-
-            // Reserve all new jobs since last run
-            $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = ".$pid.' WHERE job_id >= '.$firstJobId." AND job_id <= $lastJobId");
         }
 
         return $jobs;
@@ -414,6 +461,14 @@ class Algolia_Algoliasearch_Model_Queue
 
         if ($idsToDelete) {
             $this->db->query("DELETE FROM {$this->logTable} WHERE id IN (" . implode(", ", $idsToDelete) . ")");
+        }
+    }
+
+    public function clearQueue($canClear = false)
+    {
+        if ($canClear) {
+            $this->db->truncateTable($this->table);
+            $this->logger->log("{$this->table} table has been truncated.");
         }
     }
 }

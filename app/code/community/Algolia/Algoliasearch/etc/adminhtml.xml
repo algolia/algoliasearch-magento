@@ -12,10 +12,15 @@
                             <action>adminhtml/system_config/edit/section/algoliasearch</action>
                             <sort_order>0</sort_order>
                         </configuration>
+                        <indexing_queue translate="title" module="algoliasearch">
+                            <title>Indexing Queue</title>
+                            <action>adminhtml/algoliasearch_indexingqueue</action>
+                            <sort_order>10</sort_order>
+                        </indexing_queue>
                         <reindexsku translate="title" module="algoliasearch">
                             <title>Reindex SKU(s)</title>
                             <action>adminhtml/algoliasearch_reindexsku</action>
-                            <sort_order>10</sort_order>
+                            <sort_order>20</sort_order>
                         </reindexsku>
                     </children>
                 </algoliasearch>
@@ -39,9 +44,13 @@
                             <algoliasearch>
                                 <title>Algolia Search</title>
                                 <children>
+                                    <indexing_queue translate="title" module="algoliasearch">
+                                        <title>Indexing Queue</title>
+                                        <sort_order>100</sort_order>
+                                    </indexing_queue>
                                     <reindexsku translate="title" module="algoliasearch">
                                         <title>Reindex SKU(s)</title>
-                                        <sort_order>100</sort_order>
+                                        <sort_order>110</sort_order>
                                     </reindexsku>
                                 </children>
                             </algoliasearch>

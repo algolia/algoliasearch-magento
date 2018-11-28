@@ -2,6 +2,7 @@
 
 class Algolia_Algoliasearch_Model_Indexer_Algoliaqueuerunner extends Mage_Index_Model_Indexer_Abstract
 {
+    const INDEXER_ID = 'algolia_queue_runner';
     const EVENT_MATCH_RESULT_KEY = 'algoliasearch_match_result';
 
     /** @var Algolia_Algoliasearch_Helper_Config */
