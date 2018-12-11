@@ -11,7 +11,7 @@ $storeId = Mage::app()->getStore()->getStoreId();
 $currencyCode = Mage::app()->getStore()->getCurrentCurrencyCode();
 
 $priceKey = '.'.$currencyCode.'.default';
-if ($config->isCustomerGroupsEnabled($storeId) && $customerGroupId !== 0) {
+if ($config->isCustomerGroupsEnabled($storeId)) {
     $priceKey = '.'.$currencyCode.'.group_'.$customerGroupId;
 }
 
