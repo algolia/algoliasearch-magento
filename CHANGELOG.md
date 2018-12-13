@@ -1,5 +1,24 @@
 # CHANGE LOG
 
+## 1.15.0
+
+### Features
+- [Reindex SKUs](https://community.algolia.com/doc/m1/sku-reindexing-form/) form (#1061)
+    - This form allows you to reindex manually up to 10 SKUs 
+    - Recommended for troubleshooting your products
+- Indexing queue page (#1070)
+    - The page shows the status and remaining jobs in indexing queue
+    - It offers suggestions to improve performance of the queue to get the fastest indexing
+
+### Updates 
+- Improved price formatting on facets (#1051)
+- Improved admin notification block (#1060)
+
+### Fixes 
+- Fix autocomplete bottom links (#1066)
+- Fix special prices when customer groups are enabled (#1071)
+- Fix error with configuration save while query rules are disabled (#1077)
+
 ## 1.14.1
 
 - Remove the default creation of the color facet query rule (#1072)
