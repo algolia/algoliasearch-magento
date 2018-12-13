@@ -1,6 +1,6 @@
 <?php
 
-class Algolia_Algoliasearch_Adminhtml_AlgoliaQueueController extends Mage_Adminhtml_Controller_Action
+class Algolia_Algoliasearch_Adminhtml_Algoliasearch_QueueController extends Mage_Adminhtml_Controller_Action
 {
     public function _isAllowed()
     {
@@ -42,13 +42,10 @@ class Algolia_Algoliasearch_Adminhtml_AlgoliaQueueController extends Mage_Adminh
 
     public function truncateAction()
     {
-        /** @var Mage_Core_Model_Resource $resource */
-        $resource = Mage::getSingleton('core/resource');
-        $tableName = $resource->getTableName('algoliasearch/queue');
-
         try {
-            $writeConnection = $resource->getConnection('core_write');
-            $writeConnection->query('TRUNCATE TABLE '.$tableName);
+            /** @var Algolia_Algoliasearch_Model_Queue $queue */
+            $queue = Mage::getModel('algoliasearch/queue');
+            $queue->clearQueue(true);
 
             $status = array('status' => 'ok');
         } catch (\Exception $e) {

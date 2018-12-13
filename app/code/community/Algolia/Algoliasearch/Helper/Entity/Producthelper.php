@@ -1,7 +1,11 @@
 <?php
 
+use AlgoliaSearch\AlgoliaException;
+
 class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algoliasearch_Helper_Entity_Helper
 {
+    private $compositeTypes;
+
     protected static $_productAttributes;
     protected static $_currencies;
 
@@ -440,7 +444,18 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         if ($saveToTmpIndicesToo === true) {
-            $this->algolia_helper->copyQueryRules($this->getIndexName($storeId), $this->getIndexName($storeId, $saveToTmpIndicesToo));
+            $indexName = $this->getIndexName($storeId);
+            $indexNameTmp = $this->getIndexName($storeId, $saveToTmpIndicesToo);
+
+            try {
+                $this->algolia_helper->copyQueryRules($indexName, $indexNameTmp);
+            } catch (AlgoliaException $e) {
+                // Fail silently if query rules are disabled on the app
+                // If QRs are disabled, nothing will happen and the extension will work as expected
+                if ($e->getMessage() !== 'Query Rules are not enabled on this application') {
+                    throw $e;
+                }
+            }
         }
     }
 
@@ -568,21 +583,29 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $group_id = (int) $group->getData('customer_group_id');
 
                         if ($special_price && $special_price < $customData[$field][$currency_code]['group_'.$group_id]) {
-                            $customData[$field][$currency_code]['group_'.$group_id.'_original_formated'] = $customData[$field][$currency_code]['default_formated'];
+                            $customData[$field][$currency_code]['group_'.$group_id.'_original_formated'] =
+                                $customData[$field][$currency_code]['default_formated'];
 
                             $customData[$field][$currency_code]['group_'.$group_id] = $special_price;
-                            $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $this->formatPrice($special_price,
-                                false, $currency_code);
+                            $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $this->formatPrice(
+                                $special_price,
+                                false,
+                                $currency_code
+                            );
                         }
                     }
-                } else {
-                    if ($special_price && $special_price < $customData[$field][$currency_code]['default']) {
-                        $customData[$field][$currency_code]['default_original_formated'] = $customData[$field][$currency_code]['default_formated'];
+                }
 
-                        $customData[$field][$currency_code]['default'] = $special_price;
-                        $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($special_price,
-                            false, $currency_code);
-                    }
+                if ($special_price && $special_price < $customData[$field][$currency_code]['default']) {
+                    $customData[$field][$currency_code]['default_original_formated'] =
+                        $customData[$field][$currency_code]['default_formated'];
+
+                    $customData[$field][$currency_code]['default'] = $special_price;
+                    $customData[$field][$currency_code]['default_formated'] = $this->formatPrice(
+                        $special_price,
+                        false,
+                        $currency_code
+                    );
                 }
 
                 if ($type == 'grouped' || $type == 'bundle' || $type == 'configurable') {
@@ -598,15 +621,21 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     } else {
                         if (count($sub_products) > 0) {
                             foreach ($sub_products as $sub_product) {
+                                if (!$sub_product->isSalable()) {
+                                    continue;
+                                }
+
                                 $price = (double) $taxHelper->getPrice($product, $sub_product->getFinalPrice(), $with_tax,
                                                          null, null, null, $product->getStore(), null);
 
                                 $min = min($min, $price);
                                 $max = max($max, $price);
                             }
-                        } else {
+                        }
+
+                        if ($min > $max) {
                             $min = $max;
-                        } // avoid to have PHP_INT_MAX in case of no subproducts (Corner case of visibility and stock options)
+                        } // avoid to have PHP_INT_MAX in case of no salable subproducts (Corner case of visibility and stock options)
                     }
 
                     if ($min != $max) {
@@ -1041,6 +1070,46 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         return $customData;
     }
 
+    /**
+     * Returns all parent product IDs, e.g. when simple product is part of configurable or bundle
+     *
+     * @param array $productIds
+     * @return array
+     */
+    public function getParentProductIds(array $productIds)
+    {
+        $parentIds = array();
+        foreach ($this->getCompositeTypes() as $typeInstance) {
+            $parentIds = array_merge($parentIds, $typeInstance->getParentIdsByChild($productIds));
+        }
+
+        return $parentIds;
+    }
+
+    /**
+     * Returns composite product type instances
+     *
+     * @return Mage_Catalog_Model_Product_Type[]
+     *
+     * @see Mage_Catalog_Model_Resource_Product_Flat_Indexer::getProductTypeInstances()
+     */
+    private function getCompositeTypes()
+    {
+        if ($this->compositeTypes === null) {
+            /** @var Mage_Catalog_Model_Product $productEmulator */
+            $productEmulator = Mage::getModel('catalog/product');
+
+            /** @var Mage_Catalog_Model_Product_Type $productType */
+            $productType = Mage::getModel('catalog/product_type');
+            foreach ($productType->getCompositeTypes() as $typeId) {
+                $productEmulator->setTypeId($typeId);
+                $this->compositeTypes[$typeId] = $productType->factory($productEmulator);
+            }
+        }
+
+        return $this->compositeTypes;
+    }
+    
     public function getAllProductIds($storeId)
     {
         $products = Mage::getModel('catalog/product')->getCollection();
@@ -1082,6 +1151,45 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         }
 
         return $catalog_productVisibility->{$visibilityMethod}();
+    }
+
+    /**
+     * Check if product can be index on Algolia
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @param int     $storeId
+     *
+     * @return bool
+     *
+     */
+    public function canProductBeReindexed(Mage_Catalog_Model_Product $product, $storeId)
+    {
+        if ($product->isDeleted() === true) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductDeletedException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if ($product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_DISABLED) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductDisabledException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if ($this->shouldIndexProductByItsVisibility($product, $storeId) === false) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductNotVisibleException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        if (!$this->config->getShowOutOfStock($storeId)
+            && !$product->getStockItem()->getIsInStock()) {
+            throw (new Algolia_Algoliasearch_Model_Exception_ProductOutOfStockException())
+                ->withProduct($product)
+                ->withStoreId($storeId);
+        }
+
+        return true;
     }
 
     private function explodeSynomyms($synonyms)
@@ -1178,22 +1286,28 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     private function clearFacetsQueryRules($index)
     {
-        $hitsPerPage = 100;
-        $page = 0;
-        do {
-            $fetchedQueryRules = $index->searchRules(
-                array(
-                    'context' => 'magento_filters',
-                    'page' => $page,
-                    'hitsPerPage' => $hitsPerPage,
-                )
-            );
+        try {
+            $hitsPerPage = 100;
+            $page = 0;
+            do {
+                $fetchedQueryRules = $index->searchRules(array(
+                        'context' => 'magento_filters',
+                        'page' => $page,
+                        'hitsPerPage' => $hitsPerPage,
+                    ));
 
-            foreach ($fetchedQueryRules['hits'] as $hit) {
-                $index->deleteRule($hit['objectID'], true);
+                foreach ($fetchedQueryRules['hits'] as $hit) {
+                    $index->deleteRule($hit['objectID'], true);
+                }
+
+                $page++;
+            } while (($page * $hitsPerPage) < $fetchedQueryRules['nbHits']);
+        } catch (AlgoliaException $e) {
+            // Fail silently if query rules are disabled on the app
+            // If QRs are disabled, nothing will happen and the extension will work as expected
+            if ($e->getMessage() !== 'Query Rules are not enabled on this application') {
+                throw $e;
             }
-
-            $page++;
-        } while (($page * $hitsPerPage) < $fetchedQueryRules['nbHits']);
+        }
     }
 }
