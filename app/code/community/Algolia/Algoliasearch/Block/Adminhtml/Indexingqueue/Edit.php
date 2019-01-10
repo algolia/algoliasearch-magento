@@ -1,6 +1,6 @@
 <?php
 
-class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Edit extends Mage_Adminhtml_Block_Widget_Form_Container
+class Algolia_Algoliasearch_Block_Adminhtml_Indexingqueue_Edit extends Mage_Adminhtml_Block_Widget_Form_Container
 {
     /**
      * Internal constructor.

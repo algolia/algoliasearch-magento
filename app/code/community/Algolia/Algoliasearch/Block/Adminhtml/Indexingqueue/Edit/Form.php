@@ -1,6 +1,6 @@
 <?php
 
-class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
+class Algolia_Algoliasearch_Block_Adminhtml_Indexingqueue_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
 {
     /**
      * @return Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Edit_Form

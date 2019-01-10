@@ -1,6 +1,6 @@
 <?php
 
-class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends Mage_Adminhtml_Controller_Action
+class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexskuController extends Mage_Adminhtml_Controller_Action
 {
     const MAX_SKUS = 10;
 
