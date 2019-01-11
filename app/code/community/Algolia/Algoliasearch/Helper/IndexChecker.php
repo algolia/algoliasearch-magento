@@ -4,10 +4,10 @@ class Algolia_Algoliasearch_Helper_IndexChecker extends Mage_Core_Helper_Abstrac
 {
     /** @var Algolia_Algoliasearch_Helper_Config */
     private $configHelper;
-    
+
     /** @var Varien_Db_Adapter_Interface */
     private $dbConnection;
-    
+
     /** @var array */
     private $pendingProductIds;
 
@@ -74,8 +74,8 @@ class Algolia_Algoliasearch_Helper_IndexChecker extends Mage_Core_Helper_Abstrac
         $returnArray = array();
 
         if ($this->configHelper->shouldCheckPriceIndex($storeId)) {
-            $maxVersion = $this->findLatestVersion('catalog_product_index_price_cl');
-            $returnArray = $this->findProductIdsPending('catalog_product_index_price_cl', 'entity_id', $maxVersion);
+            $maxVersion = $this->findLatestVersion($this->checkTablePrefix('catalog_product_index_price_cl'));
+            $returnArray = $this->findProductIdsPending($this->checkTablePrefix('catalog_product_index_price_cl'), 'entity_id', $maxVersion);
         }
 
         return $returnArray;
@@ -92,8 +92,8 @@ class Algolia_Algoliasearch_Helper_IndexChecker extends Mage_Core_Helper_Abstrac
         $returnArray = array();
 
         if ($this->configHelper->shouldCheckStockIndex($storeId)) {
-            $maxVersion = $this->findLatestVersion('cataloginventory_stock_status_cl');
-            $returnArray = $this->findProductIdsPending('cataloginventory_stock_status_cl', 'product_id', $maxVersion);
+            $maxVersion = $this->findLatestVersion($this->checkTablePrefix('cataloginventory_stock_status_cl'));
+            $returnArray = $this->findProductIdsPending($this->checkTablePrefix('cataloginventory_stock_status_cl'), 'product_id', $maxVersion);
         }
 
         return $returnArray;
@@ -111,11 +111,12 @@ class Algolia_Algoliasearch_Helper_IndexChecker extends Mage_Core_Helper_Abstrac
     private function findProductIdsPending($changeLogTable, $idColumn, $maxVersion)
     {
         $connection = $this->getConnection();
+        $joinCond = $this->checkTablePrefix('catalog_product_entity');
         $select = $connection->select()
-                             ->distinct()
-                             ->from($changeLogTable, $idColumn)
-                             ->join(array('catalog_product_entity' => 'catalog_product_entity'), "$changeLogTable.$idColumn = catalog_product_entity.entity_id", array())
-                             ->where('version_id > ?', $maxVersion);
+            ->distinct()
+            ->from($changeLogTable, $idColumn)
+            ->join(array($this->checkTablePrefix('catalog_product_entity') => $this->checkTablePrefix('catalog_product_entity')), "$changeLogTable.$idColumn = $joinCond.entity_id", array())
+            ->where('version_id > ?', $maxVersion);
 
         return $connection->fetchCol($select);
     }
@@ -130,8 +131,8 @@ class Algolia_Algoliasearch_Helper_IndexChecker extends Mage_Core_Helper_Abstrac
     {
         $connection = $this->getConnection();
         $select = $connection->select()
-                             ->from('enterprise_mview_metadata', 'version_id')
-                             ->where('changelog_name = ?', $changeLogTable);
+            ->from($this->checkTablePrefix('enterprise_mview_metadata'), 'version_id')
+            ->where('changelog_name = ?', $changeLogTable);
 
         return $connection->fetchOne($select);
     }
@@ -145,5 +146,18 @@ class Algolia_Algoliasearch_Helper_IndexChecker extends Mage_Core_Helper_Abstrac
         }
 
         return $this->dbConnection;
+    }
+
+
+    /**
+     * Call core/resource to check table name in case of table prefixing
+     *
+     * @param $table
+     * @return mixed
+     */
+    private function checkTablePrefix($table){
+
+        return Mage::getSingleton('core/resource')->getTableName($table);
+
     }
 }
