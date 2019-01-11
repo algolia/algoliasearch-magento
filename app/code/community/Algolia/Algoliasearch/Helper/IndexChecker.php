@@ -157,8 +157,6 @@ class Algolia_Algoliasearch_Helper_IndexChecker extends Mage_Core_Helper_Abstrac
      */
     private function checkTablePrefix($table)
     {
-
         return Mage::getSingleton('core/resource')->getTableName($table);
-
     }
 }
