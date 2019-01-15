@@ -52,21 +52,13 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
                     $this->checkAndReindex($product, $stores);
                 } catch (Algolia_Algoliasearch_Model_Exception_ProductUnknownSkuException $e) {
                     $session->addError($e->getMessage());
-                } catch (Algolia_Algoliasearch_Model_Exception_ProductDisabledException $e) {
-                    $session->addError(
-                        $this->__('The product "%s" (%s) is disabled in store "%s".', $e->getProduct()->getName(), $e->getProduct()->getSku(), $stores[$e->getStoreId()]->getName())
-                    );
                 } catch (Algolia_Algoliasearch_Model_Exception_ProductDeletedException $e) {
                     $session->addError(
-                        $this->__('The product "%s" (%s) is deleted from store "%s".', $e->getProduct()->getName(), $e->getProduct()->getSku(), $stores[$e->getStoreId()]->getName())
-                    );
-                } catch (Algolia_Algoliasearch_Model_Exception_ProductNotVisibleException $e) {
-                    $session->addError(
-                        $this->__('The product "%s" (%s) is not visible in store "%s".', $e->getProduct()->getName(), $e->getProduct()->getSku(), $stores[$e->getStoreId()]->getName())
+                        $this->__('The product "%s" (%s) is deleted.', $e->getProduct()->getName(), $e->getProduct()->getSku())
                     );
                 } catch (Algolia_Algoliasearch_Model_Exception_ProductOutOfStockException $e) {
                     $session->addError(
-                        $this->__('The product "%s" (%s) is out of stock in store "%s".', $e->getProduct()->getName(), $e->getProduct()->getSku(), $stores[$e->getStoreId()]->getName())
+                        $this->__('The product "%s" (%s) is out of stock.', $e->getProduct()->getName(), $e->getProduct()->getSku())
                     );
                 } catch (Exception $e) {
                     $session->addError($e->getMessage());
@@ -87,27 +79,55 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
         $productHelper = Mage::helper('algoliasearch/entity_producthelper');
         $session = Mage::getSingleton('adminhtml/session');
 
+        $websites = Mage::app()->getWebsites();
+        $groups = Mage::app()->getGroups();
+
         foreach ($stores as $storeId => $store) {
             if (!in_array($storeId, $product->getStoreIds())) {
-                $session->addNotice($this->__('The product "%s" (%s) is not associated with store "%s".',
-                    $product->getName(), $product->getSku(), $store->getName()));
+                $session->addNotice($this->__('The product "%s" (%s) is not associated with store "%s \ %s \ %s".',
+                    $product->getName(), $product->getSku(),
+                    $websites[$store->getWebsiteId()]->getName(),
+                    $groups[$store->getGroupId()]->getName(),
+                    $store->getName()));
                 continue;
             }
             try {
+                $product = Mage::getModel('catalog/product')->setStoreId($storeId)->load($product->getId());
                 $productHelper->canProductBeReindexed($product, $storeId);
-            } catch (Algolia_AlgoliaSearch_Model_Exception_ProductNotVisibleException $e) {
+            } catch (Algolia_Algoliasearch_Model_Exception_ProductDisabledException $e) {
+                $session->addError(
+                    $this->__('The product "%s" (%s) is disabled in store "%s \ %s \ %s".',
+                        $e->getProduct()->getName(), $e->getProduct()->getSku(),
+                        $websites[$store->getWebsiteId()]->getName(),
+                        $groups[$store->getGroupId()]->getName(),
+                        $stores[$e->getStoreId()]->getName())
+                );
+                continue;
+            } catch (Algolia_Algoliasearch_Model_Exception_ProductNotVisibleException $e) {
                 // If it's a simple product that is not visible, try to index its parent if it exists
                 if ($e->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE) {
                     $parentId = $productHelper->getParentProductIds(array($e->getProduct()->getId()));
                     if (isset($parentId[0])) {
                         $parentProduct = Mage::getModel('catalog/product')->load($parentId[0]);
                         $session->addError(
-                            $this->__('The product "%s" (%s) is not visible but it has a parent product "%s" (%s) for store "%s".',
+                            $this->__('The product "%s" (%s) is not visible but it has a parent product "%s" (%s) for store "%s \ %s \ %s".',
                                 $e->getProduct()->getName(), $e->getProduct()->getSku(), $parentProduct->getName(),
-                                $parentProduct->getSku(), $stores[$e->getStoreId()]->getName()));
+                                $parentProduct->getSku(),
+                                $websites[$store->getWebsiteId()]->getName(),
+                                $groups[$store->getGroupId()]->getName(),
+                                $stores[$e->getStoreId()]->getName()));
                         $this->checkAndReindex($parentProduct, array($stores[$e->getStoreId()]));
                         continue;
                     }
+                } else {
+                    $session->addError(
+                        $this->__('The product "%s" (%s) is not visible in store "%s \ %s \ %s".',
+                            $e->getProduct()->getName(), $e->getProduct()->getSku(),
+                            $websites[$store->getWebsiteId()]->getName(),
+                            $groups[$store->getGroupId()]->getName(),
+                            $stores[$e->getStoreId()]->getName())
+                    );
+                    continue;
                 }
             }
             $productIds = array($product->getId());
@@ -115,8 +135,12 @@ class Algolia_Algoliasearch_Adminhtml_Algoliasearch_ReindexSkuController extends
 
             Mage::helper('algoliasearch')->rebuildStoreProductIndex($storeId, $productIds);
 
-            $session->addSuccess($this->__('The product "%s" (%s) has been reindexed for store "%s".',
-                $product->getName(), $product->getSku(), $store->getName()));
+            $session->addSuccess($this->__('The product "%s" (%s) has been reindexed for store "%s \ %s \ %s".',
+                $product->getName(), $product->getSku(),
+                $websites[$store->getWebsiteId()]->getName(),
+                $groups[$store->getGroupId()]->getName(),
+                $store->getName())
+            );
         }
     }
 
