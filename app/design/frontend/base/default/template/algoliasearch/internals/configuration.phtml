@@ -178,7 +178,7 @@ if ($config->isClickConversionAnalyticsEnabled()) {
  * Generate API keys
  * Docs: https://www.algolia.com/doc/api-client/php/api-keys#generate-key
  */
-$attributesToRetrieve = $config->getAttributesToRetrieve($customerGroupId);
+$attributesToRetrieve = $config->getAttributesToRetrieve($customerGroupId, $store);
 
 if ($attributesToRetrieve) {
     $instantsearchApiKeyParams['attributesToRetrieve'] = $attributesToRetrieve;
