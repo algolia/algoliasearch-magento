@@ -1,6 +1,6 @@
 <?php
 
-class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Grid extends Mage_Adminhtml_Block_Widget_Grid
+class Algolia_Algoliasearch_Block_Adminhtml_Indexingqueue_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
     /**
      * Initialize Grid Properties

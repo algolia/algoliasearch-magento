@@ -1,6 +1,6 @@
 <?php
 
-class Algolia_Algoliasearch_Adminhtml_Algoliasearch_IndexingQueueController extends Mage_Adminhtml_Controller_Action
+class Algolia_Algoliasearch_Adminhtml_Algoliasearch_IndexingqueueController extends Mage_Adminhtml_Controller_Action
 {
     /**
      * Controller predispatch method
