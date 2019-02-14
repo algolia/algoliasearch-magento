@@ -344,6 +344,10 @@ class Algolia_Algoliasearch_Model_Resource_Engine extends Mage_CatalogSearch_Mod
         foreach (Mage::app()->getStores() as $store) {
             $storeId = $store->getId();
 
+            if (!$store->getIsActive()) {
+                continue;
+            }
+
             if ($this->config->isEnabledBackend($store->getId()) === false) {
                 if (php_sapi_name() === 'cli') {
                     echo '[ALGOLIA] INDEXING IS DISABLED FOR '.$this->logger->getStoreName($store->getId())."\n";
