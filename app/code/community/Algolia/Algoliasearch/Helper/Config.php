@@ -474,7 +474,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
         /** @var Mage_Tax_Helper_Data $taxHelper */
         $taxHelper = Mage::helper('tax');
-        $priceFields = ['price'];
+        $priceFields = array('price');
 
         if ($taxHelper->getPriceDisplayType($store) == Mage_Tax_Model_Config::DISPLAY_TYPE_BOTH) {
             $priceFields[] = 'price_with_tax';
