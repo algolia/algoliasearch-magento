@@ -1,6 +1,6 @@
 <?php
 
-class Algolia_Algoliasearch_Block_Adminhtml_ReindexSku_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
+class Algolia_Algoliasearch_Block_Adminhtml_Reindexsku_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
 {
     /**
      * @return Algolia_AlgoliaSearch_Block_Adminhtml_ReindexSku_Edit_Form

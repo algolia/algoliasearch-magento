@@ -56,7 +56,7 @@ while [[ $# > 0 ]]; do
       esac
       shift
       ;;
-    -v|--magneto-version)
+    -v|--magento-version)
       MAGENTO_VERSION="$2"
       shift
       ;;

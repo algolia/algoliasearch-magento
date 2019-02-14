@@ -1,6 +1,6 @@
 <?php
 
-class Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Status extends Mage_Adminhtml_Block_Template
+class Algolia_Algoliasearch_Block_Adminhtml_Indexingqueue_Status extends Mage_Adminhtml_Block_Template
 {
     const CRON_QUEUE_FREQUENCY = 330;
 

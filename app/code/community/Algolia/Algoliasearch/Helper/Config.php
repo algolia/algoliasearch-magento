@@ -434,7 +434,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return trim(Mage::getStoreConfig(self::INDEX_PREFIX, $storeId));
     }
 
-    public function getAttributesToRetrieve($group_id)
+    public function getAttributesToRetrieve($groupId, $store)
     {
         if (false === $this->isCustomerGroupsEnabled()) {
             return array();
@@ -472,14 +472,24 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         $currencyDirectory = Mage::getModel('directory/currency');
         $currencies = $currencyDirectory->getConfigAllowCurrencies();
 
-        foreach ($currencies as $currency) {
-            $attributes[] = 'price.'.$currency.'.default';
-            $attributes[] = 'price.'.$currency.'.default_formated';
-            $attributes[] = 'price.'.$currency.'.group_'.$group_id;
-            $attributes[] = 'price.'.$currency.'.group_'.$group_id.'_formated';
-            $attributes[] = 'price.'.$currency.'.group_'.$group_id.'_original_formated';
-            $attributes[] = 'price.'.$currency.'.special_from_date';
-            $attributes[] = 'price.'.$currency.'.special_to_date';
+        /** @var Mage_Tax_Helper_Data $taxHelper */
+        $taxHelper = Mage::helper('tax');
+        $priceFields = array('price');
+
+        if ($taxHelper->getPriceDisplayType($store) == Mage_Tax_Model_Config::DISPLAY_TYPE_BOTH) {
+            $priceFields[] = 'price_with_tax';
+        }
+
+        foreach ($priceFields as $price) {
+            foreach ($currencies as $currency) {
+                $attributes[] = $price.'.'.$currency.'.default';
+                $attributes[] = $price.'.'.$currency.'.default_formated';
+                $attributes[] = $price.'.'.$currency.'.group_'.$groupId;
+                $attributes[] = $price.'.'.$currency.'.group_'.$groupId.'_formated';
+                $attributes[] = $price.'.'.$currency.'.group_'.$groupId.'_original_formated';
+                $attributes[] = $price.'.'.$currency.'.special_from_date';
+                $attributes[] = $price.'.'.$currency.'.special_to_date';
+            }
         }
 
         $attributes = array_unique($attributes);
