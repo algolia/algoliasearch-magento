@@ -83,6 +83,12 @@ abstract class Algolia_Algoliasearch_Block_System_Config_Form_Field_AbstractFiel
         $selectField->setOptions($options);
         $selectField->setExtraParams('style="width:'.$width.'px;"');
 
+        if (isset($columnSettings['disabled']) && $columnSettings['disabled'] != 0) {
+            $extra = $selectField->getExtraParams();
+            $extra .= ' disabled';
+            $selectField->setExtraParams($extra);
+        }
+
         $this->selectFields[$columnId] = $selectField;
 
         return $this->selectFields[$columnId];

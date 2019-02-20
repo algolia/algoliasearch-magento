@@ -18,3 +18,14 @@
 	color: #333;
 	font-size: 13px;
 }
+
+.algoliasearch-config-info {
+	border: 1px solid #D6D6D6;
+	padding: 16px 20px 15px 56px;
+	margin: 7px 0;
+}
+
+
+.algoliasearch-config-info.icon-stars {
+	background: 19px 12px url(/skin/frontend/base/default/algoliasearch/stars-icon.svg) no-repeat;
+}
