@@ -33,12 +33,12 @@ class Algolia_Algoliasearch_Helper_ProxyHelper extends Mage_Core_Helper_Abstract
 
         $token = $appId . ':' . $apiKey;
         $token = base64_encode($token);
-        $token = str_replace(["\n", '='], '', $token);
+        $token = str_replace(array("\n", '='), '', $token);
 
-        $params = [
+        $params = array(
             'appId' => $appId,
             'token' => $token,
-        ];
+        );
 
         if ($type !== self::INFO_TYPE_EXTENSION_SUPPORT) {
             $params['type'] = $type;
