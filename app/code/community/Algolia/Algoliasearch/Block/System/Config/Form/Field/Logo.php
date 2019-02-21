@@ -21,9 +21,9 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Logo extends Mage_Adm
     public function showLogo()
     {
         $proxyHelper = Mage::helper('algoliasearch/proxyHelper');
-        $info = $proxyHelper->getInfo(Algolia_Algoliasearch_Helper_ProxyHelper::INFO_TYPE_ANALYTICS);
+        $info = $proxyHelper->getClientConfigurationData();
 
-        return isset($info['click_analytics']) || $info['click_analytics'] == 1;
+        return isset($info['require_logo']) && $info['require_logo'] == 1;
     }
 
     protected function _decorateRowHtml($element, $html)

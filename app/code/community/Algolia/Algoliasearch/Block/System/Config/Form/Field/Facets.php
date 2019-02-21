@@ -86,7 +86,7 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Algoli
     protected function _disableQueryRules()
     {
         $proxyHelper = Mage::helper('algoliasearch/proxyHelper');
-        $info = $proxyHelper->getInfo(Algolia_Algoliasearch_Helper_ProxyHelper::INFO_TYPE_QUERY_RULES);
+        $info = $proxyHelper->getClientConfigurationData();
 
         return !isset($info['query_rules']) || $info['query_rules'] == 0;
     }

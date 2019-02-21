@@ -9,9 +9,12 @@ class Algolia_Algoliasearch_Helper_ProxyHelper extends Mage_Core_Helper_Abstract
     const INFO_TYPE_EXTENSION_SUPPORT = 'extension_support';
     const INFO_TYPE_QUERY_RULES = 'query_rules';
     const INFO_TYPE_ANALYTICS = 'analytics';
+    const INFO_TYPE_ALL = 'all';
 
     /** @var Algolia_Algoliasearch_Helper_Config */
     private $configHelper;
+
+    private $allClientData;
 
     public function __construct()
     {
@@ -48,6 +51,15 @@ class Algolia_Algoliasearch_Helper_ProxyHelper extends Mage_Core_Helper_Abstract
         }
 
         return $info;
+    }
+
+    public function getClientConfigurationData()
+    {
+        if (!$this->allClientData) {
+            $this->allClientData = $this->getInfo(self::INFO_TYPE_ALL);
+        }
+
+        return $this->allClientData;
     }
 
     /**
