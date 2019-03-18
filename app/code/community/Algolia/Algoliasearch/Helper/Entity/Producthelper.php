@@ -155,7 +155,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $products = $products->setStoreId($storeId);
         $products = $products->addStoreFilter($storeId);
-        $products = $products->distinct(true);
 
         if ($productIds && count($productIds) > 0) {
             $products = $products->addAttributeToFilter('entity_id', array('in' => $productIds));

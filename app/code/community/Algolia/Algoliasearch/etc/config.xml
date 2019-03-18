@@ -107,6 +107,11 @@
                     </queue_archive>
                 </entities>
             </algoliasearch_resource>
+            <catalog_resource_eav_mysql4>
+                <rewrite>
+                    <product_collection>Algolia_Algoliasearch_Model_Catalog_Resource_Eav_Mysql4_Product_Collection</product_collection>
+                </rewrite>
+            </catalog_resource_eav_mysql4>
             <catalogsearch_mysql4>
                 <rewrite>
                     <fulltext>Algolia_Algoliasearch_Model_Resource_Fulltext</fulltext>
