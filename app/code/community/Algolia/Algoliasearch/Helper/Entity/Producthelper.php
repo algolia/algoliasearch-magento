@@ -528,20 +528,20 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         foreach ($fields as $field => $with_tax) {
             $customData[$field] = array();
+            $field_price = (double) $taxHelper->getPrice($product, $product->getPrice(), $with_tax, null, null, null, $product->getStore(), null);
+            $field_special_price = (double) $taxHelper->getPrice($product, $product->getPriceModel()->getFinalPrice(1, $product), $with_tax, null, null, null, $product->getStore(), null);
 
             foreach ($currencies as $currency_code) {
                 $customData[$field][$currency_code] = array();
 
-                $price = (double) $taxHelper->getPrice($product, $product->getPrice(), $with_tax, null, null, null, $product->getStore(), null);
-                $price = $directoryHelper->currencyConvert($price, $baseCurrencyCode, $currency_code);
+                $price = $directoryHelper->currencyConvert($field_price, $baseCurrencyCode, $currency_code);
                 $price += $weeeTaxAmount;
+
+                $special_price = $directoryHelper->currencyConvert($field_special_price, $baseCurrencyCode, $currency_code);
+                $special_price += $weeeTaxAmount;
 
                 $customData[$field][$currency_code]['default'] = $price;
                 $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($price, false, $currency_code);
-
-                $special_price = (double) $taxHelper->getPrice($product, $product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
-                $special_price = $directoryHelper->currencyConvert($special_price, $baseCurrencyCode, $currency_code);
-                $special_price += $weeeTaxAmount;
 
                 if ($customer_groups_enabled) {
                     // If fetch special price for groups
