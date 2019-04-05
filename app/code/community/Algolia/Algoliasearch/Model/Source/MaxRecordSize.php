@@ -20,12 +20,12 @@ class Algolia_Algoliasearch_Model_Source_MaxRecordSize
 
             rsort($options);
 
-            $formattedOptions = [];
+            $formattedOptions = array();
             foreach ($options as $option) {
-                $formattedOptions[] = [
+                $formattedOptions[] = array(
                     'value' => $option,
                     'label' => $option,
-                ];
+                );
             }
 
             $this->_options = $formattedOptions;
