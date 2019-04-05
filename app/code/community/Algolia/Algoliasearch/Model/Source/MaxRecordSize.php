@@ -6,7 +6,6 @@ class Algolia_Algoliasearch_Model_Source_MaxRecordSize
 
     public function toOptionArray()
     {
-
         if (!$this->_options) {
             $options[] = Algolia_Algoliasearch_Helper_Config::DEFAULT_MAX_RECORD_SIZE;
             $proxyHelper = Mage::helper('algoliasearch/proxyHelper');
@@ -30,6 +29,7 @@ class Algolia_Algoliasearch_Model_Source_MaxRecordSize
 
             $this->_options = $formattedOptions;
         }
+
         return $this->_options;
     }
 }
