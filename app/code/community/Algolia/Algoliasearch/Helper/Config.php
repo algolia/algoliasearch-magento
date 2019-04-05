@@ -88,6 +88,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const PREVENT_BACKEND_RENDERING_DISPLAY_MODE = 'algoliasearch/advanced/prevent_backend_rendering_display_mode';
     const BACKEND_RENDERING_ALLOWED_USER_AGENTS = 'algoliasearch/advanced/backend_rendering_allowed_user_agents';
     const NON_CASTABLE_ATTRIBUTES = 'algoliasearch/advanced/non_castable_attributes';
+    const MAX_RECORD_SIZE_LIMIT = 'algoliasearch/advanced/max_record_size_limit';
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
@@ -97,6 +98,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const EXTRA_SETTINGS_PAGES = 'algoliasearch/advanced_settings/pages_extra_settings';
     const EXTRA_SETTINGS_SUGGESTIONS = 'algoliasearch/advanced_settings/suggestions_extra_settings';
     const EXTRA_SETTINGS_ADDITIONAL_SECTIONS = 'algoliasearch/advanced_settings/additional_sections_extra_settings';
+
+    const DEFAULT_MAX_RECORD_SIZE = 10000;
 
     protected $_productTypeMap = array();
 
@@ -741,6 +744,16 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return $nonCastableAttributes;
+    }
+
+    public function getDefaultMaxRecordSize()
+    {
+        return self::DEFAULT_MAX_RECORD_SIZE;
+    }
+
+    public function getMaxRecordSizeLimit($storeId = null)
+    {
+        return Mage::getStoreConfig(self::MAX_RECORD_SIZE_LIMIT, $storeId);
     }
 
     private function getCustomRanking($configName, $storeId = null)
