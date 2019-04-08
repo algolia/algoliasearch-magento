@@ -102,6 +102,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const DEFAULT_MAX_RECORD_SIZE = 10000;
 
     protected $_productTypeMap = array();
+    protected $_maxRecordSize;
 
     public function indexVisibility($storeId = null)
     {
@@ -746,16 +747,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return $nonCastableAttributes;
     }
 
-    public function getDefaultMaxRecordSize()
-    {
-        return self::DEFAULT_MAX_RECORD_SIZE;
-    }
-
-    public function getMaxRecordSizeLimit($storeId = null)
-    {
-        return Mage::getStoreConfig(self::MAX_RECORD_SIZE_LIMIT, $storeId);
-    }
-
     private function getCustomRanking($configName, $storeId = null)
     {
         $attrs = unserialize(Mage::getStoreConfig($configName, $storeId));
@@ -791,5 +782,36 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return $attributes;
+    }
+
+    public function getDefaultMaxRecordSize()
+    {
+        return self::DEFAULT_MAX_RECORD_SIZE;
+    }
+
+    public function getMaxRecordSizeLimit($storeId = null)
+    {
+        if ($this->_maxRecordSize) {
+            return $this->_maxRecordSize;
+        }
+
+        $configValue = Mage::getStoreConfig(self::MAX_RECORD_SIZE_LIMIT, $storeId);
+        if ($configValue) {
+            $this->_maxRecordSize = $configValue;
+
+            return $this->_maxRecordSize;
+        } else {
+            /** @var Algolia_Algoliasearch_Helper_ProxyHelper $proxyHelper */
+            $proxyHelper = Mage::helper('algoliasearch/proxyHelper');
+            $clientData = $proxyHelper->getClientConfigurationData();
+            if ($clientData && isset($clientData['max_record_size'])) {
+                Mage::getConfig()->saveConfig(self::MAX_RECORD_SIZE_LIMIT, $clientData['max_record_size']);
+                $this->_maxRecordSize = $clientData['max_record_size'];
+            } else {
+                $this->_maxRecordSize = self::getDefaultMaxRecordSize();
+            }
+        }
+
+        return $this->_maxRecordSize;
     }
 }

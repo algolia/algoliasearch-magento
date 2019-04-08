@@ -236,7 +236,7 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->lastUsedIndexName = $toIndex;
         $this->lastTaskId = $res['taskID'];
     }
-    
+
     /**
      * @param $fromIndexName
      * @param $toIndexName
