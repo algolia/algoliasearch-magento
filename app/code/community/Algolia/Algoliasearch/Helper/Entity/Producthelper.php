@@ -612,6 +612,9 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     );
                 }
 
+                // configurable appears to assume that there are no customer_group_prices
+                // specified on the attached simple products, but needs re-writing anyway
+                // to correctly calculate the option price, not the simple price
                 if ($type == 'grouped' || $type == 'bundle' || $type == 'configurable') {
                     $min = PHP_INT_MAX;
                     $max = 0;
@@ -649,15 +652,16 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $dashed_format = $this->formatPrice($min, false, $currency_code).' - '.$this->formatPrice($max,
                                 false, $currency_code);
 
-                        if (isset($customData[$field][$currency_code]['default_original_formated']) === false || $min <= $customData[$field][$currency_code]['default']) {
-                            $customData[$field][$currency_code]['default_formated'] = $dashed_format;
+                        if (isset($cdfc['default_original_formated']) === false || $min <= $cdfc['default']) {
+                            $cdfc['default_formated'] = $dashed_format;
 
                             //// Do not keep special price that is already taken into account in min max
-                            unset($customData['price']['special_from_date']);
-                            unset($customData['price']['special_to_date']);
-                            unset($customData['price']['default_original_formated']);
+                            unset($cdfc['special_from_date']);
+                            unset($cdfc['special_to_date']);
+                            unset($cdfc['default_original']);
+                            unset($cdfc['default_original_formated']);
 
-                            $customData[$field][$currency_code]['default'] = 0; // will be reset just after
+                            $cdfc['default'] = 0; // will be reset just after
                         }
 
                         if ($customer_groups_enabled) {
@@ -665,22 +669,22 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                                 $group_id = (int) $group->getData('customer_group_id');
                                 $group_str = 'group_' . $group_id;
 
-                                if ($min != $max && $min <= $customData[$field][$currency_code][$group_str]) {
-                                    $customData[$field][$currency_code][$group_str] = 0;
+                                if ($min != $max && $min <= $cdfc[$group_str]) {
+                                    $cdfc[$group_str] = 0;
                                 } else {
-                                    $customData[$field][$currency_code][$group_str] = $customData[$field][$currency_code]['default'];
+                                    $cdfc[$group_str] = $cdfc['default'];
                                 }
 
-                                $customData[$field][$currency_code][$group_str .'_formated'] = $dashed_format;
+                                $cdfc[$group_str .'_formated'] = $dashed_format;
                             }
                         }
                     }
 
-                    if ($customData[$field][$currency_code]['default'] == 0) {
-                        $customData[$field][$currency_code]['default'] = $min;
+                    if ($cdfc['default'] == 0) {
+                        $cdfc['default'] = $min;
 
                         if ($min === $max) {
-                            $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($min, false,
+                            $cdfc['default_formated'] = $this->formatPrice($min, false,
                                 $currency_code);
                         }
                     }
@@ -690,11 +694,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                             $group_id = (int) $group->getData('customer_group_id');
                             $group_str = 'group_' . $group_id;
 
-                            if ($customData[$field][$currency_code][$group_str] == 0) {
-                                $customData[$field][$currency_code][$group_str] = $min;
+                            if ($cdfc[$group_str] == 0) {
+                                $cdfc[$group_str] = $min;
 
                                 if ($min === $max) {
-                                    $customData[$field][$currency_code][$group_str .'_formated'] = $customData[$field][$currency_code]['default_formated'];
+                                    $cdfc[$group_str .'_formated'] = $cdfc['default_formated'];
                                 }
                             }
                         }
