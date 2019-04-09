@@ -735,20 +735,30 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $objectIds = array();
         $counter = 0;
-        foreach ($index->browse('', array('attributesToRetrieve' => array('objectID'))) as $hit) {
-            $objectIds[] = $hit['objectID'];
-            $counter++;
 
-            if ($counter === 1000) {
-                $this->deleteInactiveIds($storeId, $objectIds, $indexName);
+        try {
+            foreach ($index->browse('', array('attributesToRetrieve' => array('objectID'))) as $hit) {
+                $objectIds[] = $hit['objectID'];
+                $counter++;
 
-                $objectIds = array();
-                $counter = 0;
+                if ($counter === 1000) {
+                    $this->deleteInactiveIds($storeId, $objectIds, $indexName);
+
+                    $objectIds = array();
+                    $counter = 0;
+                }
             }
-        }
 
-        if (!empty($objectIds)) {
-            $this->deleteInactiveIds($storeId, $objectIds, $indexName);
+            if (!empty($objectIds)) {
+                $this->deleteInactiveIds($storeId, $objectIds, $indexName);
+            }
+        } catch (\AlgoliaSearch\AlgoliaException $e) {
+            $message = $e->getMessage();
+
+            // Fail silently if the exception tells that Index does not exist
+            if (!preg_match('/^Index (.*) does not exist$/', $message)) {
+                throw $e;
+            }
         }
     }
 
