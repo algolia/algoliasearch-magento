@@ -154,10 +154,12 @@ document.addEventListener("DOMContentLoaded", function (e) {
 			if (hit['price'] !== undefined && hit['price'][algoliaConfig.currencyCode][formated_original_key]) {
 				const formated_key = price_key_as_key + '_formated';
 
-				// Neither date should be blank, magento sets special_from_date
-				// Producthelper.php sets to_date to today if it's blank
+				// special_from_date should not be blank Producthelper.php sets it to today if blank
 				var priceStart = hit['price'][algoliaConfig.currencyCode]['special_from_date'];
+				// special_to_date may be blank, maybe the special price doesn't end
+                // if it is blank, just set it to the future so the comparison works
 				var priceExpiration = hit['price'][algoliaConfig.currencyCode]['special_to_date'];
+				if (!priceExpiration) priceExpiration = algoliaConfig.now+1;
 
 				// if .now is not inside the window between priceStart and priceExpiration
 				if (!(algoliaConfig.now >= priceStart && algoliaConfig.now <= priceExpiration )) {

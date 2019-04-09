@@ -557,8 +557,10 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
                     // this needs moving up a few levels
                     $cdfc['special_from_date'] = Mage::app()->getLocale()->storeDate($store, $special_from_date)->getTimestamp();
-                    //if special_to_date is null this will default to today
-                    $cdfc['special_to_date'] = Mage::app()->getLocale()->storeDate($store, $special_to_date)->getTimestamp();
+                    //if special_to_date is null leave this blank or it will end the special_price!
+                    if ($special_to_date) {
+                        $cdfc['special_to_date'] = Mage::app()->getLocale()->storeDate($store, $special_to_date)->getTimestamp();
+                    }
                 }
                 if ($customer_groups_enabled) {
                     // If fetch special price for groups
