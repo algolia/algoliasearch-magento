@@ -1,5 +1,27 @@
 # CHANGE LOG
 
+## 1.16.0
+
+### Updates
+- Update max PHP dependency (#1090)
+- Update Reindex SKU for improved messaging  (#1098)
+- Added ProxyHelper to assist with plan upsell (#1109)
+- Update autocomplete version in algoliaBundle.js (#1121)
+- Improvements to Indexing and Indexing Queue
+	- Skip inactive stores (#1101)
+	- Add distinct to category collection fetch (#1104)
+	- Fail "Remove Algolia products" silently on non-existent index (#1111)
+	- Fetch max_record_size and add retry on stuck PIDs for indexing queue (#1117)
+
+### Fixes
+- Fix directory casing 404s (#1095)
+- Add table prefixes when calling core/resource instances (#1097)
+- Fix price_with_tax for customer groups (#1100)
+- Fix autocomplete frontend hook (#1102)
+- Fix jobs locking (#1118)
+- Fix Dockerfile (#1120)
+- Fix sticky autocomplete input value after clear toggle (#1122)
+
 ## 1.15.0
 
 ### Features
