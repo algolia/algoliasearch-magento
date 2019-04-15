@@ -88,6 +88,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const PREVENT_BACKEND_RENDERING_DISPLAY_MODE = 'algoliasearch/advanced/prevent_backend_rendering_display_mode';
     const BACKEND_RENDERING_ALLOWED_USER_AGENTS = 'algoliasearch/advanced/backend_rendering_allowed_user_agents';
     const NON_CASTABLE_ATTRIBUTES = 'algoliasearch/advanced/non_castable_attributes';
+    const MAX_RECORD_SIZE_LIMIT = 'algoliasearch/advanced/max_record_size_limit';
 
     const SHOW_OUT_OF_STOCK = 'cataloginventory/options/show_out_of_stock';
     const LOGGING_ENABLED = 'algoliasearch/credentials/debug';
@@ -98,7 +99,10 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     const EXTRA_SETTINGS_SUGGESTIONS = 'algoliasearch/advanced_settings/suggestions_extra_settings';
     const EXTRA_SETTINGS_ADDITIONAL_SECTIONS = 'algoliasearch/advanced_settings/additional_sections_extra_settings';
 
+    const DEFAULT_MAX_RECORD_SIZE = 10000;
+
     protected $_productTypeMap = array();
+    protected $_maxRecordSize;
 
     public function indexVisibility($storeId = null)
     {
@@ -434,7 +438,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         return trim(Mage::getStoreConfig(self::INDEX_PREFIX, $storeId));
     }
 
-    public function getAttributesToRetrieve($group_id)
+    public function getAttributesToRetrieve($groupId, $store)
     {
         if (false === $this->isCustomerGroupsEnabled()) {
             return array();
@@ -472,14 +476,24 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         $currencyDirectory = Mage::getModel('directory/currency');
         $currencies = $currencyDirectory->getConfigAllowCurrencies();
 
-        foreach ($currencies as $currency) {
-            $attributes[] = 'price.'.$currency.'.default';
-            $attributes[] = 'price.'.$currency.'.default_formated';
-            $attributes[] = 'price.'.$currency.'.group_'.$group_id;
-            $attributes[] = 'price.'.$currency.'.group_'.$group_id.'_formated';
-            $attributes[] = 'price.'.$currency.'.group_'.$group_id.'_original_formated';
-            $attributes[] = 'price.'.$currency.'.special_from_date';
-            $attributes[] = 'price.'.$currency.'.special_to_date';
+        /** @var Mage_Tax_Helper_Data $taxHelper */
+        $taxHelper = Mage::helper('tax');
+        $priceFields = array('price');
+
+        if ($taxHelper->getPriceDisplayType($store) == Mage_Tax_Model_Config::DISPLAY_TYPE_BOTH) {
+            $priceFields[] = 'price_with_tax';
+        }
+
+        foreach ($priceFields as $price) {
+            foreach ($currencies as $currency) {
+                $attributes[] = $price.'.'.$currency.'.default';
+                $attributes[] = $price.'.'.$currency.'.default_formated';
+                $attributes[] = $price.'.'.$currency.'.group_'.$groupId;
+                $attributes[] = $price.'.'.$currency.'.group_'.$groupId.'_formated';
+                $attributes[] = $price.'.'.$currency.'.group_'.$groupId.'_original_formated';
+                $attributes[] = $price.'.'.$currency.'.special_from_date';
+                $attributes[] = $price.'.'.$currency.'.special_to_date';
+            }
         }
 
         $attributes = array_unique($attributes);
@@ -768,5 +782,36 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         }
 
         return $attributes;
+    }
+
+    public function getDefaultMaxRecordSize()
+    {
+        return self::DEFAULT_MAX_RECORD_SIZE;
+    }
+
+    public function getMaxRecordSizeLimit($storeId = null)
+    {
+        if ($this->_maxRecordSize) {
+            return $this->_maxRecordSize;
+        }
+
+        $configValue = Mage::getStoreConfig(self::MAX_RECORD_SIZE_LIMIT, $storeId);
+        if ($configValue) {
+            $this->_maxRecordSize = $configValue;
+
+            return $this->_maxRecordSize;
+        } else {
+            /** @var Algolia_Algoliasearch_Helper_ProxyHelper $proxyHelper */
+            $proxyHelper = Mage::helper('algoliasearch/proxyHelper');
+            $clientData = $proxyHelper->getClientConfigurationData();
+            if ($clientData && isset($clientData['max_record_size'])) {
+                Mage::getConfig()->saveConfig(self::MAX_RECORD_SIZE_LIMIT, $clientData['max_record_size']);
+                $this->_maxRecordSize = $clientData['max_record_size'];
+            } else {
+                $this->_maxRecordSize = self::getDefaultMaxRecordSize();
+            }
+        }
+
+        return $this->_maxRecordSize;
     }
 }

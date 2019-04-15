@@ -13,7 +13,7 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
     protected $config;
 
     /** @var int */
-    protected $maxRecordSize = 20000;
+    protected $maxRecordSize;
 
     /** @var array */
     protected $potentiallyLongAttributes = array('description', 'short_description', 'meta_description', 'content');
@@ -236,7 +236,7 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->lastUsedIndexName = $toIndex;
         $this->lastTaskId = $res['taskID'];
     }
-    
+
     /**
      * @param $fromIndexName
      * @param $toIndexName
@@ -332,11 +332,21 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         }
     }
 
+    private function getMaxRecordSize()
+    {
+        if (!$this->maxRecordSize) {
+            $this->maxRecordSize = $this->config->getMaxRecordSizeLimit()
+                ? $this->config->getMaxRecordSizeLimit() : $this->config->getDefaultMaxRecordSize();
+        }
+
+        return $this->maxRecordSize;
+    }
+
     public function handleTooBigRecord($object)
     {
         $size = mb_strlen(json_encode($object));
 
-        if ($size > $this->maxRecordSize) {
+        if ($size > $this->getMaxRecordSize()) {
             foreach ($this->potentiallyLongAttributes as $attribute) {
                 if (isset($object[$attribute])) {
                     unset($object[$attribute]);
@@ -345,7 +355,7 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
 
             $size = mb_strlen(json_encode($object));
 
-            if ($size > $this->maxRecordSize) {
+            if ($size > $this->getMaxRecordSize()) {
                 $object = false;
             }
         }

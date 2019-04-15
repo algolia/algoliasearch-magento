@@ -36,7 +36,12 @@ var algolia = {
 			hookArguments = Array.prototype.slice.call(arguments, 2);
 
 		var data = this.getRegisteredHooks(hookName).reduce(function(currentData, hook) {
+			if (Array.isArray(currentData)) {
+				currentData = [currentData];
+			}
+			
 			var allParameters = [].concat(currentData).concat(hookArguments);
+			
 			return hook.apply(null, allParameters);
 		}, originalData);
 
@@ -488,6 +493,10 @@ document.addEventListener("DOMContentLoaded", function (e) {
 		$(document).on('click', '.clear-query-autocomplete', function () {
 			var input = $(this).closest('#algolia-searchbox').find('input');
 			input.val('');
+
+			if (input.data('aaAutocomplete')) {
+				input.data('aaAutocomplete').input.query = '';
+			}
 
 			if (algoliaConfig.autocomplete.enabled != algoliaConfig.instant.enabled) {
 				input.get(0).dispatchEvent(new Event('input'));

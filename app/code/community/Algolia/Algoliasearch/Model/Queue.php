@@ -5,6 +5,8 @@ class Algolia_Algoliasearch_Model_Queue
     const SUCCESS_LOG = 'algoliasearch_queue_log.txt';
     const ERROR_LOG = 'algoliasearch_queue_errors.log';
 
+    const UNLOCK_STACKED_JOBS_AFTER_MINUTES = 15;
+
     protected $table;
     protected $logTable;
     protected $archiveTable;
@@ -92,6 +94,7 @@ class Algolia_Algoliasearch_Model_Queue
         }
 
         $this->clearOldLogRecords();
+        $this->unlockStackedJobs();
 
         $this->logRecord = array(
             'started' => date('Y-m-d H:i:s'),
@@ -136,7 +139,7 @@ class Algolia_Algoliasearch_Model_Queue
             // and therefore are not indexed yet in TMP index
             if ($job['method'] === 'moveProductsTmpIndex' && $this->noOfFailedJobs > 0) {
                 // Set pid to NULL so it's not deleted after
-                $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = NULL WHERE job_id = ".$job['job_id']);
+                $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} SET pid = NULL, locked_at = NULL WHERE job_id = ".$job['job_id']);
 
                 continue;
             }
@@ -147,8 +150,8 @@ class Algolia_Algoliasearch_Model_Queue
                 $model->{$method}(new Varien_Object($job['data']));
 
                 // Delete one by one
-                $where = $this->db->quoteInto('job_id IN (?)', $job['merged_ids']);
-                $this->db->delete($this->table, $where);
+                $this->db->delete($this->table, array('job_id IN (?)' => $job['merged_ids']));
+
 
                 $this->logRecord['processed_jobs'] += count($job['merged_ids']);
             } catch (\Exception $e) {
@@ -168,7 +171,7 @@ class Algolia_Algoliasearch_Model_Queue
 
                 // Increment retries, set the job ID back to NULL
                 $updateQuery = "UPDATE {$this->db->quoteIdentifier($this->table, true)} 
-                  SET pid = NULL, retries = retries + 1 , error_log = '" . addslashes($logMessage) . "'
+                  SET pid = NULL, locked_at = NULL, retries = retries + 1 , error_log = '" . addslashes($logMessage) . "'
                   WHERE job_id IN (".implode(', ', (array) $job['merged_ids']).")";
                 $this->db->query($updateQuery);
             }
@@ -227,11 +230,6 @@ class Algolia_Algoliasearch_Model_Queue
                     break;
                 }
 
-                // If $jobs is empty, it's the first run
-                if (empty($jobs)) {
-                    $firstJobId = $rawJobs[0]['job_id'];
-                }
-
                 $rawJobs = $this->prepareJobs($rawJobs);
                 $rawJobs = array_merge($jobs, $rawJobs);
                 $rawJobs = $this->mergeJobs($rawJobs);
@@ -262,14 +260,7 @@ class Algolia_Algoliasearch_Model_Queue
                 }
             }
 
-            if (isset($firstJobId)) {
-                $lastJobId = $this->maxValueInArray($jobs, 'job_id');
-
-                // Reserve all new jobs since last run
-                $this->db->query("UPDATE {$this->db->quoteIdentifier($this->table, true)} 
-                  SET pid = " . $pid . ' 
-                  WHERE job_id >= ' . $firstJobId . " AND job_id <= $lastJobId");
-            }
+            $this->lockJobs($jobs);
 
             $this->db->commit();
         } catch (\Exception $e) {
@@ -439,19 +430,35 @@ class Algolia_Algoliasearch_Model_Queue
         return array_pop($args);
     }
 
-    private function maxValueInArray($array, $keyToSearch)
+    /**
+     * @param array $jobs
+     */
+    private function lockJobs($jobs)
     {
-        $currentMax = null;
+        $jobsIds = $this->getJobsIdsFromMergedJobs($jobs);
 
-        foreach ($array as $arr) {
-            foreach ($arr as $key => $value) {
-                if ($key == $keyToSearch && ($value >= $currentMax)) {
-                    $currentMax = $value;
-                }
-            }
+        if ($jobsIds !== array()) {
+            $pid = getmypid();
+            $this->db->update($this->table, array(
+                'pid' => $pid,
+                'locked_at' => date('Y-m-d H:i:s'),
+            ), array('job_id IN (?)' => $jobsIds));
+        }
+    }
+
+    /**
+     * @param array $mergedJobs
+     *
+     * @return string[]
+     */
+    private function getJobsIdsFromMergedJobs($mergedJobs)
+    {
+        $jobsIds = array();
+        foreach ($mergedJobs as $job) {
+            $jobsIds = array_merge($jobsIds, $job['merged_ids']);
         }
 
-        return $currentMax;
+        return $jobsIds;
     }
 
     private function clearOldLogRecords()
@@ -470,5 +477,13 @@ class Algolia_Algoliasearch_Model_Queue
             $this->db->truncateTable($this->table);
             $this->logger->log("{$this->table} table has been truncated.");
         }
+    }
+
+    private function unlockStackedJobs()
+    {
+        $this->db->update($this->table, array(
+            'locked_at' => null,
+            'pid' => null,
+        ), 'locked_at < (NOW() - INTERVAL ' . self::UNLOCK_STACKED_JOBS_AFTER_MINUTES . ' MINUTE)');
     }
 }
