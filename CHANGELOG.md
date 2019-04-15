@@ -6,7 +6,7 @@
 - Update max PHP dependency (#1090)
 - Update Reindex SKU for improved messaging  (#1098)
 - Added ProxyHelper to assist with plan upsell (#1109)
-- Update all algoliaBundle.js (#1121)
+- Update autocomplete version in algoliaBundle.js (#1121)
 - Improvements to Indexing and Indexing Queue
 	- Skip inactive stores (#1101)
 	- Add distinct to category collection fetch (#1104)
