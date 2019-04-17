@@ -258,8 +258,12 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 }
             } else {
                 $attribute = $facet['attribute'];
-                if (array_key_exists('searchable', $facet) && $facet['searchable'] === '1') {
-                    $attribute = 'searchable('.$attribute.')';
+                if (array_key_exists('searchable', $facet)) {
+                    if ($facet['searchable'] === Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets::SEARCHABLE) {
+                        $attribute = 'searchable(' . $attribute . ')';
+                    } elseif ($facet['searchable'] === Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets::FILTER_ONLY) {
+                        $attribute = 'filterOnly(' . $attribute . ')';
+                    }
                 }
 
                 $attributesForFaceting[] = $attribute;
