@@ -535,6 +535,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         if ($special_price && Mage::app()->getLocale()->isStoreDateInInterval($store, null, $special_to_date)) {
             $canSpecialBeValid = true;
             $special_price += $weeeTaxAmount;
+        } else {
+            $canSpecialBeValid = false;
         }
 
         foreach ($fields as $field => $with_tax) {
