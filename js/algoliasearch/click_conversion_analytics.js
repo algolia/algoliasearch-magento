@@ -1,20 +1,31 @@
 algoliaBundle.$(function ($) {
 	AlgoliaAnalytics.init({
-		applicationID: algoliaConfig.applicationId,
+		appId: algoliaConfig.applicationId,
 		apiKey: algoliaConfig.instant.apiKey
 	});
 
 	// "Click" in autocomplete
 	$(algoliaConfig.autocomplete.selector).each(function () {
-		$(this).on('autocomplete:selected', function (e, suggestion) {
-			trackClick(suggestion.objectID, suggestion.__position, suggestion.__queryID);
+		$(this).on('autocomplete:selected', function (e, suggestion, dataset, context) {
+
+			var sources = analyticsHelper.sources;
+			var source = sources.find(function(e) {
+				return e.name == dataset;
+			});
+
+			trackClick(source.indexName, suggestion.objectID, suggestion.__position, suggestion.__queryID);
 		});
 	});
 
 	// "Click" on instant search page
 	$(document).on('click', algoliaConfig.ccAnalytics.ISSelector, function() {
 		var $this = $(this);
-		trackClick($this.data('objectid'), $this.data('position'));
+		var lastResults = analyticsHelper.getLastResults();
+
+		// want to track results returned
+		if (lastResults) {
+			trackClick(lastResults.index, $this.data('objectid'), $this.data('position'), lastResults.queryID ? lastResults.queryID : lastResults._rawResults[0].queryID);
+		}
 	});
 
 	// "Add to cart" conversion
@@ -34,7 +45,7 @@ algoliaBundle.$(function ($) {
 			// "setTimeout" ensures "trackConversion" is always triggered AFTER "trackClick"
 			// when clicking "Add to cart" on instant search results page
 			setTimeout(function () {
-				trackConversion(objectId);
+				trackConversion(algoliaConfig.indexName + "_products", objectId);
 			}, 0);
 		});
 	}
@@ -43,47 +54,48 @@ algoliaBundle.$(function ($) {
 	// "algoliaConfig.ccAnalytics.orderedProductIds" are set only on checkout success page
 	if (algoliaConfig.ccAnalytics.conversionAnalyticsMode === 'place_order'
 		&& algoliaConfig.ccAnalytics.orderedProductIds.length > 0) {
-		$.each(algoliaConfig.ccAnalytics.orderedProductIds, function (i, objectId) {
-			trackConversion(objectId);
-		});
+		trackConversion(algoliaConfig.indexName + "_products", algoliaConfig.ccAnalytics.orderedProductIds);
 	}
 
 });
 
-algolia.registerHook('beforeInstantsearchInit', function (instantsearchOptions) {
-	instantsearchOptions.searchParameters['clickAnalytics'] = true;
+var analyticsHelper = {};
 
-	return instantsearchOptions;
+algolia.registerHook('beforeAutocompleteSources', function(sources) {
+	analyticsHelper.sources = sources;
+	return sources;
 });
 
 algolia.registerHook('beforeInstantsearchStart', function (search) {
 	search.once('render', function() {
-		AlgoliaAnalytics.initSearch({
-			getQueryID: function() {
-				return search.helper.lastResults && search.helper.lastResults._rawResults[0].queryID
-			}
-		});
+		analyticsHelper.getLastResults = function () {
+			return search.helper.lastResults;
+		}
 	});
-
 	return search;
 });
 
+algolia.registerHook('beforeInstantsearchInit', function (instantsearchOptions) {
+	instantsearchOptions.searchParameters['clickAnalytics'] = true;
+	return instantsearchOptions;
+});
 
-function trackClick(objectID, position, queryId) {
+function trackClick(indexName, objectID, position, queryId) {
 	var clickData = {
-		objectID: objectID.toString(),
-		position: parseInt(position)
+		index: indexName,
+		eventName: "Clicked item",
+		objectIDs: [objectID.toString()],
+		positions: [parseInt(position)],
+		queryID: queryId
 	};
 
-	if (queryId) {
-		clickData.queryID = queryId;
-	}
-
-	AlgoliaAnalytics.click(clickData);
+	AlgoliaAnalytics.clickedObjectIDsAfterSearch(clickData);
 }
 
-function trackConversion(objectID) {
-	AlgoliaAnalytics.conversion({
-		objectID: objectID.toString()
+function trackConversion(indexName, objectIDs) {
+	AlgoliaAnalytics.convertedObjectIDsAfterSearch({
+		index: indexName,
+		eventName: "Conversion",
+		objectIDs: Array.isArray(objectIDs) ? objectIDs : [objectID.toString()]
 	});
 }

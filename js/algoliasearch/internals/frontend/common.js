@@ -370,6 +370,8 @@ document.addEventListener("DOMContentLoaded", function (e) {
 				source.templates.header = '<div class="category">' + (section.label ? section.label : section.name) + '</div>';
 			}
 
+			source.indexName = algoliaConfig.indexName + "_" + section.name;
+
 			return source;
 		};
 
