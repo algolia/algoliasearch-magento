@@ -547,21 +547,21 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
 
             foreach ($currencies as $currency_code) {
-                $cdfc = array();
+                $currencyData = array();
 
                 $price = $directoryHelper->currencyConvert($field_price + $weeeTaxAmount, $baseCurrencyCode, $currency_code);
 
-                $cdfc['default'] = $price;
-                $cdfc['default_formated'] = $this->formatPrice($price, false, $currency_code);
+                $currencyData['default'] = $price;
+                $currencyData['default_formated'] = $this->formatPrice($price, false, $currency_code);
 
                 if ($canSpecialBeValid) {
                     $special_price = $directoryHelper->currencyConvert($field_special_price + $weeeTaxAmount, $baseCurrencyCode, $currency_code);
 
                     // this needs moving up a few levels
-                    $cdfc['special_from_date'] = Mage::app()->getLocale()->storeDate($store, $special_from_date)->getTimestamp();
+                    $currencyData['special_from_date'] = Mage::app()->getLocale()->storeDate($store, $special_from_date)->getTimestamp();
                     //if special_to_date is null leave this blank or it will end the special_price!
                     if ($special_to_date) {
-                        $cdfc['special_to_date'] = Mage::app()->getLocale()->storeDate($store, $special_to_date)->getTimestamp();
+                        $currencyData['special_to_date'] = Mage::app()->getLocale()->storeDate($store, $special_to_date)->getTimestamp();
                     }
                 }
                 if ($customer_groups_enabled) {
@@ -576,7 +576,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $group_price += $weeeTaxAmount;
 
                         if ($group_price !== false) {
-                            $cdfc[$group_str] = $directoryHelper->currencyConvert(
+                            $currencyData[$group_str] = $directoryHelper->currencyConvert(
                                 (double) $taxHelper->getPrice($product,
                                     $group_price,
                                     $with_tax, null,
@@ -586,30 +586,30 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                                 $baseCurrencyCode,
                                 $currency_code);
                         } else {
-                            $cdfc[$group_str] = $cdfc['default'];
+                            $currencyData[$group_str] = $currencyData['default'];
                         }
 
-                        if ($canSpecialBeValid && $special_price < $cdfc[$group_str]) {
-                            $cdfc[$group_str .'_original_formated'] = $this->formatPrice(
-                                $cdfc[$group_str],
+                        if ($canSpecialBeValid && $special_price < $currencyData[$group_str]) {
+                            $currencyData[$group_str .'_original_formated'] = $this->formatPrice(
+                                $currencyData[$group_str],
                                 false,
                                 $currency_code
                             );
-                            $cdfc[$group_str .'_original'] = $cdfc[$group_str];
+                            $currencyData[$group_str .'_original'] = $currencyData[$group_str];
 
-                            $cdfc[$group_str] = $special_price;
+                            $currencyData[$group_str] = $special_price;
                         }
-                        $cdfc[$group_str .'_formated'] = $store->formatPrice($cdfc[$group_str], false, $currency_code);
+                        $currencyData[$group_str .'_formated'] = $store->formatPrice($currencyData[$group_str], false, $currency_code);
                     }
                     $product->setCustomerGroupId(null);
                 }
 
-                if ($canSpecialBeValid && $special_price < $cdfc['default']) {
-                    $cdfc['default_original_formated'] = $cdfc['default_formated'];
-                    $cdfc['default_original'] = $cdfc['default'];
+                if ($canSpecialBeValid && $special_price < $currencyData['default']) {
+                    $currencyData['default_original_formated'] = $currencyData['default_formated'];
+                    $currencyData['default_original'] = $currencyData['default'];
 
-                    $cdfc['default'] = $special_price;
-                    $cdfc['default_formated'] = $this->formatPrice(
+                    $currencyData['default'] = $special_price;
+                    $currencyData['default_formated'] = $this->formatPrice(
                         $special_price,
                         false,
                         $currency_code
@@ -656,16 +656,16 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $dashed_format = $this->formatPrice($min, false, $currency_code).' - '.$this->formatPrice($max,
                                 false, $currency_code);
 
-                        if (isset($cdfc['default_original_formated']) === false || $min <= $cdfc['default']) {
-                            $cdfc['default_formated'] = $dashed_format;
+                        if (isset($currencyData['default_original_formated']) === false || $min <= $currencyData['default']) {
+                            $currencyData['default_formated'] = $dashed_format;
 
                             //// Do not keep special price that is already taken into account in min max
-                            unset($cdfc['special_from_date']);
-                            unset($cdfc['special_to_date']);
-                            unset($cdfc['default_original']);
-                            unset($cdfc['default_original_formated']);
+                            unset($currencyData['special_from_date']);
+                            unset($currencyData['special_to_date']);
+                            unset($currencyData['default_original']);
+                            unset($currencyData['default_original_formated']);
 
-                            $cdfc['default'] = 0; // will be reset just after
+                            $currencyData['default'] = 0; // will be reset just after
                         }
 
                         if ($customer_groups_enabled) {
@@ -673,22 +673,22 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                                 $group_id = (int) $group->getData('customer_group_id');
                                 $group_str = 'group_' . $group_id;
 
-                                if ($min != $max && $min <= $cdfc[$group_str]) {
-                                    $cdfc[$group_str] = 0;
+                                if ($min != $max && $min <= $currencyData[$group_str]) {
+                                    $currencyData[$group_str] = 0;
                                 } else {
-                                    $cdfc[$group_str] = $cdfc['default'];
+                                    $currencyData[$group_str] = $currencyData['default'];
                                 }
 
-                                $cdfc[$group_str .'_formated'] = $dashed_format;
+                                $currencyData[$group_str .'_formated'] = $dashed_format;
                             }
                         }
                     }
 
-                    if ($cdfc['default'] == 0) {
-                        $cdfc['default'] = $min;
+                    if ($currencyData['default'] == 0) {
+                        $currencyData['default'] = $min;
 
                         if ($min === $max) {
-                            $cdfc['default_formated'] = $this->formatPrice($min, false,
+                            $currencyData['default_formated'] = $this->formatPrice($min, false,
                                 $currency_code);
                         }
                     }
@@ -698,17 +698,17 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                             $group_id = (int) $group->getData('customer_group_id');
                             $group_str = 'group_' . $group_id;
 
-                            if ($cdfc[$group_str] == 0) {
-                                $cdfc[$group_str] = $min;
+                            if ($currencyData[$group_str] == 0) {
+                                $currencyData[$group_str] = $min;
 
                                 if ($min === $max) {
-                                    $cdfc[$group_str .'_formated'] = $cdfc['default_formated'];
+                                    $currencyData[$group_str .'_formated'] = $currencyData['default_formated'];
                                 }
                             }
                         }
                     }
                 }
-                $customData[$field][$currency_code] = $cdfc;
+                $customData[$field][$currency_code] = $currencyData;
             }
         }
     }
