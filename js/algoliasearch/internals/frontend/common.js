@@ -176,6 +176,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
 			if (section.name === "products") {
 				options.facets = ['categories.level0'];
 				options.numericFilters = 'visibility_search=1';
+				options.ruleContexts = ['', 'magento_filters']; // Empty context to keep BC for already create rules in dashboard
 
 				source = {
 					source: $.fn.autocomplete.sources.hits(algolia_client.initIndex(algoliaConfig.indexName + "_" + section.name), options),
