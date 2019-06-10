@@ -495,6 +495,10 @@ document.addEventListener("DOMContentLoaded", function (e) {
 			var input = $(this).closest('#algolia-searchbox').find('input');
 			input.val('');
 
+			if (input.data('aaAutocomplete')) {
+				input.data('aaAutocomplete').input.query = '';
+			}
+
 			if (algoliaConfig.autocomplete.enabled != algoliaConfig.instant.enabled) {
 				input.get(0).dispatchEvent(new Event('input'));
 			}
