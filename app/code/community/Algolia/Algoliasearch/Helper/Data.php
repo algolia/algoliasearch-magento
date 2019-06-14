@@ -165,6 +165,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
 
         $additionnal_sections = $this->config->getAutocompleteSections();
 
+        $emulationInfo = $this->startEmulation($storeId);
+
         foreach ($additionnal_sections as $section) {
             if ($section['name'] === 'products' || $section['name'] === 'categories' || $section['name'] === 'pages' || $section['name'] === 'suggestions') {
                 continue;
@@ -183,6 +185,8 @@ class Algolia_Algoliasearch_Helper_Data extends Mage_Core_Helper_Abstract
             $this->algolia_helper->setSettings($index_name,
                 $this->additionalsections_helper->getIndexSettings($storeId));
         }
+
+        $this->stopEmulation($emulationInfo);
     }
 
     public function rebuildStorePageIndex($storeId, $pageIds = null)
