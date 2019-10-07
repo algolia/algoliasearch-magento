@@ -24,39 +24,28 @@ algoliaBundle.$(function ($) {
 
 		// want to track results returned
 		if (lastResults) {
-			trackClick(lastResults.index, $this.data('objectid'), $this.data('position'), lastResults.queryID ? lastResults.queryID : lastResults._rawResults[0].queryID);
+			trackClick(lastResults.index, $this.data('objectid'), $this.data('position'), $this.data('queryid'));
 		}
 	});
 
 	// "Add to cart" conversion
 	if (algoliaConfig.ccAnalytics.conversionAnalyticsMode === 'add_to_cart') {
+		function getQueryParamFromCurrentUrl(queryParamName) {
+			var url = window.location.href;
+			var regex = new RegExp('[?&]' + queryParamName + '(=([^&#]*)|&|#|$)');
+			var results = regex.exec(url);
+			if (!results || !results[2]) return '';
+			return results[2];
+		}
+
 		$(document).on('click', algoliaConfig.ccAnalytics.addToCartSelector, function () {
-			var objectId = $(this).data('objectid') || algoliaConfig.productId;
+			var objectId = $(this).data('objectid') || getQueryParamFromCurrentUrl('objectID');
+			var queryId = $(this).data('queryid') ||  getQueryParamFromCurrentUrl('queryID');
+			var index = algoliaConfig.indexName + "_products" ||  getQueryParamFromCurrentUrl('index');
 
-			if (!objectId) {
-				var postData = $(this).data('post');
-				if (!postData || !postData.data.product) {
-					return;
-				}
-
-				objectId = postData.data.product;
-			}
-
-			// "setTimeout" ensures "trackConversion" is always triggered AFTER "trackClick"
-			// when clicking "Add to cart" on instant search results page
-			setTimeout(function () {
-				trackConversion(algoliaConfig.indexName + "_products", objectId);
-			}, 0);
+			trackConversion(index, objectId, queryId);
 		});
 	}
-
-	// "Place order" conversions
-	// "algoliaConfig.ccAnalytics.orderedProductIds" are set only on checkout success page
-	if (algoliaConfig.ccAnalytics.conversionAnalyticsMode === 'place_order'
-		&& algoliaConfig.ccAnalytics.orderedProductIds.length > 0) {
-		trackConversion(algoliaConfig.indexName + "_products", algoliaConfig.ccAnalytics.orderedProductIds);
-	}
-
 });
 
 var analyticsHelper = {};
@@ -75,14 +64,19 @@ algolia.registerHook('beforeInstantsearchStart', function (search) {
 	return search;
 });
 
+algolia.registerHook('beforeWidgetInitialization', function (allWidgetConfiguration) {
+	allWidgetConfiguration['hits']
+	return allWidgetConfiguration;
+});
+
 algolia.registerHook('beforeInstantsearchInit', function (instantsearchOptions) {
 	instantsearchOptions.searchParameters['clickAnalytics'] = true;
 	return instantsearchOptions;
 });
 
-function trackClick(indexName, objectID, position, queryId) {
+function trackClick(index, objectID, position, queryId) {
 	var clickData = {
-		index: indexName,
+		index: index,
 		eventName: "Clicked item",
 		objectIDs: [objectID.toString()],
 		positions: [parseInt(position)],
@@ -92,10 +86,11 @@ function trackClick(indexName, objectID, position, queryId) {
 	AlgoliaAnalytics.clickedObjectIDsAfterSearch(clickData);
 }
 
-function trackConversion(indexName, objectIDs) {
+function trackConversion(index, objectID, queryId) {
 	AlgoliaAnalytics.convertedObjectIDsAfterSearch({
-		index: indexName,
+		index: index,
 		eventName: "Conversion",
-		objectIDs: Array.isArray(objectIDs) ? objectIDs : [objectID.toString()]
+		objectIDs: [objectID.toString()],
+		queryID: queryId,
 	});
 }
