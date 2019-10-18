@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.16.0</version>
+            <version>1.17.0</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -148,6 +148,27 @@
                     </algolia_savepage>
                 </observers>
             </cms_page_save_before>
+
+            <catalog_controller_product_init_before>
+                <observers>
+                    <algolia_conversion_save_request_to_session>
+                        <type>singleton</type>
+                        <class>algoliasearch/observer_conversion</class>
+                        <method>setAlgoliaParamsToSession</method>
+                    </algolia_conversion_save_request_to_session>
+                </observers>
+            </catalog_controller_product_init_before>
+
+            <checkout_cart_product_add_after>
+                <observers>
+                    <algolia_conversion_save_quote_item>
+                        <type>singleton</type>
+                        <class>algoliasearch/observer_conversion</class>
+                        <method>saveAlgoliaParamToQuoteItem</method>
+                    </algolia_conversion_save_quote_item>
+                </observers>
+            </checkout_cart_product_add_after>
+
         </events>
         <resources>
             <algoliasearch_setup>
@@ -181,6 +202,13 @@
                 </algolia_delete_products>
             </indexer>
         </index>
+        <fieldsets>
+            <sales_convert_quote_item>
+                <algoliasearch_query_param>
+                    <to_order_item>*</to_order_item>
+                </algoliasearch_query_param>
+            </sales_convert_quote_item>
+        </fieldsets>
     </global>
     <default>
         <algoliasearch>

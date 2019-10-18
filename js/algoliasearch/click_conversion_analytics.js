@@ -46,6 +46,18 @@ algoliaBundle.$(function ($) {
 			trackConversion(index, objectId, queryId);
 		});
 	}
+
+	if (algoliaConfig.ccAnalytics.conversionAnalyticsMode === 'place_order') {
+
+		if (typeof algoliaOrderConversionJson !== 'undefined') {
+			$.each(algoliaOrderConversionJson, function(idx, itemData) {
+				if (itemData !== null && typeof itemData.objectID !== 'undefined') {
+					trackConversion(itemData.indexName, itemData.objectID, itemData.queryID);
+				}
+			});
+		}
+	}
+
 });
 
 var analyticsHelper = {};
