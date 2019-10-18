@@ -2,11 +2,11 @@
 
 class Algolia_Algoliasearch_Model_Observer_Conversion
 {
-    protected $_analyticsParams = [
+    protected $_analyticsParams = array(
         'queryID',
         'indexName',
         'objectID',
-    ];
+    );
 
     /**
      * @param null $storeId

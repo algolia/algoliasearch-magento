@@ -5,10 +5,6 @@ class Algolia_Algoliasearch_Block_Checkout_Success_Conversion extends Mage_Core_
     /** @var Mage_Sales_Model_Order */
     protected $_order;
 
-    /**
-     * Internal constructor, that is called from real constructor
-     *
-     */
     protected function _construct()
     {
         parent::_construct();
@@ -18,9 +14,12 @@ class Algolia_Algoliasearch_Block_Checkout_Success_Conversion extends Mage_Core_
         }
     }
 
+    /**
+     * @return string
+     */
     public function getOrderItemsConversionJson()
     {
-        $orderItemsData = [];
+        $orderItemsData = array();
         $orderItems = $this->_order->getAllVisibleItems();
 
         /** @var Item $item */
@@ -30,7 +29,7 @@ class Algolia_Algoliasearch_Block_Checkout_Success_Conversion extends Mage_Core_
             }
         }
 
-        return json_encode($orderItemsData);
+        return Mage::helper('core')->jsonEncode($orderItemsData);
     }
 
     public function _toHtml()
