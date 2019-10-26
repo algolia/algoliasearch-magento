@@ -23,14 +23,14 @@ class Algolia_Algoliasearch_Model_Observer_Conversion
      */
     public function setAlgoliaParamsToSession(Varien_Event_Observer $observer)
     {
-        /** @var Mage_Core_Controller_Front_Action $controllerAction */
-        $controllerAction = $observer->getEvent()->getControllerAction();
-        $params = $controllerAction->getRequest()->getParams();
-
         $checkoutSession = Mage::getSingleton('checkout/session');
         if (!$this->_isOrderConversionTrackingEnabled($checkoutSession->getQuote()->getStoreId())) {
             return;
         }
+
+        /** @var Mage_Core_Controller_Front_Action $controllerAction */
+        $controllerAction = $observer->getEvent()->getControllerAction();
+        $params = $controllerAction->getRequest()->getParams();
 
         if (isset($params['queryID'])) {
             $conversionData = array(

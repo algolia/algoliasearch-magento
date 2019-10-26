@@ -6,14 +6,17 @@ algoliaBundle.$(function ($) {
 
 	// "Click" in autocomplete
 	$(algoliaConfig.autocomplete.selector).each(function () {
-		$(this).on('autocomplete:selected', function (e, suggestion, dataset, context) {
+		$(this).on('autocomplete:selected', function (e, suggestion, dataset) {
 
 			var sources = analyticsHelper.sources;
-			var source = sources.find(function(e) {
-				return e.name == dataset;
+			var source = sources.filter(function(src) {
+				return src.name == dataset;
 			});
 
-			trackClick(source.indexName, suggestion.objectID, suggestion.__position, suggestion.__queryID);
+			if (source.length > 0) {
+				var source = source[0];
+				trackClick(source.indexName, suggestion.objectID, suggestion.__position, suggestion.__queryID);
+			}
 		});
 	});
 
@@ -51,7 +54,7 @@ algoliaBundle.$(function ($) {
 
 		if (typeof algoliaOrderConversionJson !== 'undefined') {
 			$.each(algoliaOrderConversionJson, function(idx, itemData) {
-				if (itemData !== null && typeof itemData.objectID !== 'undefined') {
+				if (itemData && itemData.objectID) {
 					trackConversion(itemData.indexName, itemData.objectID, itemData.queryID);
 				}
 			});
