@@ -19,6 +19,21 @@ class Algolia_Algoliasearch_Model_Observer_Conversion
     }
 
     /**
+     * @param array $params
+     * @return bool
+     */
+    protected function _hasRequiredParameters($params = array())
+    {
+        foreach ($this->_analyticsParams as $requiredParam) {
+            if (!isset($params[$requiredParam])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * @event catalog_controller_product_init_before
      */
     public function setAlgoliaParamsToSession(Varien_Event_Observer $observer)
@@ -32,16 +47,19 @@ class Algolia_Algoliasearch_Model_Observer_Conversion
         $controllerAction = $observer->getEvent()->getControllerAction();
         $params = $controllerAction->getRequest()->getParams();
 
-        if (isset($params['queryID'])) {
-            $conversionData = array(
-                'queryID' => $params['queryID'],
-                'indexName' => $params['index'],
-                'objectID' => $params['objectID'],
-            );
-
-            $session = Mage::getSingleton('core/session', array('name' => 'frontend'));
-            $session->setData('algolia_conversion_parameters', Mage::helper('core')->jsonEncode($conversionData));
+        if (!$this->_hasRequiredParameters($params)) {
+            return;
         }
+
+        $conversionData = array(
+            'queryID' => $params['queryID'],
+            'indexName' => $params['index'],
+            'objectID' => $params['objectID'],
+        );
+
+        $session = Mage::getSingleton('core/session', array('name' => 'frontend'));
+        $session->setData('algolia_conversion_parameters', Mage::helper('core')->jsonEncode($conversionData));
+
     }
 
     /**
@@ -60,4 +78,5 @@ class Algolia_Algoliasearch_Model_Observer_Conversion
             $session->unsetData('algolia_conversion_parameters');
         }
     }
+
 }
