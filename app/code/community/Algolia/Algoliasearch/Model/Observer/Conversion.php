@@ -59,7 +59,6 @@ class Algolia_Algoliasearch_Model_Observer_Conversion
 
         $session = Mage::getSingleton('core/session', array('name' => 'frontend'));
         $session->setData('algolia_conversion_parameters', Mage::helper('core')->jsonEncode($conversionData));
-
     }
 
     /**
@@ -78,5 +77,4 @@ class Algolia_Algoliasearch_Model_Observer_Conversion
             $session->unsetData('algolia_conversion_parameters');
         }
     }
-
 }
