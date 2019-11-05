@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
 				var insightsDataUrlString = $.param({
 					queryID: hit.__queryID,
 					objectID: hit.objectID,
-					index: hit.__indexName
+					indexName: hit.__indexName
 				});
 				if (hit.url.indexOf('?') > -1) {
 					hit.urlForInsights = hit.url + insightsDataUrlString

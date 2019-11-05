@@ -53,7 +53,7 @@ class Algolia_Algoliasearch_Model_Observer_Conversion
 
         $conversionData = array(
             'queryID' => $params['queryID'],
-            'indexName' => $params['index'],
+            'indexName' => $params['indexName'],
             'objectID' => $params['objectID'],
         );
 

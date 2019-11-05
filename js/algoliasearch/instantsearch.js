@@ -1,12 +1,12 @@
 document.addEventListener("DOMContentLoaded", function (event) {
 	algoliaBundle.$(function ($) {
 
-		function makeUrlForInsights(baseUrl, objectID, queryID, index) {
+		function makeUrlForInsights(baseUrl, objectID, queryID, indexName) {
 			var _baseUrl = baseUrl.indexOf('?') === -1 ? baseUrl + '?' : baseUrl;
 			return _baseUrl + $.param({
 				queryID: queryID,
 				objectID: objectID,
-				index: index,
+				indexName: indexName,
 			});
 		}
 		
