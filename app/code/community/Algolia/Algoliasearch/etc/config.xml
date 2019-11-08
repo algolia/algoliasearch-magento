@@ -140,14 +140,14 @@
                 </observers>
             </catalog_product_save_before>
 
-            <cms_page_save_before>
+            <cms_page_save_commit_after>
                 <observers>
                     <algolia_savepage>
                         <class>algoliasearch/observer</class>
                         <method>savePage</method>
                     </algolia_savepage>
                 </observers>
-            </cms_page_save_before>
+            </cms_page_save_commit_after>
 
             <catalog_controller_product_init_before>
                 <observers>
