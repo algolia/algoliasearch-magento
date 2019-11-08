@@ -65,7 +65,7 @@ class Algolia_Algoliasearch_Block_Adminhtml_Indexingqueue_Grid extends Mage_Admi
         $this->addColumn('data', array(
             'header' => Mage::helper('algoliasearch')->__('Data'),
             'index' => 'data',
-            'renderer' => 'Algolia_Algoliasearch_Block_Adminhtml_IndexingQueue_Grid_Renderer_Json'
+            'renderer' => 'Algolia_Algoliasearch_Block_Adminhtml_Indexingqueue_Grid_Renderer_Json'
         ));
 
         $this->addColumn('max_retries', array(
