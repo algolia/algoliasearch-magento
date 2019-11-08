@@ -126,7 +126,9 @@ class Algolia_Algoliasearch_Model_Observer
         $engine = Mage::getResourceModel('algoliasearch/engine');
 
         foreach ($storeIds as $storeId) {
-            if ($storeId == 0) $storeId = null;
+            if ($storeId == 0) {
+                $storeId = null;
+            }
             $engine->rebuildPages($storeId, array($page->getPageId()));
         }
     }
