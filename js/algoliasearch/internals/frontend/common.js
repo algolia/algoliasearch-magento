@@ -157,6 +157,19 @@ document.addEventListener("DOMContentLoaded", function (e) {
 				}
 			}
 
+			if (hit.__queryID) {
+				var insightsDataUrlString = $.param({
+					queryID: hit.__queryID,
+					objectID: hit.objectID,
+					indexName: hit.__indexName
+				});
+				if (hit.url.indexOf('?') > -1) {
+					hit.urlForInsights = hit.url + insightsDataUrlString
+				} else {
+					hit.urlForInsights = hit.url + '?' + insightsDataUrlString;
+				}
+			}
+
 			return hit;
 		};
 
@@ -205,10 +218,12 @@ document.addEventListener("DOMContentLoaded", function (e) {
 							return template;
 						},
 						suggestion: function (hit, payload) {
-							hit = transformHit(hit, algoliaConfig.priceKey)
-							hit.displayKey = hit.displayKey || hit.name;
+							hit.__indexName = algoliaConfig.indexName + "_" + section.name;
 							hit.__queryID = payload.queryID;
 							hit.__position = payload.hits.indexOf(hit) + 1;
+
+							hit = transformHit(hit, algoliaConfig.priceKey);
+							hit.displayKey = hit.displayKey || hit.name;
 
 							return algoliaConfig.autocomplete.templates[section.name].render(hit);
 						}
@@ -370,6 +385,8 @@ document.addEventListener("DOMContentLoaded", function (e) {
 			if (section.name !== 'suggestions' && section.name !== 'products') {
 				source.templates.header = '<div class="category">' + (section.label ? section.label : section.name) + '</div>';
 			}
+
+			source.indexName = algoliaConfig.indexName + "_" + section.name;
 
 			return source;
 		};

@@ -1,5 +1,14 @@
 document.addEventListener("DOMContentLoaded", function (event) {
 	algoliaBundle.$(function ($) {
+
+		function makeUrlForInsights(baseUrl, objectID, queryID, indexName) {
+			var _baseUrl = baseUrl.indexOf('?') === -1 ? baseUrl + '?' : baseUrl;
+			return _baseUrl + $.param({
+				queryID: queryID,
+				objectID: objectID,
+				indexName: indexName,
+			});
+		}
 		
 		/** We have nothing to do here if instantsearch is not enabled **/
 		if (!algoliaConfig.instant.enabled || !(algoliaConfig.isSearchPage || !algoliaConfig.autocomplete.enabled)) {
@@ -302,6 +311,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 						hit.algoliaConfig = window.algoliaConfig;
 
 						hit.__position = hit.__hitIndex + 1;
+						hit.__queryID = search.helper.lastResults.queryID;
+						hit.__urlForInsights = makeUrlForInsights(hit.url, hit.objectID, hit.__queryID, search.helper.lastResults.index);
 
 						return hit;
 					}
@@ -331,7 +342,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
 							results.hits[i] = transformHit(results.hits[i], algoliaConfig.priceKey, search.helper);
 							results.hits[i].isAddToCartEnabled = algoliaConfig.instant.isAddToCartEnabled;
 							results.hits[i].__position = (state.page * state.hitsPerPage) + ++hitIndex;
-
+							results.hits[i].__queryID = results.queryID;
+							results.hits[i].__urlForInsights = makeUrlForInsights(
+								results.hits[i].url, 
+								results.hits[i].objectID, 
+								results.hits[i].__queryID, 
+								results.index
+							);
 							results.hits[i].algoliaConfig = window.algoliaConfig;
 						}
 
@@ -593,4 +610,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
         return options;
     }
-});
+
+})
+;

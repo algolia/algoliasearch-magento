@@ -1,0 +1,8 @@
+<?php
+/** @var Algolia_Algoliasearch_Block_Checkout_Success_Conversion $this */
+$orderItemsJson = $this->getOrderItemsConversionJson();
+?>
+
+<script type="text/javascript">
+    var algoliaOrderConversionJson = <?php echo $orderItemsJson ?>;
+</script>

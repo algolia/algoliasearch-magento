@@ -19,7 +19,13 @@ if ($config->isCustomerGroupsEnabled($storeId)) {
 
 <!-- Product hit template -->
 <script type="text/template" id="autocomplete_products_template">
-    <a class="algoliasearch-autocomplete-hit" href="{{url}}">
+    <a class="algoliasearch-autocomplete-hit"
+        {{^__queryID}} href="{{url}}" {{/__queryID}}
+        {{#__queryID}} href="{{urlForInsights}}" {{/__queryID}}
+        data-objectid="{{objectID}}"
+        data-position="{{__position}}"
+        data-queryid="{{__queryID}}"
+    >
         {{#thumbnail_url}}
             <div class="thumb"><img src="{{thumbnail_url}}" /></div>
         {{/thumbnail_url}}
