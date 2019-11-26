@@ -1015,7 +1015,7 @@
                                     <p>Default value: 3000</p>
                                 ]]>
                             </comment>
-                            <depends><enable_analytics>1</enable_analytics></depends>
+                            <depends><enable>1</enable></depends>
                         </delay>
                         <trigger_on_ui_interaction translate="label comment">
                             <label>Trigger the push function before the the delay on UI interaction</label>
@@ -1031,7 +1031,7 @@
                                     <p>Default value: Yes</p>
                                 ]]>
                             </comment>
-                            <depends><enable_analytics>1</enable_analytics></depends>
+                            <depends><enable>1</enable></depends>
                         </trigger_on_ui_interaction>
                         <push_initial_search translate="label comment">
                             <label>Trigger the push function after the initial search</label>
@@ -1047,7 +1047,7 @@
                                     <p>Default value: No</p>
                                 ]]>
                             </comment>
-                            <depends><enable_analytics>1</enable_analytics></depends>
+                            <depends><enable>1</enable></depends>
                         </push_initial_search>
                     </fields>
                 </analytics>
