@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.16.0</version>
+            <version>1.17.0</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
@@ -140,14 +140,35 @@
                 </observers>
             </catalog_product_save_before>
 
-            <cms_page_save_before>
+            <cms_page_save_commit_after>
                 <observers>
                     <algolia_savepage>
                         <class>algoliasearch/observer</class>
                         <method>savePage</method>
                     </algolia_savepage>
                 </observers>
-            </cms_page_save_before>
+            </cms_page_save_commit_after>
+
+            <catalog_controller_product_init_before>
+                <observers>
+                    <algolia_conversion_save_request_to_session>
+                        <type>singleton</type>
+                        <class>algoliasearch/observer_conversion</class>
+                        <method>setAlgoliaParamsToSession</method>
+                    </algolia_conversion_save_request_to_session>
+                </observers>
+            </catalog_controller_product_init_before>
+
+            <checkout_cart_product_add_after>
+                <observers>
+                    <algolia_conversion_save_quote_item>
+                        <type>singleton</type>
+                        <class>algoliasearch/observer_conversion</class>
+                        <method>saveAlgoliaParamToQuoteItem</method>
+                    </algolia_conversion_save_quote_item>
+                </observers>
+            </checkout_cart_product_add_after>
+
         </events>
         <resources>
             <algoliasearch_setup>
@@ -181,6 +202,13 @@
                 </algolia_delete_products>
             </indexer>
         </index>
+        <fieldsets>
+            <sales_convert_quote_item>
+                <algoliasearch_query_param>
+                    <to_order_item>*</to_order_item>
+                </algoliasearch_query_param>
+            </sales_convert_quote_item>
+        </fieldsets>
     </global>
     <default>
         <algoliasearch>
@@ -198,8 +226,7 @@
             </credentials>
             <products>
                 <number_product_results>9</number_product_results>
-                <product_additional_attributes>a:10:{s:18:"_1427959997377_377";a:4:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427960012597_597";a:4:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427961262735_735";a:4:{s:9:"attribute";s:10:"categories";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1447846016385_385";a:5:{s:9:"attribute";s:5:"color";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";s:14:"index_no_value";s:1:"0";}s:18:"_1427961324936_936";a:4:{s:9:"attribute";s:3:"sku";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427962021621_621";a:4:{s:9:"attribute";s:5:"price";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1427977839554_554";a:4:{s:9:"attribute";s:11:"ordered_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:9:"unordered";}s:18:"_1428566173508_508";a:4:{s:9:"attribute";s:9:"stock_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:9:"unordered";}s:17:"_1433929490023_23";a:4:{s:9:"attribute";s:14:"rating_summary";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";}s:18:"_1436178594492_492";a:4:{s:9:"attribute";s:10:"created_at";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:9:"unordered";}}</product_additional_attributes>
-                <custom_ranking_product_attributes>a:1:{s:18:"_1427960305274_274";a:2:{s:9:"attribute";s:11:"ordered_qty";s:5:"order";s:4:"desc";}}</custom_ranking_product_attributes>
+                <product_additional_attributes>a:9:{s:18:"_1427959997377_377";a:5:{s:9:"attribute";s:4:"name";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";s:14:"index_no_value";s:1:"1";}s:18:"_1427960012597_597";a:5:{s:9:"attribute";s:4:"path";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";s:14:"index_no_value";s:1:"1";}s:18:"_1427961262735_735";a:5:{s:9:"attribute";s:10:"categories";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";s:14:"index_no_value";s:1:"1";}s:18:"_1447846016385_385";a:5:{s:9:"attribute";s:5:"color";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";s:14:"index_no_value";s:1:"0";}s:18:"_1427961324936_936";a:5:{s:9:"attribute";s:3:"sku";s:10:"searchable";s:1:"1";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";s:14:"index_no_value";s:1:"1";}s:18:"_1427962021621_621";a:5:{s:9:"attribute";s:5:"price";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";s:14:"index_no_value";s:1:"1";}s:18:"_1428566173508_508";a:5:{s:9:"attribute";s:9:"stock_qty";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:9:"unordered";s:14:"index_no_value";s:1:"1";}s:17:"_1433929490023_23";a:5:{s:9:"attribute";s:14:"rating_summary";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"1";s:5:"order";s:9:"unordered";s:14:"index_no_value";s:1:"1";}s:18:"_1436178594492_492";a:5:{s:9:"attribute";s:10:"created_at";s:10:"searchable";s:1:"0";s:11:"retrievable";s:1:"0";s:5:"order";s:9:"unordered";s:14:"index_no_value";s:1:"1";}}</product_additional_attributes>
                 <results_limit>1000</results_limit>
                 <show_suggestions_on_no_result_page>1</show_suggestions_on_no_result_page>
                 <index_visibility>all</index_visibility>

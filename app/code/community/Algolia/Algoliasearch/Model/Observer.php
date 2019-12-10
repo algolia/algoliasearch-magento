@@ -106,6 +106,10 @@ class Algolia_Algoliasearch_Model_Observer
         Algolia_Algoliasearch_Model_Indexer_Algolia::$product_categories[$product->getId()] = $product->getCategoryIds();
     }
 
+    /**
+     * @event cms_page_save_commit_after
+     * @param Varien_Event_Observer $observer
+     */
     public function savePage(Varien_Event_Observer $observer)
     {
         if (!$this->config->getApplicationID()
@@ -115,15 +119,18 @@ class Algolia_Algoliasearch_Model_Observer
         }
 
         /** @var Mage_Cms_Model_Page $page */
-        $page = $observer->getDataObject();
-        $page = Mage::getModel('cms/page')->load($page->getId());
-
-        $storeIds = $page->getStoreId();
+        $page = $observer->getEvent()->getDataObject();
+        $storeIds = $page->getStores();
 
         /** @var Algolia_Algoliasearch_Model_Resource_Engine $engine */
         $engine = Mage::getResourceModel('algoliasearch/engine');
 
-        $engine->rebuildPages($storeIds, $page->getId());
+        foreach ($storeIds as $storeId) {
+            if ($storeId == 0) {
+                $storeId = null;
+            }
+            $engine->rebuildPages($storeId, array($page->getPageId()));
+        }
     }
 
     public function deleteProductsStoreIndices(Varien_Object $event)

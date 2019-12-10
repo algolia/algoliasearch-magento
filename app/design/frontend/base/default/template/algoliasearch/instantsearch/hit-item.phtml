@@ -19,7 +19,12 @@ if ($config->isCustomerGroupsEnabled($storeId)) {
 
         <div class="col-md-4 col-sm-6">
             <div class="result-wrapper">
-                <a href="{{url}}" class="result algolia-clearfix" data-objectid="{{objectID}}" data-position="{{__position}}">
+                <a  href="{{__urlForInsights}}"
+                    class="result algolia-clearfix"
+                    data-objectid="{{objectID}}" 
+                    data-position="{{__position}}" 
+                    data-queryid="{{__queryID}}"
+                    >
                     <div class="result-content">
                         <div class="result-thumbnail">
                             {{#image_url}}<img src="{{{ image_url }}}"/>{{/image_url}}

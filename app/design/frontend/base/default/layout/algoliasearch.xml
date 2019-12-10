@@ -101,4 +101,10 @@
         </reference>
     </algolia_search_handle_click_conversion_analytics>
 
+    <checkout_onepage_success>
+        <reference name="before_body_end">
+            <block type="algoliasearch/checkout_success_conversion" name="algolia.order.conversion" template="algoliasearch/checkout/success/conversion.phtml" />
+        </reference>
+    </checkout_onepage_success>
+
 </layout>
