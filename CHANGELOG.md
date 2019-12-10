@@ -1,5 +1,17 @@
 # CHANGE LOG
 
+## 1.17.0
+
+### Updates
+- Apply ruleContexts in autocomplete (#1133)
+- Update search-insights and compatibility (#1129)
+- Remove ordered_qty as a default option for product attr and ranking (#1142)
+- Update CMS Page Indexing (#1141)
+
+### Fixes
+- Admin indexing queue remove uppercase on renderer's column (#1132)
+- GA configuration update the depends node to the correct field name (#1143)
+
 ## 1.16.0
 
 ### Updates
