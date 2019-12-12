@@ -90,7 +90,7 @@ class ConfigTest extends TestCase
             }
         }
 
-        setConfig('algoliasearch/instant/facets', serialize($facets));
+        setConfig('algoliasearch/instant/facets', \Zend_Serializer::serialize($facets));
 
         // Set don't replace category pages with Algolia - categories attribute shouldn't be included in facets
         setConfig('algoliasearch/instant/replace_categories', '0');

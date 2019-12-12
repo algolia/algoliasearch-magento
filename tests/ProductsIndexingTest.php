@@ -42,10 +42,10 @@ class ProductsIndexingTest extends AbstractIndexingTestCase
 
     public function testDefaultIndexableAttributes()
     {
-        setConfig('algoliasearch/products/product_additional_attributes', serialize(array()));
-        setConfig('algoliasearch/instant/facets', serialize(array()));
-        setConfig('algoliasearch/instant/sorts', serialize(array()));
-        setConfig('algoliasearch/products/custom_ranking_product_attributes', serialize(array()));
+        setConfig('algoliasearch/products/product_additional_attributes', \Zend_Serializer::serialize(array()));
+        setConfig('algoliasearch/instant/facets', \Zend_Serializer::serialize(array()));
+        setConfig('algoliasearch/instant/sorts', \Zend_Serializer::serialize(array()));
+        setConfig('algoliasearch/products/custom_ranking_product_attributes', \Zend_Serializer::serialize(array()));
 
         $indexer = new Algolia_Algoliasearch_Model_Indexer_Algolia();
         $indexer->reindexSpecificProducts(405);
