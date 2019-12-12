@@ -19,7 +19,7 @@ class PagesIndexingTest extends AbstractIndexingTestCase
             ),
         );
 
-        setConfig('algoliasearch/autocomplete/excluded_pages', \Zend_Serializer::serialize($excludedPages));
+        setConfig('algoliasearch/autocomplete/excluded_pages', serialize($excludedPages));
 
         $indexer = new Algolia_Algoliasearch_Model_Indexer_Algoliapages();
         $this->processTest($indexer, 'pages', 8, 7, 7);

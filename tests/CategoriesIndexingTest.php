@@ -10,7 +10,7 @@ class CategoriesIndexingTest extends AbstractIndexingTestCase
 
     public function testDefaultIndexableAttributes()
     {
-        setConfig('algoliasearch/categories/category_additional_attributes2', \Zend_Serializer::serialize(array()));
+        setConfig('algoliasearch/categories/category_additional_attributes2', serialize(array()));
 
         $indexer = new Algolia_Algoliasearch_Model_Indexer_Algoliacategories();
         $indexer->reindexSpecificCategories(24);
