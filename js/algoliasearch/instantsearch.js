@@ -2,6 +2,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
 	algoliaBundle.$(function ($) {
 
 		function makeUrlForInsights(baseUrl, objectID, queryID, indexName) {
+			if (algoliaConfig.ccAnalytics.enabled !== true) {
+				return baseUrl;
+			}
+
 			var _baseUrl = baseUrl.indexOf('?') === -1 ? baseUrl + '?' : baseUrl;
 			return _baseUrl + $.param({
 				queryID: queryID,
