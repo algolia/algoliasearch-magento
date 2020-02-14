@@ -236,7 +236,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getAutocompleteSections($storeId = null)
     {
-        $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::AUTOCOMPLETE_SECTIONS, $storeId));
+        $attrs = array();
+        try {
+            $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::AUTOCOMPLETE_SECTIONS, $storeId));
+        } catch (\Exception $e) {
+        }
 
         if (is_array($attrs)) {
             return array_values($attrs);
@@ -358,7 +362,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getExcludedPages($storeId = null)
     {
-        $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::EXCLUDED_PAGES, $storeId));
+        $attrs = array();
+        try {
+            $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::EXCLUDED_PAGES, $storeId));
+        } catch (\Exception $e) {
+        }
 
         if (is_array($attrs)) {
             return $attrs;
@@ -382,7 +390,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         /** @var Algolia_Algoliasearch_Helper_Entity_Producthelper $product_helper */
         $product_helper = Mage::helper('algoliasearch/entity_producthelper');
 
-        $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::SORTING_INDICES, $storeId));
+        $attrs = array();
+        try {
+            $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::SORTING_INDICES, $storeId));
+        } catch (\Exception $e) {
+        }
 
         /** @var Mage_Customer_Model_Session $customerSession */
         $customerSession = Mage::getSingleton('customer/session');
@@ -503,7 +515,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getCategoryAdditionalAttributes($storeId = null)
     {
-        $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::CATEGORY_ATTRIBUTES, $storeId));
+        $attrs = array();
+        try {
+            $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::CATEGORY_ATTRIBUTES, $storeId));
+        } catch (\Exception $e) {
+        }
 
         if (is_array($attrs)) {
             return $attrs;
@@ -514,19 +530,23 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getProductAdditionalAttributes($storeId = null)
     {
-        $attributes = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::PRODUCT_ATTRIBUTES, $storeId));
+        $attributes = array();
+        try {
+            $attributes = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::PRODUCT_ATTRIBUTES, $storeId));
 
-        $facets = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::FACETS, $storeId));
-        $attributes = $this->addIndexableAttributes($attributes, $facets, '0');
+            $facets = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::FACETS, $storeId));
+            $attributes = $this->addIndexableAttributes($attributes, $facets, '0');
 
-        $sorts = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::SORTING_INDICES, $storeId));
-        $attributes = $this->addIndexableAttributes($attributes, $sorts, '0');
+            $sorts = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::SORTING_INDICES, $storeId));
+            $attributes = $this->addIndexableAttributes($attributes, $sorts, '0');
 
-        $customRankings = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::PRODUCT_CUSTOM_RANKING, $storeId));
-        $customRankings = array_filter($customRankings, function ($customRanking) {
-            return $customRanking['attribute'] != 'custom_attribute';
-        });
-        $attributes = $this->addIndexableAttributes($attributes, $customRankings, '0', '0');
+            $customRankings = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::PRODUCT_CUSTOM_RANKING, $storeId));
+            $customRankings = array_filter($customRankings, function ($customRanking) {
+                return $customRanking['attribute'] != 'custom_attribute';
+            });
+            $attributes = $this->addIndexableAttributes($attributes, $customRankings, '0', '0');
+        } catch (\Exception $e) {
+        }
 
         if (is_array($attributes)) {
             return $attributes;
@@ -537,7 +557,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getFacets($storeId = null)
     {
-        $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::FACETS, $storeId));
+        $attrs = array();
+        try {
+            $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::FACETS, $storeId));
+        } catch (\Exception $e) {
+        }
+
         foreach ($attrs as &$attr) {
             if ($attr['type'] == 'other') {
                 $attr['type'] = $attr['other_type'];
@@ -660,7 +685,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getSynonyms($storeId = null)
     {
-        $synonyms = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::SYNONYMS, $storeId));
+        $synonyms = array();
+        try {
+            $synonyms = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::SYNONYMS, $storeId));
+        } catch (\Exception $e) {
+        }
 
         if (is_array($synonyms)) {
             return $synonyms;
@@ -671,7 +700,11 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getOnewaySynonyms($storeId = null)
     {
-        $onewaySynonyms = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::ONEWAY_SYNONYMS, $storeId));
+        $onewaySynonyms = array();
+        try {
+            $onewaySynonyms = \Zend_Serializer::unserialize((string) Mage::getStoreConfig(self::ONEWAY_SYNONYMS, $storeId));
+        } catch (\Exception $e) {
+        }
 
         if (is_array($onewaySynonyms)) {
             return $onewaySynonyms;
@@ -734,10 +767,15 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
     public function getNonCastableAttributes($storeId = null)
     {
         $nonCastableAttributes = array();
-        $config = Mage::getStoreConfig(self::NON_CASTABLE_ATTRIBUTES, $storeId);
+        $config = array();
 
-        if ($config !== null && $config !== '') {
-            $config = \Zend_Serializer::unserialize($config);
+        try {
+            $config = Mage::getStoreConfig(self::NON_CASTABLE_ATTRIBUTES, $storeId);
+
+            if ($config !== null && $config !== '') {
+                $config = \Zend_Serializer::unserialize($config);
+            }
+        } catch (\Exception $e) {
         }
 
         if (is_array($config)) {
@@ -753,7 +791,12 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     private function getCustomRanking($configName, $storeId = null)
     {
-        $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig($configName, $storeId));
+
+        $attrs = array();
+        try {
+            $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig($configName, $storeId));
+        } catch (\Exception $e) {
+        }
 
         if (is_array($attrs)) {
             foreach ($attrs as $index => $attr) {
