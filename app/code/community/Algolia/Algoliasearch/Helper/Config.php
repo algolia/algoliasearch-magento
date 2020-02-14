@@ -791,7 +791,6 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     private function getCustomRanking($configName, $storeId = null)
     {
-
         $attrs = array();
         try {
             $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig($configName, $storeId));
