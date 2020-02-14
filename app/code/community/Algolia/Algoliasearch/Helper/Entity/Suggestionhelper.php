@@ -51,7 +51,7 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
             // load from cache if we can
             $cachedPopularQueries = Mage::app()->loadCache($this->_popularQueriesCacheId);
             if ($cachedPopularQueries) {
-                $this->_popularQueries = \Zend_Serializer::unserialize($cachedPopularQueries);
+                $this->_popularQueries = \Zend_Serializer::unserialize((string) $cachedPopularQueries);
             } else {
                 $collection = Mage::getResourceModel('catalogsearch/query_collection');
                 $collection->getSelect()->where('num_results >= '.$this->config->getMinNumberOfResults().' AND popularity >= '.$this->config->getMinPopularity().' AND query_text != "__empty__"');
