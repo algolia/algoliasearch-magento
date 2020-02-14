@@ -795,6 +795,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
         try {
             $attrs = \Zend_Serializer::unserialize((string) Mage::getStoreConfig($configName, $storeId));
         } catch (\Exception $e) {
+            //
         }
 
         if (is_array($attrs)) {
