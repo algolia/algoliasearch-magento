@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Algolia_Algoliasearch>
-            <version>1.17.0</version>
+            <version>1.17.1</version>
         </Algolia_Algoliasearch>
     </modules>
     <frontend>
