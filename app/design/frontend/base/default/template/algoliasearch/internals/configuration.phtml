@@ -263,6 +263,7 @@ $algoliaJsConfig = array(
     'maxValuesPerFacet' => (int) $config->getMaxValuesPerFacet(),
     'autofocus' => true,
     'ccAnalytics' => array(
+        'enabled' => $config->isClickConversionAnalyticsEnabled(),
         'ISSelector' => $config->getClickConversionAnalyticsISSelector(),
         'conversionAnalyticsMode' => $config->getConversionAnalyticsMode(),
         'addToCartSelector' => $config->getConversionAnalyticsAddToCartSelector(),

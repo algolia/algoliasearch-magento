@@ -618,7 +618,7 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
 
     public function getPopularQueries($storeId = null)
     {
-        if (!$this->isInstantEnabled($storeId) || !$this->showSuggestionsOnNoResultsPage($storeId)) {
+        if (!$this->showSuggestionsOnNoResultsPage($storeId)) {
             return array();
         }
 
