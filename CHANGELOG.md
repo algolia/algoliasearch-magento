@@ -1,5 +1,14 @@
 # CHANGE LOG
 
+## 1.17.1
+
+### Updates
+- Clean up and condition the analytics url (#1149) 
+- Remove IS enable condition for empty result popular queries (#1151) 
+
+### Fixes
+- Remove (un)serialize methods to pass new Marketplace expectations (#1152) 
+
 ## 1.17.0
 
 ### Updates
