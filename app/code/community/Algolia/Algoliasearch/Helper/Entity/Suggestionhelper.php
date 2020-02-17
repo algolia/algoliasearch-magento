@@ -51,7 +51,7 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
             // load from cache if we can
             $cachedPopularQueries = Mage::app()->loadCache($this->_popularQueriesCacheId);
             if ($cachedPopularQueries) {
-                $this->_popularQueries = unserialize($cachedPopularQueries);
+                $this->_popularQueries = \Zend_Serializer::unserialize((string) $cachedPopularQueries);
             } else {
                 $collection = Mage::getResourceModel('catalogsearch/query_collection');
                 $collection->getSelect()->where('num_results >= '.$this->config->getMinNumberOfResults().' AND popularity >= '.$this->config->getMinPopularity().' AND query_text != "__empty__"');
@@ -77,7 +77,7 @@ class Algolia_Algoliasearch_Helper_Entity_Suggestionhelper extends Algolia_Algol
 
                 $this->_popularQueries = array_slice($suggestions, 0, 9);
                 try { //save to cache
-                    $cacheContent = serialize($this->_popularQueries);
+                    $cacheContent = \Zend_Serializer::serialize($this->_popularQueries);
                     $tags = array(
                         Mage_CatalogSearch_Model_Query::CACHE_TAG,
                     );
