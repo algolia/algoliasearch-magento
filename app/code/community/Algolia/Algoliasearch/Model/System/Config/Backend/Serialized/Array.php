@@ -9,7 +9,7 @@ class Algolia_Algoliasearch_Model_System_Config_Backend_Serialized_Array extends
         if ($helper->isX3Version()) {
             if (!is_array($this->getValue())) {
                 $value = $this->getValue();
-                $this->setValue(empty($value) ? false : unserialize($value));
+                $this->setValue(empty($value) ? false : \Zend_Serializer::unserialize((string) $value));
             }
 
             return;

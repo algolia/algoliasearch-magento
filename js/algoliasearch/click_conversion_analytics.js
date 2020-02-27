@@ -79,11 +79,6 @@ algolia.registerHook('beforeInstantsearchStart', function (search) {
 	return search;
 });
 
-algolia.registerHook('beforeWidgetInitialization', function (allWidgetConfiguration) {
-	allWidgetConfiguration['hits']
-	return allWidgetConfiguration;
-});
-
 algolia.registerHook('beforeInstantsearchInit', function (instantsearchOptions) {
 	instantsearchOptions.searchParameters['clickAnalytics'] = true;
 	return instantsearchOptions;
