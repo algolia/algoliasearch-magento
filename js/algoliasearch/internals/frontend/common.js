@@ -290,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
 							allTitle: algoliaConfig.translations.allDepartments
 						});
 				} else {
-					suggestionsSource = $.fn.autocomplete.sources.hits(suggestions_index, options, {
+					suggestionsSource = $.fn.autocomplete.sources.hits(suggestions_index, {
 						hitsPerPage: section.hitsPerPage
 					});
 				}
