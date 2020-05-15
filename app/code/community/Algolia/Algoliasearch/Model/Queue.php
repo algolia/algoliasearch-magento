@@ -439,7 +439,10 @@ class Algolia_Algoliasearch_Model_Queue
 
         if ($jobsIds !== array()) {
             $pid = getmypid();
-            $this->db->update($this->table, array('pid' => $pid), array('job_id IN (?)' => $jobsIds));
+            $this->db->update($this->table, array(
+                'pid' => $pid,
+                'locked_at' => date('Y-m-d H:i:s'),
+            ), array('job_id IN (?)' => $jobsIds));
         }
     }
 

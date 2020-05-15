@@ -238,6 +238,7 @@ class QueueTest extends AbstractTestCase
             'data_size' => 3,
             'store_id' => '1',
             'merged_ids' => array('1', '7'),
+            'locked_at' => null
         );
 
         $this->assertEquals($expectedCategoryJob, $mergedJobs[0]);
@@ -261,6 +262,7 @@ class QueueTest extends AbstractTestCase
             'data_size' => 2,
             'store_id' => '1',
             'merged_ids' => array('4', '10'),
+            'locked_at' => null
         );
 
         $this->assertEquals($expectedProductJob, $mergedJobs[3]);
@@ -348,6 +350,7 @@ class QueueTest extends AbstractTestCase
             'data_size' => 3,
             'store_id' => '1',
             'merged_ids' => array('1', '7'),
+            'locked_at' => null
         );
 
         $expectedLastJob = array(
@@ -369,6 +372,7 @@ class QueueTest extends AbstractTestCase
             'data_size' => 2,
             'store_id' => '3',
             'merged_ids' => array('6', '12'),
+            'locked_at' => null
         );
 
         $this->assertEquals($expectedFirstJob, reset($jobs));
