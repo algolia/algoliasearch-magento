@@ -207,6 +207,14 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
         $this->lastTaskId = $res['taskID'];
     }
 
+    public function copyIndex($fromIndexName, $toIndexName, $scope)
+    {
+        $res = $this->client->copyIndex($fromIndexName, $toIndexName, $scope);
+
+        $this->lastUsedIndexName = $toIndexName;
+        $this->lastTaskId = $res['taskID'];
+    }
+
     public function copySynonyms($fromIndexName, $toIndexName)
     {
         $fromIndex = $this->getIndex($fromIndexName);

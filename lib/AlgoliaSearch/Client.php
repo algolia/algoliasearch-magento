@@ -347,9 +347,13 @@ class Client
      *
      * @return mixed
      */
-    public function copyIndex($srcIndexName, $dstIndexName)
+    public function copyIndex($srcIndexName, $dstIndexName, $scope = null)
     {
         $request = array('operation' => 'copy', 'destination' => $dstIndexName);
+
+        if ($scope) {
+            $request['scope'] = $scope;
+        }
 
         return $this->request(
             $this->context,

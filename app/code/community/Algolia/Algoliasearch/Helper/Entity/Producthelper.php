@@ -439,8 +439,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
 
             $this->algolia_helper->setSynonyms($this->getIndexName($storeId, $saveToTmpIndicesToo), $synonymsToSet);
-        } elseif ($saveToTmpIndicesToo === true) {
-            $this->algolia_helper->copySynonyms($this->getIndexName($storeId), $this->getIndexName($storeId, $saveToTmpIndicesToo));
+        } else {
+            $this->algolia_helper->copyIndex($this->getIndexName($storeId), $this->getIndexName($storeId, $saveToTmpIndicesToo), ['synonyms']);
         }
 
         if ($saveToTmpIndicesToo === true) {
@@ -448,7 +448,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $indexNameTmp = $this->getIndexName($storeId, $saveToTmpIndicesToo);
 
             try {
-                $this->algolia_helper->copyQueryRules($indexName, $indexNameTmp);
+                $this->algolia_helper->copyIndex($indexName, $indexNameTmp, ['rules']);
             } catch (AlgoliaException $e) {
                 // Fail silently if query rules are disabled on the app
                 // If QRs are disabled, nothing will happen and the extension will work as expected
