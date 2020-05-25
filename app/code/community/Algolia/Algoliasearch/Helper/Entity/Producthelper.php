@@ -439,7 +439,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
 
             $this->algolia_helper->setSynonyms($this->getIndexName($storeId, $saveToTmpIndicesToo), $synonymsToSet);
-        } else if ($saveToTmpIndicesToo === true) {
+        } elseif ($saveToTmpIndicesToo === true) {
             $this->algolia_helper->copyIndex($this->getIndexName($storeId), $this->getIndexName($storeId, $saveToTmpIndicesToo), ['synonyms']);
         }
 
