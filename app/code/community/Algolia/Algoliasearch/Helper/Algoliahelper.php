@@ -240,40 +240,15 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
     /**
      * @param $fromIndexName
      * @param $toIndexName
-     *
-     * @throws \AlgoliaSearch\AlgoliaException
      */
     public function copyQueryRules($fromIndexName, $toIndexName)
     {
-        $fromIndex = $this->getIndex($fromIndexName);
-        $toIndex = $this->getIndex($toIndexName);
+        $res = $this->getClient()->scopedCopyIndex($fromIndexName, $toIndexName, array('rules'), array(
+            'forwardToReplicas'  => true,
+            'clearExistingRules' => true
+        ));
 
-        $queryRulesToSet = array();
-
-        $hitsPerPage = 100;
-        $page = 0;
-        do {
-            $fetchedQueryRules = $fromIndex->searchRules(array(
-                'page' => $page,
-                'hitsPerPage' => $hitsPerPage,
-            ));
-
-            foreach ($fetchedQueryRules['hits'] as $hit) {
-                unset($hit['_highlightResult']);
-
-                $queryRulesToSet[] = $hit;
-            }
-
-            $page++;
-        } while (($page * $hitsPerPage) < $fetchedQueryRules['nbHits']);
-
-        if (empty($queryRulesToSet)) {
-            $res = $toIndex->clearRules(true);
-        } else {
-            $res = $toIndex->batchRules($queryRulesToSet, true, true);
-        }
-
-        $this->lastUsedIndexName = $toIndex;
+        $this->lastUsedIndexName = $toIndexName;
         $this->lastTaskId = $res['taskID'];
     }
 
