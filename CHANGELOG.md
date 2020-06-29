@@ -1,5 +1,12 @@
 # CHANGE LOG
 
+## 1.18.0
+
+### Updates
+- Update PHP Client to v 1.28.0 (#1162)
+- Update copyQueryRules to use scopedCopyIndex method (#1166)
+- Update README.md (#1167) 
+
 ## 1.17.1
 
 ### Updates
