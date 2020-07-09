@@ -244,7 +244,7 @@ class Algolia_Algoliasearch_Helper_Algoliahelper extends Mage_Core_Helper_Abstra
     public function copyQueryRules($fromIndexName, $toIndexName)
     {
         $res = $this->getClient()->scopedCopyIndex($fromIndexName, $toIndexName, array('rules'), array(
-            'forwardToReplicas'  => true,
+            'forwardToReplicas'  => false,
             'clearExistingRules' => true
         ));
 
