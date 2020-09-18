@@ -1,7 +1,7 @@
 Algolia Search for Magento 1.6+
 ==================
 
-![Latest version](https://img.shields.io/badge/latest-1.17.1-green.svg)
+![Latest version](https://img.shields.io/badge/latest-1.18.0-green.svg)
 
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-magento.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-magento)
 ![PHP >= 5.3](https://img.shields.io/badge/php-%3E=5.3-green.svg)
@@ -14,15 +14,15 @@ Algolia Search for Magento 1.6+
 
 -------
 
-🔎 Are you a Magento engineer? [Join our team](https://www.algolia.com/careers#!?j=eed58660-f684-436d-a2ff-e9947d2b65a2) and help us deliver the best search solution for Magento stores!
+🔎  &nbsp; **Need help?** Check out our [Troubleshooting Guide](https://www.algolia.com/doc/integration/magento-1/troubleshooting/data-indexes-queues/) and our [General FAQs](https://www.algolia.com/doc/integration/magento-1/troubleshooting/general-faq/). For feedback, bug reporting, or unresolved issues with the extension, please contact us at [support@algolia.com](mailto:support@algolia.com). Please include your Magento version, extension version, application ID, and steps to reproducing your issue. Add additional information like screenshots, screencasts, and error messages to help our team better troubleshoot your issues.
 
 -------
 
-- **Auto-completion menu:** Offer End-Users immediate access to your whole catalog from the dropdown menu, whatever your number of categories or attributes.
+- **Autocompletion menu:** Offer End-Users immediate access to your whole catalog from the dropdown menu, whatever your number of categories or attributes.
 
-- **Instant search results page:** Have your search results page, navigation and pagination updated in realtime, after each keystroke.
+- **Instantsearch results page:** Have your search results page, navigation and pagination updated in realtime, after each keystroke.
 
-Official website: [community.algolia.com/magento](https://community.algolia.com/magento).
+Official website: [https://www.algolia.com/solutions/magento/](https://www.algolia.com/solutions/magento/).
 
 *Note: if your store is running under Magento version 2, please check our [Algolia for Magento 2 extension](https://github.com/algolia/algoliasearch-magento-2).*
 
@@ -38,12 +38,12 @@ You can check out our [live demo](https://magento.algolia.com).
 Documentation
 --------------
 
-Check out the [Algolia Search for Magento 1 documentation](https://community.algolia.com/magento/doc/m1/getting-started/).
+Check out the [Algolia Search for Magento 1 documentation](https://www.algolia.com/doc/integration/magento-1/getting-started/quick-start/).
 
 Installation
 ------------
 
-Follow our [getting started guide](https://community.algolia.com/magento/doc/m1/getting-started/).
+Follow our [getting started guide](https://www.algolia.com/doc/integration/magento-1/getting-started/quick-start/).
 
 Contribute to the Extension
 ------------
@@ -101,3 +101,15 @@ $ cd /path/to/your/magento/directory
 $ modman init
 $ modman clone https://github.com/algolia/algoliasearch-magento.git
 ```
+
+Need Help?
+------------
+Here are some helpful documentation to help with your issue:
+
+- [General FAQs](https://www.algolia.com/doc/integration/magento-1/troubleshooting/general-faq/)
+- [Troubleshooting Guide](https://www.algolia.com/doc/integration/magento-1/troubleshooting/data-indexes-queues/)
+- [Indexing Queue](https://www.algolia.com/doc/integration/magento-1/how-it-works/indexing-queue/)
+- [Frontend Custom Events](https://www.algolia.com/doc/integration/magento-1/customize/custom-front-end-events/)
+- [Dispatched Backend Events](https://www.algolia.com/doc/integration/magento-1/customize/custom-back-end-events/)
+
+For feedback, bug reporting, or unresolved issues with the extension, please contact us at [support@algolia.com](mailto:support@algolia.com). Please include your Magento version, extension version, application ID, and steps to reproducing your issue. Add additional information like screenshots, screencasts, and error messages to help our team better troubleshoot your issues.
