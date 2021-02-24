@@ -1,5 +1,2 @@
-## `algolia/algoliasearch-magento` maintainers
-
-| Name                         | Email                     |
-|------------------------------|---------------------------|
-| Jan Petr                     | jan.petr@algolia.com      |
+## Maintainers
+The Algolia Magento 1 extension has reached a support and maintenance EOL and, therefore, will not commit to maintain the extension past FEB 2021. We encourage you to upgrade to Magento 2 as Magento 1 has already reached its end of life. 
