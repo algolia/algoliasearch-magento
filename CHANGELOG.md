@@ -1,5 +1,14 @@
 # CHANGE LOG
 
+## 1.19.0
+
+### Updates
+- Update algoliaBundle with latest autocomplete for multiqueries (#1171)
+- Set forwardToReplicas for copy rules to false (#1170)
+- Add missing options for suggestion source (#1157)
+- Update readme and remove travis (#1172)
+
+
 ## 1.18.0
 
 ### Updates
