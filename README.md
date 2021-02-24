@@ -3,7 +3,6 @@ Algolia Search for Magento 1.6+
 
 ![Latest version](https://img.shields.io/badge/latest-1.18.0-green.svg)
 
-[![Build Status](https://travis-ci.org/algolia/algoliasearch-magento.svg?branch=master)](https://travis-ci.org/algolia/algoliasearch-magento)
 ![PHP >= 5.3](https://img.shields.io/badge/php-%3E=5.3-green.svg)
 
 ![Magento 1.6.2](https://img.shields.io/badge/magento-1.6.2-blue.svg)
@@ -14,7 +13,13 @@ Algolia Search for Magento 1.6+
 
 -------
 
-🔎  &nbsp; **Need help?** Check out our [Troubleshooting Guide](https://www.algolia.com/doc/integration/magento-1/troubleshooting/data-indexes-queues/) and our [General FAQs](https://www.algolia.com/doc/integration/magento-1/troubleshooting/general-faq/). For feedback, bug reporting, or unresolved issues with the extension, please contact us at [support@algolia.com](mailto:support@algolia.com). Please include your Magento version, extension version, application ID, and steps to reproducing your issue. Add additional information like screenshots, screencasts, and error messages to help our team better troubleshoot your issues.
+## End of Support
+
+🚨 &nbsp; The Algolia Magento 1 extension has reached **End of Life** regarding support and maintenance. We do not commit to maintain and support the extension past FEB 2021. We encourage you to upgrade to Magento 2 as Magento 1 has already reached its end of life. 
+
+-------
+
+🔎  &nbsp; **Need help?** Check out our [Troubleshooting Guide](https://www.algolia.com/doc/integration/magento-1/troubleshooting/data-indexes-queues/) and our [General FAQs](https://www.algolia.com/doc/integration/magento-1/troubleshooting/general-faq/).
 
 -------
 
@@ -111,5 +116,3 @@ Here are some helpful documentation to help with your issue:
 - [Indexing Queue](https://www.algolia.com/doc/integration/magento-1/how-it-works/indexing-queue/)
 - [Frontend Custom Events](https://www.algolia.com/doc/integration/magento-1/customize/custom-front-end-events/)
 - [Dispatched Backend Events](https://www.algolia.com/doc/integration/magento-1/customize/custom-back-end-events/)
-
-For feedback, bug reporting, or unresolved issues with the extension, please contact us at [support@algolia.com](mailto:support@algolia.com). Please include your Magento version, extension version, application ID, and steps to reproducing your issue. Add additional information like screenshots, screencasts, and error messages to help our team better troubleshoot your issues.
