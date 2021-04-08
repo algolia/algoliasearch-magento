@@ -176,6 +176,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             }
 
             $products = $products
+                ->addAttributeToSelect('special_price')
                 ->addAttributeToSelect('special_from_date')
                 ->addAttributeToSelect('special_to_date')
                 ->addAttributeToSelect('visibility')
@@ -496,14 +497,22 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
     protected function handlePrice(Mage_Catalog_Model_Product &$product, $sub_products, &$customData)
     {
+        /** @var Mage_Directory_Model_Currency $directoryCurrency */
+        $directoryCurrency = Mage::getModel('directory/currency');
+
+        /** @var Mage_Tax_Helper_Data $taxHelper */
+        $taxHelper = Mage::helper('tax');
+
+        /** @var Mage_Directory_Helper_Data $directoryHelper */
+        $directoryHelper = Mage::helper('directory');
+
         $fields = $this->getFields($product->getStore());
         $customer_groups_enabled = $this->config->isCustomerGroupsEnabled($product->getStoreId());
         $store = $product->getStore();
         $type = $this->config->getMappedProductType($product->getTypeId());
 
-        /** @var Mage_Directory_Model_Currency $directoryCurrency */
-        $directoryCurrency = Mage::getModel('directory/currency');
         $currencies = $directoryCurrency->getConfigAllowCurrencies();
+        $baseCurrencyCode = $store->getBaseCurrencyCode();
 
         if (Mage::helper('core')->isModuleEnabled('Mage_Weee') &&
             Mage::helper('weee')->getPriceDisplayType($product->getStore()) == 0) {
@@ -512,102 +521,104 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
             $weeeTaxAmount = 0;
         }
 
-        $baseCurrencyCode = $store->getBaseCurrencyCode();
-
-        $groups = array();
-
         if ($customer_groups_enabled) {
             $groups = Mage::getModel('customer/group')->getCollection();
+        } else {
+            $groups = array();
         }
+        $special_price = $product->getSpecialPrice();
+        $special_from_date = $product->getSpecialFromDate();
+        $special_to_date = $product->getSpecialToDate();
 
-        /** @var Mage_Tax_Helper_Data $taxHelper */
-        $taxHelper = Mage::helper('tax');
-
-        /** @var Mage_Directory_Helper_Data $directoryHelper */
-        $directoryHelper = Mage::helper('directory');
+        // There is a special_price and either no to date or a to date in the future
+        // start date is irrelevant
+        if ($special_price && Mage::app()->getLocale()->isStoreDateInInterval($store, null, $special_to_date)) {
+            $canSpecialBeValid = true;
+            $special_price += $weeeTaxAmount;
+        } else {
+            $canSpecialBeValid = false;
+        }
 
         foreach ($fields as $field => $with_tax) {
             $customData[$field] = array();
+            $field_price = (double) $taxHelper->getPrice($product, $product->getPrice() + $weeeTaxAmount, $with_tax, null, null, null, $store, null);
+            if ($canSpecialBeValid) {
+                $field_special_price = (double) $taxHelper->getPrice($product, $special_price, $with_tax, null, null, null, $store, null);
+            }
 
             foreach ($currencies as $currency_code) {
-                $customData[$field][$currency_code] = array();
+                $currencyData = array();
 
-                $price = (double) $taxHelper->getPrice($product, $product->getPrice(), $with_tax, null, null, null, $product->getStore(), null);
-                $price = $directoryHelper->currencyConvert($price, $baseCurrencyCode, $currency_code);
-                $price += $weeeTaxAmount;
+                $price = $directoryHelper->currencyConvert($field_price + $weeeTaxAmount, $baseCurrencyCode, $currency_code);
 
-                $customData[$field][$currency_code]['default'] = $price;
-                $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($price, false, $currency_code);
+                $currencyData['default'] = $price;
+                $currencyData['default_formated'] = $this->formatPrice($price, false, $currency_code);
 
-                $special_price = (double) $taxHelper->getPrice($product, $product->getFinalPrice(), $with_tax, null, null, null, $product->getStore(), null);
-                $special_price = $directoryHelper->currencyConvert($special_price, $baseCurrencyCode, $currency_code);
-                $special_price += $weeeTaxAmount;
+                if ($canSpecialBeValid) {
+                    $special_price = $directoryHelper->currencyConvert($field_special_price + $weeeTaxAmount, $baseCurrencyCode, $currency_code);
 
+                    // this needs moving up a few levels
+                    $currencyData['special_from_date'] = Mage::app()->getLocale()->storeDate($store, $special_from_date)->getTimestamp();
+                    //if special_to_date is null leave this blank or it will end the special_price!
+                    if ($special_to_date) {
+                        $currencyData['special_to_date'] = Mage::app()->getLocale()->storeDate($store, $special_to_date)->getTimestamp();
+                    }
+                }
                 if ($customer_groups_enabled) {
                     // If fetch special price for groups
 
                     foreach ($groups as $group) {
                         $group_id = (int) $group->getData('customer_group_id');
+                        $group_str = 'group_' . $group_id;
                         $product->setCustomerGroupId($group_id);
 
-                        $discounted_price = $product->getPriceModel()->getFinalPrice(1, $product);
-                        $discounted_price = $directoryHelper->currencyConvert($discounted_price, $baseCurrencyCode, $currency_code);
-                        $discounted_price += $weeeTaxAmount;
+                        $group_price = $product->getGroupPrice();
+                        $group_price += $weeeTaxAmount;
 
-                        if ($discounted_price !== false) {
-                            $customData[$field][$currency_code]['group_'.$group_id] = (double) $taxHelper->getPrice($product,
-                                                                                                      $discounted_price,
-                                                                                                      $with_tax, null,
-                                                                                                      null, null,
-                                                                                                      $product->getStore(),
-                                                                                                      null);
-                            $customData[$field][$currency_code]['group_'.$group_id] = $directoryHelper->currencyConvert($customData[$field][$currency_code]['group_'.$group_id],
-                                                                                              $baseCurrencyCode,
-                                                                                              $currency_code);
-                            $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $store->formatPrice($customData[$field][$currency_code]['group_'.$group_id],
-                                false, $currency_code);
+                        if ($group_price !== false) {
+                            $currencyData[$group_str] = $directoryHelper->currencyConvert(
+                                (double) $taxHelper->getPrice($product,
+                                    $group_price,
+                                    $with_tax, null,
+                                    null, null,
+                                    $store,
+                                    null),
+                                $baseCurrencyCode,
+                                $currency_code);
                         } else {
-                            $customData[$field][$currency_code]['group_'.$group_id] = $customData[$field][$currency_code]['default'];
-                            $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $customData[$field][$currency_code]['default_formated'];
+                            $currencyData[$group_str] = $currencyData['default'];
                         }
-                    }
 
-                    $product->setCustomerGroupId(null);
-                }
-
-                $customData[$field][$currency_code]['special_from_date'] = strtotime($product->getSpecialFromDate());
-                $customData[$field][$currency_code]['special_to_date'] = strtotime($product->getSpecialToDate());
-
-                if ($customer_groups_enabled) {
-                    foreach ($groups as $group) {
-                        $group_id = (int) $group->getData('customer_group_id');
-
-                        if ($special_price && $special_price < $customData[$field][$currency_code]['group_'.$group_id]) {
-                            $customData[$field][$currency_code]['group_'.$group_id.'_original_formated'] =
-                                $customData[$field][$currency_code]['default_formated'];
-
-                            $customData[$field][$currency_code]['group_'.$group_id] = $special_price;
-                            $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $this->formatPrice(
-                                $special_price,
+                        if ($canSpecialBeValid && $special_price < $currencyData[$group_str]) {
+                            $currencyData[$group_str .'_original_formated'] = $this->formatPrice(
+                                $currencyData[$group_str],
                                 false,
                                 $currency_code
                             );
+                            $currencyData[$group_str .'_original'] = $currencyData[$group_str];
+
+                            $currencyData[$group_str] = $special_price;
                         }
+                        $currencyData[$group_str .'_formated'] = $store->formatPrice($currencyData[$group_str], false, $currency_code);
                     }
+                    $product->setCustomerGroupId(null);
                 }
 
-                if ($special_price && $special_price < $customData[$field][$currency_code]['default']) {
-                    $customData[$field][$currency_code]['default_original_formated'] =
-                        $customData[$field][$currency_code]['default_formated'];
+                if ($canSpecialBeValid && $special_price < $currencyData['default']) {
+                    $currencyData['default_original_formated'] = $currencyData['default_formated'];
+                    $currencyData['default_original'] = $currencyData['default'];
 
-                    $customData[$field][$currency_code]['default'] = $special_price;
-                    $customData[$field][$currency_code]['default_formated'] = $this->formatPrice(
+                    $currencyData['default'] = $special_price;
+                    $currencyData['default_formated'] = $this->formatPrice(
                         $special_price,
                         false,
                         $currency_code
                     );
                 }
 
+                // configurable appears to assume that there are no customer_group_prices
+                // specified on the attached simple products, but needs re-writing anyway
+                // to correctly calculate the option price, not the simple price
                 if ($type == 'grouped' || $type == 'bundle' || $type == 'configurable') {
                     $min = PHP_INT_MAX;
                     $max = 0;
@@ -645,37 +656,39 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                         $dashed_format = $this->formatPrice($min, false, $currency_code).' - '.$this->formatPrice($max,
                                 false, $currency_code);
 
-                        if (isset($customData[$field][$currency_code]['default_original_formated']) === false || $min <= $customData[$field][$currency_code]['default']) {
-                            $customData[$field][$currency_code]['default_formated'] = $dashed_format;
+                        if (isset($currencyData['default_original_formated']) === false || $min <= $currencyData['default']) {
+                            $currencyData['default_formated'] = $dashed_format;
 
                             //// Do not keep special price that is already taken into account in min max
-                            unset($customData['price']['special_from_date']);
-                            unset($customData['price']['special_to_date']);
-                            unset($customData['price']['default_original_formated']);
+                            unset($currencyData['special_from_date']);
+                            unset($currencyData['special_to_date']);
+                            unset($currencyData['default_original']);
+                            unset($currencyData['default_original_formated']);
 
-                            $customData[$field][$currency_code]['default'] = 0; // will be reset just after
+                            $currencyData['default'] = 0; // will be reset just after
                         }
 
                         if ($customer_groups_enabled) {
                             foreach ($groups as $group) {
                                 $group_id = (int) $group->getData('customer_group_id');
+                                $group_str = 'group_' . $group_id;
 
-                                if ($min != $max && $min <= $customData[$field][$currency_code]['group_'.$group_id]) {
-                                    $customData[$field][$currency_code]['group_'.$group_id] = 0;
+                                if ($min != $max && $min <= $currencyData[$group_str]) {
+                                    $currencyData[$group_str] = 0;
                                 } else {
-                                    $customData[$field][$currency_code]['group_'.$group_id] = $customData[$field][$currency_code]['default'];
+                                    $currencyData[$group_str] = $currencyData['default'];
                                 }
 
-                                $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $dashed_format;
+                                $currencyData[$group_str .'_formated'] = $dashed_format;
                             }
                         }
                     }
 
-                    if ($customData[$field][$currency_code]['default'] == 0) {
-                        $customData[$field][$currency_code]['default'] = $min;
+                    if ($currencyData['default'] == 0) {
+                        $currencyData['default'] = $min;
 
                         if ($min === $max) {
-                            $customData[$field][$currency_code]['default_formated'] = $this->formatPrice($min, false,
+                            $currencyData['default_formated'] = $this->formatPrice($min, false,
                                 $currency_code);
                         }
                     }
@@ -683,17 +696,19 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                     if ($customer_groups_enabled) {
                         foreach ($groups as $group) {
                             $group_id = (int) $group->getData('customer_group_id');
+                            $group_str = 'group_' . $group_id;
 
-                            if ($customData[$field][$currency_code]['group_'.$group_id] == 0) {
-                                $customData[$field][$currency_code]['group_'.$group_id] = $min;
+                            if ($currencyData[$group_str] == 0) {
+                                $currencyData[$group_str] = $min;
 
                                 if ($min === $max) {
-                                    $customData[$field][$currency_code]['group_'.$group_id.'_formated'] = $customData[$field][$currency_code]['default_formated'];
+                                    $currencyData[$group_str .'_formated'] = $currencyData['default_formated'];
                                 }
                             }
                         }
                     }
                 }
+                $customData[$field][$currency_code] = $currencyData;
             }
         }
     }

@@ -39,9 +39,8 @@ var algolia = {
 			if (Array.isArray(currentData)) {
 				currentData = [currentData];
 			}
-			
 			var allParameters = [].concat(currentData).concat(hookArguments);
-			
+
 			return hook.apply(null, allParameters);
 		}, originalData);
 
@@ -143,17 +142,35 @@ document.addEventListener("DOMContentLoaded", function (e) {
 				hit.price = hit.price[0];
 			}
 
-			if (hit['price'] !== undefined && price_key !== '.' + algoliaConfig.currencyCode + '.default' && hit['price'][algoliaConfig.currencyCode][price_key.substr(1) + '_formated'] !== hit['price'][algoliaConfig.currencyCode]['default_formated']) {
-				hit['price'][algoliaConfig.currencyCode][price_key.substr(1) + '_original_formated'] = hit['price'][algoliaConfig.currencyCode]['default_formated'];
+			if (Array.isArray(hit.price_with_tax)) {
+				hit.price_with_tax = hit.price_with_tax[0];
 			}
-			
-			if (hit['price'] !== undefined && hit['price'][algoliaConfig.currencyCode]['default_original_formated']
-				&& hit['price'][algoliaConfig.currencyCode]['special_to_date']) {
-				var priceExpiration = hit['price'][algoliaConfig.currencyCode]['special_to_date'];
 
-				if (algoliaConfig.now > priceExpiration) {
-					hit['price'][algoliaConfig.currencyCode]['default_formated'] = hit['price'][algoliaConfig.currencyCode]['default_original_formated'];
-					hit['price'][algoliaConfig.currencyCode]['default_original_formated'] = false;
+			// price_key is in format .CURRENCY.KEY, fix that for array access
+			const price_key_as_key = price_key.replace('.' + algoliaConfig.currencyCode + '.', '');
+			const formated_original_key = price_key_as_key + '_original_formated';
+
+			// original_formatted means that there is possibly a special price
+			if (hit['price'] !== undefined && hit['price'][algoliaConfig.currencyCode][formated_original_key]) {
+				const formated_key = price_key_as_key + '_formated';
+
+				// special_from_date should not be blank Producthelper.php sets it to today if blank
+				var priceStart = hit['price'][algoliaConfig.currencyCode]['special_from_date'];
+				// special_to_date may be blank, maybe the special price doesn't end
+                // if it is blank, just set it to the future so the comparison works
+				var priceExpiration = hit['price'][algoliaConfig.currencyCode]['special_to_date'];
+				if (!priceExpiration) priceExpiration = algoliaConfig.now+1;
+
+				// if .now is not inside the window between priceStart and priceExpiration
+				if (!(algoliaConfig.now >= priceStart && algoliaConfig.now <= priceExpiration )) {
+					// remove original_formatted_price, so client doesn't show special price
+					hit['price'][algoliaConfig.currencyCode][formated_key] = hit['price'][algoliaConfig.currencyCode][formated_original_key];
+					hit['price'][algoliaConfig.currencyCode][formated_original_key] = false;
+					if (hit.price_with_tax !== undefined) {
+						hit['price_with_tax'][algoliaConfig.currencyCode][formated_key] = hit['price_with_tax'][algoliaConfig.currencyCode][formated_original_key];
+						hit['price_with_tax'][algoliaConfig.currencyCode][formated_original_key] = false;
+
+					}
 				}
 			}
 

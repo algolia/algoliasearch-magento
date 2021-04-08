@@ -503,6 +503,8 @@ class Algolia_Algoliasearch_Helper_Config extends Mage_Core_Helper_Abstract
             foreach ($currencies as $currency) {
                 $attributes[] = $price.'.'.$currency.'.default';
                 $attributes[] = $price.'.'.$currency.'.default_formated';
+                $attributes[] = $price.'.'.$currency.'.default_original';
+                $attributes[] = $price.'.'.$currency.'.default_original_formated';
                 $attributes[] = $price.'.'.$currency.'.group_'.$groupId;
                 $attributes[] = $price.'.'.$currency.'.group_'.$groupId.'_formated';
                 $attributes[] = $price.'.'.$currency.'.group_'.$groupId.'_original_formated';
