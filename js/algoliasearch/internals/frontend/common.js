@@ -60,6 +60,8 @@ document.addEventListener("DOMContentLoaded", function (e) {
 		};
 		
 		window.transformHit = function (hit, price_key, helper) {
+			hit._highlightResult = hit._highlightResult || {};
+			
 			if (Array.isArray(hit.categories)) {
 				hit.categories = hit.categories.join(', ');
 			}
