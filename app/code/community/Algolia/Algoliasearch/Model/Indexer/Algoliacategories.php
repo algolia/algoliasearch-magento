@@ -78,7 +78,9 @@ class Algolia_Algoliasearch_Model_Indexer_Algoliacategories extends Algolia_Algo
                     $productIds = $category->getAffectedProductIds();
                 }
 
-                if (!$category->getData('is_active')) {
+                $isActive = $category->getResource()
+                    ->getAttributeRawValue($category->getId(), "is_active", $category->getStoreId());
+                if ((int) $isActive !== 1) {
                     $categories = array_merge(array($category->getId()), $category->getAllChildren(true));
                     $event->addNewData('catalogsearch_delete_category_id', $categories);
 
