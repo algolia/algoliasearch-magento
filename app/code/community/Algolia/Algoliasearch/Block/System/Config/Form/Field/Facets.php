@@ -5,6 +5,10 @@
  */
 class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Algolia_Algoliasearch_Block_System_Config_Form_Field_AbstractField
 {
+    const SEARCHABLE = '1';
+    const NOT_SEARCHABLE = '2';
+    const FILTER_ONLY = '3';
+
     protected $_isQueryRulesDisabled;
 
     public function __construct()
@@ -44,10 +48,11 @@ class Algolia_Algoliasearch_Block_System_Config_Form_Field_Facets extends Algoli
                     'style' => 'width: 100px;',
                 ),
                 'searchable' => array(
-                    'label' => 'Searchable?',
+                    'label' => 'Modifier',
                     'options' => array(
-                        '1' => 'Yes',
-                        '2' => 'No'
+                        self::SEARCHABLE => 'Searchable',
+                        self::NOT_SEARCHABLE => 'Not Searchable',
+                        self::FILTER_ONLY => 'Filter Only',
                     ),
                     'rowMethod' => 'getSearchable',
                 ),
