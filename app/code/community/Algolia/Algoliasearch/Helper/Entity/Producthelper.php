@@ -236,9 +236,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         $facets = $this->config->getFacets($storeId);
 
-        /** @var Mage_Directory_Model_Currency $directoryCurrency */
-        $directoryCurrency = Mage::getModel('directory/currency');
-        $currencies = $directoryCurrency->getConfigAllowCurrencies();
+        $currencies = Mage::app()->getStore($storeId)->getAvailableCurrencyCodes();
 
         foreach ($facets as $facet) {
             if ($facet['attribute'] === 'price') {
