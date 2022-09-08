@@ -505,8 +505,11 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $directoryCurrency = Mage::getModel('directory/currency');
         $currencies = $directoryCurrency->getConfigAllowCurrencies();
 
-        if (Mage::helper('core')->isModuleEnabled('Mage_Weee') &&
-            Mage::helper('weee')->getPriceDisplayType($product->getStore()) == 0) {
+        // Get the weee tax amount if the weee module is enabled and for all types that include it
+        if (
+            Mage::helper('core')->isModuleEnabled('Mage_Weee') &&
+            Mage::helper('weee')->typeOfDisplay($product, [0, 1, 4])
+        ) {
             $weeeTaxAmount = Mage::helper('weee')->getAmountForDisplay($product);
         } else {
             $weeeTaxAmount = 0;
