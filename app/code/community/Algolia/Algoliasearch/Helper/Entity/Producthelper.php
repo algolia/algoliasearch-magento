@@ -505,13 +505,6 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
         $directoryCurrency = Mage::getModel('directory/currency');
         $currencies = $directoryCurrency->getConfigAllowCurrencies();
 
-        if (Mage::helper('core')->isModuleEnabled('Mage_Weee') &&
-            Mage::helper('weee')->getPriceDisplayType($product->getStore()) == 0) {
-            $weeeTaxAmount = Mage::helper('weee')->getAmountForDisplay($product);
-        } else {
-            $weeeTaxAmount = 0;
-        }
-
         $baseCurrencyCode = $store->getBaseCurrencyCode();
 
         $groups = array();
@@ -533,6 +526,8 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 $customData[$field][$currency_code] = array();
 
                 $price = (double) $taxHelper->getPrice($product, $product->getPrice(), $with_tax, null, null, null, $product->getStore(), null);
+
+                $weeeTaxAmount = $this->getWeeeAmount($product, $with_tax);
                 $price = $directoryHelper->currencyConvert($price, $baseCurrencyCode, $currency_code);
                 $price += $weeeTaxAmount;
 
@@ -1112,7 +1107,7 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
 
         return $this->compositeTypes;
     }
-    
+
     public function getAllProductIds($storeId)
     {
         $products = Mage::getModel('catalog/product')->getCollection();
@@ -1312,5 +1307,20 @@ class Algolia_Algoliasearch_Helper_Entity_Producthelper extends Algolia_Algolias
                 throw $e;
             }
         }
+    }
+
+    private function getWeeeAmount($product, $withTax)
+    {
+        // Get the weee tax amount if the weee module is enabled and for all types that include it
+        if (
+            !Mage::helper('core')->isModuleEnabled('Mage_Weee') ||
+            !Mage::helper('weee')->typeOfDisplay($product, [0, 1, 4])
+        ) {
+            return 0;
+        }
+
+        return $withTax
+            ? Mage::helper('weee')->getAmountForDisplayInclTaxes($product)
+            : Mage::helper('weee')->getAmountForDisplay($product);
     }
 }
